@@ -1,0 +1,275 @@
+#!/usr/bin/perl
+############################################################################
+# $Id: check_pedi_loop,v 1.7 2009-08-13 07:07:34 popreport Exp $
+############################################################################
+# see documentation at the end of the file
+
+use strict;
+use warnings;
+
+use Boost::Graph;
+use Data::Dumper;
+use Graph;
+use Graph::Writer::Dot;
+use Cache::Memcached::Fast;
+use Parallel::ForkManager;
+use Sys::CPU;
+
+# handle command-line options:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+
+my $startdate = `date +%s`;
+
+# allowed parameters:
+my $args_ref = {};
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'file|f=s',
+    'datadir|d=s',
+    'namespace|n',
+) or pod2usage( -verbose => 1 );
+
+# intializing parallel runs (one process per cpu):
+my $cpus = Sys::CPU::cpu_count();
+my $parallel = new Parallel::ForkManager( $cpus );
+
+my $infile   = $args_ref->{'file'};
+my $datadir  = $args_ref->{'datadir'} || '.';
+
+my $nanosecs = `date +%s%N`;
+chomp $nanosecs;
+my $namespace = $args_ref->{'namespace'} || $nanosecs;
+
+# short help, longer man page:
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 2 ) if $args_ref->{'man'};
+pod2usage( -verbose => 1 ) if !$infile;
+
+select STDERR; $| = 1; # autoflush
+select STDOUT; $| = 1; # autoflush
+
+my $cache = new Cache::Memcached::Fast {
+    'servers'            => ["localhost:11211"],
+    'compress_threshold' => 10_000,
+    'namespace'          => $namespace,
+};
+die "Cannot initialize memcache\n" if !$cache;
+
+our $g = new Boost::Graph(directed=>1);
+open my $IN, '<', $infile or die "Cannot open infile $infile: $!\n";
+my $loop_log = "$datadir/check_pedi_loop.log";
+open my $LOG, '>', $loop_log or die "Cannot open logfile $loop_log: $!\n";
+
+my $param_file = "$datadir/param";
+open my $PARAM, '>>', $param_file or die "Cannot open param file $param_file: $!\n";
+print $PARAM "startdate-check_pedi_loop=" . $startdate;
+
+my @all_animals;
+my $i = 0;
+while ( <$IN> ) {
+    next if /^#/;
+    next if /^\s*$/;
+    chomp;
+    s/^\s*//;
+    s/\s*$//;
+    my ($animal,$sire,$dam) = split /\s*\|\s*/;
+    # print "$animal,$sire,$dam\n";
+    push @all_animals, $animal, $sire, $dam;
+    $g->add_edge($sire, $animal);
+    $g->add_edge($dam, $animal);
+    $i++;
+}
+close $IN;
+print $LOG "$i records loaded\n";
+
+my @child_less;
+for my $node ( @{$g->get_nodes} ){
+    push @child_less, $node if ! scalar @{$g->children_of_directed($node)};
+}
+my $no_of_childless = scalar @child_less;
+printf $LOG "Found %u childrenless animals.\n", $no_of_childless;
+
+# Start with children-less animals:
+my %cfg = (
+    gen_depth => 0,
+    do_exit   => 0,
+);
+my ( $count, $max_gen_depth, $do_exit, $return );
+$count = $max_gen_depth = $do_exit = $return = 0;
+my $modulus = 100;
+$modulus = 1000  if $no_of_childless > 10000;
+$modulus = 10000 if $no_of_childless > 100000;
+
+BASE:
+for my $node (@child_less) {
+    $count++;
+    my $pid = $parallel->start and next;    # forks a child process
+    find_parents( $node, [], \%cfg );
+    $max_gen_depth = $cfg{gen_depth} if $cfg{gen_depth} > $max_gen_depth;
+    $do_exit       = $cfg{do_exit}   if $cfg{do_exit};
+
+    print $LOG '.'              if !${count} % ${modulus};
+    print $LOG " --> $count}\n" if !${count} % ( ${modulus} * 10 );
+    last BASE                   if $do_exit;
+    $parallel->finish;                      # Terminates the child process
+}
+$parallel->wait_all_children;    # wait for all children to terminate
+
+print $LOG "\n";
+printf $LOG "max. generation depth: %u\n", $max_gen_depth if $max_gen_depth;
+
+# free cache memory:
+for my $animal (@all_animals) {
+    $cache->delete($animal);
+}
+
+if ( $do_exit ) {
+    $return++;
+    my $errfile = "$datadir/errors.loop";
+    open my $ERR, '>', $errfile or die "Cannot open errfile $errfile: $!\n";
+    print $ERR "Stopped traversing through tree after $count iterations:\n";
+    print $ERR $do_exit;
+    # same to logfile:
+    print $LOG "Stopped traversing through tree after $count iterations:\n";
+    print $LOG $do_exit;
+    close $ERR;
+}
+print $PARAM "enddate-check_pedi_loop=" . `date +%s`;
+close $LOG;
+close $PARAM;
+exit $return;
+
+##############################################################################
+sub find_parents {
+    my ( $node, $stack_ref, $cfg_ref ) = @_;
+
+    return if $cfg_ref->{do_exit};
+    return if !defined $node;
+    return if $node eq 'unknown_sire';
+    return if $node eq 'unknown_dam';
+    my $depth = scalar @{$stack_ref};
+    $cfg_ref->{gen_depth} = $depth if $depth > $cfg_ref->{gen_depth};
+
+    my ( @parents, $parents_concat );
+    $parents_concat = $cache->get($node);
+    if ($parents_concat) {
+        @parents = split /\|/, $parents_concat;
+    }
+    else {
+        @parents = @{ $g->parents_of_directed($node) };
+        $cache->set( $node, join( '|', @parents ), 3600 );
+    }
+
+    for my $parent (@parents) {
+        # is this a loop?:
+        # printf "Node: %s Parents: %s Stack: %s\n", $node, join('|',@parents), join('-', @{$stack_ref});
+        if ( grep {/^${parent}$/} @{$stack_ref} ) {
+            push @{$stack_ref}, $node;
+            push @{$stack_ref}, $parent;
+            draw_loop($stack_ref);
+            $cfg_ref->{do_exit} = sprintf "Loop found in Stack %s!\n",
+                join( '-', @{$stack_ref} );
+            return;
+        }
+        else {
+            push @{$stack_ref}, $node;
+            find_parents( $parent, $stack_ref, $cfg_ref );
+            pop @{$stack_ref};
+        }
+    }
+}
+##############################################################################
+
+# we have a loop, so read the loop animals into Graph:
+sub draw_loop {
+    my $stack_ref = shift;
+    my $graph     = Graph->new();
+
+    open my $IN, '<', $infile or die "Cannot open infile $infile: $!\n";
+    while (<$IN>) {
+        next if /^#/;
+        next if /^\s*$/;
+        chomp;
+        s/^\s*//;
+        s/\s*$//;
+        my ( $animal, $sire, $dam ) = split /\s*\|\s*/;
+        my $do_load = 0;
+        $do_load++ if grep {/^${animal}$/} @{$stack_ref};
+
+        if ($do_load) {
+            $graph->add_edge( $animal, $sire );
+            $graph->add_edge( $animal, $dam );
+            $graph->set_vertex_attribute( $animal, 'color', 'blue' );
+            $graph->set_edge_attribute( $animal, $sire, 'color', 'red' )
+                if grep {/^${sire}$/} @{$stack_ref};
+            $graph->set_edge_attribute( $animal, $dam, 'color', 'red' )
+                if grep {/^${dam}$/} @{$stack_ref};
+        }
+    }
+    my $writer = Graph::Writer::Dot->new();
+    $writer->write_graph( $graph, "${datadir}/loopgraph.dot" );
+    `dot -Tfig -o "${datadir}/loopgraph.fig" "${datadir}/loopgraph.dot" && fig2dev -Lpdf "${datadir}/loopgraph.fig" "${datadir}/loopgraph.pdf"`;
+}
+##############################################################################
+
+sub show_progress {
+   my ( $counter_ref, $mod ) = @_;
+   $mod = 100 unless $mod;
+   print '.' unless $$counter_ref%${mod};
+   print " --> $$counter_ref\n" unless $$counter_ref%(${mod} *10);
+}
+##############################################################################
+
+
+=pod
+
+=head1 NAME
+
+check_pedi_loop
+
+=head1 SYNOPSIS
+
+check_pedi_loop -f infile [ -d ]
+
+=head1 OPTIONS
+
+ -f | --file       Pedigree input file (r)
+ -d | --datadir    Directory, where the input data and param files reside (default: .) (o)
+ -n | --namespace  Set namespace for memcached (default is date in nanoseconds) (o)
+
+ -h | -? | --help  short help (o)
+ -m | --man        detailed man page (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<check_pedi_loop> reads the input file and checks for loops in the pedigree data.
+
+B<check_pedi_loop> returns 0 if no loop exists, 1 and some errors messages if
+it finds a loop. Additionally, a pdf-file is written which documents the found
+loop.
+
+After the first found loop the program exits. It does not look for additional
+ones.
+
+=head1 EXAMPLES
+
+Example usage:
+
+    check_pedi_loop -f DSN.data
+
+=head1 BUGS
+
+=head1 VERSION
+
+$Revision: 1.7 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut

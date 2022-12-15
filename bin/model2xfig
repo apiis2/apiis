@@ -1,0 +1,298 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: model2xfig,v 1.22 2011-09-14 10:18:23 ulm Exp $
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.22 $' );
+
+
+my $programname = $apiis->programname;
+my $version = $apiis->version;
+
+use xfig_lib;     # common variables and subroutines for model2fig
+
+#### Variables ###############################################################
+use vars qw( $xml_file $opt_f $opt_h $opt_v $opt_b $opt_s $opt_R );
+
+my ( @tables, $table, $col );
+my $nl = 0; # number of lines
+my @lines;  # $lines[$nl][0] destination table
+            # $lines[$nl][1] destination column
+            # $lines[$nl][2] source x-coordinate
+            # $lines[$nl][3] source y-coordinate
+my $xfigf;  # collects the tables and lines in xfig format
+my $xfig;   # current table in xfig format
+
+
+
+# allowed parameters:
+use Getopt::Std;
+getopts('f:hvb:sR:T:'); # option -f <modelfile>  => Modelfile
+                  #        -b <fill | nofill> => boxes are filled or not
+                  #        -h              => Help
+		  #        -v              => version
+		  #        -s              => stack tables
+		  #        -R <0|1>        => relations 0 , 1
+
+# Version:
+die "$programname: $version\n" if $opt_v;
+
+## help:
+if ($opt_h or scalar(@ARGV) < 1) {
+   print  __("\n  model2xfig creates a relationship diagram from a model file\n".
+       "  in xfig file format (FIG 3.2).\n\n"); 
+   print  __("usage:"), " $programname [-b <fill|nofill|value>] [-s] [-R <yes|no>] [modelfile]\n";
+   print "       $programname -h | -v\n".
+         "\t-h\t". __('Help'), "\n\n".
+         "\t-v\t". __('Version'). "\n\n".
+         "\t-s\t". __("stack tables - put tables in layers one on top of the other") . ".\n".
+         "\t\t". __("The order of the stacked tables correspondence to the order\n".
+                   "\t\tof the defined tables in the model file. The last defined\n".
+                   "\t\ttable lies on top of the others.\n\n").
+         "\t-T\t<yes|no>i\t", __("Titel"), "\n".
+         "\t\tyes: ", __("with Titel"),"\n".
+         "\t\tno: ", __("without Titel"),"\n".
+         "\t-R\t<yes|no>i\t", __("relations"), "\n".
+         " \t\tyes:  ", __("lines with arrow to indicate foreign key relations (default)"), "\n".
+         " \t\t no:  ", __("no lines for foreign key relations"), "\n\n".
+         " \t-b\t<fill|nofill|value>\t", __("box fill"), "\n".
+         "\t\t  fill: ", __("opaque table boxes, color white"), "\n".
+         "\t\tnofill: (", __("default"), " ", __("transparent table boxes - crossing lines are visible"), "\n".
+         "\t\t value: -1 = ", __("not filled, same as 'nofill'"), "\n".
+         "\t\t         0 = ", __("black"), "\n".
+         "\t\t         ... ",__("values from 1 to 19 are shades of grey, from darker to lighter"),"\n".
+         "\t\t        20 = ", __("white"), " ", __("same as 'fill'"), "\n".
+         "\t\t       41-56 ",__("patterns"),"(?)\n\n".
+         "  ",__("creates xfig file <modelfile>.fig"), "\n".
+         "  ",__("after loading the file in xfig, move tables with".
+         "  'Smart Links' set to 'MOVE' mode."), "\n\n";
+   exit;
+}
+
+# How to fill boxes
+if($opt_b) {
+    $fill = -1 if($opt_b eq 'nofill');
+   
+    if($opt_b eq 'fill') {
+        $fill = 20;
+    } 
+    else {
+        $fill = $opt_b; # values  -1 = not filled, same as 'nofill'
+    }                   #          0 = black
+}                       #          ... values from 1to 19 are shades of grey, from darker to lighter
+                        #          20 = white, same as 'fill'
+		                #          21-40 not used
+		                #          41-56 patterns(?)
+ 
+
+$xml_file = $opt_f if ($opt_f);
+
+# maybe model file given without -f
+unless ( $xml_file ) {
+   $xml_file = $ARGV[0] if $ARGV[0];
+}
+
+die __("Name of model file"), "''\n" unless $xml_file;
+
+use XML::Simple;
+$xml = new XML::Simple(KeyAttr => ['id'],ForceArray => 1);  
+$xfile = $xml->XMLin( $xml_file );
+
+### The xfig header
+$xfigf  = "#FIG 3.2\n";
+$xfigf .= "# This file was created by $programname $version\n";
+$xfigf .= "# on ".`date`;
+$xfigf .= "# ". __("modelfile") .": $xml_file";
+$xfigf = getFileHeader($xfigf);
+
+### the title
+if(!$opt_T or $opt_T eq 'yes') {
+    $xfigf .= texttype(__("modelfile") . ": $xml_file",'h',$x0-$xoffset,200,$depthT);
+}
+
+### make the tables
+use Tie::IxHash;
+
+my %table;
+tie %table, "Tie::IxHash";
+
+my ($in,$yin,$d) = (0,0,5);
+$yin = 300 if($opt_s);
+$xi = $sizeC*205 if($opt_s);
+$xi = $sizeC*60 if($opt_s and $opt_R eq 'no');
+
+#-- loop over all in modelfile defined tables
+foreach my $tab (@{$xfile->{'table'}}) {
+
+    my $table=$tab->{'name'};
+
+   my $yc       = $y0 + $in * $yin;
+   my $xfig     = texttype(uc($table), 't', $xc, $yc,$depthT-$d); # tablename
+      $xfig     .= linetype($xc-100, $yc+40, $xc+$xw, $yc+40, $depthL-$d);
+
+    #-- loop over all columns of a table 
+    foreach my $column (@{$tab->{'column'}}) {
+
+        my $col=$column->{'name'};
+      $yc += $yi;
+      $xfig .= texttype($col,'c',$xc,$yc,$depthT-$d);# columnname
+
+      # For later line drawings we need the coordinates of each column.
+      # Let us use the hash-keys 'DATA' and 'ERROR' --defined in the model file.
+      # This keys are unused otherwise in this program. 
+      # we hold the X coordinate in DATA and the Y coordinate in ERROR.
+      $table{$table}{$col}{DATA} = $xc;
+      $table{$table}{$col}{ERROR} = $yc;
+     
+      if ($column->{'CHECK'}) {
+        
+           my @check =split(',', $column->{'CHECK'});
+
+           foreach (@check) {
+            
+               if ($_=~/foreignkey/i) {
+                    my @a;
+                    @a=split(' ',$_);
+            
+                    $lines[$nl][0] =  $a[1];
+            
+                    $lines[$nl][1] =  $a[2];
+            
+                    $lines[$nl][2] =  $xc;
+            
+                    $lines[$nl][3] =  $yc;
+            
+                    $nl++;
+                }
+           }
+        }
+    }
+   
+    # box: draw a rectangle around the table text
+    $xfig .= boxtype($xc-100,$y0+$in*$yin-220,$xc+$xw,$yc+100,$depthB-$d);
+
+    # compound: put all together into one compound object
+    $xfig = compoundtype($xfig, $xc-$xoffset,$y0+$in*$yin-220,$xc+$xw,$yc+100);
+
+    $xc += $xi;
+    $xfigf .= $xfig;
+
+    $in++;
+    $d += 1 if($opt_s);
+}
+
+# draw the lines with backward arrows
+if(!$opt_R or $opt_R eq 'yes') {
+  
+    #-- loop over all lines which to draw 
+    foreach $n (0..$nl-1) {
+      
+        #-- Get column 
+        foreach $col ( $lines[$n][1]) {
+	 
+#           if ($lines[$n][0]{$col}{DB_COLUMN} eq $lines[$n][1]) {
+	    
+                $xfigf .= arrowlinetype(
+                        $table{ $lines[$n][0] }{$col}{DATA}-$xoffset,
+				        $table{ $lines[$n][0] }{$col}{ERROR}-$yoffset,
+				        $lines[$n][2]+$xw,$lines[$n][3]-$yoffset,
+				        $depthA); 
+#        }
+        }
+    }
+}
+
+# print out the xfig string
+# filename : $xml_file.fig
+my $xfigfilename = $xml_file.".fig";
+if ( -s $xfigfilename) {
+    print "$programname: ", __("[_1] exists - moved to [_1].bak\n", $xfigfilename);
+    system  ("mv $xfigfilename $xfigfilename.bak");
+}
+
+open (FIG, ">$xfigfilename") || die __("Problems opening file [_1]\n", $xfigfilename);
+print FIG $xfigf;
+close FIG;
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+model2xfig - create a database relationship diagram
+
+=head1 SYNOPSIS
+
+B<model2xfig> [F<options>] [modelfile]
+
+=head1 DESCRIPTION
+
+model2xfig creates a relationship diagram from a modelfile
+in xfig file format (FIG 3.2). The name of the xfig file is
+F<modelfile.fig>.
+
+After loading the file into B<xfig> one can move tables with 'Smart Links'
+set to 'MOVE'. In this mode the end of lines (foreign keys) persists.
+
+=head1 OPTIONS
+
+=over 6
+
+=item B<-h>
+
+help
+
+=item B<-v>
+
+version
+
+=item B<-s>
+
+stack tables - put tables in layers one on top of the other.
+The order of the stacked tables correspondence to the order
+of the defined tables in the model file. The last defined
+table lies on top of the others.
+
+=item B<-R> <yes | no>
+
+relations
+ yes:  lines with arrows to indicate foreign keys
+       (default)
+ no:  no lines for foreign keys
+
+=item B<-b> <fill | nofill | value>
+
+box fill
+   fill: opaque table boxes, color white
+ nofill: (default) transparent table boxes,
+         visible crossing lines within the boxes.
+  value: -1 = not filled, same as 'nofill'
+          0 = black
+          1-19 shades of grey,
+               from darker to lighter
+         20 = white, same as 'fill'
+         41-56 patterns(?)
+
+=back
+
+=head1 SEE ALSO
+
+xfig (www.xfig.org)
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+    
+2011: Ulf Müller (ulf.mueller@smul.sachsen.de)
+      usage of xml-modelfile
+=cut

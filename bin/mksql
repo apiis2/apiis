@@ -1,0 +1,103 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: mksql,v 1.17 2007-12-11 07:10:52 heli Exp $
+# make SQL statements from the model file.
+##############################################################################
+
+=head1 NAME
+
+mksql -- create SQL commands from the model file
+
+=head1 SYNOPSIS
+
+   mksql [-h|v|t|d|n|s] [-f] <model file>
+
+Create SQL commands from the model file to create the database structure
+
+=head1 OPTIONS
+
+   -h                Help
+   -m                show manpage
+   -v                Version
+   -f <modelfile>    Name of model file (required)
+   -t <table>        only for table <table>
+   -d                delete: DROP-statements are not commented out!
+   -n                create no views
+   -s                write to STDOUT
+
+=head1 DESCRIPTION
+
+mksql reads the model file and writes a SQL-file (unless -s) to create
+all necessary tables, view, indexes, sequences, etc.
+As this is very database specific you have to run this file by hand. Maybe
+you want to inspect it before. :^)
+
+=cut
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.17 $' );
+
+use vars qw( $opt_f $opt_h $opt_v $opt_t $opt_d $opt_s $opt_m $opt_n);
+
+use Pod::Usage;
+use Apiis::DataBase::SQL::MakeSQL;
+use Apiis::DataBase::User;
+our $apiis;
+
+my $programname = $apiis->programname;
+
+# allowed parameters:
+use Getopt::Std;
+getopts('f:t:dsvhmn');
+
+pod2usage(-exitstatus => 0, -verbose => 2) if $opt_m;
+die __("mksql_USAGE_MESSAGE") if $opt_h;    # help
+die "$programname: ", $apiis->version, "\n" if $opt_v;    # version
+my $model_file = $opt_f if ($opt_f);
+
+# maybe model file given without -f
+( $model_file = $ARGV[0] || '' ) unless $model_file;
+die __("mksql_USAGE_MESSAGE") unless $model_file;
+
+my $dummy = Apiis::DataBase::User->new(
+    id       => ($apiis->os_user || 'nobody'),
+    password => 'nopassword',
+);
+
+$apiis->join_model( $model_file,
+    userobj  => $dummy,
+    database => 0,
+);
+$apiis->check_status( die => 'ERR' );
+
+my %opts;
+$opts{-t}    = $opt_t if $opt_t;
+$opts{-d}    = $opt_d if $opt_d;
+$opts{-n}    = $opt_n if $opt_n;
+$opts{-s}    = $opt_s if $opt_s;
+
+MakeSQL( \%opts );
+
+=head1 SEE ALSO
+
+Apiis::DataBase::SQL::MakeSQL;
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See <http://www.perl.com/perl/misc/Artistic.html>
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+

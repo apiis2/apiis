@@ -1,0 +1,288 @@
+#!/usr/bin/env perl 
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use Apiis;
+use warnings;
+use Apiis::Errors;
+use Apiis::DataBase::User;
+use Apiis::Form::Init;
+#use Devel::DProf;
+
+use strict;
+use CGI qw/:standard :html3 /; 
+use vars qw($opt_u $opt_p $opt_m $query $gui  $zw $user_obj );
+
+Apiis->initialize( VERSION => '$Revision: 1.18 $' );
+
+$query=CGI->new();
+
+#print $query->header();
+
+#--- Test ob es Files gibt
+my $vapiis=$apiis->APIIS_HOME;
+if (! -e $apiis->APIIS_HOME."/etc/apiis.css") {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'GUI',
+     msg_short => __("Can't open [_1]/etc/apiis.css", $vapiis),
+  ));
+  goto ERR; 
+}
+if (! -w $apiis->filelog_filename) {
+  my  $a=$apiis->filelog_filename;
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'GUI',
+     msg_short => __("[_1] Can't write $a", $ENV{'REMOTE_IDENT'}),
+  ));
+  goto ERR; 
+}
+if (! -r "$APIIS_HOME/etc/apiisrc") {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'GUI',
+     msg_short => __("[_1] Can't read $APIIS_HOME/etc/apiisrc", $ENV{'REMOTE_IDENT'}),
+  ));
+  goto ERR; 
+}
+#--- test arguments
+$opt_m=$query->param('m')   if ($query and $query->param('m'));
+$opt_u=$query->param('user')    if ($query->param('user'));
+$opt_p=$query->param('pw_user') if ($query->param('pw_user'));
+
+$user_obj = Apiis::DataBase::User->new( id => $opt_u );
+goto ERR if ($apiis->status);
+
+$user_obj->password($opt_p);
+goto ERR if ($apiis->status);
+
+$Apiis::Model::apiis->join_model($opt_m, userobj => $user_obj); 
+goto ERR if ($apiis->status);
+
+if (! ($opt_m)) {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+     msg_short => __("-m option wasn't set"),
+  ));
+  goto ERR; 
+}
+
+my $dtd=$apiis->APIIS_HOME.'/etc/form.dtd';
+my $vgui='Form';
+
+$apiis->log('debug', "use model: ".$apiis->project($opt_m)."/model/$opt_m.model");
+goto ERR if $apiis->status;
+
+ERR:
+if ($ENV{'DOCUMENT_ROOT'}) {
+  print $query->header();# if (! $vgui);
+  my $rawcontent='';
+  foreach (@{$apiis->errors}) {
+    $rawcontent.=TR(td("ERROR"),td());
+    $rawcontent.=TR(td("type: "),td($_->type)) if ($_->type ne '');
+    $rawcontent.=TR(td("severity: "),td($_->severity)) if ($_->severity ne '');
+    $rawcontent.=TR(td("from: "),td($_->from)) if ($_->from ne '');
+    $rawcontent.=TR(td("msg_short: "),td($_->msg_short)) if ($_->msg_short);
+    $rawcontent.=TR(td("msg_long: "),td($_->msg_long)) if ($_->msg_long);
+  }  
+  print $query->table({-style=>"tablegui"},$rawcontent);
+} else {
+  if ( $apiis->errors ) {
+    $_->print for $apiis->errors;
+  }
+}
+
+__END__
+
+### create guiobject as merge from xml and dtd
+my $guio;my $hs_parameter;
+$guio=Apiis::Form::Init->new(query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui);
+ 
+  goto ERR if $apiis->status;
+
+  #--- Test, ob Parameter belegt sind
+  #-- Argumente zuordnen von console oder aus CGI
+  my $ok; 
+  while ((my $key, my $parameter)=each %{$hs_parameter}) {
+    my $field;
+    if ($parameter->[1]=~/Name:(.*)/) {
+      $field=$1;
+    } else {
+      $field=$parameter->[1];
+    }
+    push(@{$parameter},$field);
+
+    if (! $opt_t) {
+      if (($opt_o eq 'htm2htm') or ($opt_o eq 'htm2pdf') or ($opt_o eq 'htm2exl' )) {
+         push(@{$parameter},$query->param($parameter->[2]));
+      }
+    } else {
+      foreach (split(';',$opt_t)) {
+        if ($_=~/$parameter->[2]\s*\=\s*(.*)/) {
+	  my $a=$1;
+          push(@{$parameter},$a) ;
+        }
+      }
+    }
+    $ok=1  if (! $parameter->[3]);
+  }
+  #--- Abbruch wenn nicht genügend Parameter oder Einfordern bei HTML
+  if ($ok) {
+    if ((($opt_o eq 'htm2htm') or ($opt_o eq 'htm2pdf') or ($opt_o eq 'htm2exl' )) and (! $opt_t)) {
+      
+      #-- if exists no Form to input parameter then make a general html
+      if ($guio->{$guio->General->[0]}->UseForm eq '') {
+        my $tablecontent;
+        print $query->header;
+        my $key; my $parameter;
+        print $query->start_form(-action=>"/cgi-bin/GUI",-method=>"GET");
+        while (($key,$parameter)=each %{$hs_parameter}) {
+          $tablecontent.=$query->TR($query->td($parameter->[2]),
+                           $query->td($query->textfield(
+                                        -name=>$parameter->[1],
+                                        -size=>20,
+                                        -maxlength=>20,
+                                        -override=>1)));
+        }
+        $tablecontent.=$query->TR($query->td($query->submit(-class=>'res',-name=>'l',-value=>__("Execute"))),
+                       $query->td($query->reset(-class=>'res',-value=>'Reset')));
+        print $query->table($tablecontent);
+        print $query->hidden(-name=>'m',-default=>"$opt_m");
+        print $query->hidden(-name=>'o',-default=>"$opt_o");
+        print $query->hidden(-name=>'g',-default=>"$opt_g");
+        print $query->hidden(-name=>'user',-default=>"$opt_u");
+        print $query->hidden(-name=>'pw_user',-default=>"$opt_p");
+        print $query->end_form();
+        exit 0;
+      } else {
+        $dtd=$apiis->APIIS_HOME.'/etc/form.dtd';
+        $vgui='Form';
+        $guio=Apiis::Init::XMLForms->new(apiis=>$apiis, query=>$query, xml=>$guio->{$guio->General->[0]}->UseForm, 
+	                            dtd=>$dtd, gui=>$vgui);
+      }
+    } else {
+      $apiis->errors(Apiis::Errors->new(
+       type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+       msg_short => __("[_1] there are not enough parameters", $opt_g),
+      ));
+      goto ERR;
+    }  
+  }
+  
+  #--- init gui-object
+  if (($vgui eq 'Report') and ($guio->{$guio->General->[0]}->CreatePDF ne '')) {  
+    $gui=Apiis::GUI::FixPDF->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+  } elsif (($opt_o eq 'htm2htm') or ($opt_o eq 'con2htm')) {
+    $gui=Apiis::GUI::HTML->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+  } elsif (($vgui eq 'Report') and (($opt_o eq 'htm2pdf') or ($opt_o eq 'con2pdf'))) {
+    $gui=Apiis::GUI::PDF->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+  } elsif (($opt_o eq 'htm2exl') or ($opt_o eq 'con2exl')) {
+    $gui=Apiis::GUI::Excel->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+  } else {
+    $apiis->errors(Apiis::Errors->new(
+       type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+       msg_short => __("[_1] isn't a valid option", $opt_o),
+    ));
+    goto ERR; 
+  }
+  if ($gui->Apiis->status) {
+    goto ERR;
+  }  
+  
+  if ($vgui eq 'Report' ) {
+    $gui->GUIobj->{'ExportFile'}=$opt_e if ($opt_e);
+
+    #--- alle xml-Elemente aller GUIs durchgehen und Verweise '{.*}' in parameterarray speichern
+    my $subguis=$gui->GUIobj->GetAllSubGUIs;
+
+    if ($guio->{$guio->General->[0]}->CreatePDF ne '') {  
+      $opt_o='htm2pdf' if ($opt_o eq 'htm2htm');
+    }
+
+    $gui->{'_Parameter'}=$hs_parameter;
+
+    #--- Schleife über alle Subguis, ausführen und Ergebnis zum Hash $subguis speichern
+    foreach my $sr (keys %{$subguis}) {
+      my $vsr;
+      if (($opt_o eq 'htm2htm') or ($opt_o eq 'con2htm')) {
+        $guio=Apiis::Init::XML->new(apiis=>$apiis, query=>$query, xml=>$sr, dtd=>$dtd, gui=>$vgui);
+        $vsr=Apiis::GUI::HTML->new(apiis=>$apiis, query=>$query, xml=>$sr, dtd=>$dtd, gui=>$vgui, guio=>$guio);
+      };
+      $gui->{$sr}=$vsr;
+    }
+  }
+ 
+  $gui->SetParameter(opt_g=>$opt_g,opt_m=>$opt_m,opt_o=>$opt_o,opt_u=>$opt_u,opt_p=>$opt_p,opt_e=>$opt_e);
+ 
+  $gui->PrintHeader;
+
+  my $ch=$gui->GUIobj->children if ($gui->GUI eq 'Form');
+  $gui->MakeGUI($ch);
+  
+  if ($gui->Apiis->status) {
+    goto ERR;
+  }  
+  
+  $gui->PrintGUI ($opt_o, $opt_e);
+  
+  exit;
+
+#}
+__END__
+
+=pod
+
+=head1 NAME
+
+GUI - creates a form or a report
+
+=head1 SYNOPSIS
+
+GUI [-u user] [-p password] [-e outfile] [-g xmlfile ] [-o htm2exl|con2exl|htm2htm|htm2pdf|con2htm|con2pdf|tk] [-t "Name1=Value1;Name2=Value2"] [-m modelname] 
+
+=head1 DESCRIPTION
+
+GUI read the definition in "-g xmlfile" and init an object with the information from the xml-definition and the default values from the corresponding dtd-file. 
+
+if option -u or -p not set, the user will be asked for his user-identifikation and his password. 
+
+=head1 Parameter
+
+ -u = user-identification (optional ) 
+ -p = password for the user (optional)
+      please note, if -p used everybody can see the password
+ -m = modelname like in apiisrc (necessary)
+ -g = full path of xml-file (necessary) (f.e. -g ../ref_breedprg/etc/reports/Codes.rpt)
+ -o = what kind of output (necessary)
+        htm2htm -> creates html-code over web
+        con2htm -> creates html-code over console
+	con2pdf -> creates pdf over console
+	htm2pdf -> creates pdf over web
+	con2exl -> creates an excel-file over console
+	htm2exl -> creates an excel-file over console
+        tk   -> create a tk-window
+ -e = writes the output into this file (optional)
+      if parameter -o is used and not -e GUI writes the result to the console
+ -t = Parameter, which are needed in section "DataSource" 
+      parameters must be in apostrophes
+      more than one parameter are seperated with a semicolen
+
+=head1 Example 
+
+ GUI -u b08guest -p password -o con2pdf -e test -m ref_breedprg -g ../ref_breedprg/etc/reports/Codes.rpt -t "Class='BREED'"
+
+=head1 SEE ALSO
+
+ Apiis::Init::XML.pm
+ Apiis::GUI.pm
+ Apiis::GUI::HTML.pm
+ Apiis::GUI::Excel.pm
+ Apiis::TK::PDF.pm
+
+=head1 AUTHOR
+
+ Ulf Müller (ulf.mueller@koellitsch.lfl.smul.sachsen.de)
+
+=cut

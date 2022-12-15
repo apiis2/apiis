@@ -1,0 +1,176 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: mkl10n,v 1.8 2010-06-28 09:47:34 duchev Exp $
+##############################################################################
+
+=head1 NAME
+
+mkl10n -- make the localization (l10n) for apiis
+
+=head1 SYNOPSIS
+
+   mkl10n [-h|-q|-m|-p] <lang>
+
+Create a file for localization in language <lang>.
+
+=head1 OPTIONS
+
+   -h help
+   -q            quiet, reduces output
+   -m            man page, print detail documentation
+   -p <project>  localize messages only for <project>
+
+=head1 DESCRIPTION
+
+mkl10n traverses through bin, lib, and etc (and their subdirectories) of
+$APIIS_HOME or the defined project and greps each file (except some excluded ones)
+for text localizations. The results are merged with the language file
+$APIIS_[HOME|LOCAL]/lib/Apiis/I18N/L10N/<lang>.mo.
+New message strings must then get translated.
+
+=cut
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.8 $' );
+
+use Pod::Usage;
+our $apiis;
+
+# allowed parameters:
+use vars qw/ $opt_h $opt_q $opt_m $opt_p /;
+use Getopt::Std;
+getopts('hqmp:');
+
+die __('mkl10n_USAGE_MESSAGE') if $opt_h;
+pod2usage(-exitstatus => 0, -verbose => 2) if $opt_m;
+my $startdir = $apiis->APIIS_HOME; # default
+
+if ($opt_p) {
+   if ( not $startdir = $apiis->project($opt_p) ) {
+         my $error = Apiis::Errors->new(
+            type      => 'PARAM',
+            severity  => 'ERR',
+            from      => 'mkl10n',
+            msg_short => __( "Unknown project '[_1]' passed", $opt_p ),
+      );
+      die $error->print . "\n";
+   }
+}
+
+my $lang = shift;
+
+unless ($lang) {
+   print __("Language name required."), "\n";
+   die __('mkl10n_USAGE_MESSAGE');
+}
+
+use File::Spec;
+use File::Path;
+my @dirs;
+push @dirs, 'bin/'; # relative to $startdir
+push @dirs, 'lib/';
+push @dirs, 'etc/';
+
+my $mo_dir = $startdir . "/lib/Apiis/I18N/L10N";
+my $mo_file = $mo_dir . '/' . "$lang.mo";
+unless ( -e $mo_dir and -d $mo_dir and -w $mo_dir ){ 
+   mkpath([ $mo_dir ], 1, 0755);
+}
+
+my @files;
+
+# change to APIIS_HOME or APIIS_LOCAL:
+chdir $startdir or die __("Cannot change to dir [_1]: [_2]", $startdir, $!), "\n";
+foreach my $thisdir (@dirs) {
+   push @files, myfind( $thisdir );
+}
+
+sub myfind {
+   my $dir = shift;
+   my @files;
+
+   for my $file ( glob $dir . '*' ) {
+      my ( $volume, $directories, $filepart ) = File::Spec->splitpath($file);
+      next if $filepart eq 'CVS';
+      push @files, myfind( $file . '/' ) if -d $file; #recursion for directories
+      next if -d $file;
+      next if $file =~ /\.xpm$/i;                     # graphic files
+      next if $file =~ /\.jpg$/i;                     # graphic files
+      next if $file =~ /\.gif$/i;                     # graphic files
+      next if $file =~ /\.png$/i;                     # graphic files
+      next if $file =~ /\.swp$/i;                     # swap files
+      next if $file =~ /\.mo$/i;                      # maketext files
+      next if $file =~ /\.po$/i;                      # gettext files
+      next if $file =~ /\.tmp$/i;                     # temp files
+      next if $file =~ /\.temp$/i;                    # temp files
+      next if $file =~ /\.dump$/i;                    # database dump files
+      next if $file =~ /\.out$/i;                    # 
+      next if $file =~ /\.gz$/i;                    # 
+      next if $file =~ /\.tar$/i;                    #
+      next if $file =~ /\.pdf$/i;                    #
+      next if $file =~ /\.ps$/i;                    #
+      next if $file =~ /\.jar$/i;                    #
+      next if $filepart eq 'y';                       # heli's specials
+      push @files, $file;
+   }
+   return @files;
+}
+
+##############################################################################
+
+=head2 Note:
+
+The core code is shamelessly stolen from xgettext.pl by
+
+   Autrijus Tang <autrijus@autrijus.org>
+   $Revision: 1.8 $ $Change: 9506 $ $DateTime: 2003/12/31 08:28:21 $
+
+the author of Locale::Maketext::Lexicon.
+
+=cut
+
+##############################################################################
+
+use Cwd;
+use Locale::Maketext::Extract;
+
+my $PO = Cwd::abs_path($mo_file || "messages.po");
+
+my $Ext = Locale::Maketext::Extract->new;
+$Ext->read_po($PO) if -r $PO;
+
+print __("Scanning files ..."), "\n" unless $opt_q;
+for ( @files ){
+   print "\t$_\n" unless $opt_q;
+   $Ext->extract_file($_);
+}
+
+$Ext->compile() or exit;
+$Ext->write_po($PO);
+print __("wrote file [_1]", $mo_file), "\n" unless $opt_q;
+
+1;
+
+=head1 SEE ALSO
+
+Locale::Maketext, Locale::Maketext::Lexicon
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See <http://www.perl.com/perl/misc/Artistic.html>
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+

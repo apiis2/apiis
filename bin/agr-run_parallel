@@ -1,0 +1,126 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: agr-run_parallel,v 1.12 2013/07/01 09:53:01 heli Exp $
+##############################################################################
+
+
+use strict;
+use warnings;
+
+use Env qw( PATH );
+$PATH .= ":."; # add local directory for binaries
+
+use Parallel::ForkManager;
+use Sys::CPU;
+use Data::Dumper;
+
+use FindBin qw($RealBin);
+use lib "${RealBin}/../lib";
+use Popreport;  # provides print_list()
+
+# intializing parallel runs (one process per cpu):
+my $cpus = Sys::CPU::cpu_count();
+my $parallel = new Parallel::ForkManager( $cpus );
+
+# Command line parameters:
+use vars qw( $opt_h $opt_b $opt_n $opt_t $opt_L );
+use Getopt::Std;
+getopts('hb:n:tL:');
+
+usage() if $opt_h;
+usage() if ! $opt_b;
+my $breed      = $opt_b;
+my $no_animals = $opt_n if $opt_n;
+our $listfile   = $opt_L if $opt_L;
+my $factor     = 1;    # factor to multiply with no of animals in $pedfile
+
+### Additive Genetic Relationsship:
+# pedfile:
+my $pedfile = $breed . '_all.ped';
+die "Pedfile '$pedfile' not found\n" if ! -e $pedfile;
+
+if ( !$no_animals ) {
+    open my $ppp, '<', $pedfile or die "Cannot open pedfile $pedfile: $!\n";
+    my $max_line;
+    $max_line++ while <$ppp>;
+    $no_animals = $max_line * $factor;
+}
+
+# datafiles:
+my $filepattern = $breed . '_[0-9][0-9][0-9][0-9]' . '.in';
+my @datafiles   = glob($filepattern);
+
+# listfile:
+# open (OUT22 , '>>run_popreport.lst');
+# my $now = localtime(time);
+# system("date '+%F %H:%M:%S' >> run_popreport.lst");
+my $msg1 =
+    sprintf "Running Relationship Coefficients for each year (using %u CPUs )",
+    $cpus;
+printf "\n%s\n", $msg1;
+print_list($msg1, $listfile);
+printf "Number of animals for add_gen_didier: %u (%s)\n", $no_animals,
+  ( $opt_n ? 'provided' : 'estimated' );
+
+my @tarfiles;
+for my $datafile ( @datafiles ) {
+    next if ! -e $datafile;
+    next if -z $datafile;
+
+    # get year from filename (e.g. BreedHereford_1980.txt ):
+    $datafile =~ m/.*_([0-9]*).in/;
+    my $year = $1;
+    print "Running year $year\n";
+    my $outfile = $breed . '_' . $year . '.agr';
+    push @tarfiles, $outfile if $opt_t;
+
+    # try to run the following jobs in parallel (fork) (29.10.2007 - heli):
+    my $pid = $parallel->start and next;    # forks a child process
+    my $run_coster = 0;
+    if ($run_coster) {
+        system( "agr-create-infiles -i $datafile -m ${datafile}-male -f ${datafile}-female") == 0
+            or die "agr-create-infiles failed: $?\n";
+        system("nice agr-coster $pedfile ${datafile}-male ${datafile}-female $outfile") == 0
+            or die "agr-coster failed: $?\n";
+    }
+    else {
+        # usage: add_gen_didier Pedfile subsetfile outfile no_of_animals
+        system("nice add_gen_didier $pedfile $datafile $outfile $no_animals") == 0
+            or die "add_gen_didier failed: $?\n";
+    }
+    unlink "${datafile}-male", "${datafile}-female";
+    $parallel->finish;    # Terminates the child process
+}
+$parallel->wait_all_children;    # wait for all children to terminate
+
+my $msg2 = "Parallel jobs finished.";
+print $msg2,"\n";
+print_list($msg2, $listfile);
+# open (OUT22 , '>>run_popreport.lst');
+# $now = localtime(time);
+# system("date '+%F %H:%M:%S' >> run_popreport.lst");
+# print OUT22 ": Parallel jobs finished. \n";
+# close OUT22;
+
+if ($opt_t) {
+    print "Creating a tar archive of all relevant files ...\n";
+    my $tarfile  = $breed . '_agr_files.tar.gz';
+    my @system_args = qw/ tar czf /;
+    push @system_args, $tarfile;
+    push @system_args, @tarfiles;
+    system(@system_args) == 0 or warn "tar failed: $?\n";
+    print "... done. Look for $tarfile\n";
+}
+
+
+##############################################################################
+sub usage {
+    print "$0 mainly runs add_gen_didier for the specified breed.\n"
+      . "usage: agr-run_par -b <breed>\n"
+      . "    -h this message \n"
+      . "    -b <> breed (required)\n"
+      . "    -n <> no of animals (optional)\n"
+      . "    -t    creates a tar archive of all relevant files \n";
+    die "\n";
+}
+

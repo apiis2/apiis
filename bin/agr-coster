@@ -1,0 +1,11 @@
+#!/bin/bash
+#############################################################################
+# $Id: agr-coster,v 1.2 2013/07/01 11:36:56 heli Exp $
+# agr-coster
+#############################################################################
+# Wrapper to automatically invoke the right 64/32-bit version.
+
+BITS=$(getconf LONG_BIT)
+BINDIR=$(dirname $0)
+
+exec ${BINDIR}/agr-coster-${BITS}bit "$@"

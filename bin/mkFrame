@@ -1,0 +1,88 @@
+#!/usr/bin/env perl 
+
+=head1 NAME
+
+mkFrame -- create a frame in a html environment
+
+=head1 SYNOPSIS
+
+   /cgi-bin/mkFrame
+
+=head1 OPTIONS
+
+   user              Username
+   pw_user           password of user
+   m                 Model   
+   language          Language  (s. apiisrc)                    
+   framestyle        Style [js|pl] 
+
+=head1 DESCRIPTION
+
+mkFrame will started through $APIIS_HOME/index.html. Index.html gives a lot of parameter (s. OPTIONS). mkFrame read this parameter, create a frameset and starts this frameset with the parameter from index.html. The options are necessary to start $APIIS_HOME/bin/GUI. 
+
+=head1 EXAMPLE
+
+It is possible to start mkFrame without index.html. In this case you must put in the parameter by hand in your browser. 
+
+http://localhost/cgi-bin/mkFrame?user=username&pw_user=password&m=model_name&language=ge&framestyle=js
+
+=cut
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use CGI qw/:standard :html3/;
+use vars qw($opt_u $opt_p $opt_g $opt_o $opt_m $query $opt_i);
+
+$query=CGI->new();
+
+$opt_o=$query->param('o')   if ($query and $query->param('o'));
+$opt_g=$query->param('g')   if ($query and $query->param('g'));
+$opt_m=$query->param('m')   if ($query and $query->param('m'));
+$opt_u=$query->param('user')    if ($query->param('user'));
+$opt_p=$query->param('pw_user') if ($query->param('pw_user'));
+$opt_i=$query->param('sid')     if ($query->param('sid'));
+
+
+print $query->header;
+if ($query->param('framestyle') eq 'js') {
+  print <<EOF1;
+<frameset rows="100,*" border=1>
+<frame src="/cgi-bin/GUI?js=1&m=$opt_m&user=$opt_u&o=htm2htm&g=1&pw_user=$opt_p"    name="nav">
+<frame name="aktiv">
+</frameset>
+EOF1
+;
+  } else {
+  print <<EOF;
+<frameset cols="170,*" border=0>
+<frame src="/cgi-bin/GUI?menu=1&m=$opt_m&user=$opt_u&o=htm2htm&g=1&pw_user=$opt_p"    name="menue">
+<frameset rows="83,*" >
+<frame src="/cgi-bin/GUI?version=1&m=$opt_m&user=$opt_u&o=htm2htm&g=1&pw_user=$opt_p" name="head">
+<frame src="/cgi-bin/GUI?aktiv=1&m=$opt_m&user=$opt_u&o=htm2htm&g=1&pw_user=$opt_p" name="aktiv">
+</frameset>
+</frameset>
+EOF
+;
+}
+
+=head1 SEE ALSO
+
+Apiis::GUI::HTML;
+bin/GUI
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See <http://www.perl.com/perl/misc/Artistic.html>
+
+=head1 AUTHOR
+
+Ulf Müller <ulf.mueller@koellitsch.lfl.smul.sachsen.de>
+

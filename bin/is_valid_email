@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+##############################################################################
+# $Id: is_valid_email,v 1.4 2019/09/24 11:57:34 ulf Exp $
+##############################################################################
+# check if passed email is valid
+# input: email address
+# output: return codes from 0 - 5 (see man Email::Valid for details)
+
+use strict;
+use warnings;
+use Email::Valid;
+my $verbose = 0;
+
+my %returncodes = (
+    rfc822   => 2,
+    mxcheck  => 3,
+    tldcheck => 4,
+    fqdn     => 5,
+);
+
+my $checkstring = shift;
+exit 1 if !$checkstring;
+
+#-- if working standalone 
+exit 0 if ($checkstring eq 'none@neverland.no');
+
+eval {
+    print $checkstring if $verbose;
+    my $addr;
+    if ($addr = Email::Valid->address(
+            -address  => $checkstring,
+            -tldcheck => 1,
+            -mxcheck  => 1
+        )
+        )
+    {
+        # print "$addr\n";
+        print "\n" if $verbose;
+        exit 0;
+    }
+    else {
+        print "\t ==> failed $Email::Valid::Details check.\n" if $verbose;
+        exit $returncodes{ $Email::Valid::Details };
+    }
+};
+warn "an error was encountered: $@" if $@; 
+

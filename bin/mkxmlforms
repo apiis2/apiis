@@ -1,0 +1,601 @@
+#!/usr/bin/perl -w
+#
+##############################################################################
+# $Id: mkxmlforms,v 1.18 2016/04/21 11:21:46 ulm Exp $
+##############################################################################
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.18 $' );
+use Apiis::DataBase::User;
+use Data::Dumper;
+use Getopt::Std;
+
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Terse  = 1;
+use vars
+    qw($opt_c $opt_r $opt_u $opt_p $opt_d $opt_i $opt_w $opt_f $query $gui $opt_s $zw $user_obj $opt_t $vgui);
+getopts( 'w:u:p:disrtc' );
+
+$opt_u = 'demo'     if ( !$opt_u );
+$opt_w = 'Demo'     if ( !$opt_w );
+$opt_p = 'breedprg' if ( !$opt_p );
+
+my $testuser =
+    Apiis::DataBase::User->new( id       => $opt_u,
+                                password => $opt_w, );
+$testuser->check_status;
+$apiis->join_model( $opt_p, userobj => $testuser );
+$apiis->check_status;
+
+my $globalcolumn  = 1;
+my $globalcounter = 0;
+my $firstcounter  = 0;
+my $lastcounter   = 0;
+my $ordercounter  = 0;
+my $globalrow;
+my $flowcounter = 1;
+my $sourcefield;
+my @dscolumn;
+my $hs_sql = {};
+my $dscolumn;
+my $ds;
+my $vfield;
+my @navigation = (
+
+# command          Type       Desc            Name       Buttonlabel  ButtonImage
+    [  'do_first_block', 'Button',
+       'First record',   'Field_first',
+       'First',          '/icons/do_first.png'
+    ],
+    [  'do_prev_block',  'Button',
+       'Previos record', 'Field_prev',
+       'Previous',       '/icons/do_prev.png'
+    ],
+    [ '_nav_r', 'TextField', 'navigation', '_nav_r', undef, undef ],
+    [  'do_next_block', 'Button',
+       'Next record',   'Field_next',
+       'Next',          '/icons/do_next.png'
+    ],
+    [  'do_last_block', 'Button',
+       'Last record',   'Field_last',
+       'Last',          '/icons/do_last.png'
+    ],
+    [  'do_new_block', 'Button',
+       'New record',   'Field_new',
+       'New',          '/icons/do_new.png'
+    ],
+    [  'do_clear_form', 'Button',
+       'Clear record',  'Field_clear',
+       'Clear',         '/icons/do_clear.png'
+    ],
+    [  'do_query_block', 'Button',
+       'Query record',   'Field_query',
+       'Query',          '/icons/do_query.png'
+    ],
+    [  'do_reset',    'Button',
+       'Rest record', 'Field_reset',
+       'Reset',       '/icons/do_reset.png'
+    ],
+    [  'do_delete',     'Button',
+       'Delete record', 'Field_delete',
+       'Delete',        '/icons/do_delete.png'
+    ],
+    [  'do_save',       'Button',
+       'Submit record', 'Field_submit',
+       'Submit',        '/icons/do_save.png'
+    ]
+);
+
+##########################################################################
+
+#-- first collect all forms for the project in etc/menu and etc/form
+my $forms='all forms';
+
+foreach my $dd ('forms','menu') {
+    opendir (DIR, $apiis->APIIS_LOCAL."/etc/$dd");
+    my @dir=readdir(DIR);
+    closedir(DIR);
+
+    foreach (@dir) {
+
+        next if ($_=~/^\./);
+        open(IN,  $apiis->APIIS_LOCAL."/etc/$dd/$_");
+        while (<IN>) {
+            $forms.=$_;
+        }
+        close(IN);
+    }
+}
+
+sub WriteTitle {
+    my $table = shift;
+
+    return
+          '    <Label Name="L'
+        . $globalcounter++
+        . '" Content="__(' . "'"
+        . $table . "'" . '): ">' . "\n"
+        . '      <Position Column="0" Columnspan="10" Position="absolute" Row="'
+        . $globalrow++ . '"/>' . "\n"
+        . '      <Text FontSize="24px" TextDecoration="underline"/>' . "\n"
+        . '    </Label>';
+}
+
+sub WriteLabel {
+    my $field = shift;
+    my $table = shift;
+
+    print "$table.$field\n";
+
+    return
+          '    <Label Name="L'
+        . $globalcounter++
+        . '" Content="__(' . "'"
+        . $apiis->Model->table( $table )->column( $field )->name . "'"
+        . '): ">' . "\n"
+        . '      <Position Column="0" Position="absolute" Row="'
+        . $globalrow . '"/>' . "\n"
+        . '    </Label>';
+}
+
+sub WriteField {
+    my $field = shift;
+    my $table = shift;
+    my $size  = 10;
+    $vfield   = '';
+    $ds       = '';
+    $dscolumn = '';
+    my $text = '';
+
+    $hs_sql = {};
+
+    $size = $apiis->Model->table( $table )->column( $field )->length
+        if ( $apiis->Model->table( $table )->column( $field )->length );
+    $lastcounter = $globalcounter++;
+    push( @dscolumn,
+                '<Column DBName="'
+              . $field
+              . '" Name="C'
+              . $lastcounter
+              . '" Order="'
+              . $ordercounter++
+              . '" Type="DB"/>' );
+    $hs_sql->{ 'related_columns' }->{ name }->{ $field } = 'C' . $lastcounter;
+    my $rc = 'C' . $lastcounter++;
+
+    ####################################
+    sub CreateField {
+
+        my $hidden  = shift;
+        my $vvfield = shift;
+
+        my $dd;
+        my $ms;
+
+        if ( $hidden ) {
+            $ms = "\n"
+                . '      <Miscellaneous Visibility="hidden" Enabled="no"/>';
+        }
+        elsif ( $vvfield eq 'guid' ) {
+            $ms = "\n" . '      <Miscellaneous Enabled="no"/>';
+        }
+        else {
+            $ms = "\n" . '      <Miscellaneous />';
+        }
+
+        $dd
+            = "\n"
+            . '      <Position Column="1" Position="absolute" Row="'
+            . $globalrow . '"/>';
+
+        my $tfield
+            = '    <Field Name="F'
+            . $globalcounter++ . '"'
+            . $dscolumn . '>'
+            . $ds . "\n"
+            . $vfield
+            . $dd
+            . $ms . "\n"
+            . '      <Text/>';
+        if ( $vvfield eq 'guid' ) {
+            $tfield
+                .= "\n"
+                . '      <Color BackGround="transparent"/>' . "\n"
+                . '      <Format BorderColor="transparent"/>' . "\n"
+                . '    </Field>' . "\n";
+        }
+        else {
+            $tfield
+                .= "\n"
+                . '      <Color/>' . "\n"
+                . '      <Format/>' . "\n"
+                . '    </Field>' . "\n";
+        }
+    }
+
+    if ( $apiis->Model->table( $table )->column( $field )->foreignkey ) {
+        if ( $opt_r ) {
+            if ( $apiis->Model->table( $table )->column( $field )
+                 ->foreignkey->[ 0 ] ne 'codes' )
+            {
+                WriteDataSource( $field, $table );
+                $vfield
+                    = '      <TextField Override="no" Size="' . $size . '"/>';
+                $dscolumn = ' DSColumn="' . $rc . '" ';
+                $text .= CreateField( 'hidden', $field );
+
+                for ( my $i = 0;
+                      $i <= $#{
+                          $hs_sql->{ 'related_columns' }->{ db_fields }
+                              ->{ $field }
+                      };
+                      $i++
+                    )
+                {
+                    $dscolumn
+                        = ' DSColumn="C'
+                        . $globalcounter
+                        . '" FlowOrder="'
+                        . $flowcounter++ . '" ';
+                    if ( $apiis->Model->table( $table )->column( $field )
+                         ->foreignkey->[ 0 ] eq 'codes' )
+                    {
+                        $vfield = '      <ScrollingList Size="1"/>';
+                    }
+                    else {
+                        $vfield = '      <TextField Override="no" Size="'
+                            . $size . '"/>';
+                    }
+                    push( @dscolumn,
+                          '   <Column DBName="'
+                              . $hs_sql->{ 'related_columns' }->{ db_fields }
+                              ->{ $field }[ $i ]
+                              . '" Name="C'
+                              . $globalcounter++
+                              . '" Order="'
+                              . $hs_sql->{ 'related_columns' }->{ order }
+                              ->{ $field }[ $i ]
+                              . '" RelatedColumn="'
+                              . $rc
+                              . '" RelatedOrder="'
+                              . $i
+                              . '" Type="Related"/>' );
+                    $text .= CreateField( undef, $field );
+                }
+            }
+            else {
+                $vfield = '      <ScrollingList Size="1"/>';
+                $dscolumn
+                    = ' DSColumn="'
+                    . $rc
+                    . '" FlowOrder="'
+                    . $flowcounter++ . '" ';
+                $text = CreateField( undef, $field );
+            }
+        }
+        else {
+            $ds = WriteDataSource( $field, $table );
+            $vfield = '      <ScrollingList Size="1"/>';
+            $dscolumn
+                = ' DSColumn="'
+                . $rc
+                . '" FlowOrder="'
+                . $flowcounter++
+                . '" InternalData="yes"';
+            $text = CreateField( undef, $field );
+        }
+    }
+    else {
+        $hs_sql->{ 'non_related_columns' }->{ $field } = 1;
+        if ( $apiis->Model->table( $table )->column( $field )->datatype eq
+             'BOOL' )
+        {
+            $vfield = '      <CheckBox/>';
+        }
+        else {
+            if ( ( $apiis->Model->table( $table )->column( $field )->check )
+                 and ( $apiis->Model->table( $table )->column( $field )
+                       ->check->[ 0 ] =~ /List/ )
+                )
+            {
+                $vfield = '      <ScrollingList Size="1"/>';
+            }
+            else {
+                $vfield
+                    = '      <TextField Override="no" Size="' . $size . '"/>';
+            }
+        }
+        $dscolumn
+            = ' DSColumn="' . $rc . '" FlowOrder="' . $flowcounter++ . '" ';
+        $text = CreateField( undef, $field );
+    }
+    $globalrow++;
+
+    #$lastcounter++;
+    return $text;
+}
+
+sub GetExternalValues {
+    my $field  = shift;
+    my $table  = shift;
+    my $alias  = shift;
+    my @traits = ();
+
+    #-- Merkmale auflösen
+    my ( $newtable, $newtrait, $newwhere )
+        = $apiis->Model->table( $table )->column( $field )->foreignkey;
+
+    $newtable = 'transfer' if ( $newtable eq 'animal' );
+
+    if ( !exists $apiis->Model->table( $newtable )->{ _pk }->{ concat } ) {
+        print "no primarykey for $newtable -> skip field\n";
+        return;
+    }
+
+    my $oldalias = $hs_sql->{ alias };
+    my $aliasnew = ++$hs_sql->{ alias };
+
+    foreach my $concat (
+                   $apiis->Model->table( $newtable )->primarykey( 'concat' ) )
+    {
+        if ( defined $apiis->Model->table( $newtable )->column( $concat )
+             ->foreignkey )
+        {
+            GetExternalValues( $concat, $newtable, $aliasnew );
+        }
+        else {
+
+            if ( $apiis->Model->table( $table )->column( $field )
+                 ->foreignkey->[ 2 ]
+                 and ( $apiis->Model->table( $table )->column( $field )
+                       ->foreignkey->[ 2 ] =~ /^$concat/ )
+                )
+            {
+                next;
+            }
+            else {
+                push(
+                    @{ $hs_sql->{ traits } },
+                    " CASE WHEN $aliasnew.$concat"
+                        . "::text isnull THEN 'unknown' ELSE $aliasnew.$concat"
+                        . "::text END "
+                    )
+                    if (
+                      !( ( $newtable eq 'codes' ) and ( $concat eq 'class' ) )
+                    );
+                push( @{  $hs_sql->{ 'related_columns' }->{ db_fields }
+                              ->{ $sourcefield }
+                      },
+                      $concat
+                );
+                push( @{  $hs_sql->{ 'related_columns' }->{ columnname }
+                              ->{ $sourcefield }
+                      },
+                      'C' . $lastcounter++
+                );
+                push( @{  $hs_sql->{ 'related_columns' }->{ order }
+                              ->{ $sourcefield }
+                      },
+                      $ordercounter++
+                );
+            }
+        }
+    }
+
+    $hs_sql->{ 'tables' }->{ $aliasnew } = [
+                $aliasnew,
+                " $newtable AS $aliasnew ON $aliasnew.$newtrait=$alias.$field"
+    ];
+
+    return;
+}
+
+sub WriteDataSource {
+    my $field = shift;
+    my $table = shift;
+    if ( ( $field ne '' )
+         and $apiis->Model->table( $table )->column( $field )->foreignkey )
+    {
+        my $ds
+            = "\n" . '      <DataSource Name="DS' . $globalcounter++ . '">';
+        my @t = $apiis->Model->table( $table )->column( $field )->foreignkey;
+        $firstcounter = $globalcounter;
+        $lastcounter  = $globalcounter;
+        my $dd = " || '" . $apiis->reserved_strings->{ v_concat } . "' || ";
+
+        #my $hs_sql={};
+        $hs_sql->{ alias }  = 'a';
+        $hs_sql->{ traits } = [];
+        my @traits;
+        my @tables;
+
+        GetExternalValues( $field, $table, 'a' );
+        foreach ( sort keys %{ $hs_sql->{ tables } } ) {
+            push( @tables, $hs_sql->{ 'tables' }->{ $_ }->[ 1 ] );
+        }
+        my $sql
+            = 'SELECT a.'
+            . $field
+            . ' as id, '
+            . join( " $dd ", @{ $hs_sql->{ traits } } )
+            . ' as ext_trait FROM '
+            . $table
+            . ' AS a LEFT OUTER JOIN '
+            . join( ' LEFT OUTER JOIN ', @tables )
+            . ' GROUP BY id,ext_trait ORDER BY ext_trait';
+
+        $ds
+            = "\n"
+            . '      <DataSource Name="DS'
+            . $globalcounter++ . '">' . "\n"
+            . '        <Sql Statement="'
+            . $sql . ' "/>';
+
+#    for (my $i=0;$i<2;$i++) {
+#      $ds.="\n".'        <Column Name="C'.$lastcounter++.'" Order="'.$i.'" Type="DB"/>';
+#    }
+        $ds .= "\n" . '      </DataSource>';
+        return $ds;
+    }
+    else {
+        my $text
+            = "\n"
+            . '    <DataSource Name="DS'
+            . $globalcounter++
+            . '" Connect="no">' . "\n"
+            . '      <Record TableName="'
+            . $table . '"/>';
+
+        map { $text .= "\n" . '      ' . $_ } @dscolumn;
+
+        $text .= "\n" . '    </DataSource>';
+        return $text;
+    }
+}
+
+my $field = '';
+
+for (my $t=1;$t<3; $t++) {
+    foreach my $table ( $apiis->Model->tables ) {
+
+        #-- if a defaultform exists then 
+        next if ($forms=~/tablename\s*=\s*"$table"/i);
+
+        $hs_sql       = {};
+        @dscolumn     = ();
+        $ordercounter = 0;
+        $flowcounter  = 0;
+
+        next
+            if ( $table =~
+            /(ar_|inspool|inspool_err|load_stat|sources|targets|users|user_roles|role_policies)/
+            );
+
+        $globalrow = 0;
+
+        my $block = "\n\n" . WriteTitle( $table );
+
+        foreach $field ( sort $apiis->Model->table( $table )->cols ) {
+            $globalcolumn = 1;
+
+            next
+                if ( $field =~
+                /(synch|version|owner|chk_lvl|dirty|last_change_user|last_change_dt)/i
+                ) and ( !$opt_s );
+            next
+                if ( ( $apiis->Model->table( $table )->primarykey( 'ref_col' ) )
+                    and
+                    ( $apiis->Model->table( $table )->primarykey( 'ref_col' ) eq
+                    $field )
+                    and ( $opt_c )
+                );
+
+            $sourcefield = $field;
+
+            $block .= "\n\n" . WriteLabel( $field, $table );
+
+            $block .= "\n\n" . WriteField( $field, $table );
+        }
+
+        $block .= "\n" . '    &NavigationButtons_Fields;';
+        $block .= "\n" . '    &ActionButtons_Fields;';
+
+        $block .= "\n\n" . '    <Color BackGround="#f0f0f0"/>';
+        $block .= "\n"
+            . '    <Format BorderStyle="ridge" BorderColor="#f0f0f0" MarginTop="10px"/>';
+        $block .= "\n\n" . '  </Block>';
+
+        my $formdefinition = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+        .'<!DOCTYPE Form PUBLIC "1" "http://'.$opt_p.'.local/etc/form2.dtd"['
+        .'  <!ENTITY NavigationButtons_Fields SYSTEM "http://'.$opt_p.'.local/etc/navigationbuttons.xml">'."\n"
+        .'  <!ENTITY ActionButtons_Fields     SYSTEM "http://'.$opt_p.'.local/etc/actionbuttons.xml">'."\n"
+        .'  <!ENTITY StatusLine_Block         SYSTEM "http://'.$opt_p.'.local/etc/statusbar.xml">'."\n"
+        .'  <!ENTITY DumpButton_Block         SYSTEM "http://'.$opt_p.'.local/etc/dumpbutton_block.xml">'."\n"
+        .'  <!ENTITY StatusLine2_Block        SYSTEM "http://'.$opt_p.'.local/etc/statusbar.xml">'."\n"
+        .'  <!ENTITY CallForm_Block           SYSTEM "http://'.$opt_p.'.local/etc/callform_button_block.xml">'."\n"
+        .']>';
+
+        $formdefinition
+        .= "\n"
+        . '<Form Name="FORM_'
+        . time() . '">' . "\n"
+        . '  <General Name="G'
+        . $globalcounter++
+        . '.frm" StyleSheet="/etc/apiis.css" Description="Form"/>' . "\n\n"
+        . '  <Block Name="B'
+        . $globalcounter++
+        . '" Description="Update '
+        . $table . '">' . "\n" . '     '
+        . WriteDataSource( '', $table ) . "\n"
+        . '      '
+        . $block . "\n"
+        . '</Form>';
+
+        open( OUT, ">".$apiis->APIIS_LOCAL."/etc/forms/$table.frm" ) || die "kann".$apiis->APIIS_LOCAL."/etc/forms/$table.xml nicht erstellen";
+        print OUT $formdefinition . "\n";
+        close( OUT );
+    }
+}
+__END__
+
+=pod
+
+=head1 Name
+
+mkxmlforms
+
+=head1 ABSTRACT
+
+mkxmlforms creates simple forms for the most tables defined in apiis modelfile. mkxmlforms writes all forms into the actual directory.
+
+=head1 STYLE
+
+written in perl
+
+=head1 INVOCATION
+
+./mkxmlforms -s[d|i] -p $project -u $user -w $password 
+
+  -u User
+  -w Password
+  -p project 
+  -d update-Forms
+  -i insert-forms
+  -s with systemfields (synch|version|owner|chk_lvl|dirty|last_change_user|last_change_dt)
+  -r related columns
+  -t optimized for TK
+  -c skip fields which are rel_col in PrimaryKey
+
+Update and insert forms are discerning by naviagationbar. 
+
+=head1 NOTICE
+
+ - mkxmlforms are in development!!!
+ - dissolving of db_* fields works not correct for special links -> change <SQL */> to <none/>
+ - on errors check your modelfile of integrity!
+ - tables: inspool|inspool_err|load_stat|sources|targets|users|user_roles|role_policies are skipped 
+ - insert navigationbar did not run
+ 
+ - tables (inspool|inspool_err|load_stat|sources|targets|users|user_roles|role_policies) are skipped
+
+=head1 AUTHOR
+
+Ulf Müller, 2005
+ulf.mueller@koellitsch.lfl.smul.sachsen.de
+
+=head1 SEE ALSO
+
+L<Apiis::Form::Tk.pm>, L<Apiis::Form::HTML.pm>
+
+=head1 TODO
+
+equql field-description for DSColumn->Field->Label
+

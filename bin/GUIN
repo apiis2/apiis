@@ -1,0 +1,53 @@
+#!/usr/bin/perl -w
+#
+##############################################################################
+# $Id: test.Form,v 1.14 2005/10/11 09:57:31 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Form object.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.14 $' );
+use CGI;
+use Apiis::Form::Tk;
+use Apiis::Form::HTML;
+use Apiis::DataBase::User;
+use Data::Dumper;
+
+use vars qw($opt_u $opt_p $opt_g $opt_o $opt_m $opt_f $query $gui $opt_e $zw $user_obj $opt_t $vgui);
+my $f_obj;
+
+my $query=CGI->new();
+$opt_o=$query->param('o')   if ($query and $query->param('o'));
+$opt_o=$query->param('_exportfilter')   if ($query and $query->param('_exportfilter'));
+$opt_g=$query->param('g')   if ($query and $query->param('g'));
+$opt_m=$query->param('m')   if ($query and $query->param('m'));
+$opt_u=$query->param('user')    if ($query->param('user'));
+$opt_p=$query->param('pw_user') if ($query->param('pw_user'));
+$opt_o='htm2htm' if (! $opt_o);
+
+my $testuser = Apiis::DataBase::User->new(
+   id       => $opt_u,
+   password => $opt_p,
+);
+$testuser->check_status;
+$apiis->join_model($opt_m, userobj => $testuser );
+$apiis->check_status;
+
+my $f_obj;
+
+$f_obj    = Apiis::Form::HTML->new( xmlfile =>$opt_g );
+$f_obj->{_query}=$query;
+$f_obj->PrintHeader;
+$f_obj->run;
+$f_obj->check_status;
+$f_obj->PrintForm;
+

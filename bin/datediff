@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+##############################################################################
+# $Id: datediff,v 1.1 2009-09-01 06:37:15 popreport Exp $
+##############################################################################
+# expects ISO-8601 format.
+
+use strict;
+use warnings;
+use Date::Calc qw( Delta_YMDHMS check_date check_time Add_Delta_YMDHMS Delta_DHMS );
+use Data::Dumper;
+
+my $date1 = shift();
+my $date2 = shift();
+die "Usage: $0 'ISO-date1' 'ISO-date2'\n" if !$date2 or !$date1;
+
+my $date_ref1 = normalize_date( $date1 );
+my $date_ref2 = normalize_date( $date2 );
+
+die "First date not in ISO 8601 format!" if !$date_ref1;
+die "Second date not in ISO 8601 format!" if !$date_ref2;
+
+my $date_diff_ref = Normalize_Delta_YMDHMS( $date_ref1, $date_ref2 );
+# my $date_diff_ref = date_diff( $date_ref1, $date_ref2 );
+my ( $y, $mon, $d, $h, $min, $s ) = @{$date_diff_ref};
+if ( !$y and !$mon and !$d ) {
+    output_as_hours( [ $h, $min, $s ] );
+}
+else {
+    output_as_iso($date_diff_ref);
+}
+
+##############################################################################
+sub normalize_date {
+    my $indate = shift;
+    my @date;
+    $indate =~ s/^\s*//;
+    $indate =~ s/\s*$//;
+    if ( $indate
+        =~ /^([0-9]{4}-[0-9][0-9]?-[0-9][0-9]?)\s+([0-2][0-9]:[0-6][0-9]:[0-6][0-9])/) {
+        my $date = $1;
+        my $time = $2;
+        my ( $year, $month, $day ) = split /-/, $date;
+        my ( $hour, $min,   $sec ) = split /:/, $time;
+        if ( check_date( $year, $month, $day ) and check_time( $hour, $min, $sec ) ) {
+            @date = ( $year, $month, $day, $hour, $min, $sec );
+        }
+    }
+    return \@date if scalar @date;
+    return;
+}
+
+##############################################################################
+# from man Date::Calc:
+sub Normalize_Delta_YMDHMS {
+    my ( $date1, $date2 ) = @_;
+    my (@delta);
+
+    @delta = Delta_YMDHMS( @$date1, @$date2 );
+    while ($delta[1] < 0
+        or $delta[2] < 0
+        or $delta[3] < 0
+        or $delta[4] < 0
+        or $delta[5] < 0 )
+    {
+        if ( $delta[1] < 0 ) { $delta[0]--; $delta[1] += 12; }
+        if ( $delta[2] < 0 ) {
+            $delta[1]--;
+            @delta[ 2 .. 5 ] = ( 0, 0, 0, 0 );
+            @delta[ 2 .. 5 ] =
+                Delta_DHMS( Add_Delta_YMDHMS( @$date1, @delta ), @$date2 );
+        }
+        if ( $delta[3] < 0 ) { $delta[2]--; $delta[3] += 24; }
+        if ( $delta[4] < 0 ) { $delta[3]--; $delta[4] += 60; }
+        if ( $delta[5] < 0 ) { $delta[4]--; $delta[5] += 60; }
+    }
+    return \@delta;
+}
+##############################################################################
+
+sub date_diff {
+    my ( $date_ref1, $date_ref2 ) = @_;
+    my ( $year1, $month1, $day1, $hour1, $min1, $sec1 ) = @$date_ref1;
+    my ( $year2, $month2, $day2, $hour2, $min2, $sec2 ) = @$date_ref2;
+    my @diff = Delta_YMDHMS($year1,$month1,$day1, $hour1,$min1,$sec1,
+                          $year2,$month2,$day2, $hour2,$min2,$sec2);
+    return \@diff if scalar @diff;
+    return;
+}
+
+##############################################################################
+sub output_as_iso {
+    my $date_ref = shift;
+    my $format = "%04d-%02d-%02d %02d:%02d:%02d";
+    printf "$format\n", @{$date_ref};
+}
+
+##############################################################################
+sub output_as_hours {
+    my $date_ref = shift;
+    my $format = "%02d:%02d:%02d";
+    printf "$format\n", @{$date_ref};
+}
+

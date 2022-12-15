@@ -1,0 +1,215 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: file_stats,v 1.1 2006/04/28 11:41:55 heli Exp $
+# Create some statistics of files, based on extensions.
+##############################################################################
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use File::Basename;
+use List::Util qw( first );
+use Number::Format;
+
+my %args;
+my $args_ref = \%args;
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'dir|d=s',
+) or pod2usage( -verbose => 1 );
+
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 2 ) if $args_ref->{'man'};
+
+### configuration start ###
+
+# good extensions:
+my @good_extensions = qw(
+    .pm .pl .pod .bat
+    .dtd
+    .sql
+    .lyx .tex
+    .rpt .srpt
+    .frm 
+    .html .cgi .js
+    .pre
+);
+
+# which extensions should be skipped:
+my @skip_extensions = qw(
+    .jpg .gif .png .tif
+    .ps .eps .doc
+    .gnumeric
+    .tmp alt ~ .backup
+    .pdf .dvi .toc .log .aux .bak .blg .idx .bbl .ilg .ind
+    .dat .copy .orig
+    .dump
+);
+
+# which directories should be skipped:
+my @skip_dirs = qw(
+    CVS model var tmp
+);
+
+# number formatting:
+my $f = new Number::Format(
+    -thousands_sep => '.',
+    -decimal_point => ','
+);
+### configuration end ###
+
+my $startdir = $args_ref->{'dir'} || '.';
+
+my %skip_extension = map { $_ => undef } @skip_extensions;
+my %skip_dir = map { $_ => undef } @skip_dirs;
+
+printf "Starting from directory:\n%s\n\n", $startdir;
+
+$| = 1;
+my ( @allfiles, %result_files );
+push @allfiles, myfind( $startdir );
+
+FILE:
+for my $file (@allfiles) {
+    next FILE if -d $file;
+    for my $bad_ext (@skip_extensions) {
+        next FILE if $file =~ /\Q${bad_ext}\E$/;
+    }
+    my $good_ext;
+    if ( $good_ext = first { $file =~ /\Q$_\E$/ } @good_extensions ){
+        push @{ $result_files{$good_ext} }, $file;
+    }
+    else {
+        push @{ $result_files{'programs etc.'} }, $file;
+    }
+}
+
+# collect sizes:
+my %ext_size;
+for my $ext ( keys %result_files ){
+    my ( $lines, $words, $chars );
+    for my $file ( @{ $result_files{$ext} } ) {
+        my $wc = `wc $file`;
+        chomp $wc;
+        $wc =~ s/^\s+//;
+        my ( $l, $w, $c ) = split /\s+/, $wc;
+        $lines += $l;
+        $words += $w;
+        $chars += $c;
+    }
+    $ext_size{$ext}{lines} = $lines;
+    $ext_size{$ext}{words} = $words;
+    $ext_size{$ext}{chars} = $chars;
+}
+
+# output:
+
+# printing:
+my ( $filetype, $linesum, $charsum );
+my ( $all_lines, $all_chars );
+for my $ext ( sort keys %ext_size ) {
+    $filetype = $ext;
+    $charsum  = $ext_size{$ext}{chars};
+    $linesum  = $ext_size{$ext}{lines};
+    $all_chars += $charsum;
+    $all_lines += $linesum;
+    write;
+}
+# change format for sums:
+$~ = "GES";
+write;
+
+#################################################
+# report formats:
+format STDOUT_TOP =
+Filetype             Characters     Lines
+------------------------------------------------
+.
+#################################################
+format STDOUT =
+@<<<<<<<<<<<<<<<< @>>>>>>>>>>>> @>>>>>>>>
+$filetype, $f->format_number($charsum), $f->format_number($linesum)
+.
+#################################################
+format GES =
+                --------------------------
+Sums              @>>>>>>>>>>>> @>>>>>>>>
+                  $f->format_number($all_chars), $f->format_number($all_lines)
+                ==========================
+.
+
+##############################################################################
+sub myfind {
+    my $dir = shift;
+    my @files;
+
+    opendir my $DIR, $dir or die "Cannot open directory $dir: $!\n";
+    my @dir_files = grep { not /\.\.?\z/ } readdir $DIR;
+    closedir $DIR;
+
+    ENTRY:
+    for my $file ( @dir_files ) {
+        # directories:
+        if ( -d $dir .'/'. $file ) {
+            next ENTRY if exists $skip_dir{$file};
+            #recursion for directories:
+            push @files, myfind( $dir .'/'. $file );
+        }
+
+        # collect all files here and sort them later:
+        push @files, $dir .'/'. $file;
+    }
+    return @files;
+}
+##############################################################################
+
+__END__
+
+
+=pod
+
+=head1 NAME
+
+file_stats
+
+=head1 SYNOPSIS
+
+file_stats [options]
+
+=head1 OPTIONS
+
+ -h | -? | --help          short help
+ -m | --man                detailed man page
+ -d | --dir <dir>          directory, where to start
+
+=head1 DESCRIPTION
+
+B<file_stats> traverses through the directory tree, starting at -d <dir> (or
+in the current directory, if no -d option is given), and collects the sizes of
+these files.
+
+In the configuration section, you can specify file extensions for accepting or
+skipping files and directories to skip. All files, which don't have one of the
+defined extensions, are collected all together in one big bucket.
+
+For the defined 'good' extensions, a report is printed out that displays the
+number of characters and lines per extension.
+
+=head1 VERSION
+
+$Revision: 1.1 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut
+
+

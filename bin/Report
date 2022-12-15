@@ -1,0 +1,257 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: Report,v 1.11 2005/03/22 13:45:34 heli Exp $
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.11 $' );
+
+use Apiis::Report::HTML;
+use Apiis::Report::PDF;
+use Apiis::Errors;
+use Getopt::Std;
+use CGI qw/:standard :html3/;
+
+use vars qw($opt_r $opt_o $opt_m $query $report);
+getopts('o:r:m:'); 
+
+
+if (($opt_o eq 'html') or ($ENV{'DOCUMENT_ROOT'})) {
+  $query=CGI->new();
+}
+
+#--- Spezifika des Zugriffs auf eine Datenbank
+#require Apiis::Report::Connect;
+#my $reportobj = $apiis->join_report( $reportname );
+
+#--- Test ob es Files gibt
+if (! -e $apiis->APIIS_HOME."/etc/apiis.css") {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'Report',
+     msg_short => __("Can't open ".$apiis->APIIS_HOME."/etc/apiis.css", 'report', 'Report'),
+  ));
+  goto ERR; 
+}
+if (! -w $apiis->filelog_filename) {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'Report',
+     msg_short => __("$ENV{'REMOTE_IDENT'} Can't write $apiis->filelog_filename", 'report', 'Report'),
+  ));
+  goto ERR; 
+}
+if (! -r "$APIIS_HOME/etc/apiisrc") {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'OS',severity  => 'ERR',from      => 'Report',
+     msg_short => __("$ENV{'REMOTE_IDENT'} Can't read $APIIS_HOME/etc/apiisrc", 'report', 'Report'),
+  ));
+  goto ERR; 
+}
+
+#--- test arguments
+$opt_o=$query->param('o') if ($query and $query->param('o'));
+$opt_r=$query->param('r') if ($query and $query->param('r'));
+$opt_m=$ENV{'APIIS_MODEL'} if($ENV{'APIIS_MODEL'});
+if (! ($opt_o and $opt_r and $opt_m)) {
+  $apiis->errors(Apiis::Errors->new(
+     type      => 'PARAM',severity  => 'ERR',from      => 'Report',
+     msg_short => __("-o or -r or -m option wasn't set", 'report', 'Report'),
+  ));
+  goto ERR; 
+}
+
+
+$apiis->join_model($apiis->APIIS_LOCAL."/model/$opt_m.model"); 
+$apiis->log('debug', "use model: ".$apiis->APIIS_LOCAL."/model/$opt_m.model");
+goto ERR if $apiis->status;
+
+my $dbh=$apiis->DataBase->dbh;
+$dbh->{AutoCommit}=0;
+
+#--- init report-object
+if ($opt_o eq 'html') {
+  $report=Apiis::Report::HTML->new(apiis=>$apiis, query=>$query, report=>$opt_r);
+} else {
+  $report=Apiis::Report::PDF->new(apiis=>$apiis, report=>$opt_r);
+}
+if ($report->Status) {
+  $apiis->errors($report->Errors);
+  goto ERR;
+}  
+
+#--- alle xml-Elemente aller Reports durchgehen und Verweise '{.*}' in parameterarray speichern
+my $xml=$report->Reportobj->XMLElements;
+my $hs_parameter=$report->Reportobj->GetAllParameter($xml);
+my $subreports=$report->Reportobj->GetAllSubReports($xml);
+
+#--- Test, ob Parameter belegt sind
+#-- Argumente zuordnen von console oder aus CGI
+my $ok; 
+while ((my $key, my $parameter)=each %{$hs_parameter}) {
+  my $field;
+  if ($parameter->[1]=~/Name:(.*)/) {
+    $field=$1;
+  } else {
+    $field=$parameter->[1];
+  }
+  push(@{$parameter},$field);
+
+  if (! @ARGV) {
+    if ($opt_o eq 'html') {
+       push(@{$parameter},$query->param($parameter->[2]));
+    }
+  } else {
+    foreach (@ARGV) {
+      if ($_=~/$parameter->[2]\=(.*)/) {
+        push(@{$parameter},"'".$1."'") ;
+      }
+    }
+  }
+  $ok=1  if (! $parameter->[3]);
+}
+
+#--- Abbruch wenn nicht genügend Parameter oder Einfordern bei HTML
+if ($ok) {
+  if ($opt_o eq 'html') {
+    my $tablecontent;
+    $report->PrintHeader;
+    my $key; my $parameter;
+    print $query->start_form(-action=>"/cgi-bin/Report",-method=>"GET");
+    while (($key,$parameter)=each %{$hs_parameter}) {
+      $tablecontent.=$query->TR($query->td($parameter->[2]),
+                           $query->td($query->textfield(
+                                        -name=>$parameter->[1],
+                                        -size=>20,
+                                        -maxlength=>20,
+                                        -override=>1)));
+    }
+    $tablecontent.=$query->TR($query->td($query->submit(-class=>'res',-name=>'l',-value=>"Ausführen")),
+                       $query->td($query->reset(-class=>'res',-value=>'Reset')));
+    print $query->table($tablecontent);
+    print $query->hidden(-name=>'o',-default=>"$opt_o");
+    print $query->hidden(-name=>'r',-default=>"$opt_r");
+    print $query->end_form();
+    exit 0;
+  } else {
+    print "Parameter fehlen";
+  }  
+}
+$report->{'_Parameter'}=$hs_parameter;
+
+#--- Schleife über alle Subreports, ausführen und Ergebnis zum Hash $subreports speichern
+foreach my $sr (keys %{$subreports}) {
+  my $vsr;
+  if ($opt_o eq 'html') {
+    $vsr=Apiis::Report::HTML->new(apiis=>$apiis, query=>$query, report=>$sr);
+  };
+  $report->{$sr}=$vsr->MakeReport;
+}
+
+$report->PrintHeader;
+$report->MakeReport;
+if ($report->Status) {
+  $apiis->errors($report->Errors);
+  goto ERR;
+}  
+$report->PrintReport;
+exit;
+
+ERR:
+if ($query) {
+  print $query->header() if (! $report);
+  my $rawcontent='';
+  foreach (@{$apiis->errors}) {
+    $rawcontent.=TR(td("ERROR"),td());
+    $rawcontent.=TR(td("type: "),td($_->type)) if ($_->type ne '');
+    $rawcontent.=TR(td("severity: "),td($_->severity)) if ($_->severity ne '');
+    $rawcontent.=TR(td("from: "),td($_->from)) if ($_->from ne '');
+    $rawcontent.=TR(td("msg_short: "),td($_->msg_short)) if ($_->msg_short ne '');
+    $rawcontent.=TR(td("msg_long: "),td($_->msg_long)) if ($_->msg_long ne '');
+  }  
+  print $query->table({-style=>"tablereport"},$rawcontent);
+} else {
+  if ( $apiis->errors ) {
+    foreach (@{$apiis->errors}) {
+      print "ERROR\n";
+      print "type: ".$_->type."\n";
+      print "severity: ".$_->severity."\n";
+      print "msg_short: ".$_->msg_short."\n";
+      print "msg_long: ".$_->msg_long."\n";
+      print "from: ".$_->from."\n";
+    }
+  }
+}
+
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Form - create a window with the form defined in formfile
+
+=head1 SYNOPSIS
+
+Form [-s][-d][-D level][-p][-P pos] [formfile] [data ... ]
+
+=head1 DESCRIPTION
+
+The formfile describe the appearance and functionality of a form. B<Form> initializes
+neccessary things and passes the formfile and parameter to the module 'yaform.pm'.
+For using more than one form at a time one can also use the wrapper B<apiish>.
+
+To pass data directly into fields of the form one can give the data to the command line.
+The first given parameter after formfile will be written into the first field of the form,
+the second into the second field and so on. One can check the order of the form field with
+the FormDesigner at the Edit menu.
+With option -p and the data parameter it is possible to pass values from one form to an other.
+
+=head1 OPTIONS
+
+=over 6
+
+=item B<-s>    
+
+print last SQL Statement
+
+=item B<-d>
+
+print debug messages from yaform
+
+=item B<-D> level
+
+DBIx::Recordset debuglevel 1..4
+
+=item B<-p>
+
+print field values from the returned hash
+
+=item B<-P> pos
+
+place in one of seven screen positions (default: 0)
+pos:   .-------.
+       |1  2  3|
+       |   0   |
+       |4  5  6|
+       '-------'
+
+=back
+
+=head1 SEE ALSO
+
+yaform.pm, form_ulib.pm, FormDesigner, apiish
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+=cut

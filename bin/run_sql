@@ -1,0 +1,151 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: run_sql,v 1.1 2007/01/23 12:14:10 heli Exp $
+# Run a SQL statement from a file against the database of an Apiis project.
+##############################################################################
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+
+Apiis->initialize( VERSION => '$Revision: 1.1 $' );
+our $apiis;
+
+# handle command-line options:
+my $args_ref = {};
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+use Perl6::Slurp;
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'version|V',
+    'project|p=s',
+    'user|u=s',
+    'password|P=s',
+    'filename|f=s',
+    'verbose|v',
+) or pod2usage( -verbose => 1);
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1) if $args_ref->{'help'};
+pod2usage( -verbose => 2) if $args_ref->{'man'};
+
+if ( $args_ref->{version} ) {
+    die sprintf "%s: %s\n", $apiis->programname, $apiis->version;
+}
+
+my $sql_file = $args_ref->{'filename'};
+if ( !$sql_file ) {
+    printf "%s!\n", __('No [_1] given', 'filename');
+    pod2usage( -verbose => 1);
+}
+
+# model file:
+my $model_file = $args_ref->{'project'};
+if ( !$model_file ) {
+    printf "%s!\n", __('No [_1] given', 'project');
+    pod2usage( -verbose => 1);
+}
+
+# connect to project:
+if ( $args_ref->{user} and $args_ref->{password} ) {
+    require Apiis::DataBase::User;
+    my $thisobj = Apiis::DataBase::User->new(
+        id       => $args_ref->{user},
+        password => $args_ref->{password},
+    );
+    $thisobj->check_status;
+    $apiis->join_model( $model_file, userobj => $thisobj );
+}
+else {
+    printf "%s!\n", __('user and password needed' );
+    pod2usage( -verbose => 1);
+}
+$apiis->check_status( die => 'ERR' );
+
+# opening SQL file:
+open my $SQL, '<', $sql_file
+    or die __( 'Problems opening file [_1]: [_2]', $sql_file, $! ) . "\n";
+
+my $sql_statement = slurp $SQL;
+
+my $statement_obj = $apiis->DataBase->user_sql( $sql_statement );
+my $statement_handle = $statement_obj->handle;
+my $processed_rows   = $statement_obj->rows;
+if ( $statement_obj->status ) {
+    for my $err ( $statement_obj->errors ) {
+        if ( $args_ref->{verbose} ) {
+            $err->print;
+        }
+        else {
+            printf "\t%s\n", $err->msg_short;
+        }
+    }
+}
+$apiis->check_status;
+$apiis->DataBase->user_dbh->commit;
+
+
+
+=pod
+
+=head1 NAME
+
+run_sql
+
+=head1 SYNOPSIS
+
+run_sql -p <project>  -u <user> -P <password> -f <filename>
+
+=head1 OPTIONS
+
+ -p | --project <project>  defines the project to check (r)
+
+ -u | --user  <user>       provide username <user> to connect to project (r)
+ -P | --password <passwd>  provide password <passwd> to connect to project (r)
+
+ -f | --filename <file>    read SQL commands from <file> (r)
+
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -V | --version            current version of check_integrity (o)
+ -v | --verbose            increase verbosity, e.g. write detailed errors (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<run_sql> runs SQL commands from a file against the database of an Apiis
+project.
+
+=head1 EXAMPLES
+
+ run_sql -p breedprg -u demo -P 'my secret' -f my_commands.sql
+
+=head1 BUGS
+
+If your SQL file contains more than one statement they are processed
+sequentially. If one statement produces an error, the remaining statements are
+skipped. The best would be to create one file for each SQL statement and
+invoke them separately.
+
+=head1 VERSION
+
+$Revision: 1.1 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut
+

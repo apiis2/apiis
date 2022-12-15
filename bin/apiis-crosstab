@@ -1,0 +1,160 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: apiis-crosstab,v 1.1 2007-06-27 11:19:44 heli Exp $
+# An apiis-wrapper around DBIx::SQLCrosstab to create cross tabulations.
+##############################################################################
+use strict;
+use warnings;
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use Getopt::Long;
+Getopt::Long::Configure("bundling");    # allow argument bundling
+use Pod::Usage;
+use Perl6::Slurp;
+use Data::Dumper;
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.1 $' );
+use Apiis::DataBase::User;
+
+# handling the command line args:
+my $args = {};
+GetOptions(
+    $args,
+    'help|h|?',
+    'man|m|pod',
+    'project|p=s',
+    'user|u=s',
+    'password|P=s',
+    'file|f=s',
+    'format|F=s',
+    'aux|A=s',
+
+) or pod2usage( -verbose => 1 );
+
+pod2usage( -verbose => 1) if $args->{'help'};
+pod2usage( -verbose => 2) if $args->{'man'};
+
+my ( $infile, $format, $user, $password, $project, $aux_param );
+$infile    = $args->{file}     || pod2usage( -verbose => 1 ) if !$infile;
+$format    = $args->{format}   || pod2usage( -verbose => 1 ) if !$format;
+$user      = $args->{user}     || pod2usage( -verbose => 1 ) if !$user;
+$password  = $args->{password} || pod2usage( -verbose => 1 ) if !$password;
+$project   = $args->{project}  || pod2usage( -verbose => 1 ) if !$project;
+$aux_param = $args->{aux};
+
+# read the parameter file and eval it:
+my $text = slurp $infile;
+my $params = eval "$text";
+die $@ if $@;
+
+# connect to project:
+my $thisobj = Apiis::DataBase::User->new(
+    id       => $user,
+    password => $password,
+);
+$thisobj->check_status( die => 'ERR' );
+$apiis->join_model( $project , userobj => $thisobj );
+$apiis->check_status( die => 'ERR' );
+
+# add dbh to the params hashref:
+$params->{dbh} = $apiis->DataBase->sys_dbh;
+
+my $pass_args = {};
+$pass_args->{params} = $params;
+$pass_args->{aux} = $aux_param if $aux_param;
+$pass_args->{format} = $format;
+
+my $return_string = $apiis->DataBase->crosstab($pass_args);
+$apiis->DataBase->check_status( die => 'ERR' );
+
+ref $return_string
+    ? ( print Dumper($return_string) )
+    : ( printf "%s\n", $return_string );
+
+##############################################################################
+
+=pod
+
+=head1 NAME
+
+apiis-crosstab
+
+=head1 SYNOPSIS
+
+apiis-crosstab [Options]
+
+=head1 OPTIONS
+
+ -h | -? | --help         short help (o)
+ -m | --man | --pod       detailed man page (o)
+
+ -p | --project <project> defines the project (r)
+ -u | --user  <user>      provide username <user> to connect to project (r)
+ -P | --password <passwd> provide password <passwd> to connect user <user> (r)
+
+ -f | --file <filename>   the crosstab is externally parameterized by <filename> (r)
+ -F | --format <Format>   Possible values for output format <Format> are: (r)
+                           as_csv         - comma separated values
+                           as_html        - formatted html output
+                           as_xml         - formatted xml output
+                           as_xls         - writes an MS-Excel file -A <filename>
+                           as_yaml        - puts out YAML if this module is installed
+                           as_perl_struct - can be dumped as -A <lol|losh|loh|hoh>
+ -A | --aux <Aux>         Auxiliary data, needed for some output formats (o,r)
+
+                          (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+apiis-crosstab is a wrapper around the Apiis-implementation of the
+CPAN-Modules DBIx::SQLCrosstab and DBIx::SQLCrosstab::Format. These modules
+allow a convenient way of creating serverside cross tabulation from a database.
+
+The parameter file must define the hash reference $params, which is read
+by B<apiis-crosstab> .
+
+Example:
+
+Create a file called 'params.in' with this contents:
+
+   my $params = {
+       op    => [ [ 'COUNT', 'db_animal' ], ],
+       from  => 'animal',
+       where => 'db_breed is not null and db_sex is not null',
+       rows => [ { col => 'db_breed', alias => 'breed' }, ],
+       cols => [
+           {   id    => 'db_sex',
+               value => 'short_name',
+               from  => qq{
+                   animal INNER JOIN codes ON (codes.db_code = animal.db_sex)
+               },
+           },
+       ],
+       col_total => 1,
+   };
+
+For a detailed description on how to write more elaborated parameter files see:
+
+   man DBIx::SQLCrosstab
+   
+and
+
+   man DBIx::SQLCrosstab::Format
+
+Then run B<apiis-crosstab>:
+
+   apiis-crosstab -p breedprg -u demo -P Demo -f params.in -F as_csv -A 1
+
+Adjust projectname, user, and password accordingly to you setup.
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut

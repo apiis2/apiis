@@ -1,0 +1,153 @@
+#!/usr/bin/perl -w
+##############################################################################
+# $Id: mkdescr,v 1.6 2004/02/10 06:52:12 heli Exp $
+# create a description of the model file structure.
+##############################################################################
+
+BEGIN { # execute some initialization before compilation
+   use Env qw( APIIS_HOME );
+   die "APIIS_HOME is not set!\n" unless $APIIS_HOME;
+   use lib "$APIIS_HOME/lib";
+   require apiis_init;
+   initialize_apiis( VERSION => '$Revision: 1.6 $' );
+}
+
+use vars qw( $model_file $outfile $opt_f $opt_o $opt_h $opt_v );
+
+# allowed parameters:
+use Getopt::Std;
+getopts('f:o:vh'); # option -f <modelfile>  => Modelfile
+                 #        -o <outfile>    => Output to file
+                 #        -v              => Version
+                 #        -h              => Help
+
+# help:
+die usage() if $opt_h;
+die "$programname: $version\n" if $opt_v;
+# usage() if $#ARGV < 0;
+
+$model_file = $opt_f if $opt_f;
+$outfile    = $opt_o if $opt_o;
+
+# maybe model file given without -f
+unless ( $model_file ) {
+   $model_file = $ARGV[0] if $ARGV[0];
+}
+
+unless ( -f $model_file ) {
+   $model_file = "$APIIS_LOCAL/model/$model_file";
+}
+
+die msg(4), $model_file, ": $!\n" unless $model_file;      
+
+require "$model_file";
+
+# open the model file:
+open(MODEL, "<$model_file") or die "Problems: $model_file: $!\n";
+# read table names from the model file:
+my @tables;
+while (<MODEL>) { push @tables, $1 if /^\s*%(\w+)/ }
+close MODEL;
+
+(my $basemodel = $model_file) =~ s|.*/||;
+my $out_handle = 'STDOUT';
+if ( $outfile ) { # for later -o switch
+   $out_handle = 'OUT';
+   open ($out_handle, ">$outfile") or die "Problems with $outfile: $!\n";
+}
+
+# my $today = GetNow();
+print_header( $out_handle );
+
+my $newline = '\\\\';
+foreach my $table (@tables){
+   my @table_constraints;
+   (my  $thistable = $table) =~ s/_/\\_/g; # mask backslashes
+   print $out_handle "\\pagebreak[3]\n";
+   print $out_handle "\\section{$thistable}\n";
+   print $out_handle "\\setlongtables\n";
+   print $out_handle "\\nopagebreak[3]\n";
+   print $out_handle "\\begin{longtable}{|r|r|p{30mm}|p{15mm}|p{45mm}|}\n";
+   print $out_handle "\\hline\n";
+   print $out_handle "DB\\_COLUMN & DATATYPE & CHECK & MODIFY & DESCRIPTION $newline\n";
+   print $out_handle "\\hline\n";
+   print $out_handle "\\hline\n";
+   foreach my $thiscol (sort keys %$table) {
+      # next if $thiscol eq 'TABLE';
+      if ( $thiscol eq 'TABLE' ){
+	 my $i1 = $i2 = 0; # temp counter
+	 if ( scalar @{$$table{TABLE}{CONSTRAINTS}{SEQUENCE}} ){
+	    my $text;
+	    foreach my $thisseq ( @{$$table{TABLE}{CONSTRAINTS}{SEQUENCE}}){
+	       $i1 ? ($text = '') : ($text = '\\textbf{Sequences:}');
+	       $thisseq =~s/_/\\_/g;
+	       push @table_constraints, "$text &\\multicolumn{4}{l|}{\\hspace{5mm} $thisseq} $newline ";
+	       $i1++;
+	    }
+	 }
+	 if ( scalar @{$$table{TABLE}{CONSTRAINTS}{INDEX}} ){
+	    my $text;
+	    foreach my $thisindex ( @{$$table{TABLE}{CONSTRAINTS}{INDEX}}){
+	       $i2 ? ($text = '') : ($text = '\\textbf{Indices:}');
+	       $thisindex =~s/_/\\_/g;
+	       push @table_constraints, "$text &\\multicolumn{4}{l|}{\\hspace{5mm} $thisindex} $newline ";
+	       $i2++;
+	    }
+	 }
+
+      } else {
+         my @out;
+         $out[0] = $$table{$thiscol}{DB_COLUMN};
+         $out[1] = "{\\small $$table{$thiscol}{DATATYPE}}";
+         my ( $check, $modify );
+         if ( scalar @{$$table{$thiscol}{CHECK}} ) {  # CHECK defined
+            $out[2] = join(' $\\bullet$ ', @{$$table{$thiscol}{CHECK}});
+         }
+         if ( scalar @{$$table{$thiscol}{MODIFY}} ) {  # MODIFY defined
+            $out[3] = join(' $\\bullet$ ', @{$$table{$thiscol}{MODIFY}});
+         }
+         $out[4] = $$table{$thiscol}{DESCRIPTION};
+         for ( @out ){
+   	 $_ = '' unless defined $_;
+   	 $_ =~ s/_/\\_/g;
+   	 $_ =~ s/%/\\%/g;
+         }
+         print $out_handle "$out[0] & $out[1] & $out[2] & $out[3] & $out[4] $newline\n";
+         print $out_handle "\\hline\n";
+      }
+   }
+   # now table constraints:
+   print $out_handle "\\hline\n";
+   print $out_handle join("\n",@table_constraints);
+   print $out_handle "\\hline\n";
+   print $out_handle "\\end{longtable}\n";
+}
+print $out_handle "\\end{document}\n";
+close $out_handle;
+
+##############################################################################
+sub usage {
+die msg(34), ":\n",
+   $programname,               " -h               ", msg(44), "\n",
+   " " x length($programname), " -v               ", msg(45), "\n",
+   " " x length($programname), " -o <", msg(64), ">\n",
+   " " x length($programname), " -f <", msg(35), ">\n";
+}
+##############################################################################
+sub print_header {
+   my $handle = shift;
+   print $handle <<"EndOfHeader";
+\\documentclass[10pt,a4,DIV16]{scrartcl}
+\\usepackage[T1]{fontenc} \\usepackage[latin1]{inputenc}
+\\usepackage{longtable}
+\\tolerance=8000
+
+\\title{Modelfile: $basemodel}
+\\date{$now}
+
+\\begin{document}
+\\maketitle
+EndOfHeader
+}
+
+# vim: tw=120

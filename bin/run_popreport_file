@@ -1,0 +1,335 @@
+#!/bin/bash
+##############################################################################
+# $Id: run_popreport_file,v 1.53 2018/02/21 12:27:50 heli Exp $
+##############################################################################
+# Run the popreport suite from uploaded data files
+#
+# input parameter:
+# -b <BREED>
+# -d <DATAFILE>
+# -e <EMAIL>
+# -m <code_for_male>
+# -f <code_for_female>
+# -y <date_format, e.g. YYYY-MM-DD>
+# -s <date_separator, e.g. ->
+# -g <switch for get_tar>
+# -I <incoming_dir>
+# -D                      # delete wrong birthdates
+
+# defaults:
+MALE=M
+FEMALE=F
+DATEFORMAT=YYYY-MM-DD
+GETTAR=
+# the prmon module:
+PRMON_MONITOR=prmon_monitor.pl
+MYLOG=maincontrol.lst
+ADMINMAIL="popreport@fli.de" # alias on mail.tzv.fal.de
+
+if [ -z $APIIS_HOME ]; then
+    echo APIIS_HOME is not set
+    exit
+fi
+
+BINDIR=${APIIS_HOME}/bin
+LIBDIR=${APIIS_HOME}/lib/popreport
+
+while getopts "b:d:e:m:f:y:s:g:I:P:D" Option
+do
+  case $Option in
+    b) BREED=$OPTARG;;
+    d) DATAFILE=$OPTARG;;
+    e) EMAIL=$OPTARG;;
+    m) MALE=$OPTARG;;
+    f) FEMALE=$OPTARG;;
+    y) DATEFORMAT=$OPTARG;;
+    s) DATESEP=$OPTARG;;
+    g) GETTAR=$OPTARG;;
+    I) INCOMING=$OPTARG;;
+    P) PROJ_DIR_BASE=$OPTARG;;
+    D) DELETE=$OPTIND;;
+    *) echo "Unknown parameter."; exit;;
+  esac
+done
+
+##############################################################################
+function usage () {
+    echo "
+Usage: run_propreport_file -b <BREED> -d <DATAFILE> -e <EMAIL>
+     -m <MALE> -f <FEMALE> -y <DATEFORMAT> -s <DATESEP> -g <tar_switch>
+     -I INCOMING -P <PROJECT_BASE_DIR> -D"
+}
+
+##############################################################################
+function mylogmsg () {
+    MSG=$1
+    echo -e "$MSG"
+    echo -e "`date '+%F %H:%M:%S'`: $MSG" >>$MYLOG
+}
+
+# same but without date and indented:
+function mylogmsg_indent () {
+    MSG=$1
+    INDENT='                     '
+    echo -e "$MSG"
+    echo -e "${INDENT}$MSG" >>$MYLOG
+}
+##############################################################################
+function logmsg () {
+    MSG=$1
+    echo "#####################################################################" >>$STDOUTLOG
+    echo "#####################################################################" >>$STDERRLOG
+    echo "# $MSG" >>$STDOUTLOG
+    echo "# $MSG" >>$STDERRLOG
+    echo "#####################################################################" >>$STDOUTLOG
+    echo "#####################################################################" >>$STDERRLOG
+}
+##############################################################################
+
+DIE=0
+if [ -z "$BREED" ]; then echo "Parameter -b <BREED> missing"  ; DIE=1; fi
+if [ -z "$DATAFILE" ];  then echo "Parameter -d <DATAFILE> missing"     ; DIE=1; fi
+if [ -z "$EMAIL" ];  then echo "Parameter -e <EMAIL> missing" ; DIE=1; fi
+if [ -z "$MALE" ];  then echo "Parameter -e <MALE> missing" ; DIE=1; fi
+if [ -z "$FEMALE" ];  then echo "Parameter -e <FEMALE> missing" ; DIE=1; fi
+if [ -z "$DATEFORMAT" ];  then echo "Parameter -e <DATEFORMAT> missing" ; DIE=1; fi
+[ -n "$DELETE" ] && DELETE="-d"
+
+PROJ_DIR_BASE=${PROJ_DIR_BASE-'/var/lib/postgresql/projects'}
+
+# datesep and get_tar can be empty
+if [ "$GETTAR" == 'on' ]; then
+    TAR="-t"
+fi
+if [ -n "$DATESEP" ]; then
+    DATESEP="-s $DATESEP"
+fi
+
+if [ "$DIE" -eq 1 ]; then
+    echo "Not enough parameters given!"
+    usage
+    exit 1
+fi
+
+if [ ! -f $DATAFILE ]; then
+    echo "File $DATAFILE does not exist"
+    exit 1
+fi
+
+$BINDIR/is_valid_email $EMAIL
+case "$?" in
+    0) ;;
+    1) echo "No email address was supplied"; exit ;;
+    2) echo "There is a syntactical error in the email address"; exit ;;
+    3) echo "There are no DNS entries for the host in question (no MX records or A records)"; exit ;;
+    4) echo "The toplevel domain check failed"; exit ;;
+    5) echo "Your email has no valid fully qualified domain name"; exit ;;
+    *) echo "Unspecified error with your mail address"; exit ;;
+esac  
+
+# create a project/user with random name:
+PROJ=`$BINDIR/mk_rand_string`
+
+# create apiis project:
+PROJ_DIR="${PROJ_DIR_BASE}/${PROJ}"
+# PROJ_DIR=/var/lib/postgresql/projects/${PROJ}
+
+# for early debugging:
+LOG="${PROJ_DIR}/run_popreport_file.debug"
+LIST="${PROJ_DIR}/early.tex"
+
+mkdir -p ${PROJ_DIR}/var/log
+mkdir -p ${PROJ_DIR}/etc
+cp ${LIBDIR}/apiisrc ${PROJ_DIR}/etc
+cat ${LIBDIR}/dummy.xml | sed -e "s/xxdummyxx/${PROJ}/" >${PROJ_DIR}/etc/${PROJ}.xml
+ln -s $APIIS_HOME/etc/model.dtd ${PROJ_DIR}/etc/model.dtd
+ln -s $APIIS_HOME/etc/AR.xml ${PROJ_DIR}/etc/AR.xml
+ln -s $APIIS_HOME/etc/OldAuth.xml ${PROJ_DIR}/etc/OldAuth.xml
+echo "${PROJ}=${PROJ_DIR}" >>~/.apiisrc
+
+# create database $PROJ
+createdb -U apiis_admin -E utf-8 $PROJ >>$LOG 2>&1
+cat ${LIBDIR}/dummy.dump | sed -e "s/xxdummyxx/${PROJ}/g" >${PROJ_DIR}/${PROJ}.dump
+psql -q -f ${PROJ_DIR}/${PROJ}.dump $PROJ >>$LOG 2>&1
+# remove dump:
+rm -f ${PROJ_DIR}/${PROJ}.dump
+
+# basic checks of file and load into database $PROJ:
+HANDLE_PARAMS="-i $DATAFILE -m $MALE -f $FEMALE -d $DATEFORMAT -u $PROJ -b $BREED -e $EMAIL $DATESEP -l $LIST"
+
+# create a new directory and change into it (all programs write into the current directory):
+cd ${PROJ_DIR}
+DATE=`date +%F-%H.%M`
+NEWDIR="Popreport_${BREED}_${DATE}"
+mkdir $NEWDIR || exit
+
+cd $NEWDIR && mylogmsg "Running handle_pedi_file ..."
+cd ${PROJ_DIR}
+echo "Running ${BINDIR}/handle_pedi_file $HANDLE_PARAMS" >>$LOG 2>&1
+${BINDIR}/handle_pedi_file $HANDLE_PARAMS >>$LOG 2>&1
+HP_RET=$?
+cd ${PROJ_DIR}
+
+if [ $HP_RET -eq 0 ]; then
+    cd $NEWDIR
+
+    REP_PARAMS="-p $PROJ -u poprep -P pass -b $BREED -m $MALE -f $FEMALE -D0 -L $TAR $DELETE"
+    echo "Running run_popreport $REP_PARAMS" >>$LOG 2>&1
+    mylogmsg "Running run_popreport ..."
+    run_popreport $REP_PARAMS
+
+    # does the prmon Module exist?:
+    if [ -x "${BINDIR}/$PRMON_MONITOR" ]; then
+        # local settings for logging:
+        PROG=`basename $PRMON_MONITOR .pl`
+        STDOUTLOG=${PROG}.stdout
+        STDERRLOG=${PROG}.stderr
+        touch $STDOUTLOG
+        touch $STDERRLOG
+
+        PRMON_MONITOR_PARAMS="-p $PROJ -u poprep -P pass -b $BREED"
+        mylogmsg "Running prmon suite ..."
+        logmsg "Running: $PRMON_MONITOR $PRMON_MONITOR_PARAMS"
+
+        ${BINDIR}/$PRMON_MONITOR $PRMON_MONITOR_PARAMS >>$STDOUTLOG 2>>$STDERRLOG
+    else
+        echo "Executable ${BINDIR}/$PRMON_MONITOR not found, prmon skipped" >>$LOG 2>&1
+    fi
+    ### zip/tar:
+    if [ "$GETTAR" == 'on' ]; then
+        mylogmsg "Running: zip -r -q ${NEWDIR}.zip $NEWDIR"
+        # logmsg "Running: zip -r -q ${NEWDIR}.zip $NEWDIR"
+        cd ${PROJ_DIR}
+        # cd ..
+        zip -r -q ${NEWDIR}.zip $NEWDIR
+    fi
+else
+    if [ $HP_RET -eq 255 ]; then
+        echo -e "handle_pedi_file found an unrecoverable data error.\nTerminated ..." >>$LOG 2>&1
+    fi
+fi
+
+# generate titlepage:
+PARAM="${INCOMING}/param"
+SUBMITTED=`grep ^submitted $PARAM  |sed -e 's/^submitted=//'`
+STARTED=`grep ^startdate $PARAM  |sed -e 's/^startdate=//'`
+FINISHED=`date "+%F %T"`
+
+# locate the .tex file and link it into curr dir:
+cd ${PROJ_DIR}
+for f in `find ${PROJ_DIR} -name "*.tex"`
+do
+    ln -sf $f . >/dev/null 2>&1
+done
+
+mylogmsg "Preparing pdf files ..."
+cp ${APIIS_HOME}/etc/PopReport/titlepage.tmpl titlepage.tex
+${BINDIR}/mk_titlepage -p $PARAM >tp_tabular.tex
+
+ln -s ${APIIS_HOME}/etc/PopReport/popreport.png
+pdflatex -interaction batchmode titlepage.tex
+
+# send pdf-file as email and store them temporarily:
+ATTACH=
+for pdf in `find ${PROJ_DIR} -iname "*.pdf"`
+do
+    PREBASE=`basename $pdf`
+    if [ "$PREBASE" != "titlepage.pdf" ]; then
+        if [ -f 'titlepage.pdf' ]; then
+            BASE=`basename $pdf .pdf`
+            if [ -f $BASE-coverpage.tex ]; then
+                ln -sf $BASE-coverpage.tex coverpage.tex
+                # rebuild specialized titlepage:
+                pdflatex -interaction batchmode titlepage.tex
+            fi
+            cp $pdf "${BASE}-orig.pdf"
+            if [ "$BASE" == "prmon-master" ]; then
+                OUTPDF="Monitoring-${BREED}.pdf"
+            else
+                OUTPDF="${BASE}.pdf"
+            fi
+            pdftk titlepage.pdf "${BASE}-orig.pdf" cat output $OUTPDF
+            ATTACH="$ATTACH -a $OUTPDF"
+            cp $OUTPDF $INCOMING
+            rm -f coverpage.tex
+        else
+            ATTACH="$ATTACH -a $pdf"
+            cp $pdf $INCOMING
+        fi
+    fi
+done
+
+rm -f *.aux *.log
+rm -rf "*-orig.pdf"
+
+# append tar file
+if [ "$GETTAR" == 'on' ]; then
+    for f in `find ${PROJ_DIR} -maxdepth 1 -iname "*.zip"`
+    do
+        TARATTACH="-a $f"
+        FEXFILE=$f
+    done
+fi
+
+mylogmsg "Sending mails ..."
+if [ -n "$ATTACH" ]; then
+    MSG1="Find attached the pdf files from your popreport request for breed $BREED.\n\n"
+    MSG2=''
+    MSG3=''
+    MSG4=''
+    MSG5=''
+    MSG6=''
+    if [ -n "$TARATTACH" ]; then
+        MSG3="A link to your zip file will be sent in a separate Mail.\n"
+        MSG4="They are usually quite big and therefore often get rejected by mail servers.\n"
+        MSG5="In case of problems please contact popreport@fli.de\n\n"
+        MSG6="Thank you for using the PopReport Service at popreport.fli.de\n"
+    fi
+    SUBJ="Your popreport request (breed: $BREED, pdf files)"
+    # exclude mailing for special case qs via hardcoded email address:
+    if [ ! $EMAIL == 'none@neverland.no' ]; then
+        FINALMSG="${MSG1}${MSG2}${MSG3}${MSG4}${MSG5}${MSG6}"
+        echo -e $FINALMSG |mutt -s "$SUBJ" "$EMAIL" $ATTACH
+        echo -e $FINALMSG |mutt -s "$SUBJ" "$ADMINMAIL" $ATTACH
+    fi
+else
+    if [ -f titlepage.pdf ]; then
+        # last chance, if titlepage.pdf is the only one (e.g. in case of
+        # dateformat errors):
+        cp titlepage.pdf $INCOMING
+        MSG="Seems we found a problem with your popreport request for breed $BREED"
+        MSG2="See the attached pdf-file for details"
+        ATTACH="-a titlepage.pdf"
+        if [ ! $EMAIL == 'none@neverland.no' ]; then
+            echo -e "$MSG \n$MSG2" |mutt -s "Your popreport request (breed: $BREED)" "$EMAIL" $ATTACH
+            echo -e "$MSG \n$MSG2" |mutt -s "Your popreport request (breed: $BREED)" "$ADMINMAIL" $ATTACH
+        fi
+    else
+        MSG="No reportfiles could be attached. This looks like an error and you should get additional error messages."
+        ADMIN_MSG="No pdf-files produced at $INCOMING (breed: ${BREED}, project: ${PROJ_DIR})"
+        if [ ! $EMAIL == 'none@neverland.no' ]; then
+            echo $MSG |mutt -s "Your popreport request (breed: $BREED)" $EMAIL
+            echo $ADMIN_MSG |mutt -s "Admin: pdf-reports missing" "$ADMINMAIL"
+        fi
+    fi
+fi
+if [ -n "$TARATTACH" ]; then
+    if [ -f $FEXFILE ]; then
+        fexsend $FEXFILE $EMAIL >>$LOG 2>>$LOG
+    fi
+fi
+
+mylogmsg "Cleaning up ..."
+# cleanup everything
+dropdb $PROJ
+if [ ! $EMAIL == 'none@neverland.no' ]; then
+    rm -rf $PROJ_DIR
+    # echo "Not removing $PROJ_DIR"
+fi
+cat ~/.apiisrc | sed -e "/${PROJ}/d" >~/.apiisrc-$PROJ && mv ~/.apiisrc-$PROJ ~/.apiisrc
+if [ -f ~/sent ]; then
+    mv -f ~/sent ~/sent-before  # keep only one old version
+fi
+mylogmsg "... Finished"
+
+# vim: tw=120

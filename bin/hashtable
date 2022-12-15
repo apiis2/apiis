@@ -1,0 +1,337 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: hashtable,v 1.17 2006/09/11 12:57:14 eg Exp $
+# build a hash from a database table 
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.17 $' );
+
+our $apiis;
+
+use Getopt::Std;
+use File::Basename;
+
+use vars qw/ $dbh $db_name $db_host $db_user $db_password
+             $opt_o $opt_i $opt_d $opt_h $opt_p $opt_D $opt_S $opt_i $opt_H 
+	     $opt_f $opt_F $opt_t $opt_A $opt_N /;
+
+usage() if join(' ', @ARGV) =~ /--help/;
+
+sub usage {
+   my $programname = $apiis->programname;
+   print "Usage: $programname [-i][-o][-H][-F][-t][-d][-h][-p][-D][-S][-N][-A][--help] -p <project>\n";
+   print "   -p	project (required)\n";
+   print "   -i	template input file [default HASHTABLE.tpl]\n";
+   print "   -o	latex output file [default HASHTABLE.tex]\n";
+   print "   -H	latex header file\n";
+   print "   -F	latex footer file\n";
+   print "   -t	table headline\n";
+   print "   -d	name of the database\n";
+   print "   -h	hostname [default localhost]\n";
+   print "   -S	SELECT statement\n";
+   print "   -N	process template without hashtable (no select statement necessary)\n";
+   print "   -A	Alignment r[ight] | l[eft] | c[enter] [default r]\n"; 
+   print "   --help give this help\n";
+   exit;
+}
+
+getopts('f:No:d:h:p:D:S:i:H:F:t:A:');
+
+usage() unless $opt_p;
+my $modelfile = $opt_p;
+$apiis->join_model( $modelfile );
+$apiis->check_status ( die => 'ERR' );
+
+$db_name = $apiis->Model->db_name;
+$db_host = $apiis->Model->db_host;
+
+my ($inputfile, $outputfile, $header, $footer);
+my ($title, $sum_row, $sum_col, $tabalign);
+
+## template file
+if($opt_i) {
+   $inputfile = $opt_i;
+} else {
+   printf "Input file=";
+   chomp($inputfile=<STDIN>);
+}
+die "In HASHTABLE: cannot open template-file $inputfile\n" if(! -f $inputfile);
+
+
+## latex file
+if($opt_o) {
+   $outputfile = $opt_o;
+} else {
+   my @out = split('\.',basename($inputfile));
+   $outputfile = $out[0].'.tex';
+}
+
+## latex header
+if($opt_H) {
+   $header = $opt_H;
+}
+
+## latex footer
+if($opt_F) {
+   $footer = $opt_F;
+}
+
+## table headline
+if($opt_t) {
+   $title = $opt_t;
+}
+
+## Database
+if($opt_d) {
+   $db_name = $opt_d;
+} elsif(! $db_name) {
+   printf "Database=";
+   chomp($db_name=<STDIN>);
+}
+
+## Host
+if($opt_h) {
+   $db_host = $opt_h;
+} elsif(! $db_host) {
+   printf "host=[rauma]:";
+   chomp($db_host=<STDIN>);
+}
+
+## SELECT statement
+my $sql;
+if(! $opt_N) {
+   if($opt_S) {
+      $sql = $opt_S;
+   } else {
+      print "SELECT ";
+      chomp($sql=<STDIN>);
+      $sql = "SELECT ". $sql if($sql);
+   }
+}
+
+if($opt_A) {
+   $tabalign = $opt_A;
+} else {
+   $tabalign = 'r';
+}
+
+my (%table, @ary, $dim, @cols);
+my (%c2, %c1, %c3);
+my $nc1 = my $nc2 = my $nc3 = my $nc4 = my $nc5 = my $nc6 = 0;
+
+if(! $opt_N) {
+   $sql='SELECT sex,  breed.breed from animal,breed where animal.breed_id = breed.breed_id' if(!$sql);
+   my $sql_return = $apiis->DataBase->user_sql($sql);
+   my $sth = $sql_return->handle;
+
+   # print Dumper($sql);
+
+
+   # N-DIMENSIONALE TABELLE
+   $sql =~ s/^(select)\s+(.+)( from).+/$2/i;
+   @cols = split(',',$sql);
+   #print Dumper(@cols);
+   foreach (@cols) {  # blanks entfernen; underscore für latex maskieren
+      $_ =~ s/^(.+)(\s+as\s+)(\w+)/$3/i;  # col 'AS' new-col 
+      $_ =~ s/distinct //g;  # 'distinct'  
+      $_ =~ s/ //g;
+      $_ =~ s/_/\\_/g;
+   }
+   #print Dumper(@cols);
+   $dim = scalar(@cols);
+   #print "COLS:$dim\n";
+   #print Dumper(@cols);
+
+
+   # build the 1-DIM table hash
+   if($dim == 1) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]} = $ary[1];
+      }
+   }
+
+   # build the 2-DIM table hash
+   if($dim == 2) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]} = $ary[1];
+      }
+   }
+
+   # build the 3-DIM table hash
+   if($dim == 3) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]} = $ary[2];
+      }
+   }
+
+   # build the 4-DIM table hash
+   if($dim == 4) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]} = $ary[3];
+      }
+   }
+
+   # build the 5-DIM table hash
+   if($dim == 5) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]} = $ary[4];
+      }
+   }
+
+   # build the 6-DIM table hash
+   if($dim == 6) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]} = $ary[5];
+      }
+   }
+
+   # build the 7-DIM table hash
+   if($dim == 7) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]} = $ary[6];
+      }
+   }
+
+   # build the 8-DIM table hash
+   if($dim == 8) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]} = $ary[7];
+      }
+   }
+   
+   # build the 9-DIM table hash
+   if($dim == 9) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]} = $ary[8];
+      }
+   }
+
+
+   # build the 10-DIM table hash
+   if($dim == 10) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]} = $ary[9];
+      }
+   }
+
+   # build the 11-DIM table hash
+   if($dim == 11) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]}{$ary[9]} = $ary[10];
+      }
+   }
+
+   # build the 12-DIM table hash
+   if($dim == 12) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]}{$ary[9]}{$ary[10]} = $ary[11];
+      }
+   }
+
+   # build the 13-DIM table hash
+   if($dim == 13) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]}{$ary[9]}{$ary[10]}{$ary[11]} = $ary[12];
+      }
+   }
+
+   # build the 14-DIM table hash
+   if($dim == 14) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]}{$ary[9]}{$ary[10]}{$ary[11]}{$ary[12]} = $ary[13];
+      }
+   }
+
+   # build the 15-DIM table hash
+   if($dim == 15) {
+      while(@ary = $sth->fetchrow_array) {
+	 $table{$ary[0]}{$ary[1]}{$ary[2]}{$ary[3]}{$ary[4]}{$ary[5]}{$ary[6]}{$ary[7]}{$ary[8]}{$ary[9]}{$ary[10]}{$ary[11]}{$ary[12]}{$ary[13]} = $ary[14];
+      }
+   }
+
+   # count number of keys nc1 and nc2
+   foreach my $tc1 ( keys %table) {
+   #   print "tc1 key:$tc1\n";
+      $c1{$tc1} = 1;
+      $nc1++;
+      foreach my $tc2 ( keys %{$table{$tc1}}) {
+   #      print "tc2 key:$tc2\n";
+	 $c2{$tc2} = 1;
+	 foreach my $tc3 ( keys %{$table{$tc1}{$tc2}}) {
+   #      print "tc3 key:$tc3\n";
+	    $c3{$tc3} = 1;
+	 }
+      }
+   }
+   foreach my $t (keys %c2) {
+      $nc2++;
+   }
+   foreach my $t (keys %c3) {
+      $nc3++;
+   }
+
+
+   #print "nc1:$nc1   nc2:$nc2    nc3:$nc3\n";
+   #print Dumper(%table);
+   #print Dumper(%c1);
+   #print Dumper(%c2);
+}
+
+use Template;
+
+my $config = {
+   INCLUDE_PATH	=> ".:$APIIS_HOME/lib",
+   INTERPOLATE	=> 1,
+   POST_CHOMP	=> 1,
+   EVAL_PERL	=> 1,
+   ABSOLUTE => 1,
+   RELATIVE => 1,
+};
+
+
+my $vars = {
+   'table' => \%table,
+   'title' => $title,
+   'DIM'   => $dim,
+   'C1Keys'=> \%c1,     # C1keys
+   'C2Keys'=> \%c2,     # C2keys
+   'COLUMNS'=> \@cols,
+   'NC1'   => $nc1,     # number of columns of C1
+   'NC2'   => $nc2,     # number of columns of C2
+   'C1'    => $cols[0], # C1 column name
+   'C2'    => $cols[1], # C2 column name
+   'C3'    => $cols[2], # C3 column name
+   'C4'    => $cols[3], # C4 column name
+   'C5'    => $cols[4], # C5 column name
+   'C6'    => $cols[5], # C6 column name
+   'C7'    => $cols[6], # C7 column name
+   'C8'    => $cols[7], # C8 column name
+   'C9'    => $cols[8], # C9 column name
+   'C10'    => $cols[9], # C10 column name
+   'C11'    => $cols[10], # C11 column name
+   'C12'    => $cols[11], # C12 column name
+   'C13'    => $cols[12], # C13 column name
+   'C14'    => $cols[13], # C14 column name
+   'C15'    => $cols[14], # C15 column name
+   'HEADER'=> $header,
+   'FOOTER'=> $footer,
+   'HOST'  => $db_host,
+   'DBASE'  => $db_name,
+   'tabalign' => $tabalign
+};
+
+# create template object
+my $tt = Template->new($config) ||
+               die Template->error(), "ERROR: cannot create template object\n";
+# process template object
+my $rt=$tt->process($inputfile, $vars, $outputfile) ||
+               die Template->error(), "ERROR: cannot process $inputfile\n";

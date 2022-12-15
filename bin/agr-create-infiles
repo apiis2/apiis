@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+#############################################################################
+# $Id: agr-create-infiles,v 1.1 2013/07/01 10:01:39 heli Exp $
+# agr-create-infiles
+#############################################################################
+# Create two separate infiles for male and female animals for agr-coster
+
+use strict;
+use warnings;
+use Getopt::Std;
+use Perl6::Slurp;
+use Data::Dumper;
+
+my %opts;
+getopts( "i:m:f:", \%opts );
+
+my $infile    = $opts{i};
+my $outfile_m = $opts{m};
+my $outfile_f = $opts{f};
+
+die "Usage: $0 -i <infile> -m <outfile_male> -f <output_female>\n"
+    if !$infile or !$outfile_m or !$outfile_f;
+
+open my $OUT_M, '>', $outfile_m or die "$0: Problems with outfile $outfile_m: $!\n";
+open my $OUT_F, '>', $outfile_f or die "$0: Problems with outfile $outfile_f: $!\n";
+
+my (@males, @females);
+my @inlines = slurp $infile;
+for (@inlines) {
+    chomp;
+    s/^\s+//;
+    my ( $id, $sex ) = split /\s+/;
+    print $OUT_M $id . "\n" if $sex == 1;
+    print $OUT_F $id . "\n" if $sex == 2;
+}

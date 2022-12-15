@@ -1,0 +1,2601 @@
+#!/usr/bin/env perl
+##############################################################################
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.51 $ ' );
+use Popreport;    # provides print_list()
+our $apiis;
+my $debug = 1;
+use Apiis::DataBase::User;
+use Apiis::Misc qw ( mychomp );    # ...
+use Data::Dumper;
+use ref_breedprg_alib;
+use vars
+    qw / $i $line_ref $k %treein $sql %ped $dbh $male $gen %delfiles $dbb $avg_pop_gen $nn %anim_compl/;
+
+use vars qw( $opt_h $opt_u $opt_p $opt_P $opt_b $opt_I $opt_m $opt_e $opt_L );
+use Getopt::Std;
+getopts('hu:p:P:b:I:m:e:L:');
+
+usage() if $opt_h;
+usage() if !$opt_p;
+usage() if !$opt_u;
+usage() if !$opt_P;
+usage() if !$opt_b;
+#usage() if !$opt_e;
+
+our $listfile = $opt_L if $opt_L;
+my $texlist = $listfile;
+$texlist =~ s/lst$/tex/;
+
+
+my $loginname = $opt_u;
+my $passwd    = $opt_P;
+my $breed     = $opt_b;
+
+
+my $classbreed = $opt_e || 'BREED';
+print "Breed = $breed \n";
+print "Class = $classbreed \n";
+
+my ( $project_name, $gen );
+if ($opt_p) {
+    $project_name = $opt_p;
+    print "Project = $project_name\n";
+}
+
+if ($opt_m) {
+    $male = $opt_m;
+    print "Sex = $male\n";
+}
+else {
+    $opt_m = 'Male';
+    $male  = $opt_m;
+    print "Sex = $male\n";
+}
+
+if ($opt_I) {
+    $gen = $opt_I;
+    print "generation interval = $gen\n";
+}
+else {
+    print "generation fetch from Population report tables \n";
+}
+
+# connect to database:
+my $thisobj = Apiis::DataBase::User->new(
+    id       => "$loginname",
+    password => "$passwd",
+);
+$thisobj->check_status;
+$apiis->join_model( $project_name, userobj => $thisobj );
+$apiis->check_status;
+
+#carina
+$dbh = $apiis->DataBase->dbh;
+$dbh->{AutoCommit} = 0;
+my $user = $apiis->User->id;
+my $now  = $apiis->now;
+#end carina
+
+############################################################
+#### sort the breed out
+############################################################
+my $sine = '=';
+$dbb = $breed;
+my $long;
+my $sql1;
+if ( !defined $breed ) {
+    $sql1 = "select min(db_breed) from animal";
+    $sine = '>=';
+    my $sql_ref1 = $apiis->DataBase->sys_sql($sql1);
+    $apiis->check_status;
+    $sql_ref1->check_status( die => 'ERR' );
+    while ( my $line_ref = $sql_ref1->handle->fetch ) {
+        my @line = @$line_ref;
+        $dbb = $line[0];
+    }
+}
+else {
+    $sql1 =
+        "select db_code, long_name from codes where class='$classbreed' and (ext_code='$breed' or
+       short_name = '$breed' or long_name='$breed')";
+
+    my $sql_ref1 = $apiis->DataBase->sys_sql($sql1);
+    $apiis->check_status;
+    $sql_ref1->check_status( die => 'ERR' );
+    while ( my $line_ref = $sql_ref1->handle->fetch ) {
+        my @line = @$line_ref;
+        $dbb = $line[0];
+        $long = $line[1] if $line[1];
+    }
+}
+##### See if the Population report exist if $opt_I is undef
+my %calc;
+my $npop;
+my $avg_pop_gen;
+if ( !$opt_I ) {
+    my $sq = "select round(pop,0),year,pop from tmp1_gen where breed = '$breed'";
+    my $sql_ref33 = $apiis->DataBase->sys_sql($sq);
+    $sql_ref33->check_status( die => 'ERR' );
+
+    while ( my $line_ref33 = $sql_ref33->handle->fetch ) {
+        my @line = @$line_ref33;
+        $npop = $line[0];
+        $calc{$line[1]}[11]=$line[0];
+        $calc{$line[1]}[12]=$line[2];
+        if ( $line[1] eq 'Total' ) { $avg_pop_gen = ( $line[0] * 1 ); }
+    }
+
+    if ( !$npop ) {
+        print "\n
+Found no generation for $breed in Population report tables.
+Option g was not set
+Set generation to 1 and continue\n\n";
+        $gen         = 1;
+        $npop        = 1;
+        $avg_pop_gen = 1;
+    }
+} else {
+$avg_pop_gen=$gen;
+$npop=$gen;
+    my $sq = "select round(pop,0),year,pop from tmp1_gen where breed = '$breed'";
+    my $sql_ref33 = $apiis->DataBase->sys_sql($sq);
+    $sql_ref33->check_status( die => 'ERR' );
+
+    while ( my $line_ref33 = $sql_ref33->handle->fetch ) {
+        my @line = @$line_ref33;
+        $calc{$line[1]}[11]=$line[0];
+        $calc{$line[1]}[12]=$line[2];
+    }
+}
+############################################################
+## Start the report
+############################################################
+my $hd    = "$APIIS_HOME/etc/PopReport/";
+my $local = $apiis->APIIS_LOCAL;
+my $tabel = 0;
+my $csv;
+
+my $short = $breed;
+if ( !$long ) { $long = $breed; }
+my $outputfile = "Inbreeding-$short.tex";
+my $output     = "Inbreeding-$short";
+open( OUT, ">$outputfile" ) or die "Problems opening file $outputfile: $!\n";
+
+##Create header
+##############
+my $file = "$hd" . "InbreedingReportDoc.hd";
+open( IN, $file ) or die "Problems opening $file: $!\n";
+my $bb = uc $project_name;
+$bb =~ s/_/\\_/g;
+
+while (<IN>) {
+  my $line = $_;
+  chomp $line;
+  $line =~ s/XX-BREED-XX/${short}/;
+  print OUT $line, "\n";
+}
+close IN;
+
+#####################################################
+#Insert pedigree completeness
+####################################################
+##Create report.91
+#################
+my $depth;
+my $sqlb    = "select veld from tmp2_gen_depth limit 1";
+my $sql_ref = $apiis->DataBase->sys_sql($sqlb);
+$sql_ref->check_status( die => 'ERR' );
+
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    $depth = $line_ref->[0];
+}
+
+$file = "$hd" . "InbreedingReport_91.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+my $title =
+    'The average pedigree completeness (\%) for 1 to 6 generations deep by year ';
+
+$sql =
+    "select generation, breed, year, number, round((completeness*100),1) from tmp2_pedcompl order by generation,year,breed";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+my ( %clear, %hash, %breed );
+my $mmax1 = 0;
+my $mmin1 = 99999;
+my $countplot;
+
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ( $generation, $breed, $year, $num_c, $compl ) = @line;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                                = $breed;
+    $hash{ $breed . '|' . $year }{$generation}[0] = $breed;
+    $hash{ $breed . '|' . $year }{$generation}[1] = $year;
+    $hash{ $breed . '|' . $year }{$generation}[2] = $num_c;
+    $hash{ $breed . '|' . $year }{$generation}[3] = $compl;
+
+    if ( $year ne 'Total' and $year > 0 and $year > $mmax1 ) {
+        $mmax1 = $year;
+    }
+    if ( $year ne 'Total' and $year > 0 and $year < $mmin1 ) {
+        $mmin1 = $year;
+    }
+
+    if ( !$hash{ $breed . '|' . $year }{$generation}[2] ) {
+        $hash{ $breed . '|' . $year }{$generation}[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }{$generation}[3] ) {
+        $hash{ $breed . '|' . $year }{$generation}[3] = '-';
+    }
+$countplot=0 if $breed != $dbb;
+}
+
+my $tabalign = 'c';
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    open( OUT9, '>Tabel_comp' . "$breed" . '.txt' )
+        or die "Problems opening file Table_comp$breed.txt: $! \n";
+    $delfiles{ 'Tabel_comp' . "$breed" . '.txt' } = 1;
+    my $min_bg = 99999;
+    my $max_bg = 0;
+    if ($countplot < 1){
+      print OUT "No data for the pedigee completeness Table \\\\ \n";
+      print OUT5 "No data for the pedigee completeness Table \\\\ \n";
+    } else {
+    print OUT5
+        '"Year","Num of Animals","Compl gen 1","Compl gen 2","Compl gen 3","Compl gen 4","Compl gen 5","Compl gen 6"'
+        . "\n";
+    print OUT '\begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title" . ' } \\\\
+  \hline ' . "\n";
+    print OUT
+        ' Year & No of & Compl. & Compl. & Compl. & Compl. & Compl. & Compl. (\%) \\\\'
+        . "\n";
+    print OUT '  & Animals & gen 1 & gen 2& gen 3& gen 4& gen 5& gen 6(\%) \\\\'
+        . "\n";
+    print OUT '\hline \endfirsthead' . "\n";
+
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ' . "\n";
+    print OUT
+        ' Year & No of & Compl. & Compl. & Compl. & Compl. & Compl. & Compl. (\%) \\\\'
+        . "\n";
+    print OUT
+        '  & Animals & 1 gen  & 2 gen & 3 gen & 4 gen & 5 gen & 6 gen (\%) \\\\'
+        . "\n";
+    print OUT '\hline \endhead' . "\n";
+    my %bb_1_sum;
+    my %bb_1_tot;
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}{1}[0] eq $tt ) {
+            print OUT5 '"' . "$hash{$ww}{1}[1]" . '","' . "$hash{$ww}{1}[2]";
+            for ( $i = 1; $i < 7; $i++ ) {
+                print OUT5 '","' . "$hash{$ww}{$i}[3]";
+            }
+            print OUT5 '"' . "\n";
+
+            if ( $hash{$ww}{1}[1] ne 'Total' ) {
+                print OUT9 "$hash{$ww}{1}[1]" . '     ';
+                for ( $i = 1; $i < 7; $i++ ) {
+                    print OUT9 "$hash{$ww}{$i}[3]" . '     ';
+                }
+                print OUT9 "\n";
+            }
+
+            print OUT "$hash{$ww}{1}[1]" . '&';
+            print OUT "$hash{$ww}{1}[2]";
+            for ( $i = 1; $i < 7; $i++ ) {
+                print OUT '&' . "$hash{$ww}{$i}[3]";
+            }
+            print OUT '\\\\' . "\n";
+
+            if (    $hash{$ww}{1}[1] ne 'Total'
+                and ( ( $hash{$ww}{1}[1] * 1 ) < $min_bg )
+                and ( ( $hash{$ww}{1}[2] * 1 ) > 20 ) )
+            {
+                $min_bg = $hash{$ww}{1}[1];
+            }
+
+            if (    $hash{$ww}{1}[1] ne 'Total'
+                and $hash{$ww}{1}[1] * 1 > $max_bg )
+            {
+                $max_bg = $hash{$ww}{1}[1];
+            }
+            if ( $mmin1 < ( $mmax1 - 10 ) ) {
+                $mmin1 = ( $mmax1 - 10 );
+            }
+
+            if (    $hash{$ww}{1}[1] ne 'Total'
+                and ( $hash{$ww}{1}[1] * 1 ) > ($mmin1)
+                and ( $hash{$ww}{1}[1] * 1 ) < $mmax1 )
+            {
+                for ( $i = 1; $i < 7; $i++ ) {
+                    $bb_1_sum{$i} += ( $hash{$ww}{$i}[3] * $hash{$ww}{$i}[2] );
+                    $bb_1_tot{$i} += $hash{$ww}{$i}[2];
+                }
+            }
+        }
+    }
+
+    for ( $i = 1; $i < 7; $i++ ) {
+        if ( $bb_1_tot{$i} == 0 or !$bb_1_tot{$i} ) {
+            $bb_1_sum{$i} = 0;
+            $bb_1_tot{$i} = 1;
+        }
+    }
+
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . '\clearpage' . "\n";
+    print OUT
+        'The average pedigee completeness for animals born within the last 10 years:'
+        . "\n";
+    for ( $i = 1; $i < 7; $i++ ) {
+        my $ten_comp = round1( $bb_1_sum{$i} / $bb_1_tot{$i} );
+        print OUT "$i" . ' generations deep = ' . "$ten_comp" . '\%.' . "\n";
+    }
+    }#end of $countplot < 1
+    close OUT5;
+    close OUT9;
+
+######GRAFIEK
+    #Create graphics1
+    if ( $countplot > 2 ) {
+######################################################################
+        #$y1min=0;
+        #$y1max=$y1max+50;
+        #$y2min=0;
+        #$y2max=$y2max+50;
+        open( OUT2, '>gnu_comp.txt' ) or die "Can not open gnu_comp.txt: $!\n";
+        $delfiles{'gnu_comp.txt'} = 1;
+        print OUT2 "set terminal postscript \n";
+        print OUT2 'set output "' . "Graphcomp" . "$breed" . '.ps"' . "\n";
+        $delfiles{ 'Graphcomp' . "$breed" . '.ps' } = 1;
+        print OUT2 'set xrange [' . "$min_bg" . ':' . "$max_bg" . ']' . "\n";
+        my $ss;
+
+        if ( ( $max_bg - $min_bg ) > 10 ) {
+            $ss = round( ( $max_bg - $min_bg ) / 10 );
+        }
+        else { $ss = 1; }
+        print OUT2 "set xtics $ss \n";
+        print OUT2 'set yrange [0:100]' . "\n";    #min and max of agr coef
+        print OUT2 'set ytics 0, 10,100' . "\n";
+        print OUT2 "set ytics nomirror \n";
+        print OUT2 "set xtics nomirror \n";
+
+        #print OUT2 "set border 11 \n";
+        #print OUT2 'set title "'.'The average pedigree completeness (\%) of '."$depth".' generations by year of birth'.'" font "'.'Times-Roman-Bold,16"'."\n";
+        print OUT2 'set ylabel "'
+            . 'Average pedigree completeness (\%)"'
+            . ' font "'
+            . 'Times-Italic,14"' . "\n";
+        print OUT2 'set xlabel "'
+            . 'Year of Birth"'
+            . ' font "'
+            . 'Times-Italic,14"' . "\n";
+        print OUT2 "set style line 1 lt 1 lw 15 \n";
+        print OUT2 "set key below \n";
+        my $ff = 'Tabel_comp' . "$breed" . '.txt';
+        print OUT2 'plot ';
+        for ( $i = 1; $i < 7; $i++ ) {
+            my $b = $i + 1;
+            print OUT2 '"' . "$ff"
+                . '" using 1:' . "$b"
+                . ' axes x1y1 title "'
+                . 'Compl gen ' . "$i" . '"' . ' lt ' . "$i"
+                . ' lw 3 smooth csp  w lines';
+            if ( $i < 6 ) {
+                print OUT2 ',';
+            }
+            else {
+                print OUT2 "\n";
+            }
+        }
+        system("gnuplot < gnu_comp.txt >/dev/null");
+        #system("cp gnu_comp.txt bob.bob");#remove
+        #system("cp Tabel_compBonsmara.txt bob.bob2");#remove
+        close OUT2;
+
+        my $dbbname = '';
+        print OUT '
+\begin{figure}[h]
+%%\begin{flushleft}
+\begin{center}{
+\caption{Average pedigree completeness for 1 to 6'
+            . ' generations ' . "$dbbname" . '}' . '
+\includegraphics[scale=.6, angle=270]{./Graphcomp' . "$breed" . '.ps}
+} \end{center}
+%%\end{flushleft}
+\end{figure}
+' . "\n";
+
+        print OUT '\begin{flushleft}
+ The figure above presents the average percentage of pedigree completeness for a pedigree depth of 1 to 6'
+            . ' generations by year of birth, between '
+            . "$min_bg and $max_bg for the $breed breed" . '.' . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+
+    }
+
+    #my ( $min_bg, $max_bg, $tt );
+    #$min_bg = $max_bg = $tt = 'UNDEFINED';
+}    #end of $countplot > 2
+##Create report.0
+#################
+%hash = ();
+
+$file = "$hd" . "InbreedingReport_0.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+$title = 'Distribution of animals by year and inbreeding levels';
+my $sql =
+    "select breed, year as Year, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11 from tmp2_table1
+where year notnull  and year>0 order by breed,year";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ($breed,      $year,       $number0005, $number0510, $number1015,
+        $number1520, $number2025, $number2530, $number3035, $number3540,
+        $number4045, $number4550, $number5055
+    ) = @line;
+    $countplot++ if $year;
+    #####  ####  ######  #######  ###### ###
+    $hash{ $breed . '|' . $year }[0]  = $breed;
+    $hash{ $breed . '|' . $year }[1]  = $year;
+    $hash{ $breed . '|' . $year }[2]  = $number0005;
+    $hash{ $breed . '|' . $year }[3]  = $number0510;
+    $hash{ $breed . '|' . $year }[4]  = $number1015;
+    $hash{ $breed . '|' . $year }[5]  = $number1520;
+    $hash{ $breed . '|' . $year }[6]  = $number2025;
+    $hash{ $breed . '|' . $year }[7]  = $number2530;
+    $hash{ $breed . '|' . $year }[8]  = $number3035;
+    $hash{ $breed . '|' . $year }[9]  = $number3540;
+    $hash{ $breed . '|' . $year }[10] = $number4045;
+    $hash{ $breed . '|' . $year }[11] = $number4550;
+    $hash{ $breed . '|' . $year }[12] = $number5055;
+    $breed{$breed}                    = $breed;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[7] ) {
+        $hash{ $breed . '|' . $year }[7] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[8] ) {
+        $hash{ $breed . '|' . $year }[8] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[9] ) {
+        $hash{ $breed . '|' . $year }[9] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[10] ) {
+        $hash{ $breed . '|' . $year }[10] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[11] ) {
+        $hash{ $breed . '|' . $year }[11] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[12] ) {
+        $hash{ $breed . '|' . $year }[12] = '-';
+    }
+#    die ">>>No data avalable for table $title for the $short breed<<<<   \n" if $dbb != $breed;
+    $countplot=0 if $dbb != $breed;
+}
+
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for $title \\\\  \n";
+      print OUT5 "No data for $title \\\\  \n";
+    } else {
+    print OUT5
+        '"Year","0-5","6-10","11-15","16-20","21-25","26-30","31-35","36-40","41-45","46-50","=>50"'
+        . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|}
+  \caption{' . "$title" . ' } \\\\
+  \caption*{\textit{(Classes 1=0-5\%, 2=6-10\%, 3=11-15\%, 4=16-20\%, 5=21-25\%, 6=26-30\%, 7=31-35\%, 8=36-40\%, \\\\ 9=41-45\%, 10=46-50\% and 11=>50\%)}} \\\\
+  \hline ';
+    print OUT ' & \multicolumn{11}{|'
+        . "$tabalign"
+        . '|}{Classes} \\\\' . "\n"
+        . ' \hline';
+    print OUT ' Year&1&2&3&4&5&6&7&8&9&10&11 \\\\' . "\n";
+    print OUT '\hline';
+    print OUT '\endfirsthead';
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ';
+    print OUT ' & \multicolumn{11}{|'
+        . "$tabalign"
+        . '|}{Classes} \\\\' . "\n"
+        . ' \hline';
+    print OUT ' Year&1&2&3&4&5&6&7&8&9&10&11 \\\\' . "\n";
+    print OUT '\hline';
+    print OUT '\endhead';
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"' . "$hash{$ww}[1]" . '","';
+            print OUT5 "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '","'
+                . "$hash{$ww}[7]" . '","'
+                . "$hash{$ww}[8]" . '","'
+                . "$hash{$ww}[9]" . '","'
+                . "$hash{$ww}[10]" . '","'
+                . "$hash{$ww}[11]" . '","'
+                . "$hash{$ww}[12]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]" . '&'
+                . "$hash{$ww}[7]" . '&'
+                . "$hash{$ww}[8]" . '&'
+                . "$hash{$ww}[9]" . '&'
+                . "$hash{$ww}[10]" . '&'
+                . "$hash{$ww}[11]" . '&'
+                . "$hash{$ww}[12]";
+            print OUT '\\\\' . "\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+  }#endof $countplot < 1
+    close OUT5;
+}
+
+##Create report.1
+#################
+$file = "$hd" . "InbreedingReport_1.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+%hash = ();
+
+$title = 'Numbers and average inbreeding of animals and parents by year';
+$sql =
+    "select breed, year as Year, off_num, off_bred_num, round(off_bred_inb,4), s_num, s_bred_num, round(s_bred_inb,4), d_num, d_bred_num, round(d_bred_inb,4)
+          from tmp2_table2 where year notnull  and year>0 order by breed,year";
+
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ($breed, $year,   $number, $animaln, $aniper, $sires,
+        $siren, $sirper, $dams,   $damn,    $damper
+    ) = @line;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                    = $breed;
+    $hash{ $breed . '|' . $year }[0]  = $breed;
+    $hash{ $breed . '|' . $year }[1]  = $year;
+    $hash{ $breed . '|' . $year }[2]  = $number;
+    $hash{ $breed . '|' . $year }[3]  = $animaln;
+    $hash{ $breed . '|' . $year }[4]  = $aniper;
+    $hash{ $breed . '|' . $year }[5]  = $sires;
+    $hash{ $breed . '|' . $year }[6]  = $siren;
+    $hash{ $breed . '|' . $year }[7]  = $sirper;
+    $hash{ $breed . '|' . $year }[8]  = $dams;
+    $hash{ $breed . '|' . $year }[9]  = $damn;
+    $hash{ $breed . '|' . $year }[10] = $damper;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[7] ) {
+        $hash{ $breed . '|' . $year }[7] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[8] ) {
+        $hash{ $breed . '|' . $year }[8] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[9] ) {
+        $hash{ $breed . '|' . $year }[9] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[10] ) {
+        $hash{ $breed . '|' . $year }[10] = '-';
+    }
+$countplot= 0 if $dbb != $breed;
+}
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for the $title \\\\ \n";
+      print OUT5 "No data for the $title \\\\ \n";
+    } else {
+    print OUT5
+        '"Year","Tot No","Inbred No","Avg F","Tot No","Inbred No","Avg F","Tot No","Inbred No","Avg F"'
+        . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title " . ' } \\\\
+  \hline ';
+    print OUT ' & \multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Animals}&\multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Sires}&\multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Dams} \\\\' . "\n";
+    print OUT
+        ' \hline  Year&Tot No&Inbred No&Avg \textit{F}&Tot No&Inbred No&Avg \textit{F}&Tot No&Inbred No&Avg \textit{F} \\\\'
+        . "\n";
+    print OUT '\hline \endfirsthead ' . "\n";
+
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ';
+    print OUT ' & \multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Animal}&\multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Sires}&\multicolumn{3}{|'
+        . "$tabalign"
+        . '|}{Dams} \\\\' . "\n";
+    print OUT
+        ' \hline   Year&Tot No&Inbred No&Avg \textit{F}&Tot No&Inbred No&Avg \textit{F}&Tot No&Inbred No&Avg \textit{F}\\\\'
+        . "\n";
+    print OUT '\hline \endhead' . "\n";
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"', "$hash{$ww}[1]" . '","';
+            print OUT5 "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '","'
+                . "$hash{$ww}[7]" . '","'
+                . "$hash{$ww}[8]" . '","'
+                . "$hash{$ww}[9]" . '","'
+                . "$hash{$ww}[10]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]" . '&'
+                . "$hash{$ww}[7]" . '&'
+                . "$hash{$ww}[8]" . '&'
+                . "$hash{$ww}[9]" . '&'
+                . "$hash{$ww}[10]";
+            print OUT '\\\\' . "\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+    }#end of $countplot < 1
+    close OUT5;
+}
+
+##Create report.2
+#################
+$file = "$hd" . "InbreedingReport_2.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+$title = 'Inbreeding coefficients (\textit{F}) of ALL animals by year';
+$sql =
+    "select breed, year as Year, number,round(a_min,4),round(a_max,4),round(a_avg,4),round(a_dev,4) from tmp2_table3 where year notnull  and year<>'unknown' order by breed,year";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+%breed = %hash = %clear;
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ( $breed, $year, $number, $minimum, $maximum, $average, $variance ) =
+        @line;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                   = $breed;
+    $hash{ $breed . '|' . $year }[0] = $breed;
+    $hash{ $breed . '|' . $year }[1] = $year;
+    $hash{ $breed . '|' . $year }[2] = $number;
+    $hash{ $breed . '|' . $year }[3] = $minimum;
+    $hash{ $breed . '|' . $year }[4] = $maximum;
+    $hash{ $breed . '|' . $year }[5] = $average;
+    $hash{ $breed . '|' . $year }[6] = $variance;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+$countplot=0 if $dbb != $breed;
+}
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    my $vce = "b_een.$breed";
+    $delfiles{"$vce"} = 1;
+    open( OUTB, ">$vce" ) or die "Problems opening file $vce: $!\n";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for $title \\\\ \n";
+      print OUT5 "No data for $title \\\\ \n";
+    } else {
+    print OUT5 '"Year","offsping","minimum","maximum","average","standard dev"'
+        . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title" . ' } \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{}&\multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{\textit{F}} \\\\' . "\n";
+    print OUT ' \hline   Year&No of Animals&Min&Max&Avg&Std \\\\' . "\n";
+    print OUT '\hline \endfirsthead' . "\n";
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{}&\multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{\textit{F}} \\\\' . "\n";
+    print OUT ' \hline   Year&No of Animals&Min&Max&Avg&Std \\\\' . "\n";
+    print OUT '\hline \endhead' . "\n";
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"' . "$hash{$ww}[1]" . '","';
+            print OUT5 "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]";
+            print OUT '\\\\' . "\n";
+            my $year_b = pack( "A10", $hash{$ww}[1] );
+            my $avg_b = sprintf( "%10.4f", $hash{$ww}[5] );
+            print OUTB "$year_b$avg_b\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+  }#end of $countplot < 1
+    close OUT5;
+    close OUTB;
+}
+
+##Create report.3
+#################
+$file = "$hd" . "InbreedingReport_3.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+$title = 'Inbreeding coefficients (\textit{F}) of INBRED animals by year';
+$sql =
+    "select breed, year as Year, number,round(a_min,4),round(a_max,4),round(a_avg,4),round(a_dev,4) from tmp2_table4 where year notnull and year<>'unknown' order by breed,year";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+%breed = %hash = %clear;
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ( $breed, $year, $number, $minimum, $maximum, $average, $variance ) =
+        @line;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                   = $breed;
+    $hash{ $breed . '|' . $year }[0] = $breed;
+    $hash{ $breed . '|' . $year }[1] = $year;
+    $hash{ $breed . '|' . $year }[2] = $number;
+    $hash{ $breed . '|' . $year }[3] = $minimum;
+    $hash{ $breed . '|' . $year }[4] = $maximum;
+    $hash{ $breed . '|' . $year }[5] = $average;
+    $hash{ $breed . '|' . $year }[6] = $variance;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+$countplot=0 if $dbb != $breed;
+}
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    my $vce   = "b_twee.$breed";
+    my $vce_1 = "b_een.$breed";
+    $delfiles{"$vce"} = 1;
+    my $min_inb = 99999999;
+    my $max_inb = 0;
+    open( OUTB, ">$vce" ) or die "Problems opening file $vce: $!\n";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for $title \\\\ \n";
+      print OUT5 "No data for $title \\\\ \n";
+    } else {
+    print OUT5 '"Year","offsping","minimum","maximum","average","standard dev"'
+        . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title" . ' } \\\\
+  \hline ' . "\n";
+    print OUT '& \multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{}&\multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{\textit{F}} \\\\' . "\n";
+    print OUT ' \hline   Year&No of Animals&Min&Max&Avg&Std \\\\' . "\n";
+    print OUT '\hline \endfirsthead' . "\n";
+
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{}&\multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{\textit{F}} \\\\' . "\n";
+    print OUT ' \hline   Year&No of Animals&Min&Max&Avg&Std \\\\' . "\n";
+    print OUT '\hline \endhead' . "\n";
+
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"'
+                . "$hash{$ww}[1]" . '","'
+                . "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]";
+            print OUT '\\\\' . "\n";
+
+            $min_inb = $hash{$ww}[1] if $min_inb > $hash{$ww}[1];
+            $max_inb = $hash{$ww}[1] if $max_inb < $hash{$ww}[1];
+            my $year_b = pack( "A10", $hash{$ww}[1] );
+            my $num_b = sprintf( "%10d", $hash{$ww}[2] );
+            print OUTB "$year_b$num_b\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+  }#end of if ($countplot < 1)
+    close OUT5;
+    close OUTB;
+
+##Grapth begin
+    if ($countplot >= 1){
+    open( OUT2, '>gnu_inbred.txt' ) or die "Can not open gnu_inbred.txt: $!\n";
+    $delfiles{'gnu_inbred.txt'} = 1;
+    print OUT2 "set terminal postscript \n";
+    print OUT2 'set output "' . "Graphinbred" . "$breed" . '.ps"' . "\n";
+    $delfiles{ 'Graphinbred' . "$breed" . '.ps' } = 1;
+    print OUT2 'set xrange [' . "$min_inb" . ':' . "$max_inb" . ']' . "\n";
+    my $ss;
+
+    if ( ( $max_inb - $min_inb ) > 10 ) {
+        $ss = round( ( $max_inb - $min_inb ) / 10 );
+    }
+    else { $ss = 1; }
+    print OUT2 "set xtics $min_inb, $ss, $max_inb\n";
+    print OUT2 "set ytics nomirror \n";
+    print OUT2 "set y2tics nomirror \n";
+    print OUT2 "set xtics nomirror \n";
+    print OUT2 'set ylabel "'
+        . 'Average F"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 'set y2label "'
+        . 'Number of Inbred Animals"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 'set xlabel "'
+        . 'Year of Birth"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 "set style line 1 lt 1 lw 15 \n";
+    print OUT2 "set key below \n";
+    print OUT2 'plot "'
+        . "$vce_1"
+        . '" using 1:2 axes x1y1 title "'
+        . 'Average F"'
+        . ' lt 1 lw 2 smooth csp  w lines, "' . "$vce"
+        . '" using 1:2 axes x1y2 title "'
+        . 'Number of Inbred Animals"'
+        . ' lt 5 lw 3 smooth csp  w lines ' . "\n";
+
+    close OUT2;
+
+    system("gnuplot < gnu_inbred.txt >/dev/null");
+
+    my $dbbname = '';
+    print OUT '
+\begin{figure}[h]
+%%\begin{flushleft}
+\begin{center}{
+\caption{Comparison between the average inbreeding coefficients (\textit{F}) and the number of inbred animals by year}'
+        . '
+\includegraphics[scale=.6, angle=270]{./Graphinbred' . "$breed" . '.ps}
+} \end{center}
+%%\end{flushleft}
+\end{figure}
+' . "\n";
+
+    #print OUT '\begin{flushleft}
+    # The figure above presents the average percentage of pedigree completeness for a pedigree depth of '
+    #  . "$depth"
+    #  . ' generations by year of birth, between '
+    #  . "$min_bg and $max_bg for the $breed breed " . '.' . "\n" . '
+    #  \end{flushleft}
+    #  \clearpage
+    #  ' . "\n";
+##end
+}#end of if ($countplot > 1)
+}
+
+##Create report.5
+#################
+$file = "$hd" . "InbreedingReport_5.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+$title = 'Effective population size by year via rate of inbreeding';
+#$sql   = "select breed, year, progenyf, parentsf, deltaf, ne from
+#tmp2_repne1 where year notnull order by breed";
+$sql =
+    "SELECT breed,year as Year,round(off_bred_inb,4),round(s_bred_inb,4),round(d_bred_inb,4),round(p_bred_inb,4),round(deltaf,4),round(ne,0)
+        from tmp2_table5
+        where year notnull  and year>0 order by breed";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+%breed = %hash = %clear;
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my ( $breed, $year, $progenyf, $s_bred, $d_bred, $parentsf, $deltaf, $ne ) =
+        @line;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                   = $breed;
+    $hash{ $breed . '|' . $year }[0] = $breed;
+    $hash{ $breed . '|' . $year }[1] = $year;
+    $hash{ $breed . '|' . $year }[2] = $progenyf;
+    $hash{ $breed . '|' . $year }[3] = $s_bred;
+    $hash{ $breed . '|' . $year }[4] = $d_bred;
+    $hash{ $breed . '|' . $year }[5] = $parentsf;
+    $hash{ $breed . '|' . $year }[6] = $deltaf;
+    $hash{ $breed . '|' . $year }[7] = $ne;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[7] ) {
+        $hash{ $breed . '|' . $year }[7] = '-';
+    }
+$countplot=0 if $dbb != $breed;
+}
+
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for $title \\\\ \n";
+      print OUT5 "No data for $title \\\\ \n";
+    } else {
+    print OUT5 '"Year","offsping","Sire","Dam","parents","deltaF","Ne"' . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title" . ' } \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{Avg \textit{F}}&\multicolumn{2}{|'
+        . "$tabalign"
+        . '|}{} \\\\' . "\n";
+    print OUT
+        ' \hline   Year&Animals&Sires&Dams&Parents&${\Delta F}$&\textit{Ne} \\\\'
+        . "\n";
+    print OUT '\hline \endfirsthead' . "\n";
+
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{2}{|'
+        . "$tabalign"
+        . '|}{Avg \textit{F}}&\multicolumn{2}{|'
+        . "$tabalign"
+        . '|}{} \\\\' . "\n";
+    print OUT
+        ' \hline   Year&Animals&Sires&Dams&Parents&${\Delta F}$&\textit{Ne} \\\\'
+        . "\n";
+    print OUT '\hline \endhead' . "\n";
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"'
+                . "$hash{$ww}[1]" . '","'
+                . "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '","'
+                . "$hash{$ww}[7]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]" . '&'
+                . "$hash{$ww}[7]";
+            print OUT '\\\\' . "\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+  }#end of if ($countplot < 1)
+    close OUT5;
+}
+
+##Create report.6
+#################
+$file = "$hd" . "InbreedingReport_6.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+
+$title = 'Effective population size by year via number of parents';
+#$sql = "select breed, year, number, sires, dams, actual, ne from
+#tmp2_repne2 where year notnull order by breed";
+$sql =
+    "select breed, year,off_num,s_num,d_num,ne_num from tmp2_table5 where year notnull  and year>0 order by breed";
+$sql_ref = $apiis->DataBase->sys_sql($sql);
+$sql_ref->check_status( die => 'ERR' );
+%breed = %hash = %clear;
+$countplot=0;
+while ( my $line_ref = $sql_ref->handle->fetch ) {
+    my @line = @$line_ref;
+    my $actual;
+    my ( $breed, $year, $number, $sires, $dams, $ne ) = @line;
+
+    $sires = 0 if !$sires;
+    $dams  = 0 if !$dams;
+
+    $actual = $sires + $dams;
+
+    $sires = '-' if $sires == 0;
+    $dams  = '-' if $dams == 0;
+    #####  ####  ######  #######  ###### ###
+    $countplot++ if $year;
+    $breed{$breed}                   = $breed;
+    $hash{ $breed . '|' . $year }[0] = $breed;
+    $hash{ $breed . '|' . $year }[1] = $year;
+    $hash{ $breed . '|' . $year }[2] = $number;
+    $hash{ $breed . '|' . $year }[3] = $sires;
+    $hash{ $breed . '|' . $year }[4] = $dams;
+    $hash{ $breed . '|' . $year }[5] = $actual;
+    $hash{ $breed . '|' . $year }[6] = $ne;
+
+    if ( !$hash{ $breed . '|' . $year }[2] ) {
+        $hash{ $breed . '|' . $year }[2] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[3] ) {
+        $hash{ $breed . '|' . $year }[3] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[4] ) {
+        $hash{ $breed . '|' . $year }[4] = '-';
+    }
+
+    if ( !$hash{ $breed . '|' . $year }[5] ) {
+        $hash{ $breed . '|' . $year }[5] = '-';
+    }
+    if ( !$hash{ $breed . '|' . $year }[6] ) {
+        $hash{ $breed . '|' . $year }[6] = '-';
+    }
+$countplot=0 if $dbb != $breed;
+}
+
+foreach my $tt ( sort keys %breed ) {
+    $tabel++;
+    $csv = "InbreedingReportTabel.$tabel.$breed.csv";
+    open( OUT5, ">$csv" ) or die "Problems opening file $csv: $!\n";
+    if ($countplot < 1){
+      print OUT "No data for $title \n";
+      print OUT5 "No data for $title \n";
+    } else {
+    print OUT5 '"Year","offsping","sires","dams","parents","Ne"' . "\n";
+    print OUT '
+  \begin{center}{
+  \begin{longtable}{|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '|'
+        . "$tabalign" . '| }
+  \caption{' . "$title" . ' } \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{Number of}&\multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{} \\\\' . "\n";
+    print OUT ' \hline    Year&Animals&Sires&Dams&Parents&\textit{Ne} \\\\' . "\n";
+    print OUT '\hline \endfirsthead' . "\n";
+
+    print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ' . "\n";
+    print OUT ' & \multicolumn{4}{|'
+        . "$tabalign"
+        . '|}{Number of}&\multicolumn{1}{|'
+        . "$tabalign"
+        . '|}{} \\\\' . "\n";
+    print OUT ' \hline    Year&Animals&Sires&Dams&Parents&\textit{Ne} \\\\' . "\n";
+    print OUT '\hline \endhead' . "\n";
+
+    foreach my $ww ( sort keys %hash ) {
+        if ( $hash{$ww}[0] eq $tt ) {
+            print OUT5 '"'
+                . "$hash{$ww}[1]" . '","'
+                . "$hash{$ww}[2]" . '","'
+                . "$hash{$ww}[3]" . '","'
+                . "$hash{$ww}[4]" . '","'
+                . "$hash{$ww}[5]" . '","'
+                . "$hash{$ww}[6]" . '"' . "\n";
+            print OUT "$hash{$ww}[1]" . '&';
+            print OUT "$hash{$ww}[2]" . '&'
+                . "$hash{$ww}[3]" . '&'
+                . "$hash{$ww}[4]" . '&'
+                . "$hash{$ww}[5]" . '&'
+                . "$hash{$ww}[6]";
+            print OUT '\\\\' . "\n";
+        }
+    }
+    print OUT '\hline
+  \end{longtable}
+  }' . "\n" . '\end{center}' . "\n";
+  }#end of if ($countplot < 1)
+    close OUT5;
+}
+%hash=();
+###################################################
+#Insert AGR
+my $filepattern  = $short . '_[0-9][0-9][0-9][0-9]' . '.agr';
+my @didier_files = glob($filepattern);
+die sprintf "Can't find any file with pattern %s from an %s-run. Terminated!\n",
+    $filepattern, 'agr-run_parallel'
+    if not @didier_files;
+
+my $jr  = 0;
+my $AGR = 0;
+DIDIER:
+for my $didier_file (@didier_files) {
+    next DIDIER if !-e $didier_file;
+    next DIDIER if -z $didier_file;    # if empty
+    my $ff = $short . '_';
+    $didier_file =~ m/$ff([0-9][0-9][0-9][0-9])/;
+    my $year = $1;
+    next DIDIER if !$year;
+    open my $fh_didier, '<', $didier_file
+        or die "Problems opening $didier_file: $!\n";
+    my ( $a1, $a2, $a3, $a4, $a5, $a6 );
+    $nn = 0;
+
+    LOOP1:
+    while (<$fh_didier>) {
+        mychomp($_);
+        my $lyn = $_;
+        if (   $lyn =~ /Group 1 :/
+            or $lyn =~ /Number of individual studied :/ )
+        {
+            ( $a1, $a2 ) = split '\:', $lyn;
+            $a6 = 0;
+            next LOOP1;
+        }
+
+        if ( $lyn =~ /Group 2 :/ ) {
+            ( $a5, $a6 ) = split '\:', $lyn;
+            next LOOP1;
+        }
+
+        $nn++ if $lyn =~ /Mean of coefficients\s*/;
+        if ( $nn == 2 and $lyn =~ /Mean of coefficients\s*/ ) {
+            ( $a3, $a4 ) = split '\:', $lyn;
+            last LOOP1;
+        }
+    }
+    close $fh_didier;
+    $calc{$year}[0] = $a2 + $a6;    #number
+    $calc{$year}[1] = $a4;          #coeff
+    $jr++;
+    $AGR++ if $calc{$year}[0];
+}
+if ($jr < 3){
+  my @die_msg_year;
+  push @die_msg_year, "ERROR:\n";
+  push @die_msg_year, "You have less than 3 years data,  Can not draw graphs. \n";
+  push @die_msg_year, "No inbreeding report can be created.\n";
+  print_tex_item( join( '\\\\', @die_msg_year ), $texlist );
+  die sprintf
+    "You have less than 3 years data,  Can not draw graphs. Terminated!\n"
+}
+if ($AGR < 3){
+  my @die_msg_year;
+  push @die_msg_year, "ERROR:\n";
+  push @die_msg_year,"You have $jr years of data, but only $AGR years had AGR calqulated. Terminated!\n";
+  push @die_msg_year,"No inbreeding report can be created.\n";
+  print_tex_item( join( '\\\\', @die_msg_year ), $texlist );
+  die sprintf
+    "You have $jr years of data, but only $AGR years had AGR calqulated. Terminated!\n";
+
+}
+############################################################
+
+my $xmin  = 9999999999;
+my $xmax  = -9999999999;
+my $y1min = 9999999999;
+my $y1max = -9999999999;
+my $y2min = 9999999999;
+my $y2max = -9999999999;
+my $y3min = 9999999999;
+my $y3max = -9999999999;
+my $y4min = 9999999999;
+my $y4max = -9999999999;
+my $yy2;
+
+$calc{'Total'}[11] = $npop;
+
+my $one = 1;
+foreach my $yy ( sort keys %calc ) {
+    next if $yy eq 'Total';
+    if ( ( $yy * 1 ) > $xmax ) { $xmax = $yy; }    #year
+    if ( ( $yy * 1 ) < $xmin ) { $xmin = $yy; }
+    my $vv;
+    if ($gen) {
+        $npop = $gen;
+        $vv   = ( $yy * 1 ) - $npop;
+    }
+    else {
+        if ( $one == 1 ) {
+            if ( $calc{$yy}[11] ) {
+                $npop = $calc{$yy}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $vv = ( $yy * 1 ) - $npop;
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+        }
+        else {
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $vv = ( $yy * 1 ) - $npop;
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $one = 2;
+        }
+    }
+
+    #     $calc{$yy}[11] = $npop;
+    #Force a 0 value to be seen
+    if ( !$calc{$yy}[1] and defined $calc{$yy}[0] ) {
+        $calc{$yy}[1] = '0.0000000000000001';
+    }
+    if ( !$calc{$vv}[1] and defined $calc{$vv}[0] ) {
+        $calc{$vv}[1] = '0.0000000000000001';
+    }
+
+    #if animals in both years
+    if ( $calc{$vv}[0] and $calc{$yy}[0] ) {
+
+        #calqulate Delta F
+        $calc{$yy}[2] =
+            ( ( $calc{$yy}[1] - $calc{$vv}[1] ) / ( 1 - $calc{$vv}[1] ) );
+
+        #if both years coefficients = each other Delta F = 0
+        #Force a 0 value to be seen
+        if ( $calc{$yy}[1] == $calc{$vv}[1] ) {
+            $calc{$yy}[2] = '0.0000000000000001';
+        }
+
+        #Force a - value to undefined
+        #if ($calc{$vv}[2] < 0){$calc{$vv}[2] = undef;}
+        #calqulate efective population size
+        if ( $calc{$yy}[2] and $calc{$yy}[2] > 0.0000000000000001 ) {
+            $calc{$yy}[3] = round( 1 / ( $calc{$yy}[2] * 2 ) );
+        }
+        else {
+            $calc{$yy}[3] = undef;
+        }
+    }
+}    ##############
+my $startyear = $xmin;
+my $endyear   = $xmax;
+my $sql2      = "select year,off_num,s_num,d_num
+            from tmp2_table2
+            where year notnull and breed ='$dbb'
+            and (year >= '$startyear' and year <= '$endyear') and off_num > 0
+            order by breed,year";
+my $sql_ref4 = $apiis->DataBase->sys_sql($sql2);
+$sql_ref4->check_status( die => 'ERR' );
+while ( my $line_ref4 = $sql_ref4->handle->fetch ) {
+    my @line = @$line_ref4;
+    my $yy   = $line[0];
+    next if $yy eq 'over years' or $yy eq 'total';
+    $calc{$yy}[4] = $line[1] if $line[1];    #number
+    $calc{$yy}[5] = $line[2] if $line[2];    #sires
+    $calc{$yy}[6] = $line[3] if $line[3];    #dams
+}
+my $sql3 = "select breed,year,number,a_min,a_max,a_avg, a_dev from tmp2_table3
+            where year notnull and breed='$dbb' and (year >= '$startyear' and year <= '$endyear')
+            and number > 0 order by breed,year";
+$sql_ref4 = $apiis->DataBase->sys_sql($sql3);
+$sql_ref4->check_status( die => 'ERR' );
+my $eencnt=0;
+while ( my $line_ref4 = $sql_ref4->handle->fetch ) {
+    my @line = @$line_ref4;
+    my $yy   = $line[1];
+    next if $yy eq 'over years' or $yy eq 'total';
+    $calc{$yy}[7] = $line[2] if $line[2];    #number
+    $calc{$yy}[8] = $line[5] if $line[5];    #avg coeff
+    $eencnt++ if $line[5];
+}
+
+my $sql4 = "select year,off_bred_inb,p_bred_inb,deltaf,ne from tmp2_table5
+            where year notnull and breed='$dbb' and (year >= '$startyear' and year <= '$endyear')
+            and off_num > 0 order by breed,year";
+$sql_ref4 = $apiis->DataBase->sys_sql($sql4);
+$sql_ref4->check_status( die => 'ERR' );
+$countplot = 0;
+while ( my $line_ref4 = $sql_ref4->handle->fetch ) {
+    my @line = @$line_ref4;
+    my $yy   = $line[0];
+    $countplot++ if $yy;
+    next if $yy eq 'over years' or $yy eq 'total';
+## calculated
+##     $calc{$yy}[9] = $line[3] if $line[3];#DeltaF inbreed
+    $calc{$yy}[10] = $line[4] if $line[4];    #Ne Inbreed
+}
+foreach my $yy ( sort keys %calc ) {
+    next if $yy eq 'Total';
+
+    #     if (($yy * 1) > $xmax){$xmax = $yy;}#year
+    #     if (($yy * 1) < $xmin){$xmin = $yy;}
+    my $vv;
+    if ($gen) {
+        $npop = $gen;
+        $vv   = ( $yy * 1 ) - $npop;
+    }
+    else {
+        if ( $one == 1 ) {
+            if ( $calc{$yy}[11] ) {
+                $npop = $calc{$yy}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $vv = ( $yy * 1 ) - $npop;
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+        }
+        else {
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $vv = ( $yy * 1 ) - $npop;
+            if ( $calc{$vv}[11] ) {
+                $npop = $calc{$vv}[11];
+            }
+            else {
+                $npop = $avg_pop_gen;
+            }
+            $one = 2;
+        }
+    }
+
+    #Force a 0 value to be seen on inbreeding coef.
+    #     if (! $calc{$yy}[1] and defined $calc{$yy}[0]){$calc{$yy}[1]='0.0000000000000001';}
+    #     if (! $calc{$vv}[1] and defined $calc{$vv}[0]){$calc{$vv}[1]='0.0000000000000001';}
+    #if animals in both years
+    #if ($calc{$vv}[7]){print "$calc{$vv}[7] and $calc{$yy}[7] <\n";}
+    if ( $calc{$vv}[7] and $calc{$yy}[7] ) {
+        #calqulate Delta F
+        $calc{$yy}[9] =  ( ( $calc{$yy}[8] - $calc{$vv}[8] ) / ( 1 - $calc{$vv}[8] ) );
+
+        #if both years coefficients = each other Delta F = 0
+        #Force a 0 value to be seen
+        if ( $calc{$yy}[8] == $calc{$vv}[8] ) {
+            $calc{$yy}[9] = '0.0000000000000001';
+        }
+
+        #Force a - value to undefined
+        #if ($calc{$vv}[2] < 0){$calc{$vv}[2] = undef;}
+        #calqulate efective population size
+        if ( $calc{$yy}[9] and $calc{$yy}[9] > 0.0000000000000001 ) {
+            $calc{$yy}[10] = round( 1 / ( $calc{$yy}[9] * 2 ) );
+        }
+        else {
+            $calc{$yy}[10] = undef;
+        }
+    }
+#    $calc{$yy}[11] = $npop if !$calc{$yy}[11] and $calc{$yy}[9];
+    $calc{$yy}[11] = $avg_pop_gen if !$calc{$yy}[11] and $calc{$yy}[9];
+}    ##############
+
+###############################################
+my $ff = 'Tabel1' . "$breed" . '.txt';
+$delfiles{$ff} = 1;
+open( OUT4, ">$ff" ) or die "Problems opening file $ff: $!\n";
+#$countplot=0;
+foreach my $yy ( sort keys %calc ) {
+    if ( $yy ne 'Total' and ( $yy >= $startyear and $yy <= $endyear ) ) {
+        my $str = 'A15';
+        print OUT4 pack( $str, $yy );    #year
+        if ( $calc{$yy}[0] ) {
+            print OUT4 pack( $str, $calc{$yy}[0] );    #number AGR
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        if ( $calc{$yy}[1] ) {
+            $calc{$yy}[1] = sprintf( "%.5f", $calc{$yy}[1] );
+            print OUT4 pack( $str, $calc{$yy}[1] );    #avg coef AGR
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        if ( $calc{$yy}[2] ) {
+            $calc{$yy}[2] = sprintf( "%.5f", $calc{$yy}[2] );
+            print OUT4 pack( $str, $calc{$yy}[2] );    #deltaF AGR
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        if ( $calc{$yy}[8] ) {
+            $calc{$yy}[8] = sprintf( "%.5f", $calc{$yy}[8] );
+            print OUT4 pack( $str, $calc{$yy}[8] );    #avg inbeeding
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        if ( $calc{$yy}[9] ) {
+            $calc{$yy}[9] = sprintf( "%.5f", $calc{$yy}[9] );
+            print OUT4 pack( $str, $calc{$yy}[9] );    #deltaf inbeeding
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        if ( $calc{$yy}[11] ) {
+            print OUT4 pack( $str, $calc{$yy}[11] );    #generation
+        }
+        else { print OUT4 pack( $str, '-' ); }
+        print OUT4 "\n";
+        if ( $calc{$yy}[1] and $calc{$yy}[1] > $y1max ) {
+            $y1max = $calc{$yy}[1];
+        }    #coef AGR
+        if ( $calc{$yy}[1] and $calc{$yy}[1] < $y1min ) {
+            $y1min = $calc{$yy}[1];
+        }
+        if ( $calc{$yy}[8] and $calc{$yy}[8] > $y1max ) {
+            $y1max = $calc{$yy}[8];
+        }    #coef inbr
+        if ( $calc{$yy}[8] and $calc{$yy}[8] < $y1min ) {
+            $y1min = $calc{$yy}[8];
+        }
+        if ( $calc{$yy}[2] and $calc{$yy}[2] > $y3max ) {
+            $y3max = $calc{$yy}[2];
+        }    #delta AGR
+        if ( $calc{$yy}[2] and $calc{$yy}[2] < $y3min ) {
+            $y3min = $calc{$yy}[2];
+        }
+        if ( $calc{$yy}[9] and $calc{$yy}[9] > $y3max ) {
+            $y3max = $calc{$yy}[9];
+        }    #delta inbr
+        if ( $calc{$yy}[9] and $calc{$yy}[9] < $y3min ) {
+            $y3min = $calc{$yy}[9];
+        }
+    }
+}
+close OUT4;
+
+#carina AGR in DB tmp2_table6 aus Datei $ff##################
+system("cp $ff table_agr_deltaFg.csv ");
+
+open my $IN, '<', "./$ff";
+my @daten1 = <$IN>;
+my %animal1;
+my $sql5 = "INSERT INTO tmp2_table6
+           (breed , year , num_off , agr_f , agr_delta_f , agr_ne , fg_off , fg_par , deltafg_ne)
+           VALUES (?,?,?, ?,?,?,?,?,?)";
+my $sth5 = $dbh->prepare($sql5) or die "Error in prepare statement: $sql5" . $dbh->errstr;
+foreach (@daten1) {
+    next if /^#/;
+    chomp;
+    s/^\s*//;
+    s/\s*$//;
+    my ( $year,$num_ani_agr, $avg_agr, $delta_agr, $avg_Fg, $deltaFg, $gi ) = split /\s+/, $_;
+    #data example
+    #2007           3813           0.02311        0.00568        0.03640        0.01047        9
+    #2008           3852           0.02343        0.00520        0.03420        0.00872        9
+    $num_ani_agr = undef if $num_ani_agr eq '-';
+    $avg_agr   = undef if $avg_agr eq '-';
+    $delta_agr   = undef if $delta_agr eq '-';
+    $avg_Fg = undef if $avg_Fg eq '-';
+    $deltaFg = undef if $deltaFg eq '-';
+    $gi = undef if $gi eq '-';
+
+    print "$year,$num_ani_agr, $avg_agr, $delta_agr, $avg_Fg, $deltaFg, $gi\n";
+    $sth5->execute($dbb,$year,$num_ani_agr, $avg_agr, $delta_agr,undef,$avg_Fg, $deltaFg,undef)
+        or die "Error executing statment:$sql5 " . $sth5->errstr;
+
+}
+close $IN;
+$sth5->finish();
+$dbh->commit;
+
+# Compute Ne for each year with agr:
+my $sql8 =
+    "UPDATE tmp2_table6    SET     agr_ne = round(1/(2 * agr_delta_f),0)   WHERE   agr_delta_f > 0 or agr_delta_f < 0";
+my $sth8 = $dbh->prepare($sql8)
+    or die "Error in prepare statement: $sql8" . $dbh->errstr;
+$sth8->execute() or die "Execute error: $sql8 " . $sth8->errstr;
+$sth8->finish();
+
+# data-file for prmon: agr_ne:
+my $sql6 = "SELECT year, agr_f, agr_delta_f, agr_ne FROM tmp2_table6 ORDER BY year desc";
+my $sth6 = $dbh->prepare($sql6) or die $dbh->errstr;
+my $ret6 = $sth6->execute;
+
+
+my $datafile = "prmon-agr-ne.data";
+open my $DATA, '>', $datafile or die "Problems opening pedfile $datafile: $!\n";
+while ( my $ss = $sth6->fetch ) {
+    my @line = @$ss;
+    print $DATA "@line\n";
+}
+close $DATA;
+print "$datafile created\n" if $debug;
+$sth6->finish();
+$dbh->commit;
+
+#end carina########################
+
+#######################################################
+##Create report.0
+#################
+#$file = "report.0.hd";
+$file = "$hd" . "AdditiveReport_0.hd";
+open( IN, $file ) or die "Problems opening $file: $! \n";
+while (<IN>) {
+    mychomp($_);
+    print OUT "$_ \n";
+}
+$tabel++;
+my $dbbout = "InbreedingReportTabel.$tabel.$breed.csv";
+my $yyy    = ">InbreedingReportTabel.$tabel.$breed.csv";
+my $bob3   = ">agr_reg.$breed.txt";
+my $bob4   = ">agr_reg1.$breed.txt";
+$delfiles{ 'agr_reg.' . $breed . '.txt' }  = 1;
+$delfiles{ 'agr_reg1.' . $breed . '.txt' } = 1;
+$delfiles{'reg_additive.log'}              = 1;
+
+open( OUT1, "$yyy" )  or die "Can not open $dbbout: $!\n";
+open( OUT3, "$bob3" ) or die "Can not open $bob3: $!\n";
+open( OUT4, "$bob4" ) or die "Can not open $bob4: $!\n";
+print OUT1 '"Year","number","CoefAGR","DeltaAGR","CoefInbr","DeltaInbr","Gen"'
+    . "\n";
+my $dbbname = $short;
+$title = 'Average Additive Genetic Relationships (AGR) ';
+
+print OUT '\begin{center}
+  \begin{longtable}{|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|'
+    . "$tabalign" . '|}
+  \caption{' . "$title" . ' } \\\\
+  \hline ';
+
+print OUT ' & & \multicolumn{2}{|'
+    . "$tabalign"
+    . '|}{AGR}&\multicolumn{2}{|'
+    . "$tabalign"
+    . '|}{\textit{F}} &Generation Interval \\\\' . "\n";
+
+print OUT
+    '\hline Year&No Animals&Avg&${\Delta f}$&Avg&${\Delta F}$&() = True GI \\\\'
+    . "\n";
+print OUT '\hline \endfirsthead ' . "\n";
+
+print OUT '\caption*{\textit{Continue...}} \\\\
+  \hline ';
+
+print OUT ' & & \multicolumn{2}{|'
+    . "$tabalign"
+    . '|}{AGR}&\multicolumn{2}{|'
+    . "$tabalign"
+    . '|}{\textit{F}} &Generation Interval \\\\' . "\n";
+
+print OUT
+    '\hline Year&No Animals&Avg&${\Delta f}$&Avg&${\Delta F}$&() = True GI \\\\'
+    . "\n";
+
+print OUT '\hline \endhead ' . "\n";
+
+my $min_add = 99999;
+$one = 1;
+foreach my $yy ( sort keys %calc ) {
+    if ( $min_add == 99999 ) {
+        if ( $calc{$yy}[1] and $calc{$yy}[1] > 0.0000 ) {
+            $min_add = $yy;
+        }
+    }
+
+    if ( $yy ne 'Total' and ( $yy >= $startyear and $yy <= $endyear ) ) {
+        if ( ( $yy * 1 ) > $xmax ) { $xmax = $yy; }    #year
+        if ( ( $yy * 1 ) < $xmin ) { $xmin = $yy; }
+        my $i   = 0;
+        my $str = 'A15';
+        print OUT "$yy" . ' & ';                       #year
+        print OUT1 '"';
+        print OUT1 pack( $str, $yy );
+        print OUT1 '","';
+
+        #print number
+        if   ( $calc{$yy}[$i] ) { print OUT "$calc{$yy}[0]" . ' & '; }
+        else                    { print OUT ' & '; }                     #number
+        if ( $calc{$yy}[$i] ) { print OUT1 pack( $str, $calc{$yy}[0] ); }
+        else                  { print OUT pack( $str, '-' ); }
+        print OUT1 '","';
+
+        my $bb;
+        if ( $calc{$yy}[1] ) {
+            my $bb = sprintf( "%.5f", $calc{$yy}[1] );                   #Coef
+            print OUT "$bb" . ' & ';
+            $bb = undef;
+            print OUT1 sprintf( "%.5f", $calc{$yy}[1] );
+            print OUT1 '","';
+        }
+        else { print OUT ' - & '; print OUT1 '-","'; }
+        if ( $calc{$yy}[2] ) {
+            $bb = sprintf( "%.5f", $calc{$yy}[2] );                      #Delta
+            print OUT "$bb" . ' & ';
+            print OUT1 sprintf( "%.5f", $calc{$yy}[2] );
+            print OUT1 '","';
+        }
+        else { print OUT ' - & '; print OUT1 '-","'; }
+        if ( $calc{$yy}[8] ) {
+            $bb = sprintf( "%.5f", $calc{$yy}[8] );    #avg inbreed
+            print OUT "$bb" . '&';
+            print OUT1 sprintf( "%.5f", $calc{$yy}[8] );
+            print OUT1 '","';
+        }
+        else { print OUT ' - & '; print OUT1 '-","'; }
+        if ( $calc{$yy}[9] ) {
+            $bb = sprintf( "%.5f", $calc{$yy}[9] );    #DeltaF inbreed
+            print OUT "$bb" . '&';
+            print OUT1 sprintf( "%.5f", $calc{$yy}[9] );
+            print OUT1 '","';
+        }
+        else { print OUT ' - & '; print OUT1 '-","'; }
+        if ( $calc{$yy}[11] ) {
+            print OUT "$calc{$yy}[11]";                #generation
+            if ($calc{$yy}[12]){print OUT " ($calc{$yy}[12])";} else {print OUT " (-)";} #true generation
+            print OUT1 sprintf( "%.0f", $calc{$yy}[11] );
+#            print OUT1 "($calc{$yy}[12])";
+            print OUT1 '","';
+        }
+        else { print OUT ' - '; print OUT1 '-","'; }
+        print OUT '\\\\' . "\n";
+        print OUT1 '"' . "\n";
+
+        if (    ( ( $yy * 1 ) > ( $min_add - 1 ) )
+            and ( ( $yy * 1 ) < ( $xmax + 1 ) ) )
+        {
+
+            my $b_count = 0;
+            print OUT3 "$yy     $calc{$yy}[1]\n";
+            print OUT4 "$yy     $calc{$yy}[8]\n";
+            $b_count += 1;
+        }
+    }
+}
+print OUT '\hline' . "\n" . '
+  \end{longtable}
+  ' . "\n" . '\end{center}' . "\n";
+
+close OUT3;
+close OUT4;
+
+if ($gen) {
+    print OUT '\begin{flushleft}
+  Fixed Time interval used to calculate Delta AGR: ' . "$npop" . '\\\\' . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+}
+else {
+    print OUT '\clearpage';
+}
+close OUT1;
+
+next if -z $dbbout;
+
+######################################################################
+#Create graphics2
+if ( $countplot > 2 and $eencnt > 2) {
+######################################################################
+    $y1min = $y1min - 0.001;
+    $y1max = $y1max + 0.001;
+    open( OUT2, '>gnu_tabel2.txt' ) or die "Can not open gnu_tabel1.txt: $!\n";
+    $delfiles{'gnu_tabel2.txt'} = 1;
+    print OUT2 "set terminal postscript \n";
+    print OUT2 'set output "' . "Graph1" . "$breed" . '.ps"' . "\n";
+    $delfiles{ 'Graph1' . "$breed" . '.ps' } = 1;
+
+    #print OUT2 'set xrange ['."$xmin".':'."$xmax".']'."\n";
+    print OUT2 'set xrange [' . "$min_add" . ':' . "$xmax" . ']' . "\n";
+    my $ss;
+
+    #if (($xmax-$xmin) > 10) {$ss = round(($xmax-$xmin)/10);} else {$ss = 1;}
+    if ( ( $xmax - $min_add ) > 10 ) {
+        $ss = round( ( $xmax - $min_add ) / 10 );
+    }
+    else { $ss = 1; }
+    print OUT2 "set xtics $ss \n";
+    print OUT2 'set yrange [' . "$y1min" . ':' . "$y1max" . ']'
+        . "\n";    #min and max of AGR coef
+    my $tt234 = ( ( $y1max - $y1min ) / 20 );
+    print OUT2 'set ytics ' . "$y1min" . ', ' . "$tt234" . ', ' . "$y1max"
+        . "\n";
+    print OUT2 "set ytics nomirror \n";
+    print OUT2 "set xtics nomirror \n";
+
+    print OUT2 'set ylabel "'
+        . 'Coefficient"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 'set xlabel "'
+        . 'Year of Birth"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 "set style line 1 lt 1 lw 15 \n";
+    print OUT2 "set key below \n";
+    system("rm -f fit.log");
+    $ff = 'Tabel1' . "$breed" . '.txt';
+    my $ff2 = 'agr_reg.' . "$breed" . '.txt';
+    my $ff3 = 'agr_reg1.' . "$breed" . '.txt';
+
+    #print OUT2 'f(x)=a*x+b'."\n";
+    #print OUT2 'fit f(x) "'."$ff3".'" via a,b'."\n";
+    #print OUT2 'f(x)=a*x+b'."\n";
+    #print OUT2 'fit f(x) "'."$ff2".'" via a,b'."\n";
+    print OUT2 'plot "' . "$ff"
+        . '" using 1:3 axis x1y1 title "'
+        . 'Additive Genetic Relationship"'
+        . ' lt 5 lw 3 smooth csp  w lines ,  "' . "$ff"
+        . '" using 1:5 axis x1y1 title "'
+        . 'Inbreeding"'
+        . ' lt 1 lw 2 smooth csp w lines' . "\n";
+    system("gnuplot < gnu_tabel2.txt >/dev/null");
+    #system("cp gnu_tabel2.txt bob.bob");#remove
+    #system("cp Tabel1Bonsmara.txt bob.bob2");#remove
+    #
+    close OUT2;
+##########################################################################END
+    print OUT '
+\begin{figure}[h]
+\begin{center}{
+\caption{Average Additive Genetic Relationships and Inbreeding Coefficients by year of birth}' . '
+%%\begin{flushleft}
+\includegraphics[scale=.6, angle=270]{./Graph1' . "$breed" . '.ps}
+%%\end{flushleft}
+}\end{center}
+\end{figure}
+' . "\n";
+
+    #}#end of $countplot > 2
+
+#####Run and Read slope of Graph1 abive from fit.log file
+
+    system("rm -f fit1_run reg_additive.log reg_inbreed.log fit.log");
+    $delfiles{'fit1_run'} = 1;
+
+    open( OUT123, ">fit1_run" ) or die "Problems opening fit1_run:$! \n";
+    print OUT123 'f(x)=a*x+b' . "\n";
+    print OUT123 'FIT_LIMIT =1E-20' . "\n";
+    print OUT123 'fit f(x) "' . "$ff3" . '" via a,b' . "\n";
+    close OUT123;
+
+    system("gnuplot < fit1_run >/dev/null");
+    system("mv fit.log reg_inbreed.log");
+
+    open( OUT123, ">fit1_run" ) or die "Problems opening fit1_run:$! \n";
+    print OUT123 'f(x)=a*x+b' . "\n";
+    print OUT123 'FIT_LIMIT =1E-20' . "\n";
+    print OUT123 'fit f(x) "' . "$ff2" . '" via a,b' . "\n";
+    close OUT123;
+
+    system("gnuplot < fit1_run >/dev/null");
+    system("mv fit.log reg_additive.log");
+
+# old version     open( IN, "reg_inbreed.log" )
+# old version         or die "Problems opening reg_inbreed.log:$! \n";
+# old version     my ( $a3, $a4 );
+# old version     my ( $a5, $a6 );
+# old version     my ( $a7, $a8 );
+# old version     my $nn = 0;
+# old version     while (<IN>) {
+# old version         mychomp($_);
+# old version         my $lyn = $_;
+# old version         if ( $lyn =~ /a               =/ ) { $nn++; }
+# old version         if ( $nn == 2 and $lyn =~ /a               =/ ) {
+# old version             ( $a5, $a6 ) = split '\+', $lyn;
+# old version             ( $a7, $a8 ) = split '\=', $a5;
+# old version             last;
+# old version         }
+# old version     }
+# old version     close IN;
+# old version 
+# old version     open( IN, "reg_inbreed.log" )
+# old version         or die "Problems opening reg_inbreed.log:$! \n";
+# old version     my ( $b5, $b6 );
+# old version     my ( $b7, $b8 );
+# old version     $nn = 0;
+# old version     while (<IN>) {
+# old version         mychomp($_);
+# old version         my $lyn = $_;
+# old version         if ( $lyn =~ /b               =/ ) { $nn++; }
+# old version         if ( $nn == 2 and $lyn =~ /b               =/ ) {
+# old version             ( $b5, $b6 ) = split '\+', $lyn;
+# old version             ( $b7, $b8 ) = split '\=', $b5;
+# old version             last;
+# old version         }
+# old version     }
+# old version     close IN;
+
+    my ( $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $b1, $b2, $b3, $b4, $b5, $b6, $b7, $b8 );
+
+    open( IN, "reg_inbreed.log" ) or die "Problems opening reg_inbreed.log:$! \n";
+    my $found = 0;
+    while (<IN>) {
+        $found++ if /^Final set of parameters/;
+        next if !$found;
+        mychomp($_);
+        my $line = $_;
+        if ( $line =~ /a               =/ ) {
+            ( $a5, $a6 ) = split '\+', $line;
+            ( $a7, $a8 ) = split '\=', $a5;
+        }
+        if ( $line =~ /b               =/ ) {
+            ( $b5, $b6 ) = split '\+', $line;
+            ( $b7, $b8 ) = split '\=', $b5;
+        }
+    }
+    close IN;
+
+# old version     open( IN, "reg_additive.log" )
+# old version         or die "Problems opening reg_additive.log:$! \n";
+# old version     my ( $a1, $a2 );
+# old version     $nn = 0;
+# old version     while (<IN>) {
+# old version         mychomp($_);
+# old version         my $lyn = $_;
+# old version         if ( $lyn =~ /a               =/ ) { $nn++; }
+# old version         if ( $nn == 2 and $lyn =~ /a               =/ ) {
+# old version             ( $a1, $a2 ) = split '\+', $lyn;
+# old version             ( $a3, $a4 ) = split '\=', $a1;
+# old version             last;
+# old version         }
+# old version     }
+# old version     close IN;
+# old version 
+# old version     open( IN, "reg_additive.log" )
+# old version         or die "Problems opening reg_additive.log:$! \n";
+# old version     my $two;
+# old version     my ( $b1, $b2, $b3, $b4 );
+# old version     $nn = 0;
+# old version     while (<IN>) {
+# old version         mychomp($_);
+# old version         my $lyn = $_;
+# old version         if ( $lyn =~ /b               =/ ) { $nn++; }
+# old version         if ( $nn == 2 and $lyn =~ /b               =/ ) {
+# old version             ( $b1, $b2 ) = split '\+', $lyn;
+# old version             ( $b3, $b4 ) = split '\=', $b1;
+# old version             last;
+# old version         }
+# old version     }
+# old version     close IN;
+
+    open( IN, "reg_additive.log" ) or die "Problems opening reg_additive.log:$! \n";
+    my $found2 = 0;
+    while (<IN>) {
+        $found2++ if /^Final set of parameters/;
+        next if !$found2;
+        mychomp($_);
+        my $line = $_;
+        if ( $line =~ /a               =/ ) {
+            ( $a1, $a2 ) = split '\+', $line;
+            ( $a3, $a4 ) = split '\=', $a1;
+        }
+        if ( $line =~ /b               =/ ) {
+            ( $b1, $b2 ) = split '\+', $line;
+            ( $b3, $b4 ) = split '\=', $b1;
+        }
+    }
+    close IN;
+#### RECALC
+
+####Ne base on Additive Rela
+    my $max_add   = $xmax;
+    my $value_min = ( ( ($a4) * ($min_add) ) + ($b4) );
+    my $value_max = ( ( ($a4) * ($max_add) ) + ($b4) );
+    my $value_t;
+#print "$value_t   = ( ( ($a4) * ( $max_add - $avg_pop_gen ) ) + ($b4) )\n";
+    $value_t   = ( ( ($a4) * ( $max_add - $avg_pop_gen ) ) + ($b4) );
+    my $deel;
+    if   ( $max_add == $min_add ) { $deel = 1; }
+    else                          { $deel = $max_add - $min_add; }
+    my $add_delta =
+        ( ( ( ( ( $value_max - $value_min ) / ($deel) ) * $avg_pop_gen ) )
+        / ( 1 - ($value_t) ) );    #per generation
+
+    #mue
+    # $add_delta=1 if (!  $add_delta);
+##
+
+    #
+    my $add_ne = round( ( ( 1 / ( 2 * $add_delta ) ) ), 2 );
+    my $a4p = sprintf( "%.5f", $a4, 5 );
+
+####Ne base on inbreeding
+    my $fvalue_min = ( ( ($a8) * ($min_add) ) + ($b8) );
+    my $fvalue_max = ( ( ($a8) * ($max_add) ) + ($b8) );
+    my $fvalue_t = ( ( ($a8) * ( $max_add - $avg_pop_gen ) ) + ($b8) );
+    my $f_delta =
+        ( ( ( ( ( $fvalue_max - $fvalue_min ) / ($deel) ) * $avg_pop_gen ) )
+        / ( 1 - ($fvalue_t) ) );    #per generation
+                                    #mue
+                                    #$f_delta=1 if (! $f_delta);
+###
+    #
+    my $f_ne = round( ( ( 1 / ( 2 * $f_delta ) ) ), 0 );
+    my $a8p = sprintf( "%.5f", $a8, 5 );
+
+    $add_delta = sprintf( "%.5f", $add_delta, 5 );
+    $f_delta   = sprintf( "%.5f", $f_delta,   5 );
+
+    if ( $add_delta > 0 and $f_delta > 0 ) {
+        print OUT '\begin{flushleft}
+  The average rate of change of the additive genetic relationships between '
+            . "$min_add and $max_add for the $short breed was $a4p per year based on the slope of the regression fitted. This result in a "
+            . '${\Delta f}$'
+            . " per generation of $add_delta. The rate of change of the average inbreeding coefficients based on the slope of the regression between $min_add and $max_add was $a8p, which represents a "
+            . '${\Delta F}$'
+            . " per generation of $f_delta. The effective population sizes for the $breed breed, based on "
+            . '${\Delta f}$' . " and "
+            . '${\Delta F}$'
+            . " were $add_ne and $f_ne, respectively." . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+    }
+
+    if ( $add_delta > 0 and $f_delta < 0 ) {
+        print OUT '\begin{flushleft}
+  The average rate of change of the additive genetic relationships between '
+            . "$min_add and $max_add for the $short breed was $a4p per year based on the slope of the regression fitted. This result in a "
+            . '${\Delta f}$'
+            . " per generation of $add_delta. The rate of change of the average inbreeding coefficients based on the slope of the regression between $min_add and $max_add was $a8p, which represents a "
+            . '${\Delta F}$'
+            . " per generation of $f_delta. The effective population sizes for the $breed breed, based on "
+            . '${\Delta f}$'
+            . " was $add_ne. Due to the negative "
+            . '${\Delta F}$'
+            . ", no effective population size could be calculated." . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+    }
+
+    if ( $add_delta < 0 and $f_delta > 0 ) {
+        print OUT '\begin{flushleft}
+  The average rate of change of the additive genetic relationships between '
+            . "$min_add and $max_add for the $short breed was $a4p per year based on the slope of the regression fitted. This result in a "
+            . '${\Delta f}$'
+            . " per generation of $add_delta. The rate of change of the average inbreeding coefficients based on the slope of the regression between $min_add and $max_add was $a8p, which represents a "
+            . '${\Delta F}$'
+            . " per generation of $f_delta. The effective population sizes for the $breed breed, based on "
+            . '${\Delta F}$'
+            . " was $f_ne. Due to the negative "
+            . '${\Delta f}$'
+            . ", no effective population size could be calculated." . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+    }
+
+    if ( $add_delta < 0 and $f_delta < 0 ) {
+        print OUT '\begin{flushleft}
+  The average rate of change of the additive genetic relationships between '
+            . "$min_add and $max_add for the $short breed was $a4p per year based on the slope of the regression fitted. This result in a "
+            . '${\Delta f}$'
+            . " per generation of $add_delta. The rate of change of the average inbreeding coefficients based on the slope of the regression between $min_add and $max_add was $a8p, which represents a "
+            . '${\Delta F}$'
+            . " per generation of $f_delta. Due to the negative "
+            . '${\Delta f}$' . " and "
+            . '${\Delta F}$'
+            . ", no effective population size could be calculated." . "\n" . '
+  \end{flushleft}
+  \clearpage
+  ' . "\n";
+    }
+    ##end of $countplot > 2
+##################################################################
+    #Graph for Log(1-Inbreeding)
+##################################################################
+    loginbreeding( $short, $dbb, $sine, $avg_pop_gen );
+
+######################################################################
+    #Create graphics3
+######################################################################
+    $y3min = $y3min - 0.001;
+    $y3max = $y3max + 0.001;
+    open( OUT2, '>gnu_tabel3.txt' ) or die "Can not open gnu_tabel3.txt: $!\n";
+    $delfiles{'gnu_tabel3.txt'} = 1;
+    print OUT2 "set terminal postscript \n";
+    print OUT2 'set output "' . "Graph2" . "$breed" . '.ps"' . "\n";
+    $delfiles{ 'Graph2' . "$breed" . '.ps' } = 1;
+
+    #print OUT2 'set xrange ['."$xmin".':'."$xmax".']'."\n";
+    print OUT2 'set xrange [' . "$min_add" . ':' . "$xmax" . ']' . "\n";
+
+    #if (($xmax-$xmin) > 10) {$ss = round(($xmax-$xmin)/10);} else {$ss = 1;}
+    if ( ( $xmax - $min_add ) > 10 ) {
+        $ss = round( ( $xmax - $min_add ) / 10 );
+    }
+    else { $ss = 1; }
+    print OUT2 "set xtics $ss \n";
+    my $vv;
+    if ( ( $y3max - $y3min ) > 10 ) { $vv = round( ( $y3max - $y3min ) / 10 ); }
+    else                            { $vv = 1; }
+    print OUT2 'set yrange [' . "$y3min" . ':' . "$y3max" . ']'
+        . "\n";    #min and max of Delta
+    my $tt432 = ( ( $y3max - $y3min ) / 20 );
+    print OUT2 'set ytics  ' . "$y3min" . ', ' . "$tt432" . ', ' . "$y3max"
+        . "\n";
+    print OUT2 "set ytics nomirror \n";
+    print OUT2 "set xtics nomirror \n";
+
+    #print OUT2 "set border 11 \n";
+    print OUT2 "set boxwidth 0.2 \n";
+
+    #print OUT2 'set title "'.'Ne from DeltaF inbreeding and Ne from AGR for '."$dbbname".'" font "'.'Times-Roman-Bold,20"'."\n";
+    print OUT2 'set ylabel "'
+        . 'Delta"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 'set xlabel "'
+        . 'Year of Birth"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT2 "set style line 1 lt 1 lw 15 \n";
+    print OUT2 "set key below \n";
+    $ff = 'Tabel1' . "$breed" . '.txt';
+    print OUT2 'plot "' . "$ff"
+        . '" using 1:4 axis x1y1 title "'
+        . 'Delta AGR"'
+        . ' lt 5 lw 3 smooth csp w lines , "' . "$ff"
+        . '" using 1:6 axis x1y1 title "'
+        . 'Delta Inb"'
+        . ' lt 1 lw 2 smooth csp w lines' . "\n";
+    system("gnuplot < gnu_tabel3.txt >/dev/null");
+    #system("cp gnu_tabel3.txt bob.bob");#remove
+    #system("cp Tabel1Bonsmara.txt bob.bob2");#remove
+    close OUT2;
+##########################################################################END
+    print OUT '
+\begin{figure}[h]
+\begin{center}{
+\caption{The Rate of Inbreeding and Increase in the Additive Genetic Relationships by year of birth}' . '
+%%\begin{flushleft}
+\includegraphics[scale=.6, angle=270]{./Graph2' . "$breed" . '.ps}
+%%\end{flushleft}
+}\end{center}
+\end{figure}
+' . "\n";
+}    # end of $countplot > 2
+###################################################
+print OUT "\n" . '\end{document}' . "\n";
+close OUT;
+system("latex $outputfile");
+system("latex $outputfile");
+system("latex $outputfile");
+system("dvips -q -f $output.dvi -o $output.ps");
+system("ps2pdfwr $output.ps $output.pdf");
+
+#system("acroread $output.pdf");
+
+system("rm -f $output.dvi");
+system("rm -f $output.aux");
+#system("rm -f $output.tex");
+system("rm -f $output.log");
+system("rm -f $output.lot");
+system("rm -f $output.toc");
+system("rm -f $output.lof");
+
+#system("mv $output.ps $output.ps");
+#system("mv $output.pdf $output.pdf");
+#system("mv $output.tex $output.tex");
+
+# Cleanup
+print "Deleting some auxiliary files...\n";
+
+# unlink keys %datafiles;
+unlink keys %delfiles; #sit terug
+$apiis->DataBase->disconnect;
+
+sub round {
+    my $number = shift;
+    return int( $number + .5 );
+}
+
+sub round1 {
+    my $number = shift;
+    return ( int( $number * 10 + .5 ) / 10 );
+}
+
+sub round2 {
+    my $number = shift;
+    return int( $number + .9 );
+}
+
+sub round4 {
+    my $number = shift;
+    return ( int( $number * 10000 + .5 ) / 10000 );
+}
+
+sub usage {
+    print "usage:\n"
+        . "    -h this message \n"
+        . "    -p <project_name>\n"
+        . "    -u <> database user \n"
+        . "    -P <> database password \n"
+        . "    -b <> breed \n"
+        . "    -e <> name of class for breed (Default = BREED)\n"
+        . "    -m <> your table codes short_name for Male (Default = Male) \n"
+        . "    -g <> generation interval if you want a fixed generation else\n"
+        . "          the generation will be pigup from Population report\n"
+        . "    -L <> listfile for program output\n\n";
+    die "";
+}
+
+sub loginbreeding {
+    my ( $breed, $dbb, $sine, $avg_pop_gen ) = @_;
+    $sine = '=';
+
+    #my $outputfile = "Inbreeding$breed.tex";
+    #open (OUT, ">>$outputfile") or die "Problems opening file $outputfile: $!\n";
+
+    my $out_put = ">Animal_Inbreeding_log_.$breed";
+    open( OUT1BB, "$out_put" ) or die "Can not open $out_put: $!\n";
+
+    # this file contains all the ln(1-F) inbreeding coefficents from each
+    # animal along with its ear of birth and the pedigree completion index
+    # for generation 1 - 6 (also to be used for postprocessing)
+    my $out_put2 = ">Inbreeding_log_.$breed.csv";
+    open( OUT1BBB, "$out_put2" ) or die "Can not open $out_put2: $!\n";
+    # EG inserted a gnuplot comment character #
+    print OUT1BBB
+        '#"year","inb_log","inbreed","gen_1","gen_2","gen_3","gen_4","gen_5","gen_6","animal"'. "\n";
+
+    print "$sine $dbb\n";
+    for ( $i = 1; $i <= 6; $i++ ) {
+        open( IN, "<tmp$i.txt" ) or die "Cannot open tmp$i.txt: $!\n";
+        while (<IN>) {
+            mychomp($_);
+            my $aa = $_;
+            my ( $a, $b, $c ) = split( '\#', $aa );
+            #1|brd|year, val, number
+            #    my ($d, $e, $f) = split('\|', $a);
+            $b                  = $b * 100;
+            $b                  = sprintf( "%.2f", $b );
+            $anim_compl{$c}[$i] = $b;
+            #    $comp{$a}[0]+=$b;
+            #    $comp{$a}[1]++;
+        }
+        close IN;
+        system("rm tmp$i.txt");
+    }
+    my $sqlb =
+        "select b.db_breed,a.db_animal,ln(1-a.inbreeding),a.year,a.inbreeding,
+         (select distinct on (t.ext_animal) t.ext_animal from transfer t where a.db_animal=t.db_animal)
+         from gene_stuff a, animal b
+         where a.db_animal=b.db_animal and b.db_breed $sine $dbb and a.year != 'unknown' order by a.year";
+    print "$sqlb";
+    my $sql_ref = $apiis->DataBase->sys_sql($sqlb);
+    $sql_ref->check_status( die => 'ERR' );
+    my $ttel   = 0;
+    my $ybegin = 99999999;
+    my $yend   = 0;
+
+    while ( my $line_ref = $sql_ref->handle->fetch ) {
+        my @line = @$line_ref;
+        my ( $br, $an, $inb_log, $yr, $inb, $ext ) = @line;
+        $ttel++;
+        if ( $yr > $yend ) {
+            $yend = $yr;
+        }
+        if ( $yr < $ybegin ) {
+            $ybegin = $yr;
+        }
+       #this Inbreeding_log_.$breed.csv file is , with "" delimited
+       print OUT1BBB '"' . "$yr" . '","' . "$inb_log"  . '","' . "$inb";
+       for ( $i = 1; $i <= 6; $i++ ) {
+           print OUT1BBB '","' . "$anim_compl{$an}[$i]";
+       }
+#       print OUT1BBB '","' . "$an" . '"' . "\n";
+       print OUT1BBB '","' . "$ext" . '"' . "\n";
+
+        #this Animal_Inbreeding_log_.$breed file is for gnuplot
+        print OUT1BB "$yr          $inb_log\n"; # this IS for each animal and gnuplot
+
+    }
+
+    close OUT1BB;
+    close OUT1BBB;
+
+    system("rm -f fit_run reg_log_inbred.log fit.log");
+
+    open( OUT123, ">fit_run" ) or die "Problems opening fit1_run: $!\n";
+
+    print OUT123 "set terminal postscript \n";
+    print OUT123 'set output "'
+        . "log_of_Inbreeding_"
+        . "$breed" . '.ps"' . "\n";
+    $delfiles{ 'log_of_Inbreeding_' . "$breed" . '.ps' }[0] = 1;
+
+    print OUT123 'set ylabel "'
+        . 'Coefficient"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT123 'set xlabel "'
+        . 'Year of Birth"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT123 "set style line 1 lt 1 lw 15 \n";
+    print OUT123 "set key below \n";
+    print OUT123 "set autoscale xy \n";
+    print OUT123 'f(x)=a*x+b' . "\n";
+    print OUT123 'FIT_LIMIT =1E-20' . "\n";
+    print OUT123 'fit f(x) "' . "Animal_Inbreeding_log_.$breed" . '" via a,b' . "\n";
+    print OUT123 'plot "'
+        . "Animal_Inbreeding_log_.$breed"
+        . '" using 1:2 title "'
+        . 'Log of Inbreed Coeff", f(x)' . "\n";
+
+    close OUT123;
+
+    system("rm -f fit.log reg_log_inbred.log");
+    system("gnuplot < fit_run >/dev/null");
+    system("mv fit.log reg_log_inbred.log");
+
+# old version     open( IN, "reg_log_inbred.log" )
+# old version         or die "Problems opening reg_log_inbred.log: $!\n";
+# old version     my $one;
+# old version     my ( $a1, $a2 );
+# old version     my ( $a3, $a4 );
+# old version     $nn = 0;
+# old version     while (<IN>) {
+# old version         mychomp($_);
+# old version         my $lyn = $_;
+# old version         if ( $lyn =~ /a               =/ ) { $nn++; }
+# old version         if ( $nn == 2 and $lyn =~ /a               =/ ) {
+# old version             ( $a1, $a2 ) = split '\+', $lyn;
+# old version             ( $a3, $a4 ) = split '\=', $a1;
+# old version             last;
+# old version         }
+# old version     }
+# old version     close IN;
+
+    my $one;
+
+    open( IN, "reg_log_inbred.log" ) or die "Problems opening reg_log_inbred.log: $!\n";
+    my ( $a1, $a2, $a3, $a4 );
+    my $found3 = 0;
+    while (<IN>) {
+        $found3++ if /^Final set of parameters/;
+        next if !$found3;
+        mychomp($_);
+        my $line = $_;
+        if ( $line =~ /a               =/ ) {
+            ( $a1, $a2 ) = split '\+', $line;
+            ( $a3, $a4 ) = split '\=', $a1;
+        }
+    }
+    close IN;
+
+    #mue
+    #$a=$avg_pop_gen*$a4;
+    #$a=1 if (! $a);
+    #my $rne=round((1/(2*(-($a)))));
+###
+
+    my $rne = round( ( 1 / ( 2 * ( -( $avg_pop_gen * $a4 ) ) ) ) );
+    my $rrade = round4( $avg_pop_gen * ( -($a4) ) );
+
+    system("rm -f fit_run reg_log_inbred.log");
+
+    $out_put = ">Year_Inbreeding_log_.$breed";
+    open( OUT1BB, "$out_put" ) or die "Can not open $out_put: $!\n";
+
+    $sqlb =
+        "select b.db_breed,round((avg(log(1-a.inbreeding))),6),a.year
+         from gene_stuff a, animal b
+         where a.db_animal=b.db_animal and b.db_breed $sine $dbb and a.year != 'unknown' group by b.db_breed,a.year order by b.db_breed,a.year";
+    $sql_ref = $apiis->DataBase->sys_sql($sqlb);
+    $sql_ref->check_status( die => 'ERR' );
+    while ( my $line_ref = $sql_ref->handle->fetch ) {
+        my @line = @$line_ref;
+        my ( $br, $inb_log, $yr ) = @line;
+        print OUT1BB "$yr          $inb_log\n";
+    }
+system ("cp Year_Inbreeding_log_.$breed prmon-log-inbreeding.data");
+    close OUT1BB;
+    open( OUT123, ">fit_run" ) or die "Problems opening fit1_run: $!\n";
+    print OUT123 "set terminal postscript \n";
+    print OUT123 'set output "'
+        . "log_of_Inbreeding_"
+        . "$breed" . '.ps"' . "\n";
+    $delfiles{ 'log_of_Inbreeding_' . "$breed" . '.ps' }[0] = 1;
+    my $t_file = "log_of_Inbreeding_$breed" . '.ps';
+
+    print OUT123 "set autoscale xy \n";
+    print OUT123 'set xrange [' . "$ybegin" . ':' . "$yend" . ']' . "\n";
+    my $ss;
+    if ( ( $yend - $ybegin ) > 10 ) {
+        $ss = round( ( $yend - $ybegin ) / 10 );
+    }
+    else { $ss = 1; }
+    print OUT123 'set xtics '
+        . "$ybegin" . ', ' . "$ss" . ', ' . "$yend" . "\n";
+
+    print OUT123 "set bmargin 10 \n";
+    print OUT123 'set ylabel "'
+        . 'Avg. Log(1 - F)"'
+        . ' font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT123 'set xlabel "'
+        . 'Year of Birth'
+        . '\n (The rate of inbreeding per generation for the '
+        . "$breed"
+        . ' breed, \nbased on the Log(1-Inbreeding) is '
+        . "$rrade"
+        . ' which presents an Ne of ' . "$rne"
+        . '.\n Calculations were performed on '
+        . "$ttel animals born between $ybegin and $yend"
+        . '.)" font "'
+        . 'Times-Italic,14"' . "\n";
+    print OUT123 "set style line 1 lt 1 lw 15 \n";
+    print OUT123 "set key below \n";
+
+    print OUT123 'plot "'
+        . "Year_Inbreeding_log_.$breed"
+        . '" using 1:2 title "' . '"' . "\n";
+
+    close OUT123;
+
+    system("gnuplot < fit_run >/dev/null");
+    system("rm -f reg_log_inbred.log fit_run Inbreeding_log_.$breed");
+
+    print OUT '
+\begin{figure}[h]
+\begin{center}{
+\caption{Average Log(1-F) by year of birth for animals  born between '
+        . "$ybegin and $yend" . '.}' . '
+  %%\begin{flushleft}
+  \includegraphics[scale=.6, angle=270]{./' . "$t_file" . '}
+  %%\end{flushleft}
+  }\end{center}
+  \end{figure}
+  ' . "\n";
+    $delfiles{"$t_file"} = 1;
+
+    #close OUT;
+
+    return ();
+}
+
+##############################################################################
+

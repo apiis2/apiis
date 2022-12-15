@@ -1,0 +1,188 @@
+#!/usr/bin/perl -w
+###########################################################################
+# $Id: mkLOWform,v 1.2 2004/02/10 06:52:11 heli Exp $
+###########################################################################
+
+BEGIN { # execute some initialization before compilation
+   $0 =~ m|(.*/)|;
+   $1?unshift(@INC, $1 . '../lib'):unshift(@INC, '../lib');
+   require apiis_init;
+   initialize_apiis( VERSION => '$Revision: 1.2 $' );
+}
+
+use Getopt::Std;
+use File::Basename;
+use Data::Dumper;
+
+use vars qw( $opt_h $opt_v $opt_f );
+my ($loadobj, $model);
+my $nl = "\n";
+
+# allowed parameters:
+use Getopt::Std;
+getopts('hvf:b:F:t:n:'); 
+                # option -h  => Help
+                #        -v  => Version
+
+## help:
+if ($opt_h or $#ARGV < 1) {
+    print  "\n$programname creates a WEB-Form from each given loadobject file\n".
+           "usage: $programname [-f] <load_object_files> <modelfile>\n".
+           "       $programname -h | -v\n".
+           "          -h      ". msg(44), $nl.
+           "          -v      ". msg(45). $nl.
+           "          -b      background color (".msg(42)." darkBlue)\n".
+           "          -F      Form background color (".msg(42)." black)\n".
+           "          -t      text color (".msg(42)." yellow)\n". 
+           "          -n      footnote color (".msg(42)." blue)\n".
+           "          -f      fieldlength (".msg(42)." 100)\n\n".
+           "Example: $programname LO_* '\$APIIS_LOCAL/model/apiis.model'\n\n";
+#
+    exit;
+}
+
+# Version:
+die "$programname: $version\n" if $opt_v;
+
+
+# model is last parameter
+$model = $ARGV[$#ARGV] if($#ARGV > 0);
+if(!$model) {
+   warn "\n**** $programname: warning: no modelfile! ****\n\n";
+} else {
+   print "\nModel: $model\n";
+}
+
+# Path of the model file.
+my $md_path = dirname($model);
+$form_path = dirname($model).'/default_forms/';
+if($md_path ne "$APIIS_LOCAL/model") {
+   $md_path = './';
+   $form_path = $md_path.'default_forms/';
+}
+if(! -d $form_path) {
+   print "make directory $form_path\n";
+   mkdir $form_path,~022;
+   die "unable to make directory $form_path\n" if(! -d $form_path);
+}
+
+# defaults 
+my $dl = "\n\n";
+my $footer = "</body>\n</html>";
+my $bg = "darkBlue";
+$bg = $opt_b if($opt_b);
+my $txt = "yellow";
+$txt = $opt_t if($opt_t);
+my $lnk = "red";
+my $alnk = "red";
+my $vlnk = "red";
+my $fnote = "blue";
+$fnote = $opt_n if($opt_n);
+my $fl = 100; # fieldlength
+$fl = $opt_f if($opt_f);
+my $maxfl = 200; # max fieldlength
+my $tabw = 300; # table width
+my $tabbd = 0; # table border
+my $tabalign = "center";
+my $tabbgcolor = "black";
+$tabbgcolor =$opt_F if($opt_F);
+
+
+pop @ARGV; # remove modelfile from list
+
+# some dummys
+my %hash = ();
+$hash{dummy}=0;
+
+# create a html-formfile for each loadobjectfile
+foreach my $loadobj (@ARGV) {
+
+   print "\n   $loadobj\n";
+
+   if(-r $loadobj) {
+      require $loadobj;
+   }else {
+      warn "unable to read $loadobj\n";
+      next;
+   }
+
+
+   # subroutine name of the loadobject
+   (my $ba = basename($loadobj)) =~ s/\.pm//;
+
+   my @LO_keys = ();
+   #####################################
+   # Get LO_keys is a little bit tricky:
+   # The loadobject calls subroutine 'CheckLO' to check the data_hash agains the LO_keys.
+   # Now we use a dummy-hash to enforce an error. The error-message contains the missing
+   # keys. :-)
+   # Problem: no LO_keys -> no error-message about that :-(thx_simpsons.avi
+
+   # so, first call the loadobject defined in $ba 
+   my ($err_status, $err_ref) = &$ba(%hash);
+   # second we must have errors about LO_keys
+   foreach my $e (@$err_ref) {
+      (my $key = $e->msg_long) =~ s/.*key '(\w+)' is missing.*/$1/;
+      print "      LO_KEY: $key\n";
+      push(@LO_keys,$key);
+   }
+
+   if(!@LO_keys) {
+      warn "$programname: No loadobject keys found in $ba\n";
+      next;
+   }
+
+
+   # open new formfile 
+   open (FORM, ">$form_path$ba.html") || die msg(4), $ba.".html\n";
+   print "   create $form_path$ba.html\n";
+
+   my $title = $ba;
+   my $z = scalar(@LO_keys); # number of entry fields
+
+   print FORM qq(<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">$nl<html>$nl<head>$nl);
+   print FORM qq(<title>$ba</title>\n);
+   print FORM qq(<meta name="GENERATOR" content="mkLOWform">$nl);
+   print FORM qq(<meta name="author" content="$user">$nl);
+   print FORM qq(<meta name="version" content="\$Id\$">$nl);
+   print FORM qq(<meta name="date" content=").localtime().'>"'.$nl;
+
+   print FORM qq(</head>$nl);
+
+   print FORM qq(<body background=""$nl).
+              qq(      bgcolor="$bg"$nl).
+              qq(      text="$txt"$nl).
+              qq(      link="$lnk"$nl).
+              qq(      alink="$alnk"$nl).
+              qq(      vlink="$vlnk">$nl<br><br>$dl); 
+   
+   print FORM qq(<form name="webform" method="post" action="cgi/webLOform">$dl);
+
+   print FORM qq(<input type="hidden" name="loadobject" value="$ba">$nl);
+   print FORM qq(<input type="hidden" name="model" value="$model">$nl);
+   print FORM qq(<input type="hidden" name="APIIS_HOME" value="$APIIS_HOME">$nl);
+   print FORM qq(<input type="hidden" name="APIIS_LOCAL" value="$APIIS_LOCAL">$dl);
+
+   print FORM qq(<table width=$tabw border=$tabbd align="$tabalign" bgcolor="$tabbgcolor");
+   print FORM qq(cellpadding="5" cellspacing="0">$nl);
+   print FORM qq(  <tr><th colspan="2"><h2>$ba</h2><hr size=3></th>\n);
+
+   # create for each LO_key one entry field
+   foreach my $col (@LO_keys) {
+      print FORM qq(  <tr><td align="left">$col</td>);
+      print FORM qq(<td><input type="Text" name="$col" value="" 
+                     size="$fl" maxlength="$maxfl"></td></tr>$nl);
+   }
+   print FORM qq(  <tr><td colspan="2" align="center"><hr size=1>$nl);
+   print FORM qq(  <tr><td colspan="2" align="center"><input type="Submit" name="Go!" value="Submit">$nl     );
+   print FORM qq (&nbsp;&nbsp;&nbsp; <input type="reset"></td>$nl);
+
+   print FORM qq(  <tr><td colspan="2" align="right"><font size="-2" color="$fnote">);
+   print FORM qq(<b>Model:</b>$nl       $model &nbsp;&nbsp;&nbsp; ).'$Id: mkLOWform,v 1.2 2004/02/10 06:52:11 heli Exp $'."</font></td>$nl";
+   print FORM "</table>\n";
+
+   print FORM "</form>\n\n";
+   print FORM "</body>\n</html>";
+   close FORM;
+
+}

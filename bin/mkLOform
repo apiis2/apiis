@@ -1,0 +1,274 @@
+#!/usr/bin/env perl
+###########################################################################
+# $Id: mkLOform,v 1.12 2005/03/01 07:26:31 haboe Exp $
+###########################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.12 $' );
+
+use Getopt::Std;
+use File::Basename;
+use Data::Dumper;
+
+my $programname = $apiis->programname;
+
+use vars qw( $opt_h $opt_v $opt_f );
+my ($loadobj, $model);
+
+# allowed parameters:
+use Getopt::Std;
+getopts('hvf:y:'); 
+                # option -h  => Help
+                #        -v  => Version
+
+# Version:
+die "$programname: ",$apiis->version,"\n" if $opt_v;
+
+## help:
+if ($opt_h or $#ARGV < 1) {
+    print  "\n$programname creates a GUI-Form from each given loadobject file\n".
+           "usage: $programname [-f] <load_object_files> <modelfile>\n".
+           "       $programname -h | -v\n".
+           "          -h      ", __('Help'), "\n".
+           "          -v      ", __('Version'), "\n".
+	   "          -y      deltaY\n".
+           "          -f      fieldlength (", __('default value'), " 45)\n\n".
+           "Example: $programname LO_* '\$APIIS_LOCAL/model/apiis.model'\n\n";
+
+    exit;
+}
+
+# model is last parameter
+$model = $ARGV[$#ARGV] if($#ARGV > 0);
+if(!$model) {
+   warn __("\n**** [_1]: warning: no modelfile! ****\n\n",$programname);
+} else {
+   print __("\nModel: [_1]\n",$model);
+}
+
+# Path of the model file.
+my $md_path = dirname($model);
+$form_path = dirname($model).'/default_forms/';
+if($md_path ne "$APIIS_LOCAL/model") {
+   $md_path = './';
+   $form_path = $md_path.'default_forms/';
+}
+if(! -d $form_path) {
+   print __('make directory [_1] \n', $form_path);
+   mkdir $form_path,~022;
+   die __('unable to make directory [_1] \n', $form_path) if(! -d $form_path);
+}
+
+# defaults 
+# Form fonts 
+my ($titlefont, $normalfont, $labelfont);
+if($^O eq 'MSWin32') {
+   # MS Windows fonts
+   $titlefont = '{Arial Black} 18 bold';
+   $normalfont= 'Arial 9 normal';
+   $labelfont = 'Arial 8 normal';
+} else {
+   # X Window fonts
+   $titlefont = '-adobe-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*';
+   $normalfont= '-adobe-helvetica-normal-r-normal-*-12-*-*-*-*-*-*-*';
+   $labelfont = '-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*';
+}
+my $type = 'E';
+my $clear= 'Y';
+
+my $deltaY = 48;
+$deltaY = $opt_y if($opt_y);
+my $section = 100;  # start value
+my $incr = 10;      # section increment
+my $fl = 45;     # fieldlenght
+$fl = $opt_f if($opt_f);
+my $width = $fl * 8 +30; # WIDHT
+
+
+pop @ARGV; # remove modelfile from list
+
+# some dummys
+my %hash = ();
+$hash{dummy}=0;
+
+# create a formfile for each loadobjectfile
+foreach my $loadobj (@ARGV) {
+
+   print "\n   $loadobj\n";
+
+   if(-r $loadobj) {
+      require $loadobj;
+   }else {
+      warn __("unable to read [_1]\n",$loadobj);
+      next;
+   }
+
+
+   # subroutine name of the loadobject
+   (my $ba = basename($loadobj)) =~ s/\.pm//;
+
+   my @LO_keys = ();
+   #####################################
+   # Get LO_keys is a little bit tricky:
+   # The loadobject calls subroutine 'CheckLO' to check the data_hash agains the LO_keys.
+   # Now we use a dummy-hash to enforce an error. The error-message contains the missing
+   # keys. :-)
+   # Problem: no LO_keys -> no error-message about that :-(
+
+   # so, first call the loadobject defined in $ba 
+   my ($err_status, $err_ref) = &$ba(%hash);
+   # second we must have errors about LO_keys
+   foreach my $e (@$err_ref) {
+      (my $key = $e->msg_long) =~ s/.*key '(\w+)' is missing.*/$1/;
+      print "      LO_KEY: $key\n";
+      push(@LO_keys,$key);
+   }
+
+   if(!@LO_keys) {
+      warn __("[_1]: No loadobject keys found in [_2]\n", $programname, $ba);
+      next;
+   }
+
+
+   # open new formfile 
+   open (FORM, ">$form_path$ba.frm") || die __('Problems opening file [_1]',$ba),".frm\n";
+   print __("   create [_1][_2].frm\n",$form_path,$ba);
+
+   my $title = $ba;
+   my $z = scalar(@LO_keys); # number of entry fields
+   my $height = $z * $deltaY + 90;
+
+   my $header = '# $Id: mkLOform,v 1.12 2005/03/01 07:26:31 haboe Exp $'."\n".
+                "# This file was created by $programname ",$apiis->version,"\n".
+                "# ".localtime()."\n".
+                "#\n";
+   
+
+   my $general = "[GENERAL]\n".   # GENERAL section
+                 "TITLE=$title\n".
+                 "TITLEFONT=$titlefont\n".
+                 "NORMALFONT=$normalfont\n".
+                 "LABELFONT=$labelfont\n".
+                 "HEIGHT=$height\nWIDTH=$width\n".
+                 "BALLOON=balloon\n".
+                 'STARTUP=$$form{GENERAL}{BUTTONBAR}->destroy'."\n".
+                 'ID=$'.'Id:'.localtime().'$'."\n".
+                 "MODEL=$model\n\n";
+
+   print FORM "$header\n$general\n";
+
+   my $yloc = 15;
+   # create for each LO_key one entry field
+   foreach $col (@LO_keys) {
+      my $field = "[sec$section]\n".
+                  "TYPE=$type\n".
+                  "XLOCATION=20\n".
+                  "YLOCATION=$yloc\n".
+                  "FIELDLENGTH=$fl\n".
+                  "LABEL=$col\n".
+                  "COLUMN=$col\n".
+                  "CLEAR=$clear\n";
+
+      $yloc += $deltaY;
+      
+      print FORM "$field\n";
+
+      $section += $incr;
+      
+   }
+
+   # buttons
+   $yloc -= 18;
+   my $buttons = "[sec$section]\n".
+                 "BORDER=2\n".
+                 "COMMAND=&call_LO(\'$ba\',".'$form);'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Insert\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=20\n".
+                 "YLOCATION=$yloc\n\n";
+
+   $yloc += 20;
+   $section += $incr;
+
+   $buttons .= "[sec$section]\n".
+                 "BORDER=2\n".
+                 'COMMAND=clearForm($form);resetBalloons($form);resetBGCOLOR($form)'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Clear\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=20\n".
+                 "YLOCATION=$yloc\n\n";
+   
+   $yloc += 20;
+   $section += $incr;
+
+   $buttons .= "[sec$section]\n".
+                 "BORDER=2\n".
+                 'COMMAND=$$form{GENERAL}{TOPLEVEL}->destroy'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Quit\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=20\n".
+                 "YLOCATION=$yloc\n\n";
+
+   print FORM "$buttons\n";
+
+}
+
+
+__END__
+
+
+=pod
+
+=head1 NAME
+
+mkLOform - create a form file from each given loadobject
+
+=head1 SYNOPSIS
+
+mkLOform [-y] [-f] <load_object_files> <modelfile>
+
+=over 3
+
+=item B<-y> vertical field spacing.
+
+Formfile parameter YLOCATION (default 48)
+
+=item B<-f> fieldlength
+
+fieldlength of each field (default 45) 
+
+=item B<-v> version
+
+=item B<-h> help
+
+=back 
+
+=head1 EXAMPLE
+
+mkLOform LO_* '$APIIS_LOCAL/model/apiis.model'
+
+=head1 SEE ALSO
+
+mkform
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+=cut

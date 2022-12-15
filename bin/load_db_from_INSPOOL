@@ -1,0 +1,106 @@
+#!/usr/bin/env perl 
+##############################################################################
+# $Id: load_db_from_INSPOOL,v 1.26 2005/05/12 13:32:39 duchev Exp $
+# ##############################################################################
+# ### for finding the expensive parts of this program run it with:
+# ###    #!/usr/bin/perl -d:DProf
+# ### then invoke in the current directory:
+# ###    dprofpp
+# ### see also: man Devel::DProf (which of course has to be installed) or
+# ###           man dprofpp
+# ##############################################################################
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.26 $' );
+
+use apiis_alib;
+
+$| = 1;             # unbuffer output
+use vars qw( @ds $model_file
+             $opt_h $opt_f $opt_s $opt_d $opt_v $opt_q $opt_p
+             $debug $verbose @starttime $profiling $max_prof_string
+           );
+my $programname = $apiis->programname;
+my $version=$apiis->version;
+# allowed parameters:
+use Getopt::Std;
+getopts('s:f:hd:vqp'); # option -h  => Help
+                 #        -f  => Model file
+                 #        -s  => data stream (e.g. DS01)
+                 #        -v  => run quit
+                 #        -v  => print Version
+                 #        -d  => debug  >0 --> debug disabled
+                 #                      >1 --> print more error messages
+                 #                      >4 --> don't commit to the DB (only in load_db_from_INSPOOL,
+                 #                             not in the load objects)
+                 #                      >5 --> run only one record
+                 #                      >6 --> print detailed infos from ParsePseudoSQL
+                 #        -p  => profiling
+die usage() if $opt_h;
+die "$programname: $version\n" if $opt_v;
+die usage() unless $opt_s;
+die usage() unless $opt_f;
+
+if ( defined $opt_d ){
+   die "-d option (debug) must have a numerical values, e.g. -d1 or -d8\n"
+      if $opt_d =~ /\D/;
+   $debug = $opt_d;
+} else {
+   $debug = 0; # to prevent warnings
+}
+if ( defined $opt_p ){
+   # profiling
+   $profiling = 1;
+   $max_prof_string = 35; # for formatting the print output
+   use Date::Calc;
+   @starttime = Now();
+   print "Starttime: $starttime[2].$starttime[1].$starttime[0] $starttime[3]:$starttime[4]:$starttime[5]\n";
+}
+
+$verbose = 1 unless $opt_q;
+
+@ds = split( /\s+/, $opt_s);
+
+###
+$model_file = $opt_f if ($opt_f);
+ 
+# maybe model file given without -f
+unless ( $model_file ) {
+   $model_file = $ARGV[0] if $ARGV[0];
+}
+
+# join Model into the $apiis structure:
+$apiis->join_model($model_file);
+$apiis->check_status( die => 'ERR' );
+
+foreach my $ds ( @ds ) {
+   print "Running datastream $ds ....\n" if $verbose;
+   no strict "refs";
+   my $load_string = "use $ds";
+   eval $load_string;
+   print $@ if $@;
+   my %arguments=(ds => $ds,debug=>$debug);
+   &$ds((ds => $ds,debug=>$debug));
+} # end datastream
+
+print "elapsed in load_db_from_INSPOOL: ",
+      ' ' x ( $max_prof_string - length( "elapsed in load_db_from_INSPOOL: ") ),
+      elapsed( \@starttime ), "\n" if $profiling;
+
+##############################################################################
+sub usage {
+   die __('load_db_from_INSPOOL_USAGE_MESSAGE'),"\n";
+}
+##############################################################################
+
+# vim:tw=100:cindent:aw:expandtab:syntax=perl
+

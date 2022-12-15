@@ -1,0 +1,98 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: agr-shorten-infiles,v 1.7 2013/08/21 08:57:39 heli Exp $
+# Shorten the infiles for add_gen_didier if they exceed a defined threshold.
+# (Due to computation/hardware limitations)
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Getopt::Std;
+use Apiis;
+use Perl6::Slurp;
+
+# max no of records allowed (due to computation limits)
+# 2000 male * 2000 female = 4000000 computations
+my $max_male   = 2000;
+my $max_female = 2000;
+my $max_agr    = $max_male * $max_female;    # 4000000
+my $outfile = 'maincontrol.tex';
+
+my $opts_ref = {};
+getopts( "b:", $opts_ref );
+my $breed = $opts_ref->{b};
+die "Usage: $0 -b <breed>\n" if !$breed;
+
+my $filepattern = $breed . '_[0-9][0-9][0-9][0-9]' . '.in';
+my @infiles     = glob($filepattern);
+
+my @outlines;
+INFILE:
+for my $infile (@infiles) {
+    next if !-e $infile;
+    next if -z $infile;
+    my ( @males, @females, $male_count, $female_count, $year );
+    $infile =~ /_([0-9][0-9][0-9][0-9])\.in/;
+    $year = $1;
+
+    my @lines = slurp $infile;
+    for my $line (@lines) {
+        chomp($line);
+        $line =~ s/\s*$//;
+        push @males,   $line if $line =~ /\s1$/;
+        push @females, $line if $line =~ /\s2$/;
+    }
+    my $no_male = scalar @males;
+    my $no_female = scalar @females;
+    next INFILE if $no_male * $no_female <= $max_agr;
+
+    rename $infile, "${infile}_orig";
+    my ( $curr_male, $curr_female);
+    $no_male < $max_male ? ($curr_male = $no_male):($curr_male = $max_male);
+    $curr_female = sprintf '%.0f', $max_agr / $curr_male;
+
+    my $cnt_male = $curr_male;
+    my $cnt_female = $curr_female;
+    open my $OUT, ">", $infile or die "Cannot open $infile: $!\n";
+    print $OUT splice( @males, int( rand $#males ), 1 ), "\n"
+        while ( $cnt_male-- );
+    print $OUT splice( @females, int( rand $#females ), 1 ), "\n"
+        while ( $cnt_female-- );
+    close $OUT;
+    push @outlines,
+        sprintf '%u & %u & %u & %u & %u',
+        $year, $no_male, $curr_male, $no_female, $curr_female;
+}
+
+open my $OUT, '>>', $outfile or die "Problems opening file $outfile: $!\n";
+print $OUT '\\item INFO: (concerning Inbreeding Report)\\\\', "\n";
+if (@outlines) {
+    print $OUT
+        'This table shows the shortening of the number of male and female'
+            . ' animals per year for the AGR computations.  The original (orig)'
+            . ' number of records is shortened (cut) to keep the product'
+            . ' of $male * female$ within acceptable limits.'
+            . ' See details later in the Inbreeding Report.', "\n";
+    print $OUT '\\setlongtables', "\n";
+    print $OUT '\\begin{longtable}{r|rr|rr}', "\n";
+    print $OUT '\\hline', "\n";
+    print $OUT ' & \\multicolumn{2}{c}{No. of Male} & \\multicolumn{2}{c}{No.  of Female} \\\\', "\n";
+    print $OUT '\\cline{2-5}', "\n";
+    print $OUT '\\raisebox{1.5ex}[-1.5ex]{Year} & orig. & cut & orig. & cut \\\\', "\n";
+    print $OUT '\\hline', "\n";
+    print $OUT '\\endhead', "\n";
+    print $OUT join("\\\\ \n", @outlines);
+    print $OUT "\\\\ \n";
+    print $OUT '\\end{longtable}';
+}
+else {
+    print $OUT "No shortening of infiles for the AGR computations done.\\\\ \n";
+}
+close $OUT;
+

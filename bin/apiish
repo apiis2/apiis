@@ -1,0 +1,561 @@
+#!/usr/bin/env perl
+###########################################################################
+# $Id: apiish,v 1.26 2014/12/08 08:56:55 heli Exp $
+###########################################################################
+
+use strict;
+use warnings;
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.26 $' );
+our $apiis;
+
+use Tk;
+use Tk::Animation;
+use Tk::BrowseEntry;
+use Tk::ErrorDialog;
+
+require 5.8.1;    # use Perl Version 5.8.1 or later
+use File::Basename;
+use Apiis::Misc qw( find_pod_path );
+use Apiis::DataBase::User;
+#use Apiis::Form::Tk::Misc qw( tk_login popup );
+
+# handling the command line args:
+my %args;
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+my $pod_path = find_pod_path();
+
+# allowed parameters:
+GetOptions( \%args,
+    'help|h|?',
+    'man|m|pod|p',
+    'formpath|F=s',
+    'reportpath|R=s',
+) or pod2usage( -verbose => 1, -input => $pod_path );
+
+# short help and longer man page:
+pod2usage( -verbose => 1, -input => $pod_path ) if $args{'help'};
+pod2usage( -verbose => 2, -input => $pod_path ) if $args{'man'};
+
+# dito for reports: ( should go into $apiis->reportpath!):
+my $reportpath;
+$reportpath = $args{reportpath} if $args{reportpath};
+
+# create top window:
+my $top = MainWindow->new(
+    -borderwidth => '2',
+    -relief      => 'groove'
+);
+
+my $menubar = $top->Menu;
+$top->configure( -menu => $menubar );
+
+$top->wm( title => __('The Apiis Shell') );
+
+# let the camel run:
+my $f0     = $top->Frame();
+my $htext1 = $f0->Label(
+    -text       => 'Apiis',
+    -width      => '26',
+    -foreground => 'red',
+    -font       => '-adobe-helvetica-bold-r-normal-*-18-*-*-*-*-*-*-*'
+);
+
+# Powered by Perl 5 and Tk
+my $perlTk = $f0->Animation(
+    -format => 'gif',
+    -file   => "$APIIS_HOME/lib/images/camel.gif"
+);
+my $perlTkButton = $f0->Button(
+    -image       => $perlTk,
+    -relief      => 'flat',
+    -borderwidth => '5',
+    -command     => sub { $perlTk->start_animation('10') }
+);
+
+$htext1->pack( -side       => 'left' );
+$perlTkButton->pack( -side => 'right' );
+$f0->pack( -padx => '10', -pady => '10' );
+$perlTk->start_animation('80');
+
+##### main menu entries:
+my $projects   = $menubar->cascade( -label => __("Projects") );
+my $form_ptr   = $menubar->cascade( -label => __("Forms") );
+my $report_ptr = $menubar->cascade( -label => __("Reports") );
+my $admin_ptr  = $menubar->cascade( -label => __("Admin") );
+my $help       = $menubar->cascade( -label => __("Help") );
+
+# disable some by default:
+$form_ptr->configure( -state   => 'disabled' ) unless $apiis->exists_model;
+$report_ptr->configure( -state => 'disabled' ) unless $apiis->exists_model;
+$admin_ptr->configure( -state  => 'disabled' ) unless $apiis->exists_model;
+
+# myApiis user configuration:
+#my $myapiis = $projects->command(
+#    -label   => __( "my[_1]", 'Apiis' ),
+#    -command => sub {
+#        popup(
+#            {   toplevel => $top,
+#                title    => __('Info'),
+#                bitmap   => 'info',
+#                text     => $apiis->User->sprint,
+#            }
+#        );
+#    },
+#);
+#$myapiis->configure( -state => 'disabled' ) unless $apiis->exists_model;
+
+# choose a project:
+my $disconnect;
+my $projects_choose;
+if ( scalar $apiis->projects == 1 ) {
+    # we have only one
+    my ($thisproject) = $apiis->projects;
+
+    ##### sub menu entry Projects->Connect:
+    $projects_choose = $projects->command(
+        -label => __( "Connect to project '[_1]'", $thisproject ),
+        -command => sub { _connect_project($thisproject) },
+    );
+}
+else {
+    $projects_choose = $projects->cascade( -label => __("Choose Project") );
+    my $_chosen_project;
+    foreach my $thisproject ( $apiis->projects ) {
+        $projects_choose->radiobutton(
+            -label    => $thisproject,
+            -variable => \$_chosen_project,
+            -command  => sub { _connect_project($_chosen_project) },
+        );
+    }
+}
+
+# Disconnect from project:
+$disconnect = $projects->command(
+    -label   => __( 'Disconnect [_1]', 'project' ),
+    -command => sub {
+        $apiis->disconnect_project;
+        $top->wm( title => __('The Apiis Shell') );
+        $form_ptr->configure( -state        => 'disabled' );
+        $report_ptr->configure( -state      => 'disabled' );
+        $admin_ptr->configure( -state       => 'disabled' );
+        $projects_choose->configure( -state => 'active' );
+        $htext1->configure( -text           => 'Apiis' );
+        $disconnect->configure( -state      => 'disabled' );
+        # $myapiis->configure( -label       => __( "my[_1]", 'Apiis' ) );
+        # $myapiis->configure( -state       => 'disabled' );
+    }
+);
+$disconnect->configure( -state => 'disabled' ) unless $apiis->exists_model;
+
+# Exit
+$projects->separator;
+$projects->command( -label => __("Exit"), -command => \&exit );
+
+##### menu entry Admin:
+#$admin_ptr->command(
+#    -label   => __('Rule the world'),
+#    -command => sub {
+#        my @text = sprintf "Your login id is: %s\n",
+#            $apiis->User->id . sprintf "Your roles are: %s\n",
+#            join( ', ', $apiis->User->roles )
+#            . "That must be enough for now.\n";
+#        popup(
+#            {   toplevel => $top,
+#                title    => __('Info'),
+#                bitmap   => 'info',
+#                text     => join( '', @text ),
+#            }
+#        );
+#    },
+#);
+
+##### sub menu entry Help->About:
+$help->command(
+    -label   => __("About ..."),
+    -command => sub {
+        popup(
+            {   toplevel => $top,
+                title    => __('Info'),
+                bitmap   => 'info',
+                text     => __(
+                    "The 'Adaptable Platform Independant Information System'")
+                    . "\n Apiis Shell "
+                    . $apiis->version,
+            }
+        );
+    },
+);
+#my $help_docs = $help->cascade( -label => __("Documentation") );
+
+##### sub menu entry Help->Documentation:
+# my $_chosen_pdf;
+# my $doc_path = $apiis->APIIS_HOME . '/doc/';
+#for my $thispdf (qw/ developer implementer /) {
+#    $help_docs->radiobutton(
+#        -label    => $thispdf,
+#        -variable => \$_chosen_pdf,
+#        -command  => sub {
+#            my @args = ( "acroread", "${doc_path}${_chosen_pdf}-doc.pdf" );
+#            system(@args) == 0 or popup(
+#                {   toplevel => $top,
+#                    title    => __('Error'),
+#                    bitmap   => 'error',
+#                    text     => __(
+#                       "system call '[_1]' failed: [_2]",
+#                       join( ' ', @args ), $?
+#                   ),
+#                }
+#            );
+#        },
+#    );
+#}
+
+MainLoop();
+
+##############################################################################
+# subroutines:
+###########################################################################
+
+# does the real work in connecting a certain project:
+sub _connect_project {
+    my $thisproject = shift;
+    EXIT: {
+        if ( $apiis->status ) {
+            for my $err ( $apiis->errors ) {
+                # print $err->sprint;
+                popup(
+                    {   toplevel => $top,
+                        title    => __('Error'),
+                        bitmap   => 'error',
+                        text     => $err->sprint
+                    }
+                );
+            }
+            last EXIT;
+        }
+
+        # get login information:
+        # my ( $loginname, $password ) = tk_login(
+        #     { toplevel => $top, project => $thisproject } );
+        # last EXIT if !$loginname and !$password;
+
+        my ( $loginname, $password );
+        my $background = 'lightgray';
+        my $tk_login   = $top->Dialog(
+            -title          => "Login",
+            -background     => $background,
+            -default_button => 'OK',
+            -buttons        => [qw/OK Cancel/]
+        );
+        my $user = $tk_login->LabEntry(
+            -textvariable => \$loginname,
+            -background   => $background,
+            -label        => 'User name'
+        )->pack( -side => 'top', -fill => 'x', -pady => 3 );
+
+        my $pass = $tk_login->LabEntry(
+            -textvariable => \$password,
+            -background   => $background,
+            -show         => '*',
+            -label        => 'Password'
+        )->pack( -side => 'top', -fill => 'x', -pady => 3 );
+
+        my $button = $tk_login->Show;
+        last EXIT if ( $button eq 'Cancel' );
+
+        # create User object:
+        my $user_obj = Apiis::DataBase::User->new(
+            id       => $loginname,
+            password => $password,
+        );
+        if ( $user_obj->status ) {
+            for my $err ( $user_obj->errors ) {
+                # print $err->sprint;
+                popup(
+                    {   toplevel => $top,
+                        title    => __('Error'),
+                        bitmap   => 'error',
+                        text     => $err->sprint
+                    }
+                );
+            }
+            last EXIT;
+        }
+
+        # connect to project:
+        $apiis->join_model( $thisproject, userobj => $user_obj );
+        if ( $apiis->status ) {
+            for my $err ( $apiis->errors ) {
+                # print $err->sprint;
+                popup(
+                    {   toplevel => $top,
+                        title    => __('Error'),
+                        bitmap   => 'error',
+                        text     => $err->sprint
+                    }
+                );
+            }
+            # reset errors and try it again
+            $apiis->status(0);
+            $apiis->del_errors;
+            goto EXIT;
+        }
+
+        # ok, successful login:
+        if ( $apiis->exists_user ) {
+            $htext1->configure( -text => ucfirst $thisproject );
+            $top->wm(
+                title => __('The Apiis Shell') . ' - ' . ucfirst $thisproject );
+            $projects_choose->configure( -state => 'disabled' );
+            $form_ptr->configure( -state        => 'active' );
+            $report_ptr->configure( -state      => 'active' );
+            # $myapiis->configure( -state         => 'active' );
+            $admin_ptr->configure( -state => 'active' )
+                if grep /^admin$/, $apiis->User->roles;
+            # $myapiis->configure(
+            #     -label => __( "my[_1]", ucfirst $thisproject ) );
+            $disconnect->configure(
+                -state => 'active',
+                -label => __( 'disconnect [_1]', $thisproject )
+            );
+
+            my $recursive_level_forms   = 0;
+            my $recursive_level_reports = 0;
+
+            # forms (default formpath is set from join_model):
+            if ( $args{formpath} ) {
+                $apiis->formpath( $args{formpath} );
+            }
+            _show_forms( $apiis->formpath, $recursive_level_forms, $form_ptr );
+
+            # reports:
+            $reportpath = $apiis->project($thisproject) . '/etc/reports'
+                if !$reportpath;
+            _show_reports( $reportpath, $recursive_level_reports, $report_ptr,
+                $top );
+        }
+    }    # end label EXIT
+}
+
+###########################################################################
+# input parameter: directory name
+#                  extension name of text files
+# output parameter: array of two pointers to arrays where the first one
+#                   contains all subdirectories and the second all
+#                   .form/.frm files (used in apiish)
+sub GetEntries {
+    my $basedir   = shift;
+    my $extension = shift;
+    my @dirs      = grep -d, map { glob("$basedir/$_") } "*"; # find directories
+    my @entries   = grep -T,
+        map { glob("$basedir/$_") } "*$extension";            # find testfiles
+    return ( \@dirs, \@entries );    # anonymous array with two pointers
+}
+
+##############################################################################
+# shown pdf files in the menu:
+sub _show_pdf {
+    my $dir     = shift;
+    my $doc_ptr = shift;
+    my ( $dirs_ref, $entries_ref ) = GetEntries( $dir, '[.pdf]' );
+    foreach my $thispdf (@$entries_ref) {
+        $doc_ptr->command(
+            -label => basename( $thispdf, ('.pdf') ),
+            -command => sub { system acroread $thispdf }
+        );
+    }
+}
+##############################################################################
+# subroutine to recursively create menu entries with forms.
+# input:  * starting directory
+#         * level of recursion
+#         * pointer for the forms of this menu level
+sub _show_forms {
+    my ( $dir, $recursive_level, $form_ptr ) = @_;
+
+    # load lib for GUI version:
+    my $gui_version = lc $apiis->gui_version;
+    $gui_version = 'tk1' if !$gui_version;    # default
+    my %init_gui_for = (
+        tk1 => {
+            lib => [ 'yaform', ],
+            sub => sub { TkYAF( $_[0] ) },
+        },
+        tk2 => {
+            lib => ['Apiis::Form::Tk'],
+            sub => sub {
+                my $f_obj = Apiis::Form::Tk->new(
+                    xmlfile  => $_[0],
+                    toplevel => $top,
+                );
+                if ( $f_obj->status ) {
+                    for my $err ( $f_obj->errors ) {
+                        # print $err->sprint;
+                        popup(
+                            {   toplevel => $top,
+                                title    => __('Error'),
+                                bitmap   => 'error',
+                                text     => $err->sprint
+                            }
+                        );
+                    }
+                    return;
+                }
+                $f_obj->run;
+                if ( $f_obj->status ) {
+                    for my $err ( $f_obj->errors ) {
+                        # print $err->sprint;
+                        popup(
+                            {   toplevel => $top,
+                                title    => __('Error'),
+                                bitmap   => 'error',
+                                text     => $err->sprint
+                            }
+                        );
+                    }
+                }
+            },    # end sub
+        },
+    );
+    for my $module ( @{ $init_gui_for{$gui_version}{lib} } ) {
+        eval "require $module";
+        if ( my $err_msg = $@ ) {
+            # print $err_msg;
+            popup(
+                {   toplevel => $top,
+                    title    => __('Error'),
+                    bitmap   => 'error',
+                    text     => $err_msg,
+                }
+            );
+        }
+    }
+
+    # get defined formnames:
+    my ( $dirs_ref, $entries_ref ) = GetEntries( $dir, '[.frm||.form]' );
+    foreach my $thisform (@$entries_ref) {
+        $form_ptr->command(
+            -label => basename( $thisform, ( '.frm', '.form' ) ),
+            -command => sub { $init_gui_for{$gui_version}{sub}->($thisform) },
+        );
+    }
+    while ( scalar @$dirs_ref ) {
+        my $thisdir = shift @$dirs_ref;
+        next if $thisdir =~ /CVS$/;
+
+        my $ptr     = $thisdir . '___' . $recursive_level;
+        my $basedir = $thisdir;
+        $basedir =~ s/^.*\///;
+        $ptr = $form_ptr->cascade( -label => "$basedir" );
+        _show_forms( $thisdir, ++$recursive_level, $ptr );
+    }
+}
+##############################################################################
+# subroutine to recursively create menu entries with reports.
+# input:  * starting directory
+#         * level of recursion
+#         * pointer for the reports of this menu level
+sub _show_reports {
+    my $dir             = shift;
+    my $recursive_level = shift;
+    my $report_ptr      = shift;
+    my $top             = shift;
+
+    my ( $dirs_ref, $entries_ref ) = GetEntries( $dir, '.rpt' );
+
+    foreach my $thisreport (@$entries_ref) {
+        $report_ptr->command(
+            -label => basename( $thisreport, '.rpt' ),
+            -command => sub { RunReport_new( $thisreport, $top ) },
+        );
+    }
+    while ( scalar @$dirs_ref ) {
+        my $thisdir = shift @$dirs_ref;
+        next if $thisdir =~ /CVS$/;
+
+        my $ptr     = $thisdir . '___' . $recursive_level;
+        my $basedir = $thisdir;
+        $basedir =~ s/^.*\///;
+        $ptr = $report_ptr->cascade( -label => "$basedir" );
+        _show_reports( "$thisdir", ++$recursive_level, $ptr );
+    }
+}
+##############################################################################
+# This subroutine just picks up the report file which has to contain legal
+# Perl code. This may implement a big security hole but it works as a first
+# attempt to run reports from the shell. 
+sub RunReport {
+    my $report = shift;
+    open( REP, $report ) or die "Cannot open $report: $!\n";
+
+    my @file = (<REP>);
+    my $code = join '', @file;
+    eval $code;
+    Error($@) if $@;
+}
+##############################################################################
+# This subroutine just picks up the report file which has to contain legal
+# Perl code. This may implement a big security hole but it works as a first
+# attempt to run reports from the shell.
+sub RunReport_new {
+    my $report      = shift;
+    my $top         = shift;
+    my $report_name = basename( $report, '.rpt' );
+    my $lib         = $apiis->APIIS_LOCAL . '/etc/reports/';
+    require $report;
+    no strict 'refs';
+    eval &$report_name($top);
+    Error($@) if $@;
+}
+##############################################################################
+
+=head2 popup
+
+B<popup> opens a popup window with some informational or error message
+and waits for a notification by the user.
+
+B<popup> is a slightly changed derivat from Hartmut's yaform version.
+
+Usage:
+
+   popup(
+       {   toplevel => $top,
+           title    => $title,
+           bitmap   => $bitmap,
+           text     => $text,
+           buttons  => $buttons_ref,
+       }
+   );
+
+=cut
+
+sub popup {
+    my $args_ref = shift;
+    require Tk::Dialog;
+    my $buttons_ref = $args_ref->{buttons} || ['OK'];
+
+    my $d = $args_ref->{toplevel}->Dialog(
+        -title      => $args_ref->{title},
+        -bitmap     => $args_ref->{bitmap},
+        -font       => 'fixed',
+        -text       => $args_ref->{text},
+        -wraplength => '180m',                # in mm
+        -buttons    => $buttons_ref,
+        -anchor     => 'w',
+    )->Show;
+    return;
+}
+##############################################################################
+
+1;
+

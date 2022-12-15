@@ -1,0 +1,2866 @@
+#####################################################################
+# Running: check_pedi_stack -p PPP_tC20uJQnhzxJQ -u poprep -P pass -m 1 -f 2 -l maincontrol.lst   -L
+#####################################################################
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c -d
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+Dropping table tmp1_sons ...
+Dropping table tmp1_daug ...
+Dropping table tmp1_parents ...
+Dropping table tmp1_par ...
+Dropping table tmp1_sires_noffsp ...
+Dropping table tmp1_1b ...
+Dropping table tmp1_sires_noffsp_sel ...
+Dropping table tmp1_dams_noffsp ...
+Dropping table tmp1_1a ...
+Dropping table tmp1_dams_noffsp_sel ...
+Dropping table tmp1_1 ...
+Dropping table tmp1_pas ...
+Dropping table tmp1_t_dam ...
+Dropping table tmp1_t_sire ...
+Dropping table tmp1_t_dam_s ...
+Dropping table tmp1_t_sire_s ...
+Dropping table tmp1_age_male ...
+Dropping table tmp1_age_female ...
+Dropping table tmp1_age ...
+Dropping table tmp1_parity ...
+Dropping table tmp1_family_sires ...
+Dropping table tmp1_family_dams ...
+Dropping table tmp1_family_all ...
+Dropping table tmp1_family_sel_sires ...
+Dropping table tmp1_family_sel_dams ...
+Dropping table tmp1_family_sel ...
+Dropping table tmp1_sons_sires ...
+Dropping table tmp1_sons_dams ...
+Dropping table tmp1_family_sel_s ...
+Dropping table tmp1_daug_sires ...
+Dropping table tmp1_daug_dams ...
+Dropping table tmp1_family_sel_d ...
+Dropping table tmp1_family ...
+Dropping table tmp1_gen_1 ...
+Dropping table tmp1_gen_ss ...
+Dropping table tmp1_gen_sd ...
+Dropping table tmp1_gen_ds ...
+Dropping table tmp1_gen_dd ...
+Dropping table tmp1_gen_sires ...
+Dropping table tmp1_gen_dams ...
+Dropping table tmp1_gen_sire_dam ...
+Dropping table tmp1_gen_temp ...
+Dropping table tmp1_gen ...
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+#####################################################################
+# Running: PopulationReport.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -L maincontrol.lst
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+BREED = BM1POPDU
+
+CLASS = BREED
+
+BM1POPDU
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+No file Population-BM1POPDU.aux.
+(/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd) [1]
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+No file Population-BM1POPDU.toc.
+No file Population-BM1POPDU.lot.
+No file Population-BM1POPDU.lof.
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 176.
+
+[2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 235.
+
+[3]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 283.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 341.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 415.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 501.
+
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 60736 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -k 1
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+max generation = 5
+opt_s not set
+opt_r not set
+opt_c not set
+# Get the project and user sort out 
+# Delete all tmp2 tables
+
+Delete tables:
+Dropping table tmp2_generations:
+Dropping table tmp2_pedcompl:
+Dropping table tmp2_table1:
+Dropping table tmp2_table2:
+Dropping table tmp2_table3:
+Dropping table tmp2_table4:
+Dropping table tmp2_gen_depth:
+Dropping table tmp2_table5:
+Dropping table tmp2_table6:
+Dropping table tmp2_table7:
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -b BM1POPDU -e BREED -c -r -s -g 5     -I 2
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+breed = BM1POPDU
+BREED = BREED
+max generation = 5
+opt_s = 1
+opt_r = 1
+opt_c = 1
+# Get the project and user sort out 
+#####################################################################
+# Running: check_pedi_stack -p PPP_tC20uJQnhzxJQ -u poprep -P pass -m 1 -f 2 -l maincontrol.lst   -L
+#####################################################################
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c -d
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+Dropping table tmp1_sons ...
+Dropping table tmp1_daug ...
+Dropping table tmp1_parents ...
+Dropping table tmp1_par ...
+Dropping table tmp1_sires_noffsp ...
+Dropping table tmp1_1b ...
+Dropping table tmp1_sires_noffsp_sel ...
+Dropping table tmp1_dams_noffsp ...
+Dropping table tmp1_1a ...
+Dropping table tmp1_dams_noffsp_sel ...
+Dropping table tmp1_1 ...
+Dropping table tmp1_pas ...
+Dropping table tmp1_t_dam ...
+Dropping table tmp1_t_sire ...
+Dropping table tmp1_t_dam_s ...
+Dropping table tmp1_t_sire_s ...
+Dropping table tmp1_age_male ...
+Dropping table tmp1_age_female ...
+Dropping table tmp1_age ...
+Dropping table tmp1_parity ...
+Dropping table tmp1_family_sires ...
+Dropping table tmp1_family_dams ...
+Dropping table tmp1_family_all ...
+Dropping table tmp1_family_sel_sires ...
+Dropping table tmp1_family_sel_dams ...
+Dropping table tmp1_family_sel ...
+Dropping table tmp1_sons_sires ...
+Dropping table tmp1_sons_dams ...
+Dropping table tmp1_family_sel_s ...
+Dropping table tmp1_daug_sires ...
+Dropping table tmp1_daug_dams ...
+Dropping table tmp1_family_sel_d ...
+Dropping table tmp1_family ...
+Dropping table tmp1_gen_1 ...
+Dropping table tmp1_gen_ss ...
+Dropping table tmp1_gen_sd ...
+Dropping table tmp1_gen_ds ...
+Dropping table tmp1_gen_dd ...
+Dropping table tmp1_gen_sires ...
+Dropping table tmp1_gen_dams ...
+Dropping table tmp1_gen_sire_dam ...
+Dropping table tmp1_gen_temp ...
+Dropping table tmp1_gen ...
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+#####################################################################
+# Running: PopulationReport.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -L maincontrol.lst
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+BREED = BM1POPDU
+
+CLASS = BREED
+
+BM1POPDU
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+No file Population-BM1POPDU.aux.
+(/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd) [1]
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+No file Population-BM1POPDU.toc.
+No file Population-BM1POPDU.lot.
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 176.
+
+[2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 235.
+
+[3]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 283.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 341.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 415.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 501.
+
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 60736 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -k 1
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+max generation = 5
+opt_s not set
+opt_r not set
+opt_c not set
+# Get the project and user sort out 
+# Delete all tmp2 tables
+
+Delete tables:
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -b BM1POPDU -e BREED -c -r -s -g 5     -I 2
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+breed = BM1POPDU
+BREED = BREED
+max generation = 5
+opt_s = 1
+opt_r = 1
+opt_c = 1
+# Get the project and user sort out 
+## read the complete pedigree into RAM 
+SELECT db_animal,db_sire,db_dam,
+            birth_dt,date_part('year',birth_dt),short_name
+     FROM   animal, codes
+     WHERE  db_breed=db_code AND db_breed = 119
+.......... info_ped --> 1000
+.......... info_ped --> 2000
+.....
+      ...Pedigree loaded with 2571 records
+
+Running pedicompl for generations (using 4 CPUs)
+## test loops in pedigree 
+
+ Congratulation, your pedigree looks fine!
+
+# test for errors in birth_dt of animals 
+
+ The following animals and parents have wrong birthdays:
+=========================================================
+
+EU:::EI:::1882500	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::122825	 2001-09-17 
+      sire: EU:::EI:::122826	 2002-04-27
+
+EU:::EI:::1882502	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882501	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882497	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882498	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+#  I N B R E E D  calculations according to Henderson (?) 
+
+Use more ram to make the job faster (option -s)
+unknown dam 5508 -> *5623*
+unknown sire 7278 -> *7030*
+unknown dam 7278 -> *6470*
+unknown sire 5907 -> *5147*
+unknown dam 5907 -> *5922*
+unknown dam 5522 -> *5984*
+unknown sire 6591 -> *5799*
+unknown sire 5578 -> *6226*
+unknown dam 5578 -> *5208*
+unknown dam 5894 -> *7320*
+unknown sire 6580 -> *6168*
+unknown dam 6415 -> *5710*
+unknown sire 7385 -> *7087*
+unknown dam 7385 -> *5747*
+unknown sire 7120 -> *6601*
+unknown dam 7151 -> *5260*
+unknown sire 5439 -> *6102*
+unknown dam 5439 -> *6276*
+unknown sire 6049 -> *5502*
+unknown dam 6049 -> *5854*
+unknown sire 6306 -> *6503*
+unknown sire 7273 -> *7470*
+unknown dam 7273 -> *5896*
+unknown sire 7390 -> *5325*
+unknown sire 7550 -> *7469*
+unknown sire 7185 -> *6502*
+unknown dam 7185 -> *5482*
+unknown sire 5762 -> *6754*
+unknown dam 5762 -> *6447*
+unknown dam 5454 -> *5116*
+unknown sire 5135 -> *7549*
+unknown sire 6980 -> *6991*
+unknown dam 6980 -> *5054*
+unknown dam 5020 -> *7007*
+unknown sire 6250 -> *7100*
+unknown dam 6250 -> *7594*
+unknown sire 5004 -> *7183*
+unknown sire 6427 -> *6598*
+unknown dam 6427 -> *7364*
+unknown dam 5285 -> *5780*
+unknown sire 5731 -> *6070*
+unknown dam 5731 -> *6705*
+unknown sire 7150 -> *6374*
+unknown sire 6002 -> *7475*
+unknown dam 6002 -> *7618*
+unknown dam 5415 -> *6210*
+unknown sire 7498 -> *5592*
+unknown dam 7498 -> *6028*
+unknown sire 6411 -> *7329*
+unknown dam 6411 -> *6532*
+unknown dam 7064 -> *5405*
+unknown sire 7297 -> *6619*
+unknown dam 5602 -> *6554*
+unknown sire 7584 -> *7602*
+unknown dam 5721 -> *5262*
+Creating table GEN_STUFF
+SQL: DROP TABLE GENE_STUFF
+SQL: CREATE TABLE GENE_STUFF (
+        db_animal         int8,
+        inbreeding        numeric,
+        founders          numeric,
+        year              text,
+        gci               numeric,
+        completeness      numeric,
+        generation        int8,
+        breed             numeric,
+        last_change_dt    timestamp,
+        last_change_user  text)
+SQL: CREATE UNIQUE INDEX uidx_gene_stuff_1 ON GENE_STUFF ( db_animal )
+SQL: SELECT db_animal,db_sire,db_dam,1 AS generation
+         INTO    tmp2_generations
+         FROM    animal
+         WHERE   db_breed = 119 AND db_animal > 2
+SQL: CREATE INDEX ind_tmp2_generations ON tmp2_generations (db_animal)
+..
+commit last 2626 records
+Running pedigree completeness  using 4 CPU
+SQL: CREATE TABLE tmp2_pedcompl (
+               generation        numeric,
+               year              text,
+               breed             numeric,
+               completeness      numeric,
+               number            numeric)
+
+# start pedicompleteness for 1 generations
+
+# start pedicompleteness for 2 generations
+
+# start pedicompleteness for 3 generations
+
+# start pedicompleteness for 4 generations
+
+# start pedicompleteness for 5 generations
+
+# start pedicompleteness for 6 generations
+Parallel jobs finished.
+Number=120
+Running generation calculations of all animals
+rows dams:590
+rows sires:215
+rows dams:355
+rows sires:145
+rows dams:243
+rows sires:111
+rows dams:179
+rows sires:85
+rows dams:125
+rows sires:70
+rows dams:97
+rows sires:47
+rows dams:70
+rows sires:39
+rows dams:47
+rows sires:25
+rows dams:34
+rows sires:19
+rows dams:29
+rows sires:19
+rows dams:21
+rows sires:14
+rows dams:13
+rows sires:10
+rows dams:9
+rows sires:8
+rows dams:7
+rows sires:6
+rows dams:2
+rows sires:1
+Done with generations calculating of all animals
+Bussy reading Gene_stuff.................>
+Bussy creating Inbreeding Table 1........>
+Bussy creating Inbreeding Table 2........>
+Bussy creating Inbreeding Table 3 and 4..>
+Bussy creating Inbreeding Table 5........>
+119|2011|250|35|71|66
+119|2010|417|48|99|91
+119|2009|402|38|91|75
+119|2008|350|31|91|65
+119|2007|381|30|94|64
+119|2006|450|29|110|64
+119|2005|494|31|108|67
+119|2004|478|30|117|67
+119|2003|426|23|93|52
+119|2002|245|25|60|49
+119|2001|150|23|48|44
+119|2000|170|27|55|51
+119|1999|149|35|57|61
+119|1998|125|27|41|46
+119|1997|67|22|35|38
+119|1996|59|25|40|43
+119|1995|55|25|33|40
+119|1994|26|17|18|24
+119|1993|10|8|8|11
+119|1992|3|3|3|4
+119|2011|0.0766|0.0775|0.0760|0.0767|-0.0001|NULL
+119|2010|0.0709|0.0703|0.0687|0.0695|0.0015|332
+119|2009|0.0700|0.0554|0.0741|0.0647|0.0057|88
+119|2008|0.0701|0.0496|0.1022|0.0759|-0.0063|NULL
+119|2007|0.0761|0.0562|0.0967|0.0765|-0.0004|NULL
+119|2006|0.0917|0.0823|0.0893|0.0858|0.0065|77
+119|2005|0.1050|0.1133|0.1115|0.1124|-0.0084|NULL
+119|2004|0.1083|0.1384|0.1405|0.1395|-0.0363|NULL
+119|2003|0.1404|0.0944|0.0978|0.0961|0.0490|10
+119|2002|0.1615|0.0320|0.0264|0.0292|0.1363|4
+119|2001|0.0356|0.0113|0.0032|0.0072|0.0285|18
+119|2000|0.0107|0.0017|0.0005|0.0011|0.0096|52
+119|1999|0.0016|0.0013|0.0004|0.0008|0.0008|665
+119|1998|0.0021|0.0000|0.0001|0.0000|0.0020|247
+119|1997|0.0021|0.0000|0.0020|0.0009|0.0012|401
+119|1996|0.0050|0.0000|0.0026|0.0012|0.0039|129
+119|1995|0.0051|0.0000|0.0000|0.0000|0.0051|98
+119|1994|0.0000|0.0000|0.0000|0.0000|0.0000|NULL
+119|1993|0.0000|0.0000|0.0000|0.0000|0.0000|NULL
+Busy creating Inbreeding Table 6........>
+Busy creating Inbreeding Table 7........>
+119, 2011, 250, 0.0766, 0.0700, 0.0070, 71
+119, 2010, 417, 0.0709, 0.0701, 0.0009, 571
+119, 2009, 402, 0.0700, 0.0761, -0.0065, 
+119, 2008, 350, 0.0701, 0.0917, -0.0238, 
+119, 2007, 381, 0.0761, 0.1050, -0.0323, 
+119, 2006, 450, 0.0917, 0.1083, -0.0185, 
+119, 2005, 494, 0.1050, 0.1404, -0.0412, 
+119, 2004, 478, 0.1083, 0.1615, -0.0635, 
+119, 2003, 426, 0.1404, 0.0356, 0.1087, 5
+119, 2002, 245, 0.1615, 0.0107, 0.1524, 3
+119, 2001, 150, 0.0356, 0.0016, 0.0340, 15
+119, 2000, 170, 0.0107, 0.0021, 0.0087, 58
+119, 1999, 149, 0.0016, 0.0021, -0.0005, 
+119, 1998, 125, 0.0021, 0.0050, -0.0030, 
+119, 1997, 67, 0.0021, 0.0051, -0.0030, 
+119, 1996, 59, 0.0050, 0.0000, 0.0050, 99
+119, 1995, 55, 0.0051, 0.0000, 0.0051, 98
+119, 1994, 26, 0.0000, 0.0000, 0.0000, 
+119, 1993, 10, 0.0000, , , 
+119, 1992, 3, 0.0000, , , 
+ prmon_log_reg.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b BM1POPDU -g 2 
+prmon_ecg_data.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b  BM1POPDU -g 2
+
+Number of records created:
+tmp2_generations: 2571 records
+tmp2_pedcompl: 120 records
+tmp2_table1: 20 records
+tmp2_table2: 20 records
+tmp2_table3: 21 records
+tmp2_table4: 18 records
+tmp2_gen_depth: 1 records
+tmp2_table5: 20 records
+tmp2_table6: 0 records
+tmp2_table7: 20 records
+#####################################################################
+# Running: InbreedingReport.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b BM1POPDU -m 1 -e BREED -L maincontrol.lst   -I 2
+#####################################################################
+***** Starting program agr-extract_files ...
+Breed = BM1POPDU 
+Class = BREED 
+Project = PPP_tC20uJQnhzxJQ
+Sex = 1
+generation interval = 2
+Loading pedigrees ...
+..
+
+Pedigree loaded with 2384 records over 20 year(s)
+
+Creating new sequence numbers ...
+..
+2384 new sequence numbers created
+Printing now BM1POPDU_all.ped ...
+..
+Pedigree printed with 2384 records
+# Delete tmp3_agr_ped table
+SQL: Drop TABLE IF EXISTS tmp3_agr_ped
+SQL: CREATE TABLE tmp3_agr_ped (
+               animal real,                  
+               year   real,
+               sex    real)
+***** Program agr-extract_files done.
+***** Starting program agr-shorten-infiles ...
+***** Program agr-shorten-infiles done.
+***** Starting program agr-run_parallel ...
+
+Running Relationship Coefficients for each year (using 4 CPUs )
+Number of animals for add_gen_didier: 2384 (estimated)
+Running year 1992
+Running year 1993
+Running year 1994
+Running year 1995
+Running year 1996
+Running year 1997
+Running year 1998
+Running year 1999
+Running year 2000
+Running year 2001
+Running year 2002
+Running year 2003
+Running year 2004
+Running year 2005
+Running year 2006
+Running year 2007
+Running year 2008
+Running year 2009
+Running year 2010
+Running year 2011
+Parallel jobs finished.
+***** Program agr-run_parallel done.
+***** Starting program inbreeding_report ...
+Breed = BM1POPDU 
+Class = BREED 
+Project = PPP_tC20uJQnhzxJQ
+Sex = 1
+generation interval = 2
+1992,3, 0.00000, , 0.00000, , 
+1993,10, 0.03125, , 0.00000, , 1
+1994,26, 0.01042, 0.01042, 0.00000, 0.00000, 1
+1995,55, 0.01846, -0.01320, 0.00780, 0.00780, 2
+1996,59, 0.01414, 0.00377, 0.00070, 0.00070, 2
+1997,67, 0.01552, -0.00299, 0.00280, -0.00504, 2
+1998,125, 0.01485, 0.00072, 0.00160, 0.00090, 2
+1999,149, 0.01755, 0.00206, 0.00150, -0.00130, 2
+2000,170, 0.02916, 0.01453, 0.01680, 0.01522, 2
+2001,150, 0.03638, 0.01917, 0.07540, 0.07401, 2
+2002,245, 0.11096, 0.08425, 0.18250, 0.16853, 2
+2003,426, 0.12580, 0.09279, 0.10420, 0.03115, 2
+2004,478, 0.10753, -0.00386, 0.11200, -0.08624, 2
+2005,494, 0.09901, -0.03065, 0.09780, -0.00714, 2
+2006,450, 0.08021, -0.03061, 0.08440, -0.03108, 2
+2007,381, 0.07940, -0.02177, 0.06640, -0.03480, 2
+2008,350, 0.08895, 0.00950, 0.07380, -0.01158, 2
+2009,402, 0.09085, 0.01244, 0.06720, 0.00086, 2
+2010,417, 0.09483, 0.00646, 0.07540, 0.00173, 2
+2011,250, 0.09920, 0.00919, 0.08030, 0.01404, 2
+prmon-agr-ne.data created
+= 119
+select b.db_breed,a.db_animal,ln(1-a.inbreeding),a.year,a.inbreeding,
+         (select distinct on (t.ext_animal) t.ext_animal from transfer t where a.db_animal=t.db_animal) 
+         from gene_stuff a, animal b
+         where a.db_animal=b.db_animal and b.db_breed = 119 and a.year != 'unknown' order by a.yearThis is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+No file Inbreeding-BM1POPDU.aux.
+(/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd) [1]
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+No file Inbreeding-BM1POPDU.toc.
+No file Inbreeding-BM1POPDU.lot.
+No file Inbreeding-BM1POPDU.lof.
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 132.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 199.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 247.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 299.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 349.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 430.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 7 on input line 512.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 8 on input line 588.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 65584 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Inbreeding-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Inbreeding-BM1POPDU.toc) (./Inbreeding-BM1POPDU.lot)
+(./Inbreeding-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 71096 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Inbreeding-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Inbreeding-BM1POPDU.toc) (./Inbreeding-BM1POPDU.lot)
+(./Inbreeding-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 71096 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+Deleting some auxiliary files...
+***** Program inbreeding_report done.
+#####################################################################
+# Running: check_pedi_stack -p PPP_tC20uJQnhzxJQ -u poprep -P pass -m 1 -f 2 -l maincontrol.lst   -L
+#####################################################################
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c -d
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+Dropping table tmp1_sons ...
+Dropping table tmp1_daug ...
+Dropping table tmp1_parents ...
+Dropping table tmp1_par ...
+Dropping table tmp1_sires_noffsp ...
+Dropping table tmp1_1b ...
+Dropping table tmp1_sires_noffsp_sel ...
+Dropping table tmp1_dams_noffsp ...
+Dropping table tmp1_1a ...
+Dropping table tmp1_dams_noffsp_sel ...
+Dropping table tmp1_1 ...
+Dropping table tmp1_pas ...
+Dropping table tmp1_t_dam ...
+Dropping table tmp1_t_sire ...
+Dropping table tmp1_t_dam_s ...
+Dropping table tmp1_t_sire_s ...
+Dropping table tmp1_age_male ...
+Dropping table tmp1_age_female ...
+Dropping table tmp1_age ...
+Dropping table tmp1_parity ...
+Dropping table tmp1_family_sires ...
+Dropping table tmp1_family_dams ...
+Dropping table tmp1_family_all ...
+Dropping table tmp1_family_sel_sires ...
+Dropping table tmp1_family_sel_dams ...
+Dropping table tmp1_family_sel ...
+Dropping table tmp1_sons_sires ...
+Dropping table tmp1_sons_dams ...
+Dropping table tmp1_family_sel_s ...
+Dropping table tmp1_daug_sires ...
+Dropping table tmp1_daug_dams ...
+Dropping table tmp1_family_sel_d ...
+Dropping table tmp1_family ...
+Dropping table tmp1_gen_1 ...
+Dropping table tmp1_gen_ss ...
+Dropping table tmp1_gen_sd ...
+Dropping table tmp1_gen_ds ...
+Dropping table tmp1_gen_dd ...
+Dropping table tmp1_gen_sires ...
+Dropping table tmp1_gen_dams ...
+Dropping table tmp1_gen_sire_dam ...
+Dropping table tmp1_gen_temp ...
+Dropping table tmp1_gen ...
+#####################################################################
+# Running: Create_Population_tables.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -m 1 -f 2 -l 2 -g year -e born_alive_no -i parity -j delivery_dt    -c
+#####################################################################
+Data Base Short_name for Males: 1
+Data Base Short_name for Females: 2
+Field name in litter for number born alive: born_alive_no
+Field name in litter for parity: parity
+Field name in litter for birth date: delivery_dt
+Gestation measure in: year 
+breed = BM1POPDU
+BREED = BREED
+Service and litter data do not exist
+Gestation measured in: year
+#####################################################################
+# Running: PopulationReport.pl -p PPP_tC20uJQnhzxJQ -u poprep -w pass -a BREED -b BM1POPDU -L maincontrol.lst -L maincontrol.lst
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+BREED = BM1POPDU
+
+CLASS = BREED
+
+BM1POPDU
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+No file Population-BM1POPDU.aux.
+(/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd) [1]
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+No file Population-BM1POPDU.toc.
+No file Population-BM1POPDU.lot.
+No file Population-BM1POPDU.lof.
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 176.
+
+[2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 235.
+
+[3]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 283.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 341.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (3.75919pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 415.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (27.79013pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 501.
+
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 60736 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Population-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/lscape.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/pdflscape.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty)))
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Population-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Population-BM1POPDU.toc) (./Population-BM1POPDU.lot)
+(./Population-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 64.
+
+[1] [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 180.
+
+[3] [4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 287.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 345.
+
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 381--390
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 390--397
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (16.53146pt too wide) in alignment at lines 397--415
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 419.
+
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 450--466
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 466--480
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+
+Overfull \hbox (37.17366pt too wide) in alignment at lines 480--501
+ [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] 
+[8] (./Population-BM1POPDU.aux) )
+(see the transcript file for additional information)
+Output written on Population-BM1POPDU.dvi (11 pages, 62728 bytes).
+Transcript written on Population-BM1POPDU.log.
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -k 1
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+max generation = 5
+opt_s not set
+opt_r not set
+opt_c not set
+# Get the project and user sort out 
+# Delete all tmp2 tables
+
+Delete tables:
+Dropping table tmp2_generations:
+Dropping table tmp2_pedcompl:
+Dropping table tmp2_table1:
+Dropping table tmp2_table2:
+Dropping table tmp2_table3:
+Dropping table tmp2_table4:
+Dropping table tmp2_gen_depth:
+Dropping table tmp2_table5:
+Dropping table tmp2_table6:
+Dropping table tmp2_table7:
+#####################################################################
+# Running: Create_inbreeding_tables.pl -p PPP_tC20uJQnhzxJQ -d poprep -w pass -L maincontrol.lst -b BM1POPDU -e BREED -c -r -s -g 5     -I 2
+#####################################################################
+project = PPP_tC20uJQnhzxJQ
+breed = BM1POPDU
+BREED = BREED
+max generation = 5
+opt_s = 1
+opt_r = 1
+opt_c = 1
+# Get the project and user sort out 
+## read the complete pedigree into RAM 
+SELECT db_animal,db_sire,db_dam,
+            birth_dt,date_part('year',birth_dt),short_name
+     FROM   animal, codes
+     WHERE  db_breed=db_code AND db_breed = 119
+.......... info_ped --> 1000
+.......... info_ped --> 2000
+.....
+      ...Pedigree loaded with 2571 records
+
+Running pedicompl for generations (using 4 CPUs)
+## test loops in pedigree 
+
+ Congratulation, your pedigree looks fine!
+
+# test for errors in birth_dt of animals 
+
+ The following animals and parents have wrong birthdays:
+=========================================================
+
+EU:::EI:::1882500	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::122825	 2001-09-17 
+      sire: EU:::EI:::122826	 2002-04-27
+
+EU:::EI:::1882502	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882501	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882497	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+
+EU:::EI:::1882498	 2001-12-19 
+      sire: EU:::EI:::74302	 2001-12-19
+#  I N B R E E D  calculations according to Henderson (?) 
+
+Use more ram to make the job faster (option -s)
+unknown dam 5508 -> *5623*
+unknown sire 7278 -> *7030*
+unknown dam 7278 -> *6470*
+unknown sire 5907 -> *5147*
+unknown dam 5907 -> *5922*
+unknown dam 5522 -> *5984*
+unknown sire 6591 -> *5799*
+unknown sire 5578 -> *6226*
+unknown dam 5578 -> *5208*
+unknown dam 5894 -> *7320*
+unknown sire 6580 -> *6168*
+unknown dam 6415 -> *5710*
+unknown sire 7385 -> *7087*
+unknown dam 7385 -> *5747*
+unknown sire 7120 -> *6601*
+unknown dam 7151 -> *5260*
+unknown sire 5439 -> *6102*
+unknown dam 5439 -> *6276*
+unknown sire 6049 -> *5502*
+unknown dam 6049 -> *5854*
+unknown sire 6306 -> *6503*
+unknown sire 7273 -> *7470*
+unknown dam 7273 -> *5896*
+unknown sire 7390 -> *5325*
+unknown sire 7550 -> *7469*
+unknown sire 7185 -> *6502*
+unknown dam 7185 -> *5482*
+unknown sire 5762 -> *6754*
+unknown dam 5762 -> *6447*
+unknown dam 5454 -> *5116*
+unknown sire 5135 -> *7549*
+unknown sire 6980 -> *6991*
+unknown dam 6980 -> *5054*
+unknown dam 5020 -> *7007*
+unknown sire 6250 -> *7100*
+unknown dam 6250 -> *7594*
+unknown sire 5004 -> *7183*
+unknown sire 6427 -> *6598*
+unknown dam 6427 -> *7364*
+unknown dam 5285 -> *5780*
+unknown sire 5731 -> *6070*
+unknown dam 5731 -> *6705*
+unknown sire 7150 -> *6374*
+unknown sire 6002 -> *7475*
+unknown dam 6002 -> *7618*
+unknown dam 5415 -> *6210*
+unknown sire 7498 -> *5592*
+unknown dam 7498 -> *6028*
+unknown sire 6411 -> *7329*
+unknown dam 6411 -> *6532*
+unknown dam 7064 -> *5405*
+unknown sire 7297 -> *6619*
+unknown dam 5602 -> *6554*
+unknown sire 7584 -> *7602*
+unknown dam 5721 -> *5262*
+Creating table GEN_STUFF
+SQL: DROP TABLE GENE_STUFF
+SQL: CREATE TABLE GENE_STUFF (
+        db_animal         int8,
+        inbreeding        numeric,
+        founders          numeric,
+        year              text,
+        gci               numeric,
+        completeness      numeric,
+        generation        int8,
+        breed             numeric,
+        last_change_dt    timestamp,
+        last_change_user  text)
+SQL: CREATE UNIQUE INDEX uidx_gene_stuff_1 ON GENE_STUFF ( db_animal )
+SQL: SELECT db_animal,db_sire,db_dam,1 AS generation
+         INTO    tmp2_generations
+         FROM    animal
+         WHERE   db_breed = 119 AND db_animal > 2
+SQL: CREATE INDEX ind_tmp2_generations ON tmp2_generations (db_animal)
+..
+commit last 2626 records
+Running pedigree completeness  using 4 CPU
+SQL: CREATE TABLE tmp2_pedcompl (
+               generation        numeric,
+               year              text,
+               breed             numeric,
+               completeness      numeric,
+               number            numeric)
+
+# start pedicompleteness for 1 generations
+
+# start pedicompleteness for 2 generations
+
+# start pedicompleteness for 3 generations
+
+# start pedicompleteness for 4 generations
+
+# start pedicompleteness for 5 generations
+
+# start pedicompleteness for 6 generations
+Parallel jobs finished.
+Number=120
+Running generation calculations of all animals
+rows dams:590
+rows sires:215
+rows dams:355
+rows sires:145
+rows dams:243
+rows sires:111
+rows dams:179
+rows sires:85
+rows dams:125
+rows sires:70
+rows dams:97
+rows sires:47
+rows dams:70
+rows sires:39
+rows dams:47
+rows sires:25
+rows dams:34
+rows sires:19
+rows dams:29
+rows sires:19
+rows dams:21
+rows sires:14
+rows dams:13
+rows sires:10
+rows dams:9
+rows sires:8
+rows dams:7
+rows sires:6
+rows dams:2
+rows sires:1
+Done with generations calculating of all animals
+Bussy reading Gene_stuff.................>
+Bussy creating Inbreeding Table 1........>
+Bussy creating Inbreeding Table 2........>
+Bussy creating Inbreeding Table 3 and 4..>
+Bussy creating Inbreeding Table 5........>
+119|2011|250|35|71|66
+119|2010|417|48|99|91
+119|2009|402|38|91|75
+119|2008|350|31|91|65
+119|2007|381|30|94|64
+119|2006|450|29|110|64
+119|2005|494|31|108|67
+119|2004|478|30|117|67
+119|2003|426|23|93|52
+119|2002|245|25|60|49
+119|2001|150|23|48|44
+119|2000|170|27|55|51
+119|1999|149|35|57|61
+119|1998|125|27|41|46
+119|1997|67|22|35|38
+119|1996|59|25|40|43
+119|1995|55|25|33|40
+119|1994|26|17|18|24
+119|1993|10|8|8|11
+119|1992|3|3|3|4
+119|2011|0.0766|0.0775|0.0760|0.0767|-0.0001|NULL
+119|2010|0.0709|0.0703|0.0687|0.0695|0.0015|332
+119|2009|0.0700|0.0554|0.0741|0.0647|0.0057|88
+119|2008|0.0701|0.0496|0.1022|0.0759|-0.0063|NULL
+119|2007|0.0761|0.0562|0.0967|0.0765|-0.0004|NULL
+119|2006|0.0917|0.0823|0.0893|0.0858|0.0065|77
+119|2005|0.1050|0.1133|0.1115|0.1124|-0.0084|NULL
+119|2004|0.1083|0.1384|0.1405|0.1395|-0.0363|NULL
+119|2003|0.1404|0.0944|0.0978|0.0961|0.0490|10
+119|2002|0.1615|0.0320|0.0264|0.0292|0.1363|4
+119|2001|0.0356|0.0113|0.0032|0.0072|0.0285|18
+119|2000|0.0107|0.0017|0.0005|0.0011|0.0096|52
+119|1999|0.0016|0.0013|0.0004|0.0008|0.0008|665
+119|1998|0.0021|0.0000|0.0001|0.0000|0.0020|247
+119|1997|0.0021|0.0000|0.0020|0.0009|0.0012|401
+119|1996|0.0050|0.0000|0.0026|0.0012|0.0039|129
+119|1995|0.0051|0.0000|0.0000|0.0000|0.0051|98
+119|1994|0.0000|0.0000|0.0000|0.0000|0.0000|NULL
+119|1993|0.0000|0.0000|0.0000|0.0000|0.0000|NULL
+Busy creating Inbreeding Table 6........>
+Busy creating Inbreeding Table 7........>
+119, 2011, 250, 0.0766, 0.0700, 0.0070, 71
+119, 2010, 417, 0.0709, 0.0701, 0.0009, 571
+119, 2009, 402, 0.0700, 0.0761, -0.0065, 
+119, 2008, 350, 0.0701, 0.0917, -0.0238, 
+119, 2007, 381, 0.0761, 0.1050, -0.0323, 
+119, 2006, 450, 0.0917, 0.1083, -0.0185, 
+119, 2005, 494, 0.1050, 0.1404, -0.0412, 
+119, 2004, 478, 0.1083, 0.1615, -0.0635, 
+119, 2003, 426, 0.1404, 0.0356, 0.1087, 5
+119, 2002, 245, 0.1615, 0.0107, 0.1524, 3
+119, 2001, 150, 0.0356, 0.0016, 0.0340, 15
+119, 2000, 170, 0.0107, 0.0021, 0.0087, 58
+119, 1999, 149, 0.0016, 0.0021, -0.0005, 
+119, 1998, 125, 0.0021, 0.0050, -0.0030, 
+119, 1997, 67, 0.0021, 0.0051, -0.0030, 
+119, 1996, 59, 0.0050, 0.0000, 0.0050, 99
+119, 1995, 55, 0.0051, 0.0000, 0.0051, 98
+119, 1994, 26, 0.0000, 0.0000, 0.0000, 
+119, 1993, 10, 0.0000, , , 
+119, 1992, 3, 0.0000, , , 
+ prmon_log_reg.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b BM1POPDU -g 2 
+prmon_ecg_data.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b  BM1POPDU -g 2
+
+Number of records created:
+tmp2_generations: 2571 records
+tmp2_pedcompl: 120 records
+tmp2_table1: 20 records
+tmp2_table2: 20 records
+tmp2_table3: 21 records
+tmp2_table4: 18 records
+tmp2_gen_depth: 1 records
+tmp2_table5: 20 records
+tmp2_table6: 0 records
+tmp2_table7: 20 records
+#####################################################################
+# Running: InbreedingReport.pl -p PPP_tC20uJQnhzxJQ -u poprep -P pass -b BM1POPDU -m 1 -e BREED -L maincontrol.lst   -I 2
+#####################################################################
+***** Starting program agr-extract_files ...
+Breed = BM1POPDU 
+Class = BREED 
+Project = PPP_tC20uJQnhzxJQ
+Sex = 1
+generation interval = 2
+Loading pedigrees ...
+..
+
+Pedigree loaded with 2384 records over 20 year(s)
+
+Creating new sequence numbers ...
+..
+2384 new sequence numbers created
+Printing now BM1POPDU_all.ped ...
+..
+Pedigree printed with 2384 records
+# Delete tmp3_agr_ped table
+SQL: Drop TABLE IF EXISTS tmp3_agr_ped
+SQL: CREATE TABLE tmp3_agr_ped (
+               animal real,                  
+               year   real,
+               sex    real)
+***** Program agr-extract_files done.
+***** Starting program agr-shorten-infiles ...
+***** Program agr-shorten-infiles done.
+***** Starting program agr-run_parallel ...
+
+Running Relationship Coefficients for each year (using 4 CPUs )
+Number of animals for add_gen_didier: 2384 (estimated)
+Running year 1992
+Running year 1993
+Running year 1994
+Running year 1995
+Running year 1996
+Running year 1997
+Running year 1998
+Running year 1999
+Running year 2000
+Running year 2001
+Running year 2002
+Running year 2003
+Running year 2004
+Running year 2005
+Running year 2006
+Running year 2007
+Running year 2008
+Running year 2009
+Running year 2010
+Running year 2011
+Parallel jobs finished.
+***** Program agr-run_parallel done.
+***** Starting program inbreeding_report ...
+Breed = BM1POPDU 
+Class = BREED 
+Project = PPP_tC20uJQnhzxJQ
+Sex = 1
+generation interval = 2
+1992,3, 0.00000, , 0.00000, , 
+1993,10, 0.03125, , 0.00000, , 1
+1994,26, 0.01042, 0.01042, 0.00000, 0.00000, 1
+1995,55, 0.01846, -0.01320, 0.00780, 0.00780, 2
+1996,59, 0.01414, 0.00377, 0.00070, 0.00070, 2
+1997,67, 0.01552, -0.00299, 0.00280, -0.00504, 2
+1998,125, 0.01485, 0.00072, 0.00160, 0.00090, 2
+1999,149, 0.01755, 0.00206, 0.00150, -0.00130, 2
+2000,170, 0.02916, 0.01453, 0.01680, 0.01522, 2
+2001,150, 0.03638, 0.01917, 0.07540, 0.07401, 2
+2002,245, 0.11096, 0.08425, 0.18250, 0.16853, 2
+2003,426, 0.12580, 0.09279, 0.10420, 0.03115, 2
+2004,478, 0.10753, -0.00386, 0.11200, -0.08624, 2
+2005,494, 0.09901, -0.03065, 0.09780, -0.00714, 2
+2006,450, 0.08021, -0.03061, 0.08440, -0.03108, 2
+2007,381, 0.07940, -0.02177, 0.06640, -0.03480, 2
+2008,350, 0.08895, 0.00950, 0.07380, -0.01158, 2
+2009,402, 0.09085, 0.01244, 0.06720, 0.00086, 2
+2010,417, 0.09483, 0.00646, 0.07540, 0.00173, 2
+2011,250, 0.09920, 0.00919, 0.08030, 0.01404, 2
+prmon-agr-ne.data created
+= 119
+select b.db_breed,a.db_animal,ln(1-a.inbreeding),a.year,a.inbreeding,
+         (select distinct on (t.ext_animal) t.ext_animal from transfer t where a.db_animal=t.db_animal) 
+         from gene_stuff a, animal b
+         where a.db_animal=b.db_animal and b.db_breed = 119 and a.year != 'unknown' order by a.yearThis is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+No file Inbreeding-BM1POPDU.aux.
+(/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd) [1]
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+No file Inbreeding-BM1POPDU.toc.
+No file Inbreeding-BM1POPDU.lot.
+No file Inbreeding-BM1POPDU.lof.
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 132.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 199.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 247.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 299.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 349.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 430.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 7 on input line 512.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 8 on input line 588.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 65584 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Inbreeding-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Inbreeding-BM1POPDU.toc) (./Inbreeding-BM1POPDU.lot)
+(./Inbreeding-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 71096 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Inbreeding-BM1POPDU.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, ngerman, german, german-x-2009-06-19, ngerman-x-2009-06-19, loaded.
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2009/07/24 v3.04a KOMA-Script document class (article)
+
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrbase.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrlfile.sty
+Package scrlfile, 2009/03/25 v3.03 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/share/texmf-texlive/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texmf-texlive/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texmf-texlive/tex/latex/koma-script/typearea.sty
+Package typearea, 2009/07/24 v3.04a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+
+Package typearea Warning: Bad type area settings!
+(typearea)                The detected line width is about 27%
+(typearea)                larger than the heuristically detected line width.
+(typearea)                You should e.g. decrease DIV, increase fontsize
+(typearea)                or change papersize.
+
+)) (/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def))
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+(/usr/share/texmf-texlive/tex/latex/base/utf8.def
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/ot1enc.dfu)
+(/usr/share/texmf-texlive/tex/latex/base/omsenc.dfu)))
+(/usr/share/texmf-texlive/tex/latex/tools/longtable.sty)
+(/usr/share/texmf-texlive/tex/generic/babel/babel.sty
+(/usr/share/texmf-texlive/tex/generic/babel/english.ldf
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def)))
+(/usr/share/texmf-texlive/tex/latex/base/makeidx.sty)
+(/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvips.def)))
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty))
+(/usr/share/texmf-texlive/tex/latex/tools/array.sty)
+(/usr/share/texmf-texlive/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty)
+
+LaTeX Warning: Unused global option(s):
+    [headtopline].
+
+(./Inbreeding-BM1POPDU.aux) (/usr/share/texmf-texlive/tex/latex/base/t1cmss.fd)
+[1] (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [2]
+(./Inbreeding-BM1POPDU.toc) (./Inbreeding-BM1POPDU.lot)
+(./Inbreeding-BM1POPDU.lof) [3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 65.
+
+[1] <./GraphcompBM1POPDU.ps> [2]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 159.
+
+[3]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 203.
+
+[4]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 251.
+
+[5]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 303.
+
+<./GraphinbredBM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6] [7]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 363.
+
+[8]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 434.
+
+[9]
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 516.
+
+[10] [11] <./Graph1BM1POPDU.ps> [12] <./log_of_Inbreeding_BM1POPDU.ps>
+<./Graph2BM1POPDU.ps>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13] [14] (./Inbreeding-BM1POPDU.aux) )
+Output written on Inbreeding-BM1POPDU.dvi (17 pages, 71096 bytes).
+Transcript written on Inbreeding-BM1POPDU.log.
+Deleting some auxiliary files...
+***** Program inbreeding_report done.

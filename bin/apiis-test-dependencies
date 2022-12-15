@@ -1,0 +1,211 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: apiis-test-dependencies,v 1.13 2012-06-13 11:37:04 heli Exp $
+# This is just a basic script that checks to make sure that all
+# the modules needed by APIIS before you can install it.
+##############################################################################
+use strict;
+use warnings;
+
+# standard perl modules:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+use FindBin qw($RealBin);
+
+my %args;
+my $core_mod_file = $RealBin . '/../etc/needed_modules';
+my @modfiles;
+
+# handling the command line args:
+GetOptions( \%args,
+    'help|h|?',
+    'man|m|pod|p',
+    'quiet|q',
+    'install|i',
+    'debian|d',
+    'file|f=s@'
+) or pod2usage( -verbose => 1);
+
+pod2usage( -verbose => 1) if $args{'help'};
+pod2usage( -verbose => 2) if $args{'man'};
+
+# reading $mod_file(s):
+if ( exists $args{file} ){
+    @modfiles = @{$args{file}}; # could be several
+} else {
+    push @modfiles, $core_mod_file;
+}
+
+PROJECT:
+for my $needed (@modfiles) {
+    my $FILE;
+    eval {
+        open $FILE, '<', $needed or die "$!\n";
+        # or die "Problems opening file\n\t$needed:\n$!\n";
+    };
+    if ($@) {
+        my $string = $@;
+        printf STDERR "%s\n", '#' x 78;
+        printf STDERR "# %s\n", 'Problems opening file:';
+        printf STDERR "# %s\n", $needed;
+        printf STDERR "# %s", $string;
+        printf STDERR "# %s\n", 'Skipped!';
+        printf STDERR "%s\n", '#' x 78;
+        next PROJECT;
+    }
+
+    # some nice printing:
+    if ( !$args{quiet} ) {
+        my $string = "# $needed: #";
+        printf "%s\n", '#' x length($string);
+        printf "%s\n", $string;
+        printf "%s\n", '#' x length($string);
+    }
+
+    my $section = 'UNSORTED';
+    my @sections;    # store in an array to keep the order
+    my %deps;
+
+    # read file and separate sections and entries:
+    while (<$FILE>) {
+        next if /^\s*#/;    # comments
+        next if /^\s*$/;    # empty lines
+        if (/^\s*\[([^]]*)\]/) {
+            $section = $1;
+            push @sections, $section;
+        }
+        else {
+            chomp;
+            push @{ $deps{$section} }, $_;
+        }
+    }
+    close $FILE;
+
+    # process entries per section
+    foreach my $section (@sections) {
+        print "$section\n" if !$args{quiet};
+        my @deps = ( @{ $deps{$section} } );
+        foreach my $entry (@deps) {
+            $entry =~ s/^\s*//;
+            $entry =~ s/\s*$//;
+            my ( $module, $version ) = split /\s+/, $entry;
+            my $ret = test_dep( $module, $version );
+
+            if ( !$ret ) {
+                resolve_dep($module) if $args{'install'} and !$args{'debian'};
+                debian_inst($module) if $args{'debian'};
+            }
+        }
+        print "\n" if !$args{quiet};
+    }
+}
+
+sub test_dep {
+    my $module  = shift;
+    my $version = shift;
+    my $string  = $module;
+    $string .= " $version" if defined $version;
+
+    eval "use $string ()";
+    if ($@) {
+        my $error = $@;
+        $error =~ s/\n(.*)$//s;
+        if ( !$args{quiet} ) {
+            print "\t$string";
+            print ' ' x ( 30 - length($string) );
+            print "... MISSING\n";
+            print "\t\t$error\n" if $error =~ /this is only/;
+        }
+
+        return undef;
+    }
+    else {
+        if ( !$args{quiet} ) {
+            print "\t$string";
+            print ' ' x ( 30 - length($string) );
+            print "... found\n";
+        }
+        return 1;
+    }
+}
+
+sub resolve_dep {
+    my $module = shift;
+    if ( $< != 0 or $> != 0 ) {
+        die "\t$module: Only root can install Perl modules. Sorry.\n";
+    }
+    else {
+        use CPAN();
+        CPAN::Shell->install($module);
+    }
+}
+
+sub debian_inst {
+    my $module = shift;
+    $module =~ tr/A-Z/a-z/;
+    $module =~ s/::/-/g;
+    $module =~ s/_/-/g;
+    $module = 'lib' . $module . '-perl';
+    if ( $< != 0 or $> != 0 ) {
+        die "\t$module: Only root can install Perl modules. Sorry.\n";
+    }
+    else {
+        system("apt-get install --yes --force-yes $module");
+    }
+}
+
+__END__
+
+=pod
+
+=head1 NAME
+
+apiis-test-dependencies
+
+=head1 SYNOPSIS
+
+apiis-test-dependencies [Options]
+
+=head1 OPTIONS
+
+   -h | -? | --help            short help
+   -m | --man | -p | --pod     detailed man page
+   -q | --quiet                quiet execution
+   -i | --install              install missing modules (only as root)
+   -d | --debian               install missing modules as debian package (only as root)
+   -f | --file <filename>      take <filename> instead of the default file
+                               $APIIS_HOME/etc/needed_modules
+
+=head1 DESCRIPTION
+
+apiis-test-dependencies determines whether you have installed all the
+perl modules APIIS needs to run. If you want to install the missing modules
+you must be root.
+
+=head1 FILES
+
+The needed modules and optionally the required versions are taken from the
+file $APIIS_HOME/etc/needed_modules unless you pass -f <filename> on the
+commandline. This option enables you to also check the modules for your
+projects. You can specify several -f <filename> options on the command line.
+
+Example:
+
+   apiis-test-dependencies -f $APIIS_HOME/etc/needed_modules\
+                           -f $APIIS_HOME/ref_breedprg/etc/needed_modules\
+                           -f $APIIS_HOME/projects/efabis/needed_modules\
+                           -d
+
+This checks the modules of the Apiis core and of the projects ref_breedprg and
+efabis. They will be installed as Debian packages.
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+
+This program is based on rt-test-dependencies by Jesse Vincent
+<jesse@bestpractical.com>, which is part of the RT request tracking
+system.
+
+

@@ -1,0 +1,138 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: Form,v 1.38 2005/03/01 07:04:59 haboe Exp $
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.38 $' );
+
+use yaform;
+use form_ulib;
+
+use Tk::ErrorDialog; # to process background errors
+
+use vars qw($opt_d $opt_s $opt_D $opt_P $opt_x $opt_v $opt_p);
+
+# allowed parameters:
+use Getopt::Std;
+getopts('sdpP:D:xv'); # -s  print last SQL Statement
+                # -d   print debug messages
+	        # -p  print values from the returned hash
+                # -P <0..6>  place in one of seven places 1:top left ... 
+	        # -D level DBIx::Recordset Debug level 1..4
+
+my $programname = $apiis->programname;
+
+# Version:
+die "$programname: ",$apiis->version,"\n" if $opt_v;
+
+
+my $formfile = $ARGV[0] if -f $ARGV[0];
+die "\n usage: $programname [-s][-d][-D level][-P pos] formfile
+	-s            print last SQL Statement
+	-d            print debug messages from yaform
+	-D level      DBIx::Recordset debuglevel 1..4
+	-p            print field values from the returned hash
+	-P pos        place in one of seven positions (default: 0)
+	       pos:   .-------.
+                      |1  2  3|
+                      |   0   |
+                      |4  5  6|
+                      '-------'
+        -x            sets 'Form' as the window title (necessary for xnodecor)
+        \n\n" if(! -f $ARGV[0]);
+
+
+my %a = TkYAF(@ARGV);
+
+############################################
+# print field values from the returned hash
+#
+# usefull for calling Form from inside TkYAF
+#
+# to use this values in a form file:
+# i.e.
+# STARTUP=<<EOT
+# @w=`Form -p other.frm`;
+# ($$form{col001}{DATA}=$w[0])=~s/\n$//;
+# EOT
+# pass the first value from other.frm to the col001-field
+# of the current form
+
+foreach my $aa (sort keys %a){
+   print "$a{$aa}\n" if($opt_p);
+}
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Form - create a window with the form defined in formfile 
+
+=head1 SYNOPSIS
+
+Form [-s][-d][-D level][-p][-P pos] [formfile] [data ... ]
+
+=head1 DESCRIPTION
+
+The formfile describe the appearance and functionality of a form. B<Form> initializes
+neccessary things and passes the formfile and parameter to the module 'yaform.pm'.
+For using more than one form at a time one can also use the wrapper B<apiish>.
+
+To pass data directly into fields of the form one can give the data to the command line.
+The first given parameter after formfile will be written into the first field of the form,
+the second into the second field and so on. One can check the order of the form field with
+the FormDesigner at the Edit menu.
+With option -p and the data parameter it is possible to pass values from one form to an other.
+
+=head1 OPTIONS
+
+=over 6
+
+=item B<-s>    
+
+print last SQL Statement
+
+=item B<-d>
+
+print debug messages from yaform
+
+=item B<-D> level
+
+DBIx::Recordset debuglevel 1..4
+
+=item B<-p>
+
+print field values from the returned hash
+
+=item B<-P> pos
+
+place in one of seven screen positions (default: 0)
+pos:   .-------.
+       |1  2  3|
+       |   0   |
+       |4  5  6|
+       '-------'
+
+=back
+
+=head1 SEE ALSO
+
+yaform.pm, form_ulib.pm, FormDesigner, apiish
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+=cut

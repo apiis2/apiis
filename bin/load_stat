@@ -1,0 +1,190 @@
+#!/usr/bin/perl -w
+##############################################################################
+# $Id: load_stat,v 1.4 2005/03/09 07:14:12 eg Exp $
+# print status of the loading process from table LOAD_STAT
+##############################################################################
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.4 $' );
+use Apiis::DataBase::Record;
+use Apiis::DataBase::SQL::Statement;
+use apiis_alib_new;
+use Data::Dumper;
+
+use Getopt::Std;
+# some inits:
+use vars qw/$opt_o $opt_d $opt_f $opt_g $opt_v $opt_h $opt_L $programname
+            $load_stat_version $model_file $outfile/;
+
+getopts('f:o:vhaLg:d:');    # option -f <modelfile>  => Modelfile
+                            #        -o <outfile>    => Output to file
+                            #        -g <formfile>   => start GUI
+                            #        -a ascii-format (default)
+                            #        -L LaTex-format
+    #        -d <days_no>    => Print status of the last <days> days\n",
+    #        -v              => Version
+    #        -h              => Help
+
+# help:
+die usage()                              if ($opt_h);
+die "$programname: $load_stat_version\n" if ($opt_v);
+
+# GUI
+if ($opt_g) {
+   use yaform;
+   TkYAF($opt_g);
+   exit;
+}
+
+### model_file required
+$model_file = $opt_f if $opt_f;
+
+# maybe model file given without -f
+if ( !$model_file ) {
+   $model_file = $ARGV[0] if $ARGV[0];
+}
+
+#die usage() if ( !$model_file );    # no model_file given
+
+# die __('Problems opening file '), $model_file, ": $!\n" if ( !-f $model_file );
+
+$apiis->join_model($model_file);
+$apiis->check_status;
+
+# output into file?
+$outfile = $opt_o if $opt_o;
+my $out_handle = 'STDOUT';
+if ($outfile) {
+   $out_handle = 'OUT';
+   open( $out_handle, ">$outfile" ) or die __('Problems opening file '), ":", $outfile, " $!\n";
+}
+
+
+my $days = $opt_d ? $opt_d : 2;
+
+my $sql = qq{ SELECT 
+              ds,job_start,job_end,rec_tot_no,rec_err_no,rec_ok_no
+              FROM LOAD_STAT
+	      WHERE  age('now',job_start)<=(reltime '$days day')};
+# my $sth = ExecuteSelect($sql);
+my $sth = $apiis->DataBase->user_sql($sql);
+
+while ( my $array_ref = $sth->handle->fetch ) {
+   my ( $ds, $job_start ) = @$array_ref;
+   print "daten: $ds $job_start\n";
+}
+
+# output ascii output format
+ascii( $sth, $out_handle ) if ( !$opt_L );
+# output LaTex output format
+latex( $sth, $out_handle ) if ($opt_L);
+
+##############################################################################
+sub usage {
+   die __('usage'), ":\n", "$programname [-h | -v | -g formfile]\n",
+     "$programname -f <modelfile> [-o <", __('output file'),
+     ">] [-a | -L] [-d <days_no>]\n", "\t -h                ", __('help'), "\n",
+     "\t -v                ", __('version'), "\n", "\t -g <formfile>     ",
+     "Start GUI\n", "\t -o <", __('output file'), ">  Place the output into <",__('output file'),
+     ">\n", "\t -f <", __('modelfile'), ">\n", "\t -d <days_no>      ",
+     "Print status of the last <days_no> days (default: 2)\n",
+     "\t -a                ", "ASCII output format (default)\n",
+     "\t -L                ", "LaTeX output format\n";
+}    # usage
+
+##############################################################################
+# ASCII ouput to filehandle
+sub ascii {
+
+   my ( $sth, $hdl ) = @_;
+
+   my ( $rto, $ren, $ron ) = ( 0, 0, 0 );
+
+  # my $today = GetNow();
+   my $today = "March";
+
+   # Title
+   print $hdl "\nStatus of the loading process\t$today\n\n";
+   # table header
+   print $hdl "DS    job_start               job_end                 ";
+   print $hdl "rec_tot_no  rec_err_no  rec_ok_no\n";
+   print $hdl "--------------------------------------------------";
+   print $hdl "-------------------------------------\n";
+
+   while ( my @w = $sth->fetchrow_array ) {
+      # print each record
+      $w[0] = '--' if ( !$w[0] );
+      $w[1] = '--' if ( !$w[1] );
+      $w[2] = '--' if ( !$w[2] );
+      $w[3] = '0'  if ( !$w[3] );
+      $w[4] = '0'  if ( !$w[4] );
+      $w[5] = '0'  if ( !$w[5] );
+      printf $hdl (
+         "%-4s  %-20s  %-20s  %10d  %10d  %9d\n",
+         $w[0], $w[1], $w[2], $w[3], $w[4], $w[5]
+      );
+      $rto += $w[3] if ( $w[3] );
+      $ren += $w[4] if ( $w[4] );
+      $ron += $w[5] if ( $w[5] );
+   }
+
+   print $hdl "------------------------------------------";
+   print $hdl "---------------------------------------------\n";
+   print $hdl "                                             Total:   ";
+   printf $hdl ( "%10d  %10d  %9d\n", $rto, $ren, $ron );
+
+}    # ascii
+
+##############################################################################
+# LaTeX ouput to filehandle
+sub latex {
+
+   my ( $sth, $hdl ) = @_;
+
+   my ( $rto, $ren, $ron ) = ( 0, 0, 0 );
+   my $today = "march";
+
+   print $hdl <<"EndOfHeader";
+\\documentclass[DIV16]{scrartcl}
+\\usepackage[T1]{fontenc} \\usepackage[latin1]{inputenc}
+\\usepackage{longtable}
+
+\\title{Status of the loading process}
+\\date{$today}
+
+\\begin{document}
+\\maketitle
+EndOfHeader
+
+   print $hdl <<"TabHead";
+{\\centering \\begin{tabular}{|c|c|c|r|r|r|}
+\\hline
+DS& job\\_start& job\\_end& rec\\_tot\\_no& rec\\_err\\_no& rec\\_ok\\_no\\\\
+\\hline
+TabHead
+
+   while ( my @w = $sth->fetchrow_array ) {
+      # print each record
+      $w[0] = '--' if ( !$w[0] );
+      $w[1] = '--' if ( !$w[1] );
+      $w[2] = '--' if ( !$w[2] );
+      $w[3] = '0'  if ( !$w[3] );
+      $w[4] = '0'  if ( !$w[4] );
+      $w[5] = '0'  if ( !$w[5] );
+      print $hdl "$w[0]&$w[1]&$w[2]&$w[3]&$w[4]&$w[5]\\\\ \n";
+      $rto += $w[3] if ( $w[3] );
+      $ren += $w[4] if ( $w[4] );
+      $ron += $w[5] if ( $w[5] );
+   }
+   print $hdl "\n\\hline\n";
+   print $hdl "\\multicolumn{3}{|r|}{Total:}&{$rto}&{$ren}&{$ron}\\\\\n";
+   print $hdl "\\hline\n\\end{tabular}\\par}\\vspace{0.3cm}\n\\end{document}";
+
+}    # latex

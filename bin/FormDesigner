@@ -1,0 +1,3581 @@
+#!/usr/bin/perl -w
+###########################################################################
+# $Id: FormDesigner,v 1.29 2005/03/01 07:24:24 haboe Exp $
+###########################################################################
+
+=pod
+
+=head1 NAME
+
+FormDesigner - GUI for creating/editing formfiles
+
+=head1 SYNOPSIS
+
+B<FormDesigner>
+
+=head1 DESCRIPTION
+
+F<FormDesigner> is a graphical user interface for creating and editing
+form files (formfile) for APIIS (Adaptable Platform Independent Information System). 
+
+The bulk of the documentation for F<FormDesigner> is in an HTML-based implementer guide.
+See the Help menu in F<FormDesigner> or point your browser at
+F<$APIIS_HOME/doc/implementer/FormDesigner/de/FormDesigner.html>. At this time, there is
+only a german version available.
+
+For the help system the preferred browser can be permanently set in the apiis configuration
+file F<$APIIS_HOME/apiisrc>
+
+=head1 SUBROUTINES
+
+=cut
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+#use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.29 $' );
+
+my $version = $apiis->version;
+
+use Getopt::Std;
+use Tk;
+use Tk::Listbox;
+use Tk::BrowseEntry;
+use Tk::ErrorDialog;
+use Tk::Pane;
+use Data::Dumper;
+use File::Basename;
+
+use yaform;
+use Tk::BreakMenu;
+
+use vars qw / %fd %yaffd @tables $section $cursection %reg_sec $maske $opt_d $opt_s
+              $_optidebug $_optisql $ygrid $ygrid $menu /;
+
+$fd{GENERAL}{HEIGHT} = 200;
+$fd{GENERAL}{WIDTH}  = 400;
+
+%eFwin = ();              # hash stores the field windows. one win per section
+%secButton = ();          # hash stores the 'textvariable', needed by renSection
+$section = 10;            # increment
+$cursection = 100;        # start value for numbering sections
+$maxsection = $cursection;
+$_bgcolor = 'LightGrey';
+$_fgcolor = 'DimGray';
+$selectedtype = undef;
+$xgrid = 1 if(!$xgrid);
+$ygrid = 1 if(!$ygrid);
+
+# if $browser is defined in apiisrc we use this.
+# Otherwise either netscape | mozilla | konqueror
+if(!$browser) {
+   # which browser
+   if(-e '/usr/bin/netscape') {
+      $myBrowser = 'netscape';
+   } elsif (-e '/usr/bin/mozilla') {
+      $myBrowser = 'mozilla';
+   } elsif (-e '/usr/bin/konqueror') {
+      $myBrowser = 'konqueror';
+   } else {$myBrowser = 'netscape'}
+} else {$myBrowser = $browser}
+
+# fileselector
+my $fileselector = $apiis->fileselector;
+$fileselector = 'FBox' if(!$fileselector);
+
+$_optidebug = undef;  # with this flag we can switch yaform on debug
+$_optisql   = undef;  # with this flag we can switch yaform on print SQLs
+
+my $bg = $_bgcolor;
+my $liheight = 6;
+my $liwidth  = 14;
+my @fieldTypen = (
+		  'A  text label without input field',
+		  'B  browseable input field with query option',
+		  'C  drop down calendar',
+                  'D  text field for displaying only',
+                  'E  editable input field',
+		  'I    image / Box',
+		  'L  list field (checkrule LIST must be defined',
+		  'N  browseable input field without query option',
+		  'M  multiselectable listbox field',
+		  'O  multicolumn Listbox for displaying arrays',
+		  'P  pushbutton',
+		  'R  radiobutton',
+		  'T   text entry (small text editor)',
+		  'U   Uhr - analog or digital clock',
+		  '    hidden field',
+		  );
+
+# Directory of FormDesigner documentation 
+my $docdir = $APIIS_HOME."/doc/implementer/FormDesigner";
+my $date = '$Date: 2005/03/01 07:24:24 $';
+
+########## create toplevel window
+my $fdtop = MainWindow->new(-title => "FormDesigner");
+$fdtop->resizable(0,0); # this prevents nasty distorted windows
+# fdtop Icon
+my $image = $APIIS_HOME."/lib/FDminiIcon.gif";
+my $icon = $fdtop->Photo(-file => $image) if($image);
+# $fdtop->idletasks;
+$fdtop->iconimage($icon);
+
+# screen dimension
+$screenheight = $fdtop->screenheight();
+$screenwidth = $fdtop->screenwidth();
+print "screen width x height:$screenwidth x $screenheight\n";
+if($screenheight < 1024) {
+  print " *** A minimal screen resolution of 1280 x 1024 pixel".
+        " is recommended. ***\n";
+}
+
+#########  fonts
+$sfont  = '-adobe-helvetica-normal-r-normal-*-10-*-*-*-*-*-*-*'; # standard font
+$sbfont = '-adobe-helvetica-bold-r-normal-*-10-*-*-*-*-*-*-*';   # std bold font
+$smfont = '-adobe-helvetica-normal-r-normal-*-8-*-*-*-*-*-*-*';  # small font
+$bfont  = '-adobe-helvetica-bold-r-normal-*-10-*-*-*-*-*-*-*';   # bold font
+$btfont = '-adobe-helvetica-bold-r-normal-*-10-*-*-*-*-*-*-*';   # button font
+$mfont  = '-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*';   # menu font
+
+$fdtop->optionAdd('*font'=>$sfont);  # standard font for widgets
+
+########  menu
+my $menubar = $fdtop->Frame(-relief=>'raised',-borderwidth=>1)
+			  ->pack(-side=>'top', -anchor=>'n',
+				 -expand=>1, -fill=>'x');
+
+$menu = $menubar->Menu;
+$menufile = $menu->cascade(-label => "~File",-font=>$mfont,-tearoff=>0);
+$menuedit = $menu->cascade(-label => "~Edit",-font=>$mfont);
+$menuopti = $menu->cascade(-label => "~Option",-font=>$mfont,-tearoff=>0);
+$menuhelp = $menu->cascade(-label => "~Help",-font=>$mfont,-tearoff=>0);
+$fdtop->configure(-menu => $menu);
+
+
+# File-menu items
+$menufile->command(-label => '~New',-font=>$mfont,
+                   -command => [\&newForm,$fdtop]);
+$menufile->command(-label => '~Open...',-font=>$mfont,
+                   -command => [\&loadForm,$fdtop]);
+$menufile->separator;
+$menufile->command(-label => '~Save',-font=>$mfont,
+                   -command => [\&saveForm,$fdtop]);
+$menufile->command(-label => 'Save ~as...',-font=>$mfont,
+                   -command => [\&saveForm,$fdtop,'ask']);
+$menufile->separator;
+$menufile->command(-label => '~Exit',-font=>$mfont,
+                   -command => sub { exit });
+
+# Edit-menu items
+$menuedit->command(-label => 'GENERAL',-font=>$mfont,
+                   -command=> [\&newForm,$fdtop,'E']);
+$menuedit->separator;
+
+
+# Optionen-menu items
+$menuopti->command(-label => '~Grid...',-font=>$mfont,
+                   -command=> [\&option_grid,$fdtop]);
+$menuopti->separator;
+$menuopti->command(-label => '~Debug        On',-font=>$mfont,
+                   -command=> [\&option_debug]);
+$menuopti->command(-label => '~SQL-Print On',-font=>$mfont,
+                   -command=> [\&option_sql]);
+$menuopti->command(-label => 'set $APIIS_~HOME...',-font=>$mfont,
+                   -command=> [\&option_apiis,$fdtop,'h']);
+$menuopti->command(-label => 'set $APIIS_~LOCAL...',-font=>$mfont,
+                   -command=> [\&option_apiis,$fdtop,'l']);
+$menuopti->separator;
+$menuopti->command(-label => '~Browser...',-font=>$mfont,
+                   -command=> [\&options,$fdtop]);
+$menuopti->command(-label => '~File Selector...',-font=>$mfont,
+                   -command=> [\&opt_fsel,$fdtop]);
+
+
+# Help-menu items
+$menuhelp->command(-label => '~Contents',-font=>$mfont,
+                   -command=>
+			 sub{
+			      if(! $myBrowser) { # if no browser - select one
+			         options($fdtop);                   # browser selctor
+			         $fdtop->waitVariable(\$myBrowser); # wait until there is one 
+				 $_opt->destroy if(Exists $_opt);   # destroy option window
+			      }
+			      if( -r "$docdir/$language/FormDesigner.html") {
+			         system( "$myBrowser $docdir/$language/FormDesigner.html &")
+			      } else {
+			         system( "$myBrowser $docdir/de/FormDesigner.html &")
+			      }
+			    });
+$menuhelp->command(-label => 'About ~Fonts',-font=>$mfont,
+                   -command=>
+			    sub{
+			       if(! $myBrowser) { # if no browser - select one
+			         options($fdtop);                   # browser selctor
+			         $fdtop->waitVariable(\$myBrowser); # wait until there is one 
+				 $_opt->destroy if(Exists $_opt);   # destroy option window
+			       }
+			       system("$myBrowser $docdir/fonts.txt")
+			          });
+$menuhelp->separator;
+$menuhelp->command(-label => '~About ...',-font=>$mfont,
+                   -command=>
+			      sub{ 
+			          warnwin($fdtop,
+			            'About FormDesigner',
+				    $fdtop->Pixmap(-file=>"$APIIS_HOME/lib/images/fd.xpm"),
+			   	    "FormDesigner\n".
+			   	    "by Hartmut Boerner\n\n".
+			   	    "$version\n$date\n\n".
+			   	    "Please report bugs to\n".
+			   	    "haboe\@tzv.fal.de",
+		   	            ['Close'])});
+
+
+######## database
+my $oframe = $fdtop->LabFrame(-relief=>'groove',-borderwidth=>0,
+                              -label=>'Database',-labelside=>'acrosstop'
+			      )->pack(-side=>'top',
+				 -anchor=>'n',
+				 -expand=>1,
+				 -padx=>10,
+				 -pady=>5);
+$oframe->Subwidget('label')->configure(-font=>$sbfont);
+
+# listbox tables
+$tablist = $oframe->Scrolled("Listbox", -scrollbars=>"osoe",
+				  -label=> "Tables",
+				  -height=>$liheight,
+				  -width=>$liwidth,
+				  -bg=>$bg,
+				  -selectmode=>"browse",
+				  -exportselection=>0)
+				  ->pack(-side=>"left",
+					 -anchor=>'w',
+					 -padx=>13,
+					 -pady=>5);
+
+
+# listbox columns
+$collist = $oframe->Scrolled("Listbox", -scrollbars=>"osoe",
+				  -label=> "Columns",
+				  -height=>$liheight,
+				  -width=>$liwidth,
+				  -bg=>$bg,
+				  -selectmode=>"browse",
+				  -exportselection=>0)
+				  ->pack(-side=>"left",
+					 -padx=>13,
+					 -pady=>5);
+
+# field typen
+my $fframe = $fdtop->LabFrame(-relief=>'groove',-borderwidth=>0,
+                              -label=>'Form Field Types',
+                              -labelside=>'acrosstop'
+			      )->pack(-side=>'top',
+				 -anchor=>'n',
+				 -expand=>1,
+				 -padx=>10,
+				 -pady=>5);
+$fframe->Subwidget('label')->configure(-font=>$sbfont);
+
+my $ftypelist = $fframe->BrowseEntry(-variable=>\$selectedtype,
+                                      -width=>39,
+                                      -font=>$sfont,
+                                      -choices=>\@fieldTypen,
+                                      -state=>'readonly'
+                                     )->pack();
+my $entry = $ftypelist->Subwidget('entry')
+                      ->Subwidget('entry')
+                      ->configure(-bg=>$bg);
+
+my $bframe = $fdtop->Frame(-relief=>'sunken',-borderwidth=>3)
+			  ->pack(-anchor=>'n',
+				 -expand=>1,
+				 -padx=>2,
+				 -pady=>0,-fill=>'x');
+
+my $bbframe = $bframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+                                      -expand=>1,-pady=>0);
+$todo = '';
+my $btn_place = $bbframe->Button(-textvariable => \$todo,
+                                 #-width=>16,
+				-font=>$btfont,-pady=>0,
+				-command => 
+                                  sub {
+					 $cursection = $maxsection;
+                                         \&proceed($fdtop)if($todo eq 'Proceed')
+                                      })
+				-> pack(-side=>'right',-padx=>4,-pady=>0,
+                                        -expand=>1,-fill=>'x');
+
+my $qub = $bbframe->Button(-text=>'Update',-width=>8,
+                           -underline=>0,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{updateField()}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+
+
+$tablist->bind("<ButtonRelease>", \&fillColList);
+$collist->bind("<ButtonRelease>",
+                             sub {
+                                    $todo = 'Select a Field Type'
+				       if($collist->curselection >= 0 and 
+                                               ! $selectedtype);
+                                    $todo = 'Proceed'
+				       if($collist->curselection >= 0 and
+                                                 $selectedtype);
+                                 });
+
+$ftypelist->children->bind("<Leave>",
+                             sub {
+                                    $todo = 'Proceed' 
+                                        if($collist->curselection >= 0 and
+                                           $selectedtype or
+                                           (!$collist->size and
+                                            !$tablist->size));
+                                 });
+
+$fdtop->bind('all','<Control-u>',sub{updateField()});
+
+MainLoop;
+
+
+
+#######################################################################
+=pod
+
+=head2 newForm
+
+newForm initialize or reset some variables for a new Form.
+If a form exists ask about destroying, then create a new one.
+Creates the GENERAL-configuration window.
+
+Subroutine is called form the main window menu: File->New and Edit->GENERAL
+
+usage: newForm( $ToplevelWindow [,$switch] )
+
+   ToplevelWindow:  created with i.e. $ToplevelWindow = MainWindow->new();
+
+           switch:  if set, create only the GENERAL-configuration window.
+
+=cut
+sub newForm {
+
+   use Tk::LabFrame;
+   use Tk::LabEntry;
+
+   my ($top, $edit) = @_;
+
+
+   my $answer;
+
+   # initialisation or reset some variables for very new Form
+   if(!$edit) {
+      if(%reg_sec) {
+         # if there are some fields placed on the Form ask for deletion
+         $answer = warnwin($top,'Question','question',
+	                   'Delete Form?',['Yes','No']);
+	 return if($answer eq 'No');
+      }
+
+      ### destroy existing Form
+      delete $fd{GENERAL}{HEIGHT};
+      updateField(); 
+
+      ### delete table-listbox
+      $tablist->delete(0,"end");
+      $collist->delete(0,"end");
+
+      ### destroy existing TYPE-windows  
+      foreach (keys %reg_sec) {
+         $eFwin{$_}->destroy() if(Exists($eFwin{$_}));
+      }
+
+      ### Edit menu löschen, falls schon was registriert ist
+      $menuedit->menu->delete(3,'end') if(%reg_sec);
+      $todo = '';
+      %fd = ();
+      %reg_sec = ();
+
+      $FORMfile = 'untitled.form';
+      $top->configure(-title=>"FormDesigner: $FORMfile");
+
+   }
+
+   my $bg = $_bgcolor; # background color for entry fields
+   my $fg = $_fgcolor; # foreground color for entry fields
+
+   # newForm-window
+   if(Exists($nFwin)) {
+      $nFwin->deiconify();
+      $nFwin->raise();
+      return;
+   }
+
+   $nFwin = $top->Toplevel(-title=>'New Form   [GENERAL]');
+   $nFwin->resizable(0,0); # this prevents nasty distorted windows
+
+   my $nFframe = $nFwin->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   # GENERAL
+   my $sframe = $nFframe->Frame(-relief=>'groove',-borderwidth=>3
+                               )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,pady=>3);
+
+   # we don't need realy a Button but it looks nice
+   my $slabel = $sframe->Button(-text=>'GENERAL', 
+                               -font=>$bfont,
+			       -bg=>$fg,-fg=>$bg,
+			       -activebackground=>$fg,
+			       -activeforeground=>$bg,
+                               -bd=>2,-relief=>'raised',
+			      )->pack(-fill=>'both',-expand=>1);
+
+   # title of the new form
+   my $tframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                -label=>'Title',-labelside=>'acrosstop',
+                               )->pack(-anchor=>'e',-fill=>'x',
+                                       -expand=>1,padx=>0);
+   $tframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   my $titleField = $tframe->LabEntry(-textvariable=>\$fd{GENERAL}{TITLE},
+                                       -label=>'',
+				       -state=>'normal',
+				       -width=>56,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',padx=>3,pady=>3);
+   $titleField->configure(-labelPack=>[-side=>'left']);
+
+   # Model
+   my $mframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                -label=>'Model File',-labelside=>'acrosstop',
+                               )->pack(-anchor=>'e',-fill=>'x',
+                                       -expand=>1,padx=>3);
+   $mframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   my $modelField = $mframe->LabEntry(-textvariable=>\$fd{GENERAL}{MODEL},
+                                       -label=>'',
+				       -state=>'normal',
+				       -width=>48,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',padx=>0,pady=>3);
+   $modelField->configure(-labelPack=>[-side=>'left']);
+   my $mb = $mframe->Button(-text=>'Browse',
+                             -font=>$smfont,
+                             -width=>4,
+                             -command=>sub {
+					    my $f = selectFile('model',$fdtop);
+			                    $fd{GENERAL}{MODEL} = $f if($f)}
+                            )->pack(-side=>'right');
+
+   # Geometrie
+   my $gframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Geometry',-labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-fill=>'x',
+                                          -expand=>1,padx=>3);
+   $gframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   # HEIGHT
+   my $heightField = $gframe->LabEntry(-textvariable=>\$fd{GENERAL}{HEIGHT},
+                                       -label=>' Height ',
+				       -state=>'normal',
+				       -width=>10,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',pady=>3);
+   $heightField->configure(-labelPack=>[-side=>'left']);
+
+   my $widthField = $gframe->LabEntry(-textvariable=>\$fd{GENERAL}{WIDTH},
+                                       -label=>' Width  ',
+				       -state=>'normal',
+				       -width=>10,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'right',pady=>3);
+   $widthField->configure(-labelPack=>[-side=>'left']);
+
+   # colors
+   my $chframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Color',-labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>3);
+   $chframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   my $cframe = $chframe->Frame()->pack(-side=>'top',-padx=>0,-pady=>0,-fill=>'x',-expand=>1);
+
+   # BG-color
+   my $bgf = $cframe->Frame()->pack(-side=>'left',-padx=>0,-pady=>0);
+   my $bgField = $bgf->LabEntry(-textvariable=>\$fd{GENERAL}{BGCOLOR},
+                                       -label=>' Background ',
+				       -state=>'normal',
+				       -width=>12,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',pady=>3);
+   $bgField->configure(-labelPack=>[-side=>'left']);
+
+   my $bgbtn = $bgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+                            -bd=>1,
+                            -command=> sub {
+                                            $fd{'GENERAL'}{BGCOLOR}=$fdtop
+                                             ->chooseColor(
+                                                       -title=>'Choose color: Background')
+                                           })->pack(-side=>'right',
+                                                       -padx=>0,-pady=>0);
+
+   # FG-color
+   my $fgf = $cframe->Frame()->pack(-side=>'right',-padx=>0,-pady=>0);
+   my $fgField = $fgf->LabEntry(-textvariable=>\$fd{GENERAL}{FGCOLOR},
+                                       -label=>' Foreground ',
+				       -state=>'normal',
+				       -width=>12,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',pady=>3);
+   $fgField->configure(-labelPack=>[-side=>'left']);
+   
+   my $fgbtn = $fgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+                            -bd=>1,
+                            -command=> sub {
+                                            $fd{'GENERAL'}{FGCOLOR}=$fdtop
+                                             ->chooseColor(
+                                                       -title=>'Choose color: Foreground')
+                                           })->pack(-side=>'right',
+                                                       -padx=>0,-pady=>0);
+
+   my $eframe = $chframe->Frame()->pack(-side=>'bottom',-padx=>3,-pady=>0,-fill,'x',-expand,1);
+   
+   # Error-color
+   my $erf = $eframe->Frame()->pack(-side=>'left',-padx=>0,-pady=>0);
+   my $erField = $erf->LabEntry(-textvariable=>\$fd{GENERAL}{ERRCOLOR},
+                                       -label=>'  Error flash ',
+				       -state=>'normal',
+				       -width=>12,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'left',pady=>3);
+   $erField->configure(-labelPack=>[-side=>'left']);
+   
+   my $erbtn = $erf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+                            -bd=>1,
+                            -command=> sub {
+                                            $fd{'GENERAL'}{ERRCOLOR}=$fdtop
+                                             ->chooseColor(
+                                                       -title=>'Choose color: Error flash')
+                                           })->pack(-side=>'right',
+                                                       -padx=>0,-pady=>0);
+
+   # Fonts
+   my $fframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Fonts',-labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>3,-pady=>0);
+   $fframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   # TITLEFONT
+   my $tiframe = $fframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>0,-pady=>2);
+   my $tibtn = $tiframe->Button(-text=>'...',
+                                -font=>$sbfont,
+                                -width=>3,-bd=>1,
+                                -padx=>0,-pady=>0,
+                                -command=>sub {
+				               selectFont($fdtop,0,
+					             \$fd{GENERAL}{TITLEFONT});
+                                              }
+                                )->pack(-side=>'right',-padx=>0,-pady=>0);
+   my $tiField = $tiframe->LabEntry(-textvariable=>\$fd{GENERAL}{TITLEFONT},
+                                       -label=>' Title ',
+				       -state=>'normal',
+				       -width=>45,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'right',padx=>0,pady=>0);
+   $tiField->configure(-labelPack=>[-side=>'left']);
+
+   # NORMALFONT
+   my $nfframe = $fframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>0,-pady=>2);
+   my $tibtn = $nfframe->Button(-text=>'...',
+                                -font=>$sbfont,
+                                -width=>3,-bd=>1,
+                                -padx=>0,-pady=>0,
+                                -command=>sub {
+				               selectFont($fdtop,1,
+					            \$fd{GENERAL}{NORMALFONT});
+                                              }
+                                )->pack(-side=>'right',-padx=>0,-pady=>0);
+   my $nfField = $nfframe->LabEntry(-textvariable=>\$fd{GENERAL}{NORMALFONT},
+                                       -label=>' Normal ',
+				       -state=>'normal',
+				       -width=>45,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'right',padx=>0,pady=>0);
+   $nfField->configure(-labelPack=>[-side=>'left']);
+
+   # LABELFONT
+   my $laframe = $fframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>0,-pady=>2);
+   my $labtn = $laframe->Button(-text=>'...',
+                                -font=>$sbfont,
+                                -width=>3,-bd=>1,
+                                -padx=>0,-pady=>0,
+                                -command=>sub {
+				               selectFont($fdtop,2,
+					              \$fd{GENERAL}{LABELFONT});
+                                              }
+                                )->pack(-side=>'right',-padx=>0,-pady=>0);
+   my $laField = $laframe->LabEntry(-textvariable=>\$fd{GENERAL}{LABELFONT},
+                                       -label=>' Label ',
+				       -state=>'normal',
+				       -width=>45,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'right',padx=>0,pady=>0);
+   $laField->configure(-labelPack=>[-side=>'left']);
+
+
+   # BUTTONFONT
+   my $buframe = $fframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>0,-pady=>2);
+   my $bubtn = $buframe->Button(-text=>'...',
+                                -font=>$sbfont,
+                                -width=>3,-bd=>1,
+                                -padx=>0,-pady=>0,
+                                -command=>sub {
+				               selectFont($fdtop,3,
+					             \$fd{GENERAL}{BUTTONFONT});
+                                              }
+                                )->pack(-side=>'right',-padx=>0,-pady=>0);
+   my $bfField = $buframe->LabEntry(-textvariable=>\$fd{GENERAL}{BUTTONFONT},
+                                       -label=>' Button ',
+				       -state=>'normal',
+				       -width=>45,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-side=>'right',padx=>0,pady=>0);
+   $bfField->configure(-labelPack=>[-side=>'left']);
+
+
+   # Query options
+   my $qframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Query Options',
+                                   -labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>3);
+   $qframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   # CONJUCTION
+   my $conjframe = $qframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-side=>'left',-expand=>1,
+                                          -fill=>'x',-padx=>3);
+
+   my $conjlabel = $conjframe->Label(-text=>'Conjunction')->pack(-side=>'left');
+   my @cchoices = ('AND','OR','NOT');
+   my $conjentry= $conjframe->BrowseEntry(-variable=>\$fd{GENERAL}{CONJUNCTION},
+                                           -width=>5,
+				           -font=>$sfont,
+                                           -choices=>\@cchoices,
+                                      )->pack(-side=>'left',-padx=>3,-pady=>3); 
+   my $entry = $conjentry->Subwidget('entry')->Subwidget('entry');
+   $entry->configure(-bg=>$bg);
+
+   my $order = $conjframe->LabEntry(-textvariable=>\$fd{GENERAL}{ORDER},
+                                       -label=>' Order by  ',
+				       -state=>'normal',
+				       -width=>20,
+				       -font=>$sfont,
+	                               -bg=>$bg
+				       )->pack(-anchor=>'e',padx=>3,pady=>3);
+   $order->configure(-labelPack=>[-side=>'left']);
+
+   # BALLOON
+   my $baframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Balloons',
+                                   -labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>3);
+   $baframe->Subwidget('label')->configure(-font=>$sbfont);
+
+
+   my $ballframe = $baframe->Frame(-relief=>'groove',-borderwidth=>0,
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>3);   
+
+   my $balllabel = $ballframe->Label(-text=>'Balloon')->pack(-side=>'left');
+   my @bchoices = ('none','balloon','status','both');
+   my $ballentry = $ballframe->BrowseEntry(-variable=>\$fd{GENERAL}{BALLOON},
+                                           -width=>10,
+				           -font=>$sfont,
+                                           -choices=>\@bchoices,
+                                      )->pack(-side=>'left',-padx=>3,-pady=>3); 
+   my $bentry = $ballentry->Subwidget('entry')->Subwidget('entry');
+   $bentry->configure(-bg=>$bg);
+
+   my $ballwait=$ballframe->LabEntry(-textvariable=>\$fd{GENERAL}{BALLOONWAIT},
+                                     -label=>' Balloon wait  ',
+				     -state=>'normal',
+                                     -width=>10,
+				     -font=>$sfont,
+	                             -bg=>$bg
+				     )->pack(-anchor=>'e',padx=>3,pady=>3);
+   $ballwait->configure(-labelPack=>[-side=>'left']);
+   # falls anderer font als widget standard font, dann nächste Zeile.
+   # $ballwait->Subwidget('label')->configure(-font=>$btfont);
+
+   # BALLOONBG
+   my $bbgf = $baframe->Frame()->pack(-anchor=>'w',-padx=>0,-pady=>0);
+   my $ballbgField=$bbgf->LabEntry(-textvariable=>\$fd{GENERAL}{BALLOONBG},
+                                      -label=>' Balloon Background Color ',
+				      -state=>'normal',
+				      -width=>20,
+				      -font=>$sfont,
+	                              -bg=>$bg
+				      )->pack(-side=>'left',padx=>0,pady=>3);
+   $ballbgField->configure(-labelPack=>[-side=>'left']);
+
+   my $bbgbtn = $bbgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+                            -bd=>1,
+                            -command=> sub {
+                                            $fd{'GENERAL'}{BALLOONBG}=$fdtop
+                                             ->chooseColor(
+                                                       -title=>'Choose color')
+                                           })->pack(-side=>'right',
+                                                       -padx=>0,-pady=>0);
+
+   # BALLONMSG
+   my $balf = $baframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+   my $ballmsgField=$balf->LabEntry(-textvariable=>\$fd{GENERAL}{BALLOONMSG},
+                                      -label=>' Balloon Message  ',
+				      -state=>'normal',
+				      -width=>37,
+				      -font=>$sfont,
+	                              -bg=>$bg
+				      )->pack(-side=>'left',padx=>0,pady=>3);
+   $ballmsgField->configure(-labelPack=>[-side=>'left']);
+
+   my $babtn = $balf->Button(-text=>'...',
+                                   -font=>$sbfont,
+                                   -width=>3,-bd=>1,
+				   -padx=>0,-pady=>0,
+                                   -command=>sub {
+                                                  &textEdit('GENERAL',
+						            'BALLOONMSG',
+							    $fdtop);
+                                                 }
+                                  )->pack(-side=>'right',-padx=>0,-pady=>0);
+
+   # STARTUP
+   my $stframe = $nFframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Startup Command  ',
+                                   -labelside=>'acrosstop',
+                                  )->pack(-anchor=>'e',-expand=>1,
+                                          -fill=>'x',-padx=>0,-pady=>0);
+   $stframe->Subwidget('label')->configure(-font=>$sbfont);
+
+   my $stField=$stframe->LabEntry(-textvariable=>\$fd{GENERAL}{STARTUP},
+                                      -label=>'',
+				      -state=>'normal',
+				      -width=>53,
+				      -font=>$sfont,
+	                              -bg=>$bg
+				      )->pack(-side=>'left',padx=>0,pady=>0);
+   $stField->configure(-labelPack=>[-side=>'left']);
+
+   my $stbtn = $stframe->Button(-text=>'...',
+                                   -font=>$sbfont,
+                                   -width=>3,-bd=>1,
+				   -padx=>0,-pady=>0,
+                                   -command=>sub {
+                                                  &textEdit('GENERAL',
+						            'STARTUP',
+							    $fdtop);
+                                                 }
+                                  )->pack(-side=>'right',-padx=>0,-pady=>0);
+
+
+## Button-Frame
+   my $bFframe = $nFwin->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+			              -pady=>3);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+   my $okb = $bbFframe->Button(-text=>'Create Form',-width=>6,
+                              -font=>$btfont,
+                              -command=>[\&loadmodel,$top,$nFwin]
+                             )->pack(-side=>'left',-expand=>1,-fill=>'x',
+                                     -padx=>5,-pady=>2);
+   my $qub = $bbFframe->Button(-text=>' Close  ',-width=>6,
+                              -font=>$btfont,
+                              -command=>sub{$nFwin->destroy}
+                             )->pack(-side=>'left',-expand=>1,-fill=>'x',
+                                     -padx=>5,-pady=>2);
+
+   my $clb = $bbFframe->Button(-text=>' Clear ',-width=>6,
+                              -font=>$btfont,
+                              -command=>[\&clearGENERAL,$top,$nFwin]
+                             )->pack(-side=>'left',-expand=>1,-fill=>'x',
+                                     -padx=>5,-pady=>2);
+
+   $nFwin->bind('all','<Escape>',sub{$nFwin->destroy});
+
+# print Dumper(%fd);
+
+} # newForm
+
+
+
+#######################################################################
+=pod
+
+=head2 loadForm
+
+loadForm loads a existing formfile for editing.
+
+usage: loadForm( $ToplevelWindow )
+
+=cut
+sub loadForm {
+
+   my $fdtop = shift;
+
+   use Config::IniFiles;
+   
+   my $hash_ref = \%fd;
+
+   my $answer;
+
+   if(%reg_sec) {
+      # if there are some fields placed on the Form ask for deletion
+      $answer = warnwin($fdtop,'Question','question',
+                        'Delete Form or merge with current Form?',
+		        ['Delete','Cancel','Merge']);
+
+      return if($answer eq 'Cancel');
+
+   }
+
+   if($answer eq 'Delete') {
+      ### destroy existing Form
+      delete $fd{GENERAL}{HEIGHT};
+      updateField(); 
+
+      ### destroy existing TYPE-windows  
+      foreach (keys %reg_sec) {
+	 $eFwin{$_}->destroy() if(Exists($eFwin{$_}));
+      }
+
+      ### delete table- and column-listbox 
+      $tablist->delete(0,"end");
+      $collist->delete(0,"end");
+
+      ### Edit menu löschen, falls schon was registriert ist
+      $menuedit->menu->delete(3,'end') if(%reg_sec);
+      $todo = '';
+      %fd = ();
+      %reg_sec = ();
+      $cursection = $maxsection = $section;
+   }
+
+   # filename
+   $FORMfile = selectFile('loadform',$fdtop);
+   my $f = basename($FORMfile);
+   $fdtop->configure(-title=>"FormDesigner: $f");
+
+   # load Form and set var $cursection and $maxsection
+   my $cfg = Config::IniFiles->new(-file=>$FORMfile);
+   my @sections = $cfg->Sections;
+   foreach my $s (@sections) {
+      ($cursection = $s) =~ s/sec//;
+      $maxsection = $cursection<$maxsection?$maxsection:$cursection;
+      # print "SECTION:$s  CURSECTION:$cursection  MAXSECTION:$maxsection\n";
+      my @par = $cfg->Parameters($s);
+      foreach $p (@par) {
+         my $value = $cfg->val($s,$p);
+	 $hash_ref->{$s}{$p} = $value;
+      }
+   }
+
+   $maxsection += $section;
+
+   # register fields
+   foreach my $s (sort keys %fd) {
+      next if $s eq 'GENERAL';
+      $reg_sec{$s} = $s;  # section registrieren
+   }
+   
+   # create main window edit menuitems
+   foreach my $s (sort keys %reg_sec) {
+      $type = substr($fd{$s}{TYPE},0,1);
+      $label = (defined $fd{$s}{LABEL})?substr($fd{$s}{LABEL},0,20):' ';
+      $menuedit->command(-label=>"$s  TYPE=$type  $label",-font=>$mfont,
+                      -command=>sub{&editsection($s)});
+   }
+
+   $menu->update;
+   $menu->BreakMenu; # break for long item lists
+
+   loadmodel($fdtop);
+   updateField();
+
+} # loadForm
+
+
+#######################################################################
+=pod
+
+=head2 saveForm
+
+saveForm stores the form definitions to a formfile.
+
+usage: saveForm( $ToplevelWindow [,$Mode] )
+
+   ToplevelWindow:  toplevel widget
+
+             Mode:  if set, ask about filename.
+	            if not set, store either to untitled.form or
+		    to a previously given filename.
+
+=cut
+sub saveForm {
+
+   my ($fdtop, $mode) = @_;
+
+   use Config::IniFiles;
+
+   my $cfg = Config::IniFiles->new();
+
+
+   # filename
+   if($mode or $FORMfile eq 'untitled.form') {
+      $FORMfile = selectFile('saveform',$fdtop);
+      my $f = basename($FORMfile);
+      $fdtop->configure(-title=>"FormDesigner: $f");
+   }
+
+   my @comment;
+   push(@comment,'$Id: FormDesigner,v 1.29 2005/03/01 07:24:24 haboe Exp $'."\n#");
+   push(@comment,"FORM: $FORMfile\n#");
+   push(@comment,"This file was created by $programname $version");
+   push(@comment,$apiis->now);
+   push(@comment,"\n");
+
+   foreach $k (sort keys (%fd)) {
+      next if(!($reg_sec{$k} or $k eq 'GENERAL')); # only registered fields and GENERAL
+      foreach $uk (sort keys(%{$fd{$k}})) {
+	 next if($uk eq 'TOPLEVEL' or $uk eq 'WIDGET' or $uk eq 'BUTTONBAR');
+	 next if($fd{$k}{$uk} eq '');  # not empty fieds
+         delete $fd{$k}{ALIAS} if(exists $fd{$k}{ALIAS});
+         delete $fd{$k}{FRAME} if(exists $fd{$k}{FRAME});
+         delete $fd{$k}{TABLE} if($fd{$k}{TYPE} =~ /^[AIOPU]/);
+         delete $fd{$k}{COLUMN} if($fd{$k}{TYPE} =~ /^[AIOPU]/);
+	 $cfg->newval($k,$uk,$fd{$k}{$uk});
+      }
+   }
+
+   # write in GENERAL parameter ID
+   $cfg->newval('GENERAL','ID','$'.'Id'.": $user ".$apiis->now.'$');
+
+   $cfg->SetSectionComment('GENERAL',@comment);
+   $cfg->WriteConfig($FORMfile);
+
+} # saveForm
+
+
+##################  loadmodel  ########################################
+=pod
+
+=head2 loadmodel
+
+Load model from given modelfile. 
+
+usage: loadmodel( $ToplevelWindow [,$nFwin] )
+
+   ToplevelWindow:  toplevel widget
+            nFwin:  GENERAL-configuration toplevel widget
+	            if given, destroy widget
+
+=cut
+sub loadmodel {
+
+   my $fdtop = shift;
+   my $nFwin = shift;
+   $nFwin->destroy if(Exists($nFwin));
+
+   my $model = eval qq{qq{$fd{GENERAL}{MODEL}}};
+
+   @tables = ();
+ 
+   if($model and -e $model) {
+      require $model;
+      # my $model = $fd{GENERAL}{MODEL};
+      open (MODEL, "$model") or die "msg(4) $model: $!\n";
+      while (<MODEL>) { push @tables, $1 if /^\s*%(\w+)/ }
+      close MODEL;
+
+      $tablist->delete(0,"end");
+      $tablist->insert(0,@tables);
+      $todo = 'Select a Table';
+      updateField();
+
+   } else {
+	 if($model) {
+            warnwin($fdtop,'Warning','warning',
+	          "Problems opening model file\n\n$fd{GENERAL}{MODEL}\n\n");
+	 } else {
+            warnwin($fdtop,'Info','info',
+	          "No database model given");
+	 }
+   }
+
+   # The size of the form must be given due to create a window
+   if($fd{GENERAL}{WIDTH} and $fd{GENERAL}{HEIGHT}) {
+      updateField();
+   } else {
+      warnwin($fdtop,'Error', 'error',
+	      "Height and Width must be set!\n\n".
+	      "Height:$fd{GENERAL}{HEIGHT}\n".
+	      "Width:$fd{GENERAL}{WIDTH}");
+   }
+   
+
+} # loadmodel
+
+
+################## selectFile ######################################### 
+=pod
+
+=head2 selectFile
+
+selectFile opens a file selector box to choose a filename for loading or saving.
+Two different file selctor boxes are available. Tk::FBox (default) and Tk::FileSelect.
+In F<$APIIS_HOME/apiisrc> one can overwrite the default by setting the $fileselector
+variable to 'FileSelect'.
+
+usage: $filename = selectFile( $operation, $ToplevelWindow )
+
+       operation: one of four operations
+                   model: to open a modelfile
+	        loadform: to open a formfile
+	        saveform: to save a formfile
+	             gif: to open a GIF-image
+
+  ToplevelWindow:  toplevel widget
+
+=cut
+sub selectFile {
+
+   my $operation = shift;
+   my $top = shift;
+
+
+   
+   my $mo;
+   my $title;
+   my $file;
+   my @types;
+   my $filter;
+
+   my $dir;
+   if($APIIS_LOCAL) {
+      $dir = $APIIS_LOCAL;
+   } elsif($APIIS_HOME) {
+      $dir = $APIIS_HOME;
+   }
+
+   if($operation eq 'model') {
+      @types = (["Model File", [qw/.model/]],
+             ["All files", '*']);
+      $title = 'Open Model File';
+      $dir .= '/model' if(-d $dir.'/model');
+      $mo = 1;
+   } elsif($operation eq 'loadform') {
+      @types = (["Form File", [qw/.frm .form/]],
+             ["All files", '*']);
+      $filter = '*.f*rm';
+      $title = 'Open Form File';
+      $dir .= '/model/forms' if(-d $dir.'/model/forms');
+      $mo = 1;
+   } elsif($operation eq 'saveform') {
+      @types = (["Form File", [qw/.frm .form/]],
+             ["All files", '*']);
+      $filter = '*.f*rm';
+      $title = 'Save Form File';
+      $dir .= '/model/forms' if(-d $dir.'/model/forms');
+      $mo = 2;
+   } elsif($operation eq 'gif') {
+      @types = (["Image File", [qw/.gif .GIF .xpm .XPM/]],
+             ["All files", '*']);
+      $filter = "*";
+      $title = 'Open GIF Image';
+      $dir .= '/model/forms' if(-d $dir.'/model/forms');
+      $mo = 1;
+   } else {return undef}
+   
+   if($fileselector eq 'FBox') {
+      require Tk::FBox;
+      # XXX remove cached dialogs
+      my $mw = $top->MainWindow;
+      delete $top->{'tk_getOpenFile'};
+      delete $top->{'tk_getSaveFile'};
+   
+      if($mo == 1) {
+         $file = $top->getOpenFile(-filetypes => \@types,
+   				   -initialdir=>$dir,
+   				   -title=>$title);
+      } elsif($mo == 2) {
+         $file = $top->getSaveFile(-filetypes => \@types,
+                                   -initialdir=>$dir,
+                                   -initialfile=>'Untitled',
+                                   -defaultextension=>'.form',
+				   -title=>$title);
+      }
+   } else {
+      require Tk::FileSelect;
+      # XXX remove cached dialogs
+      my $mw = $top->MainWindow;
+      delete $top->{'tk_getOpenFile'};
+      delete $top->{'tk_getSaveFile'};
+      my $fsref = $top->FileSelect(-initialdir=>$dir,
+				   -filter=>$filter,
+                                   -title=>$title,
+				   -width=>20,-height=>10);
+      $file = $fsref->Show;
+   }
+
+   return $file;
+
+} # selectFile
+
+
+##################  selectFont   ###################################### 
+=pod
+
+=head2 selectFont
+
+selectFont is a font browser and chooser for X Window fonts. Therefore only
+available for unix operating systems.
+
+usage:  selectFont( $ToplevelWindow, $switch, $font_ref)
+
+   ToplevelWindow:  toplevel widget
+           switch:  one of six settings. It is only 
+	            used to set the title of the 
+		    font browser window.
+	            0: "Select: Title Font"
+		    1: "Select: Normal Font"
+		    2: "Select: Label Font"
+		    3: "Select: Button Font"
+		    4: "Select: Font for digital time"
+		    5: "Select: Font for digital date"
+         font_ref: a reference to the name of the X font string
+
+=cut
+sub selectFont {
+ 
+   my ($top,$ft,$font_ref) = @_;
+
+   if($^O ne 'linux') {
+      warnwin($top,'Info','info',
+                    "     Ops - $^O detected\n\n".
+                    "This feature is only available for\n".
+		    "             »Linux«");
+   }
+
+   # only one intance is allowed
+   if(Exists($_selFont)) {
+      $_selFont->deiconify();
+      $_selFont->raise();
+      return;
+   }
+
+   # selected font
+   my $font;
+
+   # xlsfonts prints all available fonts
+   my (@f) = `xlsfonts`;
+   chomp(@f);
+   # make list uniq
+   my %sn = ();
+   foreach $item (@f) {
+      $sn{$item}++;
+   }
+   @f = sort keys %sn;
+
+   # on which host are this X11 fonts
+   my $host = `hostname`;
+   
+   # create toplevel
+   $_selFont = $top->Toplevel();
+   $_selFont->resizable(0,0); # this prevents nasty distorted windows
+
+   my ($txt,$ltxt);
+
+   if($ft == 0) {
+      $_selFont->configure(-title=>"Select: Title Font");
+      $txt = "\n  Herr Orlon fragt Frau Perlon ob Sie Ihn einmal dralon. Darauf meint Sie: Nylon!";
+   }
+   if($ft == 1 ) {
+      $_selFont->configure(-title=>"Select: Normal Font");
+      $txt = "\n  f u cn rd ths, u cn gt a gd jb n cmptr prgrmmng.";
+   }
+   if($ft == 2) {
+      $_selFont->configure(-title=>"Select: Label Font");
+      $txt = "\n  Real Users find the one combination of bizarre input values that shuts down the system for days.";
+   }
+   if($ft == 3) {
+      $_selFont->configure(-title=>"Select: Button Font");
+      $txt = "\n  Im Wald da rauscht der Wasserfall, hört's rauschen auf, ist's Wasser all.";
+   }
+   if($ft == 4) {
+      $_selFont->configure(-title=>"Select: Font for digital time");
+      $txt = "\n  Der Zahn der Zeit wird deine Traenen trocknen und ueber deine Wunden Gras wachsen lassen.";
+   }
+   if($ft == 5) {
+      $_selFont->configure(-title=>"Select: Font for digital date");
+      $txt = "\n  You think Oedipus had a problem -- Adam was Eve's mother.";
+   }
+
+   $ltxt = "\nAvailable X11 fonts on $host";
+
+   my $la = $_selFont->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>0);
+
+   my $buttn = $la->Button(-text=>$ltxt,-bd=>2,-relief=>'raised',
+                           -bg=>$_fgcolor,-fg=>$_bgcolor,-height=>1,
+                           -activebackground=>$_fgcolor,
+                           -activeforeground=>$_bgcolor)
+                          ->pack(-side=>'top',-padx=>0,-pady=>0,
+                                 -fill=>'x',-expand=>1);
+
+   my $li = $la->Scrolled(Listbox,-height=>20,-width=>80,
+                                   -font=>$sfont,
+                                   -scrollbars=>'osoe',
+                                   -selectmode=>'single')
+                             ->pack(-anchor=>'n',-padx=>0,-pady=>0);
+   $li->insert(0,@f);
+
+   # preview labframe mit scrolled text
+   my $labf = $la->LabFrame(-relief=>'groove',-borderwidth=>0,
+                            -label=>'Preview',-labelside=>'acrosstop',
+			   )->pack();
+   $labf->Subwidget('label')->configure(-font=>$sbfont);
+
+   my $tex = $labf->Scrolled(Text,-width=>80,-height=>6,
+                            -font=>$sfont,-wrap=>'word',
+                            -bg=>$bg,
+                            #-state=>disabled,
+                            -scrollbars=>'osoe'
+                           )->pack();
+   $tex->insert('2.2',$txt);
+
+   $li->bind("<Button-1>",sub{$font=setFont($li,$tex,@f)});
+
+   # buttons
+   my $bFframe = $_selFont->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+			              -expand=>1,-pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'OK',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{
+			                    $$font_ref = $font;
+					    $_selFont->destroy;
+					    }
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   my $qub = $bbFframe->Button(-text=>'Cancel',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_selFont->destroy}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+ 
+   # key bindings for OK -> Return   and Cancel -> Escape
+   $_selFont->bind("<Return>",sub{$$font_ref = $font;$_selFont->destroy;});
+   $_selFont->bind("<Escape>",sub{$_selFont->destroy;});
+
+   ###### setFont
+   sub setFont {
+      
+      my ($l,$t,@f) = @_;
+
+      my $i=$l->curselection;
+      $font = $f[$i];
+      $t->configure(-font=>$font);
+
+      return $font;
+
+   } # setFont
+
+} # selectFont
+
+
+##################  warnwin   ######################################### 
+=pod
+
+=head2 warnwin
+
+warnwin creates a modal dialogbox window and waits for response.
+
+usage: $answer = warnwin( $ToplevelWindow, $title, $bitmap, $text, [\@buttons] )
+
+   ToplevelWindow: toplevel widget
+            title: title of the dialogbox window
+	   bitmap: specifies a bitmap to display in the top portion
+	           of the dialog, to the left of the text.  If this
+		   is an empty string then no bitmap is displayed in
+                   the dialog. There are a set of Tk build-in bitmaps.
+		   The most used are 'error', 'info', 'question',
+		   'questhead' and 'warning'.
+                   bitmap can also be a Tk::Pixmap object. 
+             text: the text to display on the dialogbox 
+	  buttons: reference to an array with the buttons text.
+	           i.e. ['Ok', 'Cancel'] (two button)
+		        ['Red', 'Green', 'Blue'] (three button)  
+
+ Example: # what would you do?
+         $answer = warnwin($top,                       # toplevel window
+	                   'Question',                 # window title
+			   'questhead',                # predefined bitmap
+	                   'What would you do?',       # text
+                           ['work', 'play', 'sleep']); # three buttons
+	 if($answer eq 'work') { # do something }
+	 if($answer eq 'play') { system("battlechess" }
+	 if($answer eq 'sleep') { sleep(28800) }
+
+
+=cut
+sub warnwin {
+
+   my ($fdtop, $title, $bitmap, $text, $buttons) = @_;
+
+   $buttons = ['OK'] if(!$buttons);
+
+   use Tk::Dialog;
+
+   my $d;
+
+   if( ref($bitmap) =~ /Tk::Pixmap/) {
+      $d = $fdtop->Dialog(-title=>$title,
+                          -image=>$bitmap,
+                          -font=>'variable',
+                          -text=>$text,
+                          -buttons=>$buttons);
+   } else {
+      $d = $fdtop->Dialog(-title=>$title,
+                          -bitmap=>$bitmap,
+                          -font=>'variable',
+                          -text=>$text,
+                          -buttons=>$buttons);
+   }
+   return $d->Show;
+
+} # warnwin
+
+
+##################  clearGENERAL  #####################################
+=pod
+
+=head2 clearGENERAL
+
+clearGENERAL clears all entrys in the GENERAL-configuration window
+
+usage: clearGENERAL( $ToplevelWindow, $GeneralWindow )
+
+   ToplevelWindow: toplevel widget
+    GeneralWindow: widget of the GENERAL-configuration window
+
+=cut
+sub clearGENERAL {
+
+   my ($fdtop, $nFwin) = @_;
+
+   foreach (sort keys %{$fd{GENERAL}}) {
+      $fd{GENERAL}{$_} = undef;
+   }
+
+} # clearGENERAL
+
+
+###################  fillColList  #####################################
+=pod
+
+=head2 fillColList
+
+fillColList fills for a given table in the column listbox the
+existing column names. After choosing a table this subroutine is executed.
+
+usage: fillColList( $table-Listbox-widget );
+
+   table-Listbox-widget: widget of the table listbox.
+                         It's used to retrieve the selected table
+			 from the table listbox.
+
+=cut
+sub fillColList {
+   my ($t) = @_;
+ 
+   return if(!$tablist->size);
+
+   my @columns = undef;
+   my $idx = $t->curselection;
+   my $table = $tables[$idx];
+ 
+   foreach $col (sort keys %$table) {
+      next if $col eq 'TABLE';
+      push @columns, $$table{$col}{DB_COLUMN};
+   }
+ 
+   shift(@columns);
+   # fill column listwidget
+   $collist->delete(0,"end");
+   $collist->insert(0,@columns);
+ 
+   $todo = 'Select a Column';
+
+} # fillColList
+
+
+################## proceed  ###########################################
+=pod
+
+=head2 proceed
+
+proceed sets formfile section name and field type.
+
+usage: proceed( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+# jump to apropriate field type routine
+sub proceed {
+
+   my $fdtop = shift;
+
+
+   my $cursec;
+   if($cursection =~ /^\d+$/) {
+      $cursec = 'sec'.$cursection;
+   } else {
+      $cursec = $cursection;
+   }
+
+
+   $fd{$cursec}{TYPE} = substr($selectedtype,0,1) if(!$reg_sec{$cursec});
+
+   my $type = $fd{$cursec}{TYPE};
+
+   $fd{$cursec}{TYPE}=' ' if(!$type);
+   $type =' ' if(!$type);
+
+   if($type =~ /^[EDLBNCATIOPMRU ]/) {
+      config_EDLBNCATIOPMRU($fdtop);
+   } else {
+      config_unknown($fdtop);
+   }
+
+} # proceed
+
+
+######################  config_EDLBNCATIOPMU  ####################################
+=pod
+
+=head2 config_EDLBNCATIOPMRU
+
+creates for each field types a different configuration window.
+Only necessary parameters will be shown.
+
+usage: config_EDLBNCATIOPMRU( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+sub config_EDLBNCATIOPMRU {
+
+   my $fdtop = shift;
+
+   my $bg = $_bgcolor; # background color for entry fields
+   my $fg = $_fgcolor; # foreground color for entry fields
+
+   my $cursec;
+   if($cursection =~ /^\d+$/) {
+      $cursec = 'sec'.$cursection;
+   } else {
+      $cursec = $cursection;
+   }
+
+   my $idx;
+   if($tablist->size and !$reg_sec{$cursec}) {
+      $idx = $tablist->curselection();
+      $fd{$cursec}{TABLE} = $tables[$idx];
+   }
+
+   if($collist->size and !$reg_sec{$cursec}) {
+      $fd{$cursec}{COLUMN} = $collist->get($collist->curselection());
+      
+      # default LABEL from model
+      my $col = getKey($tables[$idx],$fd{$cursec}{COLUMN},'DB_COLUMN');
+      $fd{$cursec}{LABEL} = ${$tables[$idx]}{$col}{DESCRIPTION};
+
+      # default FIELDLENGTH from model
+      $col = getKey($tables[$idx],$fd{$cursec}{COLUMN},'DB_COLUMN');
+      $fd{$cursec}{FIELDLENGTH} = ${$tables[$idx]}{$col}{LENGTH};
+      
+   }
+
+   $eFwin{$cursec}->destroy if(Exists($eFwin{$cursec})
+                                          and !$reg_sec{$cursec});
+
+   # return, if win is registered
+   if(Exists($eFwin{$cursec})) {
+      $eFwin{$cursec}->deiconify();
+      $eFwin{$cursec}->raise();
+      return;
+   }
+
+   # newForm-window
+   $eFwin{$cursec} = $fdtop->Toplevel(-title=>"  $fd{$cursec}{TYPE}   $cursec");
+   $eFwin{$cursec}->resizable(0,0); # this prevents nasty distorted windows
+
+   my $eFframe = $eFwin{$cursec}->Frame(-relief=>'groove',-borderwidth=>4,
+			      )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+
+   # Section
+   my $sframe = $eFframe->Frame(-relief=>'groove',-borderwidth=>3
+                               )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,pady=>3);
+   my $slabel = $sframe->Button(-textvariable=>\$cursec,
+                               -font=>$bfont,
+			       -bg=>$fg, -fg=>$bg,
+			       -activebackground=>$bg,
+			       -activeforeground=>$fg,
+                               -bd=>2,-relief=>'raised',
+			       -command=>sub{renSection($cursec,$fdtop)}
+			      )->pack(-side=>'right',-fill=>'both',-expand=>1);
+   my $elabel = $sframe->Button(-text=>substr($fd{$cursec}{TYPE},0,1),
+                               -font=>$bfont,
+			       -bg=>$fg, -fg=>$bg,
+			       -activebackground=>$fg,
+			       -activeforeground=>$bg,
+                               -bd=>2,-relief=>'raised',
+			      )->pack(-side=>'left',-fill=>'both',-expand=>1);
+   
+   # register the textvariable of the Button
+   $secButton{$cursec}=\$cursec;
+
+###### Pane Frame #############   
+   my $paneframe = $eFframe;
+
+   # only scrollbar if the height of the screen is less than 1024 pixel
+   if($screenheight < 1648) {
+      my $h = $screenheight - 350;
+      my $w = 160;
+      $pane = $eFframe->Scrolled(Pane,
+			     -scrollbars => 'osoe',
+			     -sticky => 'n',
+			     -height=>$h,
+			     -width=>$w,
+			     )->pack();
+      $paneframe = $pane -> Frame() ->pack(-side=>'top');
+   }
+
+####### LABEL #####
+   if(not $fd{$cursec}{TYPE} =~ /^[ U]/) {
+      my $lblfrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                  -label=>'Field Label',-labelside=>'acrosstop',
+				      )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,padx=>3);
+      $lblfrm->Subwidget('label')->configure(-font=>$sbfont);
+
+      my $lblfld = $lblfrm->LabEntry(-textvariable=>\$fd{$cursec}{LABEL},
+                                      -label=>'',
+                                      -state=>'normal',
+                                      -width=>20,
+                                      -font=>$sfont,
+                                      -bg=>$bg
+                                     )->pack(-side=>'top',padx=>0,pady=>3);
+      $lblfld->configure(-labelPack=>[-side=>'left']);
+
+
+      my $lfrm = $lblfrm->Frame(-bd=>2,-relief=>'ridge')
+                           ->pack(-side=>'top',-padx=>3,-pady=>5);
+      my $ab = $lfrm->Button(-text=>'Label Font ...',-font=>$sfont,
+                             -padx=>0,-pady=>0,-bd=>1,
+                             -command=>
+                                    sub {
+                                        selectFont($fdtop,4,
+                                                     \$fd{$cursec}{FONT});
+                                        })->pack(-side=>'top',
+                                                 -padx=>0,-pady=>0);
+ 
+      my $balfld = $lfrm->Entry(-textvariable=>\$fd{$cursec}{FONT},
+                                             -state=>'normal',
+                                             -width=>19,
+                                             -font=>$sfont,
+                                             -bg=>$bg
+                                             )->pack(-side=>'top',pady=>3); 
+      if($fd{$cursec}{TYPE} =~ /^O/) {
+	 $ab->configure(-text=>'Label / Header Font ...');
+      }
+
+   }
+##################
+
+####### TYPE options 
+   # Browse Parameter BNM
+   if($fd{$cursec}{TYPE} =~ /^[BNMO]/) {
+      my $tlofrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Browse Parameter',
+                                   -labelside=>'acrosstop',
+				  )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,padx=>3);
+      $tlofrm->Subwidget('label')->configure(-font=>$sbfont);
+
+      $fd{$cursec}{TYPE} .= " ".$fd{$cursec}{COLUMN}." ".$fd{$cursec}{TABLE}
+                            if($fd{$cursec}{COLUMN} and 
+			       $fd{$cursec}{TABLE} and
+			       !$reg_sec{$cursec});
+
+      my $tlofld = $tlofrm->LabEntry(-textvariable=>\$fd{$cursec}{TYPE},
+                                     -label=>'',
+                                     -state=>'normal',
+                                     -width=>20,
+                                     -font=>$sfont,
+                                     -bg=>$bg
+                                    )->pack(-side=>'left',padx=>0,pady=>3);
+      $tlofld->configure(-labelPack=>[-side=>'left']);
+
+   }
+   # Clock - analog or digital or both
+   if($fd{$cursec}{TYPE} =~ /^[U]/) {
+      my $tlofrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                   -label=>'Clock type',
+                                   -labelside=>'acrosstop',
+				  )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,padx=>3);
+      $tlofrm->Subwidget('label')->configure(-font=>$sbfont);
+
+      my @clocktype = ('U analog','U digital','U analog and digital');
+      my $tlofld = $tlofrm->BrowseEntry(-variable=>\$fd{$cursec}{TYPE},
+                                     -width=>16,
+				     -listwidth=>36,
+                                     -font=>$sfont,
+				     -choices=>\@clocktype,
+                                    )->pack(-side=>'left',padx=>0,pady=>3);
+      my $clockt = $tlofld->Subwidget('entry')->Subwidget('entry');
+      $clockt->configure(-bg=>$bg);
+
+   }
+###################
+
+####### TEXT only P #####
+   if($fd{$cursec}{TYPE} =~ /^[OPR]/) {
+      my $texfrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+                                      #-label=>'Button Text or Image',
+				      -labelside=>'acrosstop',
+				     )->pack(-anchor=>'e',-fill=>'x',
+				              -expand=>1,padx=>3);
+      $texfrm->Subwidget('label')->configure(-font=>$sbfont);
+      $texfrm->configure(-label=>'Button Text or Image') if($fd{$cursec}{TYPE} =~ /^[P]/);
+      $texfrm->configure(-label=>'Header Label') if($fd{$cursec}{TYPE} =~ /^[O]/);
+      $texfrm->configure(-label=>'Text') if($fd{$cursec}{TYPE} =~ /^[R]/);
+      
+      my $width = 15;
+      $width = 20 if($fd{$cursec}{TYPE} =~ /^[R]/);
+
+      my $texfld = $texfrm->LabEntry(-textvariable=>\$fd{$cursec}{TEXT},
+                                      -label=>'',
+                                      -state=>'normal',
+                                      -width=>$width,
+                                      -font=>$sfont,
+                                      -bg=>$bg
+                                     )->pack(-side=>'left',padx=>0,pady=>3);
+      $texfld->configure(-labelPack=>[-side=>'left']);
+
+      if($fd{$cursec}{TYPE} =~ /^[PR]/) {
+	 my $comfrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+					 -label=>'Command',
+					 -labelside=>'acrosstop',
+					)->pack(-anchor=>'e',-fill=>'x',
+						 -expand=>1,padx=>3);
+	 $comfrm->Subwidget('label')->configure(-font=>$sbfont);
+
+	 if($fd{$cursec}{TYPE} =~ /^[P]/) {
+	    my $bxbtn = $texfrm->Button(-text=>'Browse',-font=>$smfont,-padx=>0,-pady=>0,
+				     -command=> 
+				       sub {
+					    $fd{$cursec}{TEXT} =
+							  selectFile('gif',$fdtop)
+					   })->pack(-side=>'right',
+						    -padx=>0,-pady=>0);
+	 }
+
+
+	 #  COMMAND     frame, entry and editor button
+	 my $bgf = $comfrm->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+	 my $bgbtn = $bgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+				  -command=> 
+				    sub {
+					 &textEdit($cursec,'COMMAND',$fdtop);
+					})->pack(-side=>'right',
+						 -padx=>0,-pady=>0);
+
+	 my $comfld = $bgf->LabEntry(-textvariable=>\$fd{$cursec}{COMMAND},
+					 -label=>'',
+					 -state=>'normal',
+					 -width=>18,
+					 -font=>$sfont,
+					 -bg=>$bg
+					)->pack(-side=>'left',padx=>0,pady=>3);
+	 $comfld->configure(-labelPack=>[-side=>'left']);
+
+	 if($fd{$cursec}{TYPE} =~ /^[R]/) {
+	    my $comfrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+					    -label=>'Selected',
+					    -labelside=>'acrosstop',
+					   )->pack(-anchor=>'e',-fill=>'x',
+						    -expand=>1,padx=>3);
+	    $comfrm->Subwidget('label')->configure(-font=>$sbfont);
+	    my $texfld = $comfrm->LabEntry(-textvariable=>\$fd{$cursec}{SELECTED},
+					 -label=>'',
+					 -state=>'normal',
+					 -width=>$width,
+					 -font=>$sfont,
+					 -bg=>$bg
+					)->pack(-side=>'left',padx=>0,pady=>3);
+	    $texfld->configure(-labelPack=>[-side=>'left']);
+	 }
+      }
+   }
+##################
+
+########## Geometrie
+   if(not $fd{$cursec}{TYPE} =~ /^[ ]/) {
+      my $geofrm = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+					  -label=>'Geometry',
+					  -labelside=>'acrosstop',
+					 )->pack(-anchor=>'e',-fill=>'x',
+						 -expand=>1,padx=>3);
+      $geofrm->Subwidget('label')->configure(-font=>$sbfont);
+      
+      my $locfrm = $geofrm->Frame(-relief=>'groove',-borderwidth=>0)
+                                ->pack(-expand=>1,-fill=>'x');
+      # XLOCATION
+      my $xlocfld = $locfrm->LabEntry(-textvariable=>\$fd{$cursec}{XLOCATION},
+					 -label=>'X ',
+					 -state=>'normal',
+					 -width=>5,
+					 -font=>$sfont,
+					 -bg=>$bg
+					)->pack(-side=>'left',padx=>3,pady=>3);
+      $xlocfld->configure(-labelPack=>[-side=>'left']);
+
+      # YLOCATION
+      my $ylocfld = $locfrm->LabEntry(-textvariable=>\$fd{$cursec}{YLOCATION},
+					 -label=>'Y ',
+					 -state=>'normal',
+					 -width=>5,
+					 -font=>$sfont,
+					 -bg=>$bg
+					)->pack(-side=>'right',padx=>3,pady=>3);
+      $ylocfld->configure(-labelPack=>[-side=>'left']);
+
+      # FIELDLENGH  not for TYPE=ATIPM
+      if(not $fd{$cursec}{TYPE} =~ /^[ATIPMUR]/) {
+	 my $fldlen = $geofrm->LabEntry(
+				-textvariable=>\$fd{$cursec}{FIELDLENGTH},
+				-label=>'Field Lenght',
+				-state=>'normal',
+				-width=>5,
+				-font=>$sfont,
+				-bg=>$bg
+				)->pack(-anchor=>'e',padx=>3,pady=>3);
+	 $fldlen->configure(-labelPack=>[-side=>'left']);
+      }
+      
+	 if($fd{$cursec}{TYPE} =~ /^[TIOPMR]/) {
+	    my $whfrm = $geofrm->Frame(-relief=>'groove',-borderwidth=>0)
+				   ->pack(-expand=>1,-fill=>'x');
+	    # WIDTH for T
+	    if(not $fd{$cursec}{TYPE} =~ /^[R]/) {
+	       my $ylocfld = $whfrm->LabEntry(-textvariable=>\$fd{$cursec}{WIDTH},
+					       -label=>'Width',
+					       -state=>'normal',
+					       -width=>4,
+					       -font=>$sfont,
+					       -bg=>$bg
+					      )->pack(-side=>'left',padx=>3,pady=>3);
+	       $ylocfld->configure(-labelPack=>[-side=>'left']);
+	    }
+
+	    # HEIGHT for T
+	    my $xlocfld = $whfrm->LabEntry(-textvariable=>\$fd{$cursec}{HEIGHT},
+					    -label=>'Height',
+					    -state=>'normal',
+					    -width=>3,
+					    -font=>$sfont,
+					    -bg=>$bg
+					   )->pack(-side=>'right',padx=>3,pady=>3);
+	    $xlocfld->configure(-labelPack=>[-side=>'left']);
+
+	 }
+      # ANALOGSCALE
+      if($fd{$cursec}{TYPE} =~ /^[U]/) {
+         my $whfrm = $geofrm->Frame(-relief=>'groove',-borderwidth=>0)
+                                ->pack(-expand=>1,-fill=>'x');
+         my $ylocfld = $whfrm->LabEntry(
+	                             -textvariable=>\$fd{$cursec}{ANALOGSCALE},
+                                     -label=>'Scale [% / 72x72]',
+                                     -state=>'normal',
+                                     -width=>5,
+                                     -font=>$sfont,
+                                     -bg=>$bg
+				)->pack(-side=>'right',padx=>3,pady=>3);
+         $ylocfld->configure(-labelPack=>[-side=>'left']);
+      }
+   ###################
+
+   ############# colors
+      my $cframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+				      -label=>'Colors',-labelside=>'acrosstop',
+				     )->pack(-anchor=>'e',-expand=>1,
+					     -fill=>'x',-padx=>3);
+      $cframe->Subwidget('label')->configure(-font=>$sbfont);
+
+      # BG-color  not for A
+      if(not $fd{$cursec}{TYPE} =~ /^[A]/) {
+	 my $bgf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+	 # first a color chooser
+	 my $bgbtn = $bgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+				  -bd=>1,
+				  -command=> sub {
+						 $fd{$cursec}{BGCOLOR}=$fdtop
+						 ->chooseColor(
+						       -title=>'Choose color')
+						 })->pack(-side=>'right',
+							  -padx=>0,-pady=>0);
+	 my $bgField = $bgf->LabEntry(-textvariable=>\$fd{$cursec}{BGCOLOR},
+					  -label=>'Background',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+				     )->pack(-side=>'right',-padx=>0,pady=>0);
+	 $bgField->configure(-labelPack=>[-side=>'left']);
+      }
+
+      # FG-color
+      my $fgf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+      # first a color chooser
+      my $fgbtn = $fgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{FGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+      my $fgField = $fgf->LabEntry(-textvariable=>\$fd{$cursec}{FGCOLOR},
+					  -label=>'Foreground',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+      $fgField->configure(-labelPack=>[-side=>'left']);
+
+      ############### some other colors for O-type
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # FRAMECOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{FRAMECOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{FRAMECOLOR},
+					  -label=>'Frame',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # HEADERFGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{HEADERFGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{HEADERFGCOLOR},
+					  -label=>'Header FG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # HEADERBGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{HEADERBGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{HEADERBGCOLOR},
+					  -label=>'Header BG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # LISTBOXFGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{LISTBOXFGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{LISTBOXFGCOLOR},
+					  -label=>'Listbox FG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # LISTBOXBGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{LISTBOXBGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{LISTBOXBGCOLOR},
+					  -label=>'Listbox BG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[R]/) {
+	 # SELECTCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{SELECTCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{SELECTCOLOR},
+					  -label=>'Select',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SELECTFGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{SELECTFGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{SELECTFGCOLOR},
+					  -label=>'Select FG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SELECTBGCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{SELECTBGCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{SELECTBGCOLOR},
+					  -label=>'Select BG',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SEPARATORCOLOR
+         my $frc = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $cfbtn = $frc->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{SEPARATORCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $frField = $frc->LabEntry(-textvariable=>\$fd{$cursec}{SEPARATORCOLOR},
+					  -label=>'Separator',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $frField->configure(-labelPack=>[-side=>'left']);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[U]/) {
+         # tick-color
+         my $tgf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $tgbtn = $tgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{tickCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $tgField = $tgf->LabEntry(-textvariable=>\$fd{$cursec}{tickCOLOR},
+					  -label=>'tick',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $tgField->configure(-labelPack=>[-side=>'left']);
+
+         # second hand -color
+         my $sgf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $sgbtn = $sgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{secsCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $sgField = $sgf->LabEntry(-textvariable=>\$fd{$cursec}{secsCOLOR},
+					  -label=>'second hand',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $sgField->configure(-labelPack=>[-side=>'left']);
+
+         # time -color
+         my $igf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $igbtn = $igf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{timeCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $igField = $igf->LabEntry(-textvariable=>\$fd{$cursec}{timeCOLOR},
+					  -label=>'digital Time',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $igField->configure(-labelPack=>[-side=>'left']);
+
+         # date -color
+         my $dgf = $cframe->Frame()->pack(-anchor=>'e',-padx=>0,-pady=>0);
+         # first a color chooser
+         my $dgbtn = $dgf->Button(-text=>'...',-font=>$sbfont,-padx=>0,-pady=>0,
+			       -bd=>1,
+			       -command=> sub {
+					       $fd{$cursec}{dateCOLOR}=$fdtop
+					      ->chooseColor(-title=>
+                                                            'Choose color')
+					      })->pack(-side=>'right',
+							-padx=>0,-pady=>0);
+         my $dgField = $dgf->LabEntry(-textvariable=>\$fd{$cursec}{dateCOLOR},
+					  -label=>'digital Date',
+					  -state=>'normal',
+					  -width=>8,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'right',
+						  -padx=>0,-pady=>0);
+         $dgField->configure(-labelPack=>[-side=>'left']);
+   ######
+      }
+   }
+###################
+
+############# Database not for AIP
+   if(not $fd{$cursec}{TYPE} =~ /^[AIPU]/) {
+      my $dbframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+				         -label=>'Database',
+                                         -labelside=>'acrosstop',
+				        )->pack(-anchor=>'e',-expand=>1,
+					     -fill=>'x',-padx=>3);
+      $dbframe->Subwidget('label')->configure(-font=>$sbfont);
+
+      if(not $fd{$cursec}{TYPE} =~ /^[MOR]/) {
+         # TABLE
+	 my $tbField = $dbframe->LabEntry(-textvariable=>\$fd{$cursec}{TABLE},
+					     -label=>'Table',
+					     -state=>'normal',
+					     -width=>12,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+	 $tbField->configure(-labelPack=>[-side=>'left']);
+	 
+	 # COLUMN
+	 my $coField = $dbframe->LabEntry(-textvariable=>\$fd{$cursec}{COLUMN},
+					     -label=>'Column',
+					     -state=>'normal',
+					     -width=>12,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+	 $coField->configure(-labelPack=>[-side=>'left']);
+
+	 # RELATION
+	 my $reField = $dbframe->LabEntry(-textvariable=>\$fd{$cursec}{RELATION},
+					     -label=>'Relation',
+					     -state=>'normal',
+					     -width=>12,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+	 $reField->configure(-labelPack=>[-side=>'left']);
+      }
+
+      # ACTION
+      $fd{$cursec}{ACTION} = "I $fd{$cursec}{TABLE} $fd{$cursec}{COLUMN}"
+			    if($fd{$cursec}{TABLE} and $fd{$cursec}{COLUMN} and
+                               !$fd{$cursec}{ACTION} and !$reg_sec{$cursec});
+                               
+      my $afrm = $dbframe->Frame(-bd=>2,-relief=>'ridge')
+                           ->pack(-side=>'top',-padx=>3,-pady=>5);
+      my $ab = $afrm->Button(-text=>'Action ...',-font=>$sfont,
+                          -padx=>0,-pady=>0,-bd=>1,
+                          -command=> 
+                                 sub {
+                                      &textEdit($cursec,'ACTION',$fdtop);
+                                     })->pack(-side=>'top',
+                                              -padx=>0,-pady=>0);
+
+      my $acField = $afrm->Entry(-textvariable=>\$fd{$cursec}{ACTION},
+					  -state=>'normal',
+					  -width=>19,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-anchor=>'e',padx=>0,pady=>1);
+
+      if(not $fd{$cursec}{TYPE} =~ /^[MOR]/) {
+	 # UPDATE
+	 my @updcho = ('Y','N');
+	 my $updentry = $dbframe->BrowseEntry(-variable=>\$fd{$cursec}{UPDATE},
+					   -label=>'Update',
+					   -width=>4,
+					   -font=>$sfont,
+					   -choices=>\@updcho,
+					   -listwidth=>20,
+					  )->pack(-anchor=>'e',-pady=>3);
+	 $updentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+	 # OPERATOR
+	 my @opcho = ('=','<','>','<=','>=','<>','LIKE','!~~');
+	 my $opentry = $dbframe->BrowseEntry(-variable=>\$fd{$cursec}{OPERATOR},
+					   -label=>'Operator',
+					   -width=>4,
+					   -font=>$sfont,
+					   -choices=>\@opcho,
+					   -listwidth=>20,
+					  )->pack(-anchor=>'e',-pady=>3);
+	 $opentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+   }
+###################
+
+############# Other Options
+   my $ooframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+			 -label=>' Other Options ',-labelside=>'acrosstop',
+				)->pack(-anchor=>'e',-expand=>1,
+					  -fill=>'x',-padx=>3);
+   $ooframe->Subwidget('label')->configure(-font=>$sbfont);
+      
+   # CLEAR  not for AIP
+   if(not $fd{$cursec}{TYPE} =~ /^[AIPUR]/) {
+	 my @clcho = ('Y','N','never');
+	 my $clentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{CLEAR},
+					   -label=>'Clear',
+					   -width=>5,
+					   -font=>$sfont,
+					   -choices=>\@clcho,
+					   -listwidth=>20,
+					  )->pack(-anchor=>'e',-pady=>3);
+      $clentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+   }
+
+   if(not $fd{$cursec}{TYPE} =~ /^[ ]/) {
+      # PASSWD  only TYPE=E
+      if($fd{$cursec}{TYPE} =~ /^E/) {
+	 my $pwfld = $ooframe->LabEntry(-textvariable=>\$fd{$cursec}{PASSWD},
+					-label=>'Password Char ',
+					-state=>'normal',
+					-width=>3,
+					-font=>$sfont,
+					-bg=>$bg
+				       )->pack(-anchor=>'e',pady=>3);
+	 $pwfld->configure(-labelPack=>[-side=>'left']);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[TIPMORU]/) {
+	 # BORDER
+	 my @bocho = (0,1,2,3,4,5,6);
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{BORDER},
+					   -label=>'Border',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);      
+	 
+	 # RELIEF
+	 my @recho = ('flat','groove','raised','ridge','sunken');
+	 my $reentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{RELIEF},
+					   -label=>'Relief',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@recho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $reentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+	 
+      }
+
+      # TICKFREQ
+      if($fd{$cursec}{TYPE} =~ /^[U]/) {
+	 my @trcho = (1,5,15);
+	 my $trentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{TICKFREQ},
+					   -label=>'Tick Frequenz',
+					   -width=>5,
+					   -font=>$sfont,
+					   -choices=>\@trcho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $trentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+      # TIMEFORMAT
+	 my @ticho = ('HH:MM:SS','HH.MM:SS','HH:MM SS','');
+	 my $tif = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{TIMEFORMAT},
+					   -label=>'Time fmt',
+					   -width=>9,
+					   -font=>$sfont,
+					   -choices=>\@ticho,
+					   -listwidth=>30,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $tif->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      
+      # DATEFORMAT
+	 my @dicho = ('dd-mm-yy','dd-mmm-yy','dd-mmmm-yy','ddd-mmm-yy',
+	              'dddd-mmmm-yy','mm-dd-yy','mmm-dd-yy','mmmm-dd-yy',
+		      'mmm-ddd-yy','mmmm-dddd-yy','');
+	 my $dif = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{DATEFORMAT},
+					   -label=>'Date fmt',
+					   -width=>9,
+					   -font=>$sfont,
+					   -choices=>\@dicho,
+					   -listwidth=>36,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $dif->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+
+      }
+      
+      if($fd{$cursec}{TYPE} =~ /^[TMO]/) {
+	 # SCROLLBAR
+	 my @sccho = ('e','w','oe','ow','n','s','on','os','se',
+	              'ose','osoe','soe');
+	 my $scentry =$ooframe->BrowseEntry(-variable=>\$fd{$cursec}{SCROLLBAR},
+					   -label=>'Scrollbar',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@sccho,
+					   -listwidth=>20,
+					  )->pack(-anchor=>'e',-pady=>3);
+	 $scentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[T]/) {
+	 # WRAP
+	 my @wrcho = ('char','word','none');
+	 my $wrentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{WRAP},
+					   -label=>'Wrap Line',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@wrcho,
+					   -listwidth=>20,
+					  )->pack(-anchor=>'e',-pady=>0);
+	 $wrentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[MO]/) {
+	 # MODE  
+	 my @smcho = ('browse','single','multiple','extended');
+	 my $smentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{MODE},
+					   -label=>'Select Mode',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@smcho,
+					   -listwidth=>22,
+					  )->pack(-anchor=>'e',-pady=>0);
+	 $smentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SORTABLE
+	 my @bocho = (0,1,'1|1','1|1|1','0|0|0|1');
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{SORTABLE},
+					   -label=>'Sortable',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SORTABLE
+	 my @bocho = ('a','a|n','n|a','a|a|n','n|n|a');
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{SORTMODE},
+					   -label=>'Sortmode',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # RESIZEABLE
+	 my @bocho = (0,1,'1|1','1|1|1','0|0|0|1');
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{RESIZEABLE},
+					   -label=>'Resizeable',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # MOVEABLE
+	 my @bocho = (0,1);
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{MOVEABLE},
+					   -label=>'Moveable',
+					   -width=>6,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+	 # SEPARATORWIDTH
+	 my @bocho = (0,1,2,3,4,5,6);
+	 my $boentry = $ooframe->BrowseEntry(-variable=>\$fd{$cursec}{SEPARATORWIDTH},
+					   -label=>'Separatorwidth',
+					   -width=>3,
+					   -font=>$sfont,
+					   -choices=>\@bocho,
+					   -listwidth=>20,
+					)->pack(-anchor=>'e',-pady=>0,-padx=>0);
+	 $boentry->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[U]/) {
+      # TIMEFONT 
+	 my $ofrm = $ooframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $ab = $ofrm->Button(-text=>'Time Font ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					selectFont($fdtop,4,
+                                                     \$fd{$cursec}{TIMEFONT});
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+	 my $balfld = $ofrm->Entry(-textvariable=>\$fd{$cursec}{TIMEFONT},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+      # DATEFONT 
+	 my $dfrm = $ooframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $db = $dfrm->Button(-text=>'Date Font ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					selectFont($fdtop,5,
+                                                     \$fd{$cursec}{DATEFONT});
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+	 my $dalfld = $dfrm->Entry(-textvariable=>\$fd{$cursec}{DATEFONT},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+      }
+
+      if($fd{$cursec}{TYPE} =~ /^[O]/) {
+      # LISTBOXFONT 
+	 my $ofrm = $ooframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $ab = $ofrm->Button(-text=>'Listbox Font ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					selectFont($fdtop,4,
+                                                     \$fd{$cursec}{LISTBOXFONT});
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+	 my $balfld = $ofrm->Entry(-textvariable=>\$fd{$cursec}{LISTBOXFONT},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+      }
+
+      # BALLOONMSG 
+	 my $ofrm = $ooframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $ab = $ofrm->Button(-text=>'Balloon Message ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					 &textEdit($cursec,'BALLOONMSG',$fdtop);
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+	 my $balfld = $ofrm->Entry(-textvariable=>\$fd{$cursec}{BALLOONMSG},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>3);
+				     
+###################
+
+################ Bind Command  not for A
+      if(not $fd{$cursec}{TYPE} =~ /^[ADIPU]/) {
+	 my $bcframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+					  -label=>' Bind Command ',
+					  -labelside=>'acrosstop',
+				   )->pack(-anchor=>'e',-expand=>1,
+					     -fill=>'x',-padx=>3);
+	 $bcframe->Subwidget('label')->configure(-font=>$sbfont);
+
+	 # ENTER
+	 my $afrm = $bcframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $ab = $afrm->Button(-text=>'Enter ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					 &textEdit($cursec,'ENTER',$fdtop);
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+
+	 my $entfld = $afrm->Entry(-textvariable=>\$fd{$cursec}{ENTER},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>0);
+	 
+	 # LEAVE
+	 my $bfrm = $bcframe->Frame(-bd=>2,-relief=>'ridge')
+			      ->pack(-side=>'top',-padx=>3,-pady=>5);
+
+	 my $bb = $bfrm->Button(-text=>'Leave ...',-font=>$sfont,
+			     -padx=>0,-pady=>0,-bd=>1,
+			     -command=> 
+				    sub {
+					 &textEdit($cursec,'LEAVE',$fdtop);
+					})->pack(-side=>'top',
+						 -padx=>0,-pady=>0);
+
+	 my $levfld = $bfrm->Entry(-textvariable=>\$fd{$cursec}{LEAVE},
+					     -state=>'normal',
+					     -width=>19,
+					     -font=>$sfont,
+					     -bg=>$bg
+					     )->pack(-anchor=>'e',pady=>0);
+      }
+   }
+###################
+
+################ DATA
+   if(not $fd{$cursec}{TYPE} =~ /^[AIPU]/) {
+      my $daframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+				       -label=>' Startup Value ',
+                                       -labelside=>'acrosstop',
+				)->pack(-anchor=>'e',-expand=>1,
+					  -fill=>'x',-padx=>3);
+      $daframe->Subwidget('label')->configure(-font=>$sbfont);
+
+      my $datfld = $daframe->LabEntry(-textvariable=>\$fd{$cursec}{DATA},
+					  -label=>'',
+					  -state=>'normal',
+					  -width=>20,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'left',pady=>3);
+      $datfld->configure(-labelPack=>[-side=>'left']);   
+   }
+###################
+
+################ FILE
+   if($fd{$cursec}{TYPE} =~ /^[I]/) {
+      my $fiframe = $paneframe->LabFrame(-relief=>'groove',-borderwidth=>0,
+				       -label=>'GIF Image File',
+                                       -labelside=>'acrosstop',
+				)->pack(-anchor=>'e',-expand=>1,
+					  -fill=>'x',-padx=>3);
+      $fiframe->Subwidget('label')->configure(-font=>$sbfont);
+
+      my $fifld = $fiframe->LabEntry(-textvariable=>\$fd{$cursec}{FILE},
+					  -label=>'',
+					  -state=>'normal',
+					  -width=>13,
+					  -font=>$sfont,
+					  -bg=>$bg
+					  )->pack(-side=>'left',pady=>3);
+      $fifld->configure(-labelPack=>[-side=>'left']);   
+      
+      my $fibtn = $fiframe->Button(-text=>'Browse',
+                                   -font=>$smfont,
+				   -width=>3,-bd=>2,
+				   -command=>sub {
+				                  $fd{$cursec}{FILE} =
+				                    selectFile('gif',$fdtop)},
+				  )->pack(-side=>'right');
+   }
+###################
+
+## So, jetzt noch ein paar Knöppe
+   # Button-Frame
+   my $bFrame = $eFframe->Frame(-relief=>'sunken',-bd=>3,
+                               )->pack(-anchor=>'n',-fill=>'x',
+			               -expand=>1,-pady=>2);
+
+   my $cqframe = $bFrame->Frame(-relief=>'ridge',-bd=>2,
+                               )->pack(-anchor=>'n',-fill=>'x',
+			               -expand=>1,-pady=>0);
+
+   my $clb = $cqframe->Button(-text=>'Clear',
+                             -font=>$btfont,
+                             -width=>6,
+			     -pady=>0,
+			     -command=>sub{foreach (keys %{$fd{$cursec}}) {
+			                      next if($_ eq 'TYPE');
+			                      $fd{$cursec}{$_} = undef;
+					      }}
+			    )->pack(-side=>'left',-padx=>4,-pady=>0);
+
+
+   my $udframe = $bFrame->Frame(-relief=>'ridge',-bd=>2,
+                               )->pack(-anchor=>'n',-fill=>'x',
+		      	               -expand=>1,-pady=>0);
+
+   if(!$reg_sec{$cursec}) {
+      $_quitClosebutton = $cqframe->Button(-text=>'Quit',
+                                          -font=>$btfont,
+                                          -width=>6,
+			                  -pady=>0,
+			                 -command=>sub{$eFwin{$cursec}->destroy}
+			                  )->pack(-side=>'right',
+                                                  -padx=>4,-pady=>0);
+
+      $_placebutton = $udframe->Button(-text=>'Place',
+                                      -font=>$btfont,
+                                      -width=>6,
+			              -pady=>0,
+			              -command=>[\&placeField,$fdtop]
+			             )->pack(-side=>'left',
+			                     -padx=>4,-pady=>0);
+
+      $_deletebutton = $udframe->Button(-text=>'Delete',
+                                      -font=>$btfont,
+                                      -width=>6,
+			              -pady=>0,
+                                      -state=>'disabled',
+			              -command=>[\&deleteField,$cursec,$fdtop]
+			             )->pack(-side=>'right',
+			                     -padx=>4,-pady=>0);
+
+   } else {
+      $_quitClosebutton = $cqframe->Button(-text=>'Close',
+                                          -font=>$btfont,
+                                          -width=>6,
+			                  -pady=>0,
+			                 -command=>sub{$eFwin{$cursec}->destroy}
+			                 )->pack(-side=>'right',
+                                                 -padx=>4,-pady=>0);
+
+      $_placebutton = $udframe->Button(-text=>'Update',
+                                      -font=>$btfont,
+                                      -width=>6,
+			              -pady=>0,
+			              -command=>[\&updateField,$fdtop]
+			             )->pack(-side=>'left',
+			                     -padx=>4,-pady=>0);
+
+      
+      $_deletebutton = $udframe->Button(-text=>'Delete',
+                                      -font=>$btfont,
+                                      -width=>6,
+			              -pady=>0,
+			              -command=>[\&deleteField,$cursec,$fdtop]
+			             )->pack(-side=>'right',
+			                     -padx=>4,-pady=>0);
+
+
+   }
+
+   
+} # config_EDLBNCATIOPMU
+
+
+######################  config_unknown  ##################################
+=pod
+
+=head2 config_unknown
+
+usage: config_unknown( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+sub config_unknown {
+
+   my $fdtop = shift;
+
+} # config_unknown
+
+
+#####################  placeField  ####################################
+=pod
+
+=head2 placeField
+
+register a section and place it on the form
+
+usage: placeField( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+ 
+=cut
+sub placeField {
+
+   my $top = shift;
+   
+   my $sec = 'sec'.$cursection;
+
+   my $type = substr($fd{$sec}{TYPE},0,1);
+   my $label = (defined $fd{$sec}{LABEL})?substr($fd{$sec}{LABEL},0,20):' ';
+
+   $menuedit->command(-label=>"$sec  TYPE=$type  $label",-font=>$mfont,
+                      -command=>sub{&editsection($sec)}) if(!$reg_sec{$sec});
+   
+   $menu->update;
+   $menu->BreakMenu; # break for long item lists
+
+   $reg_sec{$sec} = $sec;  # section registrieren
+
+   $_quitClosebutton->configure(-text=>'Close');
+   $_placebutton->configure(-text=>'Update',
+                            -command=>[\&updateField,$fdtop]);
+   $_deletebutton->configure(-state=>'normal');
+   
+   # some increments 
+   $cursection = $maxsection + $section;
+   $maxsection = $cursection;
+
+   &updateField;
+
+} # placeField
+
+
+#####################  editsection  ####################################
+=pod
+
+=head2 editsection
+
+open a registered section for editing
+
+usage: editsection( $section )
+
+   section: section name to be edited
+
+=cut
+sub editsection {
+
+   my $sec = shift;
+
+   if($sec =~ /sec/) {
+      ($cursection = $sec) =~ s/sec//;
+   } else {
+      $cursection = $sec;
+   }
+
+   proceed($fdtop);
+
+} # editsection
+
+
+#####################  updateField  ####################################
+=pod
+
+=head2 updateField
+
+if a Field is placed then this is the right subroutine
+to create or update the Form\().
+
+usage: updateField()
+
+=cut
+sub updateField {
+
+   %yaffd = ();
+   foreach (keys %fd) {
+      $yaffd{$_} = $fd{$_} if($reg_sec{$_} or $_ eq 'GENERAL');
+   }
+   my $a = TkYAF();
+
+} # updateField
+
+
+#####################  deleteField  ###################################
+=pod
+
+=head2 deleteField
+
+delete a registered section
+
+usage: deleteField( $section )
+
+   section: a registered section to delete
+
+=cut
+sub deleteField {
+
+   my $sec = shift;
+
+   my $type;
+   my $label;
+
+   # sections löschen
+   delete $fd{$sec};
+   delete $reg_sec{$sec};
+
+   $eFwin{$sec}->destroy;
+
+   # menuitems löschen und wieder einfügen
+   $menuedit->menu->delete(3,'end');
+   foreach my $s (sort keys %reg_sec) {
+      $type = substr($fd{$s}{TYPE},0,1);
+      $label = (defined $fd{$s}{LABEL})?$fd{$s}{LABEL}:' ';
+      $label = (defined $fd{$s}{LABEL})?substr($fd{$s}{LABEL},0,20):' ';
+      $menuedit->command(-label=>"$s  TYPE=$type  $label",-font=>$mfont,
+                      -command=>sub{&editsection($s)});
+   }
+   $menu->update;
+   $menu->BreakMenu; # break for long item lists
+
+} # deleteField
+
+
+#####################  textEdit  ####################################
+=pod
+
+=head2 textEdit
+
+textEdit is a small text editor for editing parameters that could be
+more than one line long.
+
+usage: textEdit( $section, $parameter, $ToplevelWindow )
+
+          section: a registered section
+        parameter: parameter of section
+   ToplevelWindow: toplevel widget
+
+=cut
+sub textEdit {
+
+   my $sec = shift;
+   my $key = shift;
+   my $top = shift;
+
+
+   my $textEdit = $top->Toplevel(-title=>"Edit:    $sec $key");
+
+   my $tframe = $textEdit->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   my $t = $tframe->Scrolled(Text,-relief=>'sunken',-bd=>2,-setgrid=>'true',
+                                 -height=>10,-width=>42,-scrollbars=>'osoe',
+                                 -font=>$sfont,-wrap=>'none',
+                                 -background=>$_bgcolor,-foreground=>'black'
+                            )->pack(-expand=>1,-fill=>'both',-padx=>5,-pady=>5);
+
+   $t->insert('0.0',$fd{$sec}{$key});
+
+   my $bf = $textEdit->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-fill=>'x',-expand=>1);
+   my $bf1 = $bf->Frame()->pack();
+
+   my $okb = $bf1->Button(-text=>'OK',-font=>$btfont,-width=>10,
+                          -command=> sub {
+                                         chomp($fd{$sec}{$key}=$t->
+                                                              get('1.0','end'));
+                                         $textEdit->destroy;
+                                        }
+                        )->pack(-side=>'left',-padx=>20,-pady=>2);
+
+   my $qub = $bf1->Button(-text=>'Cancel',-font=>$btfont,-width=>10,
+                         -command=> sub {$textEdit->destroy}
+                        )->pack(-side=>'left',-padx=>20,-pady=>2);
+
+   # key bindings for OK -> Return   and Cancel -> Escape
+   #$textEdit->bind("<Return>",sub{chomp($fd{$sec}{$key}=$t->get('1.0','end'));
+   #                                                      $textEdit->destroy;});
+   #$textEdit->bind("<Escape>",sub{$textEdit->destroy});
+
+
+} # textEdit
+
+
+################  options  ###################
+=pod
+
+=head2 options
+
+creates a window for selecting a browser
+
+usage: options( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+   
+=cut
+sub options {
+
+   my $top = shift;
+
+   # we allow only one instance
+   if(Exists $_opt) {
+      $_opt->deiconify();
+      $_opt->raise();
+      return;
+   }
+
+   my $bg = $_bgcolor;
+   my $mbr = $myBrowser;
+
+   $_opt = $top->Toplevel(-title=>'Browser');
+   $_opt->resizable(0,0); # this prevents nasty distorted windows
+   
+   my $optframe = $_opt->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   my @ch = ('konqueror','mozilla','netscape');
+   my $browser = $optframe->BrowseEntry(-variable=>\$myBrowser,
+                                        -label=>'HTML Browser ',
+                                        -width=>18,
+                                        -font=>$sfont,
+                                        -choices=>\@ch,
+                                        -listwidth=>52,
+                                      )->pack(-anchor=>'e',-padx=>10,-pady=>10);
+   $browser->Subwidget('entry')->Subwidget('entry')->configure(-bg=>$bg);
+
+
+   # buttons
+   my $bFframe = $optframe->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+			              -expand=>1,-pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'OK',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_opt->destroy}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   my $qub = $bbFframe->Button(-text=>'Cancel',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_opt->destroy;
+			                    $myBrowser = $mbr;
+					    }
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   
+   # key bindings for OK -> Return   and Cancel -> Escape
+   $_opt->bind("<Return>",sub{$_opt->destroy});
+   $_opt->bind("<Escape>",sub{$_opt->destroy;$myBrowser = $mbr;});
+ 
+} # options
+
+
+#################  debug  ############################
+=pod
+
+=head2 option_debug
+
+set debug option. Used to print some debug messages from yaform.pm
+
+usage: option_debug()
+
+=cut
+sub option_debug {
+
+   if(!$_optidebug) {
+      $menuopti->menu->entryconfigure(2,-label=>'Debug        Off');
+      $_optidebug = 1;
+      $opt_d = 1;
+   } else {
+      $menuopti->menu->entryconfigure(2,-label=>'Debug        On');
+      $_optidebug = 0;
+      $opt_d = undef;
+   }
+
+} # option_debug
+
+
+#################  SQL-Print  ############################
+=pod
+
+=head2 option_sql
+
+set option 'last SQL statement'. Used to print some SQL messages from yaform.pm
+
+usage: option_sql()
+
+=cut
+sub option_sql {
+
+   if(!$_optisql) {
+      $menuopti->menu->entryconfigure(3,-label=>'SQL-Print Off');
+      $_optisql = 1;
+      $opt_s = 1;
+   } else {
+      $menuopti->menu->entryconfigure(3,-label=>'SQL-Print On');
+      $_optisql = 0;
+      $opt_s = undef;
+   }
+
+} # option_sql
+
+
+################  option_apiis  ###################
+=pod
+
+=head2 option_apiis
+
+option_apiis creates a window to set or edit $APIIS_HOME
+and $APIIS_LOCAL.
+
+usage: option_apiis( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+sub option_apiis {
+
+   my $top = shift;
+
+   my $bg = $_bgcolor;
+   my $home = $APIIS_HOME;
+   my $local = $APIIS_LOCAL;
+
+   # we allow only one instance
+   if(Exists $_optp) {
+      $_optp->deiconify();
+      $_optp->raise();
+      return;
+   }
+
+   $_optp = $top->Toplevel(-title=>'$APIIS_HOME  $APIIS_LOCAL');
+   $_optp->resizable(0,0); # this prevents nasty distorted windows
+
+   my $optframe = $_optp->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   my $bh = $optframe->LabEntry(-textvariable=>\$APIIS_HOME,
+                                        -label=>'$APIIS_HOME ',
+                                        -width=>28,
+                                        -font=>$sfont,
+                                        -bg=>$bg,
+                                      )->pack(-anchor=>'e',-padx=>10,-pady=>10);
+   $bh->configure(-labelPack=>[-side=>'left']);
+
+   my $bl = $optframe->LabEntry(-textvariable=>\$APIIS_LOCAL,
+                                        -label=>'$APIIS_LOCAL ',
+                                        -width=>28,
+                                        -font=>$sfont,
+                                        -bg=>$bg,
+                                      )->pack(-anchor=>'e',-padx=>10,-pady=>10);
+   $bl->configure(-labelPack=>[-side=>'left']);
+
+
+   # buttons
+   my $bFframe = $optframe->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+			              -expand=>1,-pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'OK',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_optp->destroy}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   my $qub = $bbFframe->Button(-text=>'Cancel',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_optp->destroy;
+			                    $APIIS_HOME = $home;
+                                            $APIIS_LOCAL = $local;
+					    }
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+ 
+   # key bindings for OK -> Return   and Cancel -> Escape
+   $_optp->bind("<Return>",sub{$_optp->destroy});
+   $_optp->bind("<Escape>",sub{$_optp->destroy;
+                               $APIIS_HOME = $home;
+                               $APIIS_LOCAL = $local;});
+ 
+} # option_apiis
+
+
+################  option_grid  ###################
+=pod
+
+=head2 option_grid
+
+option_grid creates a window to set x/y grid values.
+
+usage: option_grid( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+sub option_grid {
+
+   my $top = shift;
+
+   my $bg = $_bgcolor;
+   my $xg = $xgrid;
+   my $yg = $ygrid;
+
+   # we allow only one instance
+   if(Exists $_optp) {
+      $_optp->deiconify();
+      $_optp->raise();
+      return;
+   }
+
+   $_optg = $top->Toplevel(-title=>'Grid');
+   $_optg->resizable(0,0); # this prevents nasty distorted windows
+
+   my $optframe = $_optg->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   my $bh = $optframe->LabEntry(-textvariable=>\$xgrid,
+                                        -label=>'X  ',
+                                        -width=>18,
+                                        -font=>$sfont,
+                                        -bg=>$bg,
+                                      )->pack(-anchor=>'e',-padx=>10,-pady=>10);
+   $bh->configure(-labelPack=>[-side=>'left']);
+
+   my $bl = $optframe->LabEntry(-textvariable=>\$ygrid,
+                                        -label=>'Y  ',
+                                        -width=>18,
+                                        -font=>$sfont,
+                                        -bg=>$bg,
+                                      )->pack(-anchor=>'e',-padx=>10,-pady=>10);
+   $bl->configure(-labelPack=>[-side=>'left']);
+
+
+   # buttons
+   my $bFframe = $optframe->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+                                      -expand=>1,-pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'OK',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{if($xgrid < 1 or $ygrid < 1) {
+                                               warnwin($top, 'Error', 'error',
+                                                       '1 pixel is the minimum')
+                                            } else { $_optg->destroy} }
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   my $qub = $bbFframe->Button(-text=>'Cancel',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_optg->destroy;
+                                            $xgrid = $xg;
+                                            $ygrid = $yg;
+                                            }
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+ 
+   # key bindings for OK -> Return   and Cancel -> Escape
+   $_optg->bind("<Return>",sub{$_optg->destroy});
+   $_optg->bind("<Escape>",sub{$_optg->destroy;
+                                   $xgrid = $xg;
+                                   $ygrid = $yg; });
+ 
+} # option_grid
+
+##################  opt_fsel  ########################
+=pod
+
+=head2 opt_fsel
+
+creates a window to select a fileselctor (FBox/FileSelector).
+
+usage: opt_fsel( $ToplevelWindow )
+
+   ToplevelWindow: toplevel widget
+
+=cut
+sub opt_fsel {
+
+   my $top = shift;
+
+   if(Exists($_optf)) {
+      $_optf->deiconify();
+      $_optf->raise();
+      return;
+   }
+
+   $_optf = $top->Toplevel(-title=>"Choose a File Selector");
+   $_optf->resizable(0,0); # this prevents nasty distorted windows
+
+   my $of = $_optf->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+   # Radiobutton  FBox | FileSelector
+   my @qa = ('FBox= (default)  is nicer, more efficientbut works not on all machines ',
+         'FileSelector= much simpler,very slow on some machines');
+   foreach my $f (@qa) {
+      my ($t,$l) = split('=',$f);
+      my $fr = $of->Frame(-bd=>1,-relief=>'groove')
+                  ->pack(-side=>'top',-expand=>1,-fill=>'x');
+      my $ra = $fr->Radiobutton(-text=>$t,-font=>$sfont,
+                                -variable=>\$fileselector,
+				-relief=>'flat',
+				-value=>$t,-indicator=>1
+                               )->pack(-side=>'left',
+			               -pady=>3,-padx=>5);
+      my $la = $fr->Label(-text=>$l,-font=>$sfont,-justify=>'left',
+                         )->pack(-side=>'left',-pady=>3,-padx=>15);
+   }
+    
+   # Label
+   my $lla = 'to make this permanet:insert in your $APIIS_HOME/apiisrc file';
+   my $llb = "$fileselector = 'FBox';  or$fileselector = 'FileSelector';";
+   my $lfr = $of->Frame(-bd=>4,-relief=>'sunken')
+                  ->pack(-side=>'top',-expand=>1,-fill=>'x');
+   my $ll = $lfr->Label(-text=>$lla,-font=>$sfont,-justify=>'left',
+                      )->pack(-anchor=>'s',-fill=>'x',-expand=>1);
+   my $ll = $lfr->Label(-text=>$llb,-font=>$sfont,-justify=>'left',
+                      )->pack(-anchor=>'s');
+
+
+   # buttons
+   my $bFframe = $of->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',
+			              -expand=>1,-pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'OK',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$_optf->destroy}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+ 
+
+} # opt_fsel
+
+##################  renSection  ######################
+=pod
+
+=head2 renSection
+
+renSection creates a window to rename a formfile section
+
+usage: renSection( $section, $ToplevelWindow )
+
+          section: section name to delete
+   ToplevelWindow: toplevel widget
+
+=cut
+sub renSection {
+
+   my ($cursec,$top) = @_;
+
+   my $newsec;
+
+   # print "renSection:$cursec\n";
+
+   if(Exists($rstop)) {
+      $rstop->deiconify();
+      $rstop->raise();
+      return;
+   }
+
+   $rstop = $top->Toplevel(-title=>"Rename Section: $cursec");
+   $rstop->resizable(0,0); # this prevents nasty distorted windows
+
+   my $rsframe = $rstop->Frame(-relief=>'groove',-borderwidth=>4,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1);
+
+
+   my $lab = $rsframe->LabEntry(-textvariable=>\$newsec,
+                                       -label=>'Rename Section to ',
+                                       -state=>'normal',
+                                       -width=>20,
+                                       -font=>$sfont,
+                                       -bg=>$bg
+                                       )->pack(-anchor=>'n',padx=>12,pady=>10);
+   $lab->configure(-labelPack=>[-side=>'left']);
+
+   # buttons
+   my $bFframe = $rsframe->Frame(-relief=>'sunken',-borderwidth=>3,
+                              )->pack(-anchor=>'s',-fill=>'x',-expand=>1,
+                                      -pady=>2);
+   my $bbFframe = $bFframe->Frame(-relief=>'ridge',-borderwidth=>2,
+                              )->pack(-anchor=>'n',-fill=>'x',-expand=>1,
+			              -pady=>0);
+
+   my $okb = $bbFframe->Button(-text=>'Rename',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub {checkSec($cursec,$newsec,$rstop)}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+   my $qub = $bbFframe->Button(-text=>'Cancel',-width=>6,
+                              -font=>$btfont,-pady=>0,
+                              -command=>sub{$rstop->destroy}
+                             )->pack(-side=>'left',-padx=>4,-pady=>0);
+
+} # renSection
+
+
+################  checkSec  ###########################
+=pod
+
+=head2 checkSec
+
+checkSec is called from subroutine renSection. Makes the extensive stuff
+to check of existing sections, changes the form hash and the registration,
+adjusts the edit menu, renames some window titles and button text.
+
+usage: checkSec( $cursec, $newsec, $toplevel )
+
+     cursec: current section name to be renamed
+     newsec: the new section name
+   toplevel: toplevel window ('Rename Section' window)
+             will be destroyed after successfull renaming.
+
+=cut
+sub checkSec {
+
+   my ($cursec,$newsec,$top) = @_;
+
+   # print "CURSEC:$cursec  NEWSEC:$newsec\n";
+
+   if(scalar %reg_sec) {      # 0
+      if($reg_sec{$newsec}) {  # 3:  newsec existiert schon -> error message
+         warnwin($top, 'Error', 'error',
+                 "Section $newsec is already registered!");
+         return;
+
+      }
+
+      if($reg_sec{$cursec}) { # 1
+         # cursec ist registriert und newsec nicht
+	 # cursec löschen, newsec registrieren
+	 # editmenü new aufbauen
+
+         # form-hash umbenennen
+	 $fd{$newsec} = $fd{$cursec};
+	 delete $fd{$cursec};
+
+         # Registrierung umbenennen
+	 $reg_sec{$newsec} = $newsec;
+	 delete $reg_sec{$cursec};
+
+         # Buttontext ändern
+	 ${$secButton{$cursec}}=$newsec;
+         $secButton{$newsec}=$secButton{$cursec};
+         delete $secButton{$cursec};
+
+         # menuitems löschen und wieder einfügen
+         $menuedit->menu->delete(3,'end');
+         foreach my $s (sort keys %reg_sec) {
+            $type = substr($fd{$s}{TYPE},0,1);
+            $label = (defined $fd{$s}{LABEL})?$fd{$s}{LABEL}:' ';
+            $label = (defined $fd{$s}{LABEL})?substr($fd{$s}{LABEL},0,20):' ';
+            $menuedit->command(-label=>"$s  TYPE=$type  $label",-font=>$mfont,
+                            -command=>sub{&editsection($s)});
+         }
+	 
+         # Feld window umbenennen, Titel neu setzen
+	 $eFwin{$newsec}=$eFwin{$cursec};
+         $eFwin{$newsec}->configure(-title=>$newsec);
+	 delete $eFwin{$cursec};
+
+         # Rename window schliessen
+	 $top->destroy;
+
+      } else {                # 2 
+         # cursec ist nicht registriert
+         # newsec registrieren, editmenü neu aufbauen 
+
+         # Feld registrieren
+         placeField($top);
+
+         # form-hash umbenennen
+	 $fd{$newsec} = $fd{$cursec};
+	 delete $fd{$cursec};
+
+         # Registrierung umbenennen
+	 $reg_sec{$newsec} = $newsec;
+	 delete $reg_sec{$cursec};
+
+         # Buttontext ändern
+	 ${$secButton{$cursec}}=$newsec;
+         $secButton{$newsec}=$secButton{$cursec};
+         delete $secButton{$cursec};
+
+         # menuitems löschen und wieder einfügen
+         $menuedit->menu->delete(3,'end');
+         foreach my $s (sort keys %reg_sec) {
+            $type = substr($fd{$s}{TYPE},0,1);
+            $label = (defined $fd{$s}{LABEL})?$fd{$s}{LABEL}:' ';
+            $label = (defined $fd{$s}{LABEL})?substr($fd{$s}{LABEL},0,20):' ';
+            $menuedit->command(-label=>"$s  TYPE=$type  $label",-font=>$mfont,
+                            -command=>sub{&editsection($s)});
+         }
+	 
+         # Feld window umbenennen, Titel neu setzen
+	 $eFwin{$newsec}=$eFwin{$cursec};
+         $eFwin{$newsec}->configure(-title=>$newsec);
+	 delete $eFwin{$cursec};
+
+         # Rename window schliessen
+	 $top->destroy;
+
+      }
+
+   } else { # noch kein Feld registriert, 
+      # newsec registrieren, menu aufbauen
+
+         # Feld registrieren
+         placeField($top);
+
+         # form-hash umbenennen
+	 $fd{$newsec} = $fd{$cursec};
+	 delete $fd{$cursec};
+
+         # Registrierung umbenennen
+	 $reg_sec{$newsec} = $newsec;
+	 delete $reg_sec{$cursec};
+
+         # Buttontext ändern
+	 ${$secButton{$cursec}}=$newsec;
+         $secButton{$newsec}=$secButton{$cursec};
+         delete $secButton{$cursec};
+
+         # menuitems löschen und wieder einfügen
+         $menuedit->menu->delete(3,'end');
+         foreach my $s (sort keys %reg_sec) {
+            $type = substr($fd{$s}{TYPE},0,1);
+            $label = (defined $fd{$s}{LABEL})?$fd{$s}{LABEL}:' ';
+            $label = (defined $fd{$s}{LABEL})?substr($fd{$s}{LABEL},0,20):' ';
+            $menuedit->command(-label=>"$s  TYPE=$type  $label",-font=>$mfont,
+                            -command=>sub{&editsection($s)});
+         }
+	 
+         # Feld window umbenennen, Titel neu setzen
+	 $eFwin{$newsec}=$eFwin{$cursec};
+         $eFwin{$newsec}->configure(-title=>$newsec);
+	 delete $eFwin{$cursec};
+
+         # Rename window schliessen
+	 $top->destroy;
+   }
+
+   $menu->update;
+   $menu->BreakMenu; # break for long item lists
+
+} # checkSec
+
+
+##############################################################################
+=pod
+
+=head2 Post
+
+Slaven Rezic has made a nice patch that solves the problem of slow
+Dialog boxes perfectly. Here is his solution.
+ 
+thanx Slaven!
+
+=cut
+package Patch::SREZIC::Tk::Wm;
+
+use Tk::Wm;
+package
+    Tk::Wm;
+
+sub Post
+{
+ my ($w,$X,$Y) = @_;
+ $X = int($X);
+ $Y = int($Y);
+ $w->positionfrom('user');
+ # $w->geometry("+$X+$Y");
+ $w->MoveToplevelWindow($X,$Y);
+ $w->deiconify;
+# $w->idletasks; # to prevent problems with KDE's kwm etc.
+# $w->raise;
+}
+#  thanx Slaven!
+
+1;
+
+__END__
+
+=pod
+
+=head1 SEE ALSO
+
+$APIIS_HOME/lib/yaform.pm, $APIIS_HOME/lib/form_ulib.pm
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+
+=cut
+# =for latex
+# \index{needs Check!FormDesigner}
+

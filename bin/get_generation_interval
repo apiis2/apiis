@@ -1,0 +1,19 @@
+#!/bin/bash
+##############################################################################
+# $Id: get_generation_interval,v 1.3 2013/08/06 14:04:51 kehr Exp $
+##############################################################################
+# Popreport: Get the computed generation interval from the database.
+
+PROJECT=$1
+
+if [ -z $PROJECT ]; then
+    echo "usage: $0 <project>"
+    exit
+fi
+
+USER=apiis_admin
+SQL="SELECT round(pop,0) FROM tmp1_gen ORDER BY year DESC OFFSET 3 LIMIT 1";
+PSQL_OPTS="-q -t -A -d $PROJECT"
+
+echo $(/usr/bin/psql -U $USER $PSQL_OPTS --command "$SQL")
+

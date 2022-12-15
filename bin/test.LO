@@ -1,0 +1,49 @@
+#!/usr/bin/perl -w
+#
+##############################################################################
+# $Id: test.LO,v 1.3 2007/04/05 10:06:38 ulm Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Form object.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.3 $' );
+use Apiis::DataBase::User;
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Terse  = 1;
+
+my $LO = 'FileUpload';
+
+# create a user object to save repeated user/pw typing during tests:
+my $testuser = Apiis::DataBase::User->new(
+   id       => 'b08mueul',
+   password => 'fwihbv',
+);
+$testuser->check_status;
+$apiis->join_model('mszv', userobj => $testuser );
+$apiis->check_status;
+no strict "refs";
+
+my $load_string="use $LO";
+eval $load_string;
+if ($@) {
+  print $@;
+}
+my %data_hash;
+my ( $data,$stru ) = &$LO($apiis, "$ENV{'APIIS_HOME'}/mszv/13.txt", 'lpa-koellitsch','on' );
+#my ( $data,$stru ) = &$LO($apiis, {'FILE'=>"$ENV{'APIIS_HOME'}/mszv/lpa.txt", 'importfilter'=>'lpa-koellitsch' } );
+#$a=pdf(undef, $data,$stru);
+#foreach my $err (@{$err_ref}) {
+#  $err->print;
+#}
+
+

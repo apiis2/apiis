@@ -1,0 +1,310 @@
+#!/usr/bin/perl
+############################################################################
+# $Id: check_pedi_stack,v 1.29 2010-07-12 06:13:10 popreport Exp $
+############################################################################
+
+use strict;
+use warnings;
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.29 $' );
+our $apiis;
+use Apiis::DataBase::User;
+use Popreport;
+
+use List::Util;
+use Data::Dumper;
+use Mail::Sendmail;
+use Date::Calc qw/ check_date Delta_Days /;
+
+# put global needed variables together:
+my $cfg = {
+    err_mesgs     => [],
+    err_stat_die  => 0,
+    err_mesgs_die => [],
+    loop_animals  => {},
+    loop_counter  => 500,
+    listfile      => undef,
+    texfile       => undef,
+    extended      => undef,
+    ped           => {},
+    male_code     => undef,
+    female_code   => undef,
+    max_loops     => 1000,
+    sex_class     => 'SEX',
+    delete        => 0,
+    max_errors    => 16,       # for handle_errors
+};
+$cfg->{apiis} = $apiis;
+
+my $pedref = $cfg->{ped};
+my ( $listfile, $texfile );
+
+# handle command-line options:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+my %args;
+my $args_ref = \%args;
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'pedigreetable|t=s',
+    'version|v',
+    'project|p=s',
+    'user|u=s',
+    'password|P=s',
+    'male|m=s',
+    'female|f=s',
+    'listfile|l=s',
+    'extended|E',
+    'delete|d',
+    'check_loop|L',
+) or pod2usage( -verbose => 1 );
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 2 ) if $args_ref->{'man'};
+
+select STDERR; $| = 1; # autoflush
+select STDOUT; $| = 1; # autoflush
+
+if ( $args_ref->{version} ) {
+    die sprintf "%s: %s\n", $apiis->programname, $apiis->version;
+}
+
+my $do_check_loop = $args_ref->{'check_loop'}; # boolean switch
+my $model_file    = $args_ref->{'project'};
+if ( !$model_file ) {
+    printf STDERR "%s!\n", __('No [_1] given', 'project');
+    pod2usage( -verbose => 1 );
+}
+
+# sex parameters required:
+if ( !defined $args_ref->{'male'} or !defined $args_ref->{'female'} ) {
+    print STDERR __( "Parameter missing: [_1]", '-m' ) . "\n"
+        if !defined $args_ref->{'male'};
+    print STDERR __( "Parameter missing: [_1]", '-f' ) . "\n"
+        if !defined $args_ref->{'female'};
+    pod2usage( -verbose => 1 );
+}
+
+# connect to project:
+if ( $args_ref->{user} and $args_ref->{password} ) {
+    require Apiis::DataBase::User;
+    my $thisobj = Apiis::DataBase::User->new(
+        id       => $args_ref->{user},
+        password => $args_ref->{password},
+    );
+    $thisobj->check_status;
+    $apiis->join_model( $model_file, userobj => $thisobj );
+}
+$apiis->join_model($model_file) if !$apiis->exists_model;
+$apiis->check_status( die => 'ERR' );
+
+# stop logging to speed it up:
+$apiis->use_filelog(0);
+$apiis->use_syslog(0);
+$apiis->use_sql_logging(0);
+
+# add some logging to the .lst file of run_popreport (wrapper):
+if ( $args_ref->{'listfile'} ) {
+    $cfg->{listfile} = $listfile = $texfile = $args_ref->{'listfile'};
+    $texfile =~ s/lst$/tex/;
+    $cfg->{texfile} = $texfile;
+}
+$cfg->{extended} = 1 if $args_ref->{'extended'};
+$cfg->{delete} = 1 if $args_ref->{'delete'};
+
+### create main hash %ped:
+my $sql1;
+if (exists $args_ref->{pedigreetable}) {
+    $sql1 = "select animal, m_p,f_p from $args_ref->{pedigreetable}";
+
+    $cfg->{'pedigreetable'}=$args_ref->{'pedigreetable'};
+}
+else {
+    $sql1 = "select db_animal,db_sire,db_dam,db_sex,birth_dt from animal";
+}
+my $sql_obj1 =
+    $apiis->DataBase->sql( { statement => $sql1, user => 'system', } );
+if ( $sql_obj1->status ) {
+    for my $errobj ( $sql_obj1->errors ){
+        $errobj->print; # stdout
+        print_list($errobj->sprint, $listfile);
+        print_tex_item($errobj->sprint, $texfile);
+    }
+    my $msg = 'SQL Errors. Terminated ...';
+    print_list($msg, $listfile);
+    print_tex_item($msg, $texfile);
+    die $msg . "\n";
+}
+
+my ( $no_sire, $no_dam, $no_animal );
+while ( my $row_ref = $sql_obj1->handle->fetchrow_arrayref ) {
+    my $animal = $row_ref->[0];
+    my $sire   = $row_ref->[1];
+    my $dam    = $row_ref->[2];
+    $pedref->{$animal}[0] = $sire;            # db_sire
+    $pedref->{$animal}[1] = $dam;             # db_dam
+    $pedref->{$animal}[2] = 0;                # left empty from older versions
+    $pedref->{$animal}[3] = $row_ref->[3];    # db_sex
+    $pedref->{$animal}[4] = $row_ref->[4];    # birth_dt
+  # $pedref->{$animal}[5] = true|false;       # flag for clean pedigree
+  # $pedref->{$animal}[6] = true|false;       # is a parent
+
+    # counters:
+    $no_sire++ if $sire;
+    $no_dam++  if $dam;
+    $no_animal++;
+}
+
+# flag base animal as clean:
+if (!exists $args_ref->{pedigreetable}) {
+    $pedref->{1}[5] = 1;
+    $pedref->{2}[5] = 1;
+}
+
+# basic test:
+if ( ( $no_animal != $no_sire ) or ( $no_animal != $no_dam ) ) {
+    push @{$cfg->{err_mesgs}}, "animals: $no_animal, sires: $no_sire, dams: $no_dam";
+    push @{$cfg->{err_mesgs}}, "Some animals/sires/dams are undefined.";
+}
+handle_errors($cfg);
+
+##############################################################################
+# testing for sire == dam:
+test_sire_eq_dam($cfg);
+handle_errors($cfg);
+##############################################################################
+# testing if all parents are either unknown_... or have an animal entry:
+test_parent_is_known($cfg);
+handle_errors($cfg);
+##############################################################################
+# testing for pedigree loops:
+if ($do_check_loop) {
+    for ( keys %{$pedref} ) {
+        test_loop( $_, [], $cfg );
+        last if $cfg->{err_stat_die};
+    }
+}
+handle_errors($cfg);
+##############################################################################
+# testing for wrong sex:
+my %sexcode_of;
+if (!exists $args_ref->{pedigreetable}) {
+    my $record = Apiis::DataBase::Record->new( tablename => $apiis->codes_table, );
+    $record->check_status( die => 'ERR' );
+    $record->column('class')->extdata($cfg->{sex_class});
+    $record->expect_rows('many');    # default
+    $record->expect_columns( 'db_code', 'short_name' );
+    my @query_records = $record->fetch;
+    $record->check_status( die => 'ERR' );
+    for my $rec (@query_records) {
+        my $ext_sex = $rec->column('short_name')->intdata;
+        my $int_sex = $rec->column('db_code')->intdata;
+        $sexcode_of{ $ext_sex } = $int_sex;
+    }
+}
+else {
+    $sexcode_of{ $args_ref->{male} }=1;
+    $sexcode_of{ $args_ref->{female} }=1;
+}
+
+$cfg->{male_code} = $sexcode_of{ $args_ref->{male} };
+$cfg->{female_code} = $sexcode_of{ $args_ref->{female} };
+
+if ( !defined $cfg->{male_code} or !defined $cfg->{female_code} ) {
+    my $msg1 = sprintf "Unknown or wrong representation of sex codes: %s, %s",
+        $args_ref->{male}, $args_ref->{female};
+    my $msg2 = sprintf "Valid codes are: %s", join( ', ', keys %sexcode_of );
+    print_list($msg1, $listfile);
+    print_list($msg2, $listfile);
+    print_tex_item($msg1, $texfile);
+    print_tex_item($msg2, $texfile);
+    print $msg1, "\n";
+    die $msg2, "\n";
+}
+
+##############################################################################
+# test for sex discrepancies:
+test_sex($cfg);
+handle_errors($cfg);
+##############################################################################
+# testing for wrong date differences between generations:
+test_dates($cfg);
+handle_errors($cfg);
+##############################################################################
+
+__END__
+
+=pod
+
+=head1 NAME
+
+check_pedi_stack
+
+=head1 SYNOPSIS
+
+check_pedi_stack [Options]
+
+=head1 OPTIONS
+
+ -p | --project <project>  defines the project to check (r)
+
+ -u | --user  <user>       provide username <user> to connect to project (r)
+ -P | --password <passwd>  provide password <passwd> to connect to project (r)
+
+ -m | --male               External representation (code.short_name) of male sex (r)
+ -f | --female             External representation (code.short_name) of female sex (r)
+
+ -E | --extended           Extended error messages (like internal db values)  (o)
+ -d | --delete             Delete wrong birthday both for animal and dam/sire (o)
+ -L | --check_loop         Run tests for finding loops if set (o)
+
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -v | --version            current version of this check_pedi_stack (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<check_pedi_stack> loops through each animal of a datasource (database, file)
+and runs the following checks:
+
+* check for loops in the pedigree
+
+* check for wrong sex of sire and dam
+
+* check, if birthdate of animal is later than that of sire/dam
+
+B<check_pedi_stack> returns 0 back to the invoking shell if no errors raise, 1
+otherwise.
+
+=head1 EXAMPLES
+
+Example usage:
+
+    check_pedi_stack -p DSN -u heli -P top_secret
+
+=head1 BUGS
+
+=head1 VERSION
+
+$Revision: 1.29 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut
+

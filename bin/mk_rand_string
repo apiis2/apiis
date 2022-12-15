@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+##############################################################################
+# $Id: mk_rand_string,v 1.1 2009-07-01 12:23:42 heli Exp $
+# (p) Original by michael@ping.de
+# slightly modified (29.6.2009 - heli):
+##############################################################################
+# provide a random string
+
+use strict;
+use warnings;
+
+my $salt_table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789';
+
+srand (time ^ $$ ^ unpack "%L*", `ps axww | gzip`);
+
+my $ascii_passwd = &pw_generate;
+
+my $salt =
+      substr( $salt_table, int( rand(61) ), 1 )
+    . substr( $salt_table, int( rand(61) ), 1 );
+
+my $enc_passwd = crypt( $ascii_passwd, $salt );
+
+$enc_passwd =~ tr{./}{pS}; # remove . and /
+
+# first char must not be a number:
+print 'PPP_' . $enc_passwd . "\n";
+
+##############################################################################
+sub pw_generate {
+
+    my @vset = ( 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U' );
+
+    # exlude y and z due to english/german keyboard layout
+    my @kset = (
+        'b' .. 'd', 'f' .. 'h', 'j' .. 'n', 'p' .. 't',
+        'v' .. 'x', 'B' .. 'D', 'F' .. 'H', 'J' .. 'N',
+        'P' .. 'T', 'V' .. 'X'
+    );
+
+    # my @sset  = ( '.', ',', '!', '%', ':' );
+    my $vsize = $#vset + 1;
+    my $ksize = $#kset + 1;
+    # my $ssize = $#sset + 1;
+
+    my $nextchar;
+    my $new_passwd;
+
+    my $z            = 2;
+    my $length       = 8;
+    my $max_capitals = 2;    # only 2 capital letters
+    my $capitals     = 0;
+
+    while ( $length-- ) {
+        $z = 1 if ( $z < 1 );
+        $z = 3 if ( $z > 3 );
+
+        if ( int( rand($z) ) ) {
+
+            # > 0 vokal
+            $nextchar = $vset[ int( rand($vsize) ) ];
+            $z--;
+
+            #print "vset>" . $z . $nextchar . "\n";
+        }
+        else {
+
+            # == 0 konsonant
+            $nextchar = $kset[ int( rand($ksize) ) ];
+            $z++;
+
+            #print "kset>" . $z . $nextchar . "\n";
+        }
+
+        $nextchar = uc $nextchar if !int( rand(8) );
+
+        # delimit the number of capitals to max_capitals:
+        if ( $nextchar eq uc $nextchar ) {
+            if ( $capitals == $max_capitals ) {
+                $nextchar = lc $nextchar;
+            }
+            else {
+                $capitals++;
+            }
+        }
+        $new_passwd = $nextchar;
+    }
+
+    # change one of the characters with a special character:
+    # $new_passwd[ int( rand( $#new_passwd + 1 ) ) ] = $sset[ int( rand($ssize) ) ];
+
+    return $new_passwd;
+}
+

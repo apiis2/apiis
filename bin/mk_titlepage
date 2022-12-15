@@ -1,0 +1,165 @@
+#!/usr/bin/perl
+############################################################################
+# $Id: mk_titlepage,v 1.17 2018/02/21 12:27:50 heli Exp $
+############################################################################
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use open ':utf8'; # input and output default layer will be UTF-8
+use utf8;
+binmode STDOUT, ":utf8";
+use Apiis::Misc qw( MaskForLatex );
+
+# handle command-line options:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+my $args_ref = {};
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'version|v',
+    'paramfile|p=s',
+) or pod2usage( -verbose => 1 );
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 2 ) if $args_ref->{'man'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'paramfile'};
+
+my $param  = $args_ref->{'paramfile'};
+my $tmpl = "${APIIS_HOME}/etc/PopReport/titlepage.tmpl";
+
+open my $PARAM, '<', $param or die "Cannot open paramfile: $!\n";
+my ($submitted, $orig_breed, $breed,     $email,     $male,
+    $female,    $pedfile,    $givenname, $institute, $country,
+    $startdate, $enddate,    $elapsed
+);
+while (<$PARAM>) {
+    chomp;
+    my $line = $_;
+    $line =~ /^submitted=/  && ( ( $submitted  = $line ) =~ s/^submitted=// );
+    $line =~ /^breed=/      && ( ( $breed      = $line ) =~ s/^breed=// );
+    $line =~ /^orig_breed=/ && ( ( $orig_breed = $line ) =~ s/^orig_breed=// );
+    $line =~ /^email=/      && ( ( $email      = $line ) =~ s/^email=// );
+    $line =~ /^male=/       && ( ( $male       = $line ) =~ s/^male=// );
+    $line =~ /^female=/     && ( ( $female     = $line ) =~ s/^female=// );
+    $line =~ /^pedfile=/    && ( ( $pedfile    = $line ) =~ s/^pedfile=// );
+    $line =~ /^givenname=/  && ( ( $givenname  = $line ) =~ s/^givenname=// );
+    $line =~ /^institute=/  && ( ( $institute  = $line ) =~ s/^institute=// );
+    $line =~ /^country=/    && ( ( $country    = $line ) =~ s/^country=// );
+    $line =~ /^startdate=/  && ( ( $startdate  = $line ) =~ s/^startdate=// );
+    $line =~ /^enddate=/    && ( ( $enddate    = $line ) =~ s/^enddate=// );
+    $line =~ /^elapsed_time=/ && ( ( $elapsed = $line ) =~ s/^elapsed_time=// );
+}
+
+if ( !$enddate ){
+    $enddate = `date "+%F %T"`;
+    chomp $enddate;
+}
+
+my $nl = "\n";
+my $head = sprintf '\vspace{25mm} %s \large %s \begin{tabular}{rp{10cm}}', $nl, $nl;
+# my $head = '\vspace{25mm}' . $nl . '   \large' . $nl . '   \begin{tabular}{rp{10cm}}';
+my $if_orig_breed = '';
+$if_orig_breed = sprintf '(%s)', $orig_breed if $orig_breed;
+my $breed_line =
+    sprintf '\textbf{Population:} & \lstinline|%s %s|\\\\',
+    $breed, $if_orig_breed;
+my $file_line  = sprintf '\textbf{Inputfile:}  & \lstinline|%s| \\\\', $pedfile;
+my $from_line;
+if ($givenname) {
+    $from_line = sprintf
+        '\textbf{Initiated by:}  & \lstinline|%s| <\lstinline|%s|> \\\\',
+        $givenname, $email;
+}
+else {
+    $from_line = sprintf '\textbf{Initiated by:}  & \lstinline|%s| \\\\', $email;
+}
+if ( $institute or $country ) {
+    $from_line .= sprintf '%s & \lstinline|%s| \lstinline|%s| \\\\',
+               "\n", ( $institute || '' ), ( $country || '' );
+}
+my $submit_line = '\textbf{Submitted at:}  & ' . $submitted . ' \\\\';
+my $start_line  = '\textbf{Started at:}    & ' . $startdate . ' \\\\';
+my $end_line    = '\textbf{Finished at:}   & ' . $enddate . ' \\\\[4em]';
+my $court_line  = '\textbf{Courtesy:}      & '
+    . 'Department of Animal Breeding and Genetics' . ' \\\\' . $nl
+    . ' ' x 27 . '& Institute of Farm Animal Genetics (FLI)' . ' \\\\' . $nl
+    . ' ' x 27 . '& Eildert.Groeneveld@gmx.de' . ' \\\\' . $nl
+    . ' ' x 27 . '& Höltystrasse 10' . ' \\\\' . $nl
+    . ' ' x 27 . '& D--31535 Mariensee, Germany' . ' \\\\' . $nl
+    . ' ' x 27 . '& \url{http://popreport.fli.de}' . ' \\\\';
+
+my $tail = '\end{tabular}';
+
+print <<"END_TABULAR";
+   $head
+   $breed_line
+   $file_line
+   $from_line
+   $submit_line
+   $start_line
+   $end_line
+   $court_line
+   $tail
+END_TABULAR
+
+
+##############################################################################
+
+__END__
+
+=pod
+
+=head1 NAME
+
+mk_titlepage
+
+=head1 SYNOPSIS
+
+mk_titlepage [Options]
+
+=head1 OPTIONS
+
+ -p | --paramfile <paramfile>    name of the data paramfile (r)
+
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -v | --version            current version of this mk_titlepage (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<mk_titlepage> creates the tex tabular data for the titlepage, which is
+prepended in front of the Popreport and Inbreedingreport pdf files.
+
+The output is printed to STDOUT.
+
+=head1 EXAMPLES
+
+Example usage:
+
+    mk_titlepage -p <parameter file> >outfile.tex
+
+=head1 BUGS
+
+=head1 VERSION
+
+$Revision: 1.17 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut
+

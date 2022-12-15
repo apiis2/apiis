@@ -1,0 +1,383 @@
+#!/usr/bin/perl
+############################################################################
+# $Id: mk_texdocu_modelfile,v 1.3 2011-09-14 11:55:07 ulm Exp $
+############################################################################
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Apiis::Misc qw( MaskForLatex );
+
+# handle command-line options:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+
+my $args_ref = {};
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'version|v',
+    'project|p=s'
+) or pod2usage( -verbose => 1 );
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'project'};
+
+#-- store projectname
+my $project=$args_ref->{'project'};
+
+#--check, if $project/doc/  exists
+if (! -d "$ENV{'APIIS_HOME'}/$project/doc") {
+    system("mkdir $ENV{'APIIS_HOME'}/$project/doc");
+}
+
+#-- store path
+my $docpath="$ENV{'APIIS_HOME'}/$project/doc";
+
+#--check, if $project/doc/img  exists
+if (! -d "$ENV{'APIIS_HOME'}/$project/doc/img") {
+    system("mkdir $ENV{'APIIS_HOME'}/$project/doc/img");
+}
+
+#-- store path
+my $imgpath="$ENV{'APIIS_HOME'}/$project/doc/img";
+
+#-- read xml to an internal structure
+use XML::Simple;
+my $xml = new XML::Simple(KeyAttr => ['id'],ForceArray => 1);  
+my $xfile = $xml->XMLin( "$ENV{'APIIS_HOME'}/$args_ref->{'project'}/etc/$args_ref->{'project'}.xml" );
+
+#-- define name of output file
+my $outfile="$docpath/database_structure.tex";
+my $i=0;
+
+#-- open file for writing
+open( OUT2, ">$outfile") || die "Cannot open $outfile \n";
+
+#-- write doc header
+print OUT2 '\documentclass[10pt,a4paper,DIV14,pdftex]{scrartcl}\usepackage{booktabs}\usepackage{multirow}
+              \usepackage{color}
+              \usepackage{colortbl}
+              \usepackage{longtable}
+              \usepackage{graphics}
+              \definecolor{hellgrau}{rgb}{0.95,0.95,0.95}
+       \begin{document}';
+
+#- loop over all tables 
+foreach my $table (@{$xfile->{'table'}}) {       
+
+    #-- store tablename 
+    my $tablename=$table->{'name'};
+
+#    my $description=$table->{'description'};
+#    #-- if translation
+#    if ($description=~/^__\('?(.*)'?\)/) {
+#                
+#         #-- translate
+#         $description=main::__($1);
+#    }    
+    #-- store content of column description and mask it for tex
+    my $description=MaskForLatex($table->{'description'});
+
+    #-- save the sequence
+    use Tie::IxHash;
+    my %hs_model;
+    tie %hs_model, "Tie::IxHash";
+    
+    $hs_model{$tablename}={};
+
+    #- print tablename as chapter
+    print OUT2 "\\subsection{Table '".MaskForLatex($tablename)."' }";
+
+    #- print description for that table 
+    if ($table->{'description'}) {
+        print OUT2 "$description \\vspace{2mm} \\\\ ";
+    }
+
+    #-- print table for all columns of that table
+    print OUT2 "\\textbf{Columns:} \\\\ "; 
+    print OUT2 "\\begin{footnotesize}";
+
+    #-- define table structur 
+    print OUT2 "\\begin{tabular*}{\\textwidth}{llp{6cm}p{5cm}} ";
+
+    #- print table header
+    print OUT2 "\\toprule \\textbf{Column} & Type & Attributs & Description \\\\ ";
+
+    #-- loop over all columns
+    foreach my $column (@{$table->{'column'}}) {
+        my $desc='';
+        my $vchk='';
+        my $stru= $column->{'struct_type'};
+        $stru='' if (!$stru);
+        my $check= $column->{'CHECK'};
+        $check='' if (!$check);
+    
+        #-- store data for foreinkey to create a grafik,
+        #-- only if column is mandatory or a foreingkey
+        if ((exists $column->{'struct_type'} and (lc($column->{'struct_type'})  eq 'mandatory') ) or 
+            ( exists $column->{'CHECK'} and ($column->{'CHECK'}=~/foreignkey/i ))) {
+            $hs_model{$tablename}->{$column->{'name'}}->{'name'}=$column->{'name'};
+            $hs_model{$tablename}->{$column->{'name'}}->{'CHECK'}=$column->{'CHECK'};
+        }
+
+        #-- store and mask for latex columnname
+        my $col   =MaskForLatex($column->{'name'});
+
+        #- split for conten in CHECK
+        my @check =split(',', $check);
+
+        #-- add info from struct_type
+        unshift(@check,$stru) if ($stru ne '');
+
+        #- prepare output
+        $vchk=join('\newline - ',@check);
+
+        #- add for output a '-' if not empty 
+        $vchk='- '.$vchk if ($vchk ne '');
+    
+        #-- loop over all contens of CHECK 
+        foreach (@check) {
+       
+            #-- if ForeinKey in string 
+            if ($_=~/foreignkey/i) {
+                my @a;
+
+                #-- split it and store table and column  
+                @a=split(' ',$_);
+                $hs_model{$a[1]}->{$a[2]}->{'name'}=$a[2];
+            }
+        }
+
+        #-- store content of table description 
+        $desc  =$column->{'description'} if ($column->{'description'} ) ;
+
+        #-- Mask for tex 
+        $check  = MaskForLatex($vchk);
+        $desc   = MaskForLatex($desc);
+
+        my $type  =lc ( MaskForLatex($column->{'datatype'}) );
+        my $z=$#check + 1;
+
+        #-- write row 
+        print OUT2 "\\midrule \\multirow{". $z ."}{*}{$col} & $type & $check & $desc \\\\";
+    }
+
+    #-- finish table column 
+    print OUT2 "\\bottomrule \\end{tabular*} \\vspace{2mm} \\\\ ";
+    print OUT2 "\\end{footnotesize}";
+
+    #-- write a new short Modelfile to create a xfig with tables which have access to the maintable
+    open(OUT,">/tmp/$tablename.xml");
+   
+    print OUT '<model><general   dbdriver=   "Pg"  dbhost=     "localhost" dbname=     "'.$project.'" 
+                                      dbport=     "5432" dbuser=     "apiis_admin" dbencoding= "utf8"
+                           />';
+
+    foreach my $table (keys %hs_model) {
+
+        print OUT '<table name = "'.$table.'">';
+    
+        foreach my $col (keys %{$hs_model{$table}}) {
+            print OUT '<column name = "'.$hs_model{$table}->{$col}->{'name'}.'" ';
+            if (exists $hs_model{$table}->{$col}->{'CHECK'}) {
+               print OUT ' CHECK = "'.$hs_model{$table}->{$col}->{'CHECK'}.'" >';
+            }
+            else {
+                print OUT '>';
+            }
+
+            print OUT "</column>";
+        }
+
+        print OUT "</table>";
+    }
+    print OUT "</model>";
+    close(OUT);
+    
+    #-- goto doc/img
+    chdir($imgpath);
+
+    #--  create a *.fig in /tmp
+    system("$ENV{'APIIS_HOME'}/bin/model2xfig -T no /tmp/$tablename.xml >/dev/null");
+
+    #-- prepare a makefile to create a pdf from that .fig 
+    system("transfig -L pdf /tmp/$tablename.xml.fig");
+
+    #-- create this pdf with make 
+    system("make >/dev/null");
+
+    #--rename it 
+    system("mv /tmp/$tablename.xml.pdf dbstructur_$tablename.pdf");
+
+    #-- save the .fig
+    system("mv /tmp/$tablename.xml.fig .");
+
+    #-- delete temporary files 
+    system("rm Makefile; rm transfig.tex");
+
+    #-- include the grafic in tex 
+    print OUT2 '
+    \begin{figure}[htbp]
+    \includegraphics{'.$imgpath.'/dbstructur_'.$tablename.'.pdf}
+    \flushleft
+    \footnotesize{References for table '."'".MaskForLatex($tablename)."'".' }
+    \end{figure} \\\\';
+
+    #-- prepare table for attriutes 
+    print OUT2 "\\textbf{Tableattributes:} \\\\ "; 
+    print OUT2 "\\begin{footnotesize}";
+
+    #-- define table
+    print OUT2 "\\begin{tabular*}{\\textwidth}{lp{10cm}} ";
+
+    #-- print table header 
+    print OUT2 "\\toprule \\textbf{Attribute} & Value \\\\ ";
+
+    #-- loop over all CONSTRAINTS in modelfile 
+    foreach my $con (@{$table->{'TABLE'}->[0]->{'CONSTRAINTS'}}) {
+    
+        #-- print the part SEQUENCES
+        if ($con->{'SEQUENCE'} ne "") {
+            my $z=1;
+            print OUT2 "\\midrule \\multirow{". $z ."}{*}{SEQUENCE} & ".MaskForLatex($con->{'SEQUENCE'})." \\\\";
+        }
+
+        #-- print the part INDEX 
+        my @index =(split(',', $con->{'INDEX'}));
+
+        #--split if more then one index
+        my $vchk='- '.join('\newline - ',@index);
+
+        #-- mark unique index 
+        $vchk=~s/unique/\\textbf{(unique)}/g;
+
+        #-- print the row 
+        print OUT2 "\\midrule \\multirow{". $#index ."}{*}{INDEX} & ".MaskForLatex($vchk)." \\\\";
+
+        #-- print the part PRIMARYKEY 
+        if (exists $con->{'PRIMARYKEY'} and ($con->{'PRIMARYKEY'} ne "")) {
+
+            #-- split information in PRIMARYKEY 
+            my @index =(split(';', $con->{'PRIMARYKEY'}));
+
+            my @vindex;
+
+            #-- loop over all contens of PRIMARYKEY
+            foreach (@index) {
+
+                #-- make an extra entry if a view exists     
+                if ($_=~/view/i) {
+
+                    #-- prepare information 
+                    my @tt=split(':',$_);
+
+                    #-- print table row 
+                    print OUT2 "\\midrule \\multirow{1}{*}{VIEW} & ".MaskForLatex($tt[1])." \\\\";
+                    next;
+                }
+
+                #-- store information 
+                push(@vindex,$_);
+            }
+
+            #-- prepare output with a leading - 
+            my $vchk='- '.join('\newline - ',@vindex);
+
+            #-- print the row
+            print OUT2 "\\midrule \\multirow{". $#vindex ."}{*}{PRIMARYKEY} & ".MaskForLatex($vchk)." \\\\";
+        }
+    }
+
+    #-- loop over all CONSTRAINTS in modelfile 
+    foreach my $con (sort keys %{$table->{'TABLE'}->[0]->{'TRIGGER'}->[0]} ) {
+   
+       #-- split triggers of more then one  
+       my @index =split(',', $table->{'TABLE'}->[0]->{'TRIGGER'}->[0]->{$con});
+            
+       #-- prepare output with a leading '-' 
+       my $vchk='- '.join('\newline - ',@index);
+
+       #-- remove ' 
+       $vchk=~s/'//g;
+
+       #-- print table row 
+       print OUT2 "\\midrule \\multirow{". $#index ."}{*}{$con} & ".MaskForLatex($vchk)." \\\\";
+    }
+ 
+    #-- finish table 
+    print OUT2 "\\bottomrule \\end{tabular*} \\vspace{2mm} \\\\ ";
+    print OUT2 "\\end{footnotesize}";
+
+    #-- make a new page 
+    print OUT2 " \\newpage ";
+}
+
+#-- finish dokument and close tex
+print OUT2 '\end{document}';
+close(OUT2);
+
+#-- change path to doc 
+chdir($docpath);
+
+#-- tex -> pdf 
+system("pdflatex $outfile >/dev/null");
+
+#-- remove temporary files
+system("rm $docpath/database_structure.log");
+system("rm $docpath/database_structure.aux");
+
+print "\n\n$docpath/database_structure.pdf successfull created.\n\n";
+
+__END__
+
+=pod
+
+=head1 NAME
+
+mk_texdocu_modelfile
+
+=head1 SYNOPSIS
+
+mk_texdocu_modelfile [Options]
+
+=head1 OPTIONS
+
+ -p | projectname          name of the project (r)
+
+ -h | -? | --help          short help (o)
+ -v | --version            current version of this mk_titlepage (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<mk_texdocu_modelfile> reads a modelfile and create a documentation for that in TeX to implement it in an other report
+
+=head1 EXAMPLES
+
+Example usage:
+
+    mk_texdocu_modelfile -p $project
+
+=head1 BUGS
+
+=head1 VERSION
+
+$Revision: 1.3 $
+
+=head1 AUTHOR
+
+ Ulf Müller <um@zwisss.de>
+
+=cut
+

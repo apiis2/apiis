@@ -1,0 +1,141 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: logtodb,v 1.8 2005/04/19 10:05:13 haboe Exp $
+##############################################################################
+
+BEGIN {                              # execute before compilation
+   use Env qw( APIIS_HOME );     # get environment variable
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+#use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.8 $' );
+
+use apiis_alib;
+use Data::Dumper;
+
+my $programname = $apiis->programname;
+use Getopt::Std;
+use vars qw($opt_f $opt_P $opt_u $opt_p $opt_h);
+my @files;
+
+getopts('f:P:u:p:h');
+
+# files to proceed
+if($opt_f) {
+   @files = `ls $opt_f`;
+} else { &usage }
+
+# project
+my $proj;
+print "Project:";
+$opt_P?$proj = $opt_P:chop($proj = <>);
+print "$proj\n";
+
+# user/password
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new( id => $opt_u ) if($opt_u);
+$thisobj->password($opt_p) if($opt_p);
+
+# join model
+if($thisobj) {
+   $apiis->join_model($proj,userobj=>$thisobj);
+} else {
+   $apiis->join_model($proj);
+}
+$apiis->check_status;
+
+my $local = $apiis->APIIS_LOCAL;
+
+foreach my $file (@files){
+   my %hash = ();
+   $file =~ /data_(LO_DS\w*)\.log/;
+   my $lib = "$local/lib/$1.pm";
+   require $lib;
+   open(DATA_LO, "$file") or die "problems opening $file ($!)";
+   # read header
+   chop(my $header = <DATA_LO>);
+   my @harry = split(/\|/, $header);
+   print "LO_keys: $header\n";
+
+   # read each line from data_LO file and proceed thru LO
+   while (<DATA_LO>) {
+      chop($_);
+      print "$_\n";
+      my @array = ();
+      @array = split(/\|/, $_);
+      for(my $i=0; $i <= $#harry;$i++) {
+	 # procees possible blobs
+	 next if($harry[$i] =~ /blob_id/);
+	 if($harry[$i] =~ /file/) {
+	    if($array[$i]) {
+	       my $blob_id = load_blob($array[$i]);
+	       $hash{blob_id} = $blob_id;
+	    }
+	 } else {
+	    $hash{$harry[$i]} = $array[$i];
+	 }
+      }
+      my ($err_status, $err_ref) = &$1(\%hash);
+      print "Error status:$err_status\n";
+      if($err_status) {
+	 foreach my $err (@$err_ref) {
+	    print $err->msg_short,"\n";
+	 }
+      }
+   }
+}
+
+sub usage {
+
+   print __('usage'), ":\n",
+   $programname,               " -h  ", __('help'), "\n",
+   " " x length($programname), " -f <", __('filenames'), ">\n",
+   " " x length($programname), " -P <", __('Project'), ">\n",
+   " " x length($programname), " -u <", __('user'), ">\n",
+   " " x length($programname), " -p <", __('password'), ">\n";
+   exit;
+
+} # usage
+
+__END__
+
+=pod
+
+=head1 NAME
+
+logtodb
+
+=head1 SYNOPSIS
+
+logtodb [-f data_LO_DS0<number>.log]
+
+=head1 DESCRIPTION
+
+A number of people can have the access right to a certain database when the access right is set to them. These people can share the job of entering data. With logtodb, after doing runall they need not to enter data again. The function of logtodb is to prevent a lost of already entered data. logtodb is to read one by one line of each data_LO_DS0<number>.log file and pass these data in appropriate load object keys. It also prints out error status if there is any while reading data_LO_DS0<number>.log files.
+
+logtodb requires headers being located at the first line of each data_LO_DS0<number>.log file. These data files are located at the directory APIIS_LOCAL/var.
+
+=head1 SUBROUTINE
+
+=head2 usage: logtodb [-f filename] [-P project] [-u user] [-p password]
+
+=over 3
+
+=item B<-h> help
+
+=item B<-f> filenames to proceed
+
+=item B<-P> projectname
+
+=item B<-u> user
+
+=item B<-p> password of a user
+
+=head1 AUTHOR
+
+Hartmut Boerner and To Nga
+
+=cut

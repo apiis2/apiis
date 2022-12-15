@@ -1,0 +1,114 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: show_rules,v 1.10 2005/03/10 08:11:07 ralf Exp $
+# extract the rules (CHECK) from the modelfile
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.10 $ ');
+our $apiis;
+use Apiis::DataBase::DBCreation;
+use Apiis::Auth::AccessControl;
+use Apiis::Misc qw ( mychomp LocalToRawDate ); # ...
+
+no strict 'refs';
+use vars qw( $model_file $outfile $opt_o $opt_h $opt_v $opt_p );
+our $apiis;
+
+# allowed parameters:
+use Getopt::Std;
+getopts('p:o:vh'); # option -p <projectname>  => project
+                   #        -o <outfile>    => Output to file
+                   #        -v              => Version
+                   #        -h              => Help
+
+die usage()                                             if $opt_h;
+die $apiis->programname . ': ' . $apiis->version . "\n" if $opt_v;
+
+$outfile  = $opt_o if $opt_o;
+
+if ($opt_p) {
+  $project_name = $opt_p;
+  print "project = $project_name\n";
+}
+
+$apiis->join_model($project_name, database => 0);
+$apiis->check_status;
+$dbh=$apiis->DataBase->dbh;
+$dbh->{AutoCommit}=0;
+my $today = $apiis->today;
+
+my $out_handle = 'STDOUT';
+if ($outfile) {
+  $out_handle = 'OUT';
+  open( $out_handle, ">$outfile" )
+    or die __( "Problems opening file [_1]: [_2]", $model_file, $! );
+}
+
+foreach my $tab ($apiis->Model->tables) {
+  print $out_handle "===== table: $tab =====\n";
+
+  # get max length:
+  my $max = 0;
+  foreach my $thiscol ( $apiis->Model->table($tab)->columns ) {
+    $max = length($thiscol) if length($thiscol) > $max;
+  }
+
+  foreach my $thiscol ( $apiis->Model->table($tab)->columns ) {
+    if ( $apiis->Model->table($tab)->check($thiscol) ) {
+      print $out_handle $thiscol, ": ", ' ' x ( $max - length($thiscol) ),
+	join ( ', ', map {s/\s+/ /g; $_} $apiis->Model->table($tab)->check($thiscol) ),
+	  "\n";
+    }
+  }
+  print $out_handle "\n";
+}
+close $out_handle;
+
+##############################################################################
+sub usage { __("show_rules_USAGE_MESSAGE"); }
+
+__END__
+
+=pod
+
+=head1 name
+
+show_rules
+
+=head1 usage
+
+show_rules -h -v -o <output file> -p <projectname>
+
+=head1 description
+
+used to compare some values from the parents with the same trait from
+the animal. for example to check the breeds of an animal in
+comparison of the breed from his parents.
+
+=head1 options
+
+=head2 -h
+
+some help about the options.
+
+=head2 -v
+
+print the version of the programm.
+
+=head2 -p <project>
+
+project name same as defined in $APIIS_HOME/etc/apiisrc.
+
+=head2 -o <outfile>
+
+name of the outputfile. else printing on STDOUT.
+
+
+=cut
+

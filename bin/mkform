@@ -1,0 +1,292 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: mkform,v 1.39 2005/03/01 07:26:54 haboe Exp $
+# creates formfiles from a modelfile
+##############################################################################
+
+# use diagnostics; 
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.39 $' );
+
+my $programname = $apiis->programname;
+
+
+#### Variables ###############################################################
+use vars qw( $model_file $opt_f $opt_h $opt_v );
+
+my ( @tables, $table, $col, $form_path, $model_file2);
+
+use File::Basename;
+use Getopt::Std;
+# allowed parameters:
+getopts('hvy:c:'); # option -h  => Help
+
+# Version:
+die "$programname: ",$apiis->version,"\n" if $opt_v;
+
+## help:
+$opt_h = 1 if(! $ARGV[0]);
+if ($opt_h) {
+   print  __("\n  $programname creates for each table -".
+          " defined in the modelfile - a formfile.\n\n");
+   print  "usage:\n".
+          "   $programname -h           ", __('Help'), "\n".
+          "   $programname [-y deltaY] [-c !column1[,!column2 ...]] <", __('modelfile'), ">\n",
+          "        -y   vertical space between fields\n".
+	  "        -c   omit column\n\n",
+          __("  Reads the modelfile from current working directory\n".
+            "  or from directory".' $APIIS_LOCAL/model'."\n".
+            "  The name of the created formfile is <table>.frm\n\n\n");
+   exit;
+}
+
+$model_file = $model_file2 = $ARGV[0] if $ARGV[0];
+
+# maybe model file is in the APIIS_LOCAL tree
+#unless ( -T $model_file ) {
+   if ( -T "$APIIS_LOCAL/model/$ARGV[0]" ){
+      $model_file = "$APIIS_LOCAL/model/$ARGV[0]";
+      $model_file2 = '$APIIS_LOCAL/model/' . $ARGV[0];
+   } elsif ( -T "$APIIS_LOCAL/model/$ARGV[0].model" ){
+      $model_file = "$APIIS_LOCAL/model/$ARGV[0].model";
+      $model_file2 = '$APIIS_LOCAL/model/' . $ARGV[0] . '.model';
+   }
+#}
+
+print "modelfile: $model_file\n";
+
+open(MODEL, "<$model_file") or die __("Problems opening file [_1]\n",$model_file);
+while (<MODEL>) { push @tables, $1 if /^\s*%(\w+)/ }
+close MODEL;
+require $model_file;
+
+# Path of the model file.
+my $md_path = dirname($model_file);
+$form_path = dirname($model_file).'/default_forms/';
+if($md_path ne "$APIIS_LOCAL/model") {
+   $md_path = './';
+   $form_path = $md_path.'default_forms/';
+}
+if(! -d $form_path) {
+   print __('make directory [_1] \n', $form_path);
+   mkdir $form_path,~022;
+   die __('unable to make directory [_1] \n', $form_path) if(! -d $form_path);
+}
+ 
+# fonts
+my ($titlefont, $normalfont, $labelfont);
+if($^O eq 'MSWin32') {
+   # MS Windows fonts
+   $titlefont = '{Arial Black} 18 bold';
+   $normalfont= 'Arial 9 normal';
+   $labelfont = 'Arial 8 normal';
+} else {
+   # X Window fonts
+   $titlefont = '-adobe-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*';
+   $normalfont= '-adobe-helvetica-normal-r-normal-*-12-*-*-*-*-*-*-*';
+   $labelfont = '-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*';
+}
+
+my $model=$model_file;
+
+my $type;
+my $clear= 'Y';
+
+my @omitCols;
+@omitCols = split(',', $opt_c) if($opt_c);
+
+my $deltaY = 50;
+$deltaY = $opt_y if($opt_y);
+my $section = 100;  # start value
+my $incr = 10;      # section increment
+
+
+# create a formfile for each table
+foreach $table (@tables) {
+
+   open (FORM, ">$form_path$table.frm") || die __('Problems opening file [_1]',$table),".frm\n";
+   print __("   create [_1][_2].frm\n",$form_path,$table);
+
+   my $header="# $table.frm\n".
+              "# This file was created by $programname ",$apiis->version,"\n".
+	      "# ".localtime()."\n#\n".
+	      "# Edit this file".
+	      " so that the form corresponds to your desires.\n".
+              "#\n# Form: $table\n\n";
+   my $general = "[GENERAL]\n";   # GENERAL section
+   my $title = basename($model).": $table";
+   my $z =  scalar (keys %$table) - scalar(@omitCols) - 1; # number of entry fields
+   my $height = $z * $deltaY + 80;
+
+   my $maxfl = 0;
+   my $defaultfl = 10;
+   foreach $col (sort keys %$table) {
+      my $fl;
+      next if($col eq 'TABLE');
+      next if(a($$table{$col}{DB_COLUMN},\@omitCols));
+      $$table{$col}{LENGTH} ? ($fl = $$table{$col}{LENGTH})
+		                      : ($fl = $defaultfl);
+      $maxfl=$fl if $fl > $maxfl; 
+   }
+   my $width = $maxfl * 8 + 30; 
+   
+   $general .= "TITLE=$title\nTITLEFONT=$titlefont\n".
+               "NORMALFONT=$normalfont\nLABELFONT=$labelfont\n".
+	       "# BUTTONFONT=variable\n".
+               "HEIGHT=$height\nWIDTH=$width\n".
+	       "# CONJUNCTION=AND\n".
+	       "# ORDER=   column (i.e. db_id)\n".
+	       "# STARTUP=\n".
+	       'ID=$'.'Id:'.localtime().'$'."\n".
+               "MODEL=$model_file2\n\n";
+   
+   print FORM "$header$general\n";
+
+   my $yloc = 15;
+   # for each column one entry field
+   foreach $col (sort keys %$table) {
+      next if($col eq 'TABLE');
+      next if(a($$table{$col}{DB_COLUMN},\@omitCols));
+      my $fl;
+      $$table{$col}{LENGTH} ? ($fl = $$table{$col}{LENGTH})
+		                      : ($fl = $defaultfl);
+      print ".";
+
+      $type = 'E'; # default Entry field
+      
+      # if a 'List' checkrule exist, make a List field
+      if (scalar @{$$table{$col}{CHECK}}) {
+	 foreach $method ( @{$$table{$col}{CHECK}} ) {
+	    my @args = split /\s+/, $method;
+	    $type = 'L' if(defined $args[0] and shift @args eq 'List');
+	 }
+      }
+
+      # if  DATATYPE => 'date' then make a drop down calendar field
+      $type = 'C' if($$table{$col}{DATATYPE} =~ /date/i);
+
+      # OPERATOR=LIKE if DATATYPE = CHAR
+      my $operator = '=';
+      $operator = 'LIKE' if($$table{$col}{DATATYPE} =~ /char/i); 
+      
+      # default values?
+      my $default;
+      $$table{$col}{DEFAULT} ? ($default = $$table{$col}{DEFAULT})
+                                 : ($default = undef);
+
+      # ForeignKey in CHECK?
+      my $fk = undef;
+      if(scalar @{$$table{$col}{CHECK}}) {
+         foreach $method (@{$$table{$col}{CHECK}}) {
+	    my @args = split /\s+/, $method;
+	    $fk = 1 if(shift @args eq 'ForeignKey');
+	 }
+      }
+
+      my $field = "[col$section]\n".
+                  #"[$col]\n".
+                  "TYPE=$type\n".
+		  "XLOCATION=20\n".
+		  "YLOCATION=$yloc\n".
+		  "FIELDLENGTH=$fl\n".
+		  "LABEL=".($$table{$col}{DESCRIPTION}?$$table{$col}{DESCRIPTION}:$$table{$col}{DB_COLUMN})."\n".
+		  "ACTION=I $table $$table{$col}{DB_COLUMN} \n".
+                  "TABLE=$table\n".
+		  "COLUMN=$$table{$col}{DB_COLUMN}\n".
+		  "# OPERATOR= (LIKE,>,<,>=,<=)\n".
+		  "OPERATOR=$operator\n".
+		  "# UPDATE=Y\n".
+		  "CLEAR=$clear\n";
+      $field .= "BGCOLOR=#bfbfbf\n" if($fk); # grey75
+      $field .= "DATA=$default\n" if $default;
+
+		  
+      $yloc += $deltaY;
+      print FORM "$field\n";
+
+      $section += $incr;
+
+   }
+
+   close FORM;
+   print __("done\n");
+
+}
+
+################################################################
+# find column exceptions
+# input column, exception_list
+# return: 1 column in exception list
+#         0 column not in  exception list
+sub a {
+   my $s = shift;
+   my @a = @{shift()};
+   if(@a and $s){foreach(@a){return 1 if($_ eq $s)}}return 0;
+}
+
+
+__END__
+
+
+=pod
+
+=head1 NAME
+
+mkform - create a formfile for each table in the database
+
+=head1 SYNOPSIS
+
+mkform [-y deltaY][-c column1[,column2 ...]] <modelfile>
+mkform [-h] 
+
+=head1 DESCRIPTION
+
+The program mkform creates a GUI parameter file for each
+table in the database assuming inserts. This procedure
+can be used to quickly generate an application for simple
+problems. The resulting form files can be edited manually.
+
+Reads the modelfile from the current working directory
+or from directory $APIIS_LOCAL/model/
+
+The formfiles will be written either to
+ F<dirname(<modelfileE<gt>)/default_forms>,
+ F<$APIIS_HOME/model/default_forms> or
+in an subdirectory default_forms of the current directory. 
+The name of the created formfile is F<E<lt>tableE<gt>.frm>
+
+=head1 OPTIONS
+
+=over 3
+
+=item B<-y> vertical field spacing.
+
+Formfile parameter YLOCATION (default 50) 
+
+=item B<-c> omit column
+
+=item B<-h> short help
+
+=back
+
+=head1 FILES
+
+ $APIIS_LOCAL/<model>.model
+ $APIIS_HOME/apiisrc
+ $HOME/.apiisrc
+
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+=cut
+=head2 a

@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+#
+##############################################################################
+# $Id: test.Form,v 1.12 2005/08/02 12:33:07 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Form object.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use CGI;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.12 $' );
+use Apiis::Form::Tk;
+use Apiis::Form::HTML;
+use Apiis::DataBase::User;
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Terse  = 1;
+
+##############################################################################
+# create a user object to save repeated user/pw typing during tests:
+my $testuser = Apiis::DataBase::User->new(
+   id       => 'b08mueul',
+   password => 'agrum1',
+);
+$testuser->check_status;
+$apiis->join_model('breedprg', userobj => $testuser );
+$apiis->check_status;
+##############################################################################
+
+# tested: test1.frm test2.frm test3.frm test4.frm test5.frm test6.frm
+#         test7.frm
+my $testform = 'test1.frm';
+my $variante='HTML';
+my $f_obj;
+
+  my $query=CGI->new('user=b08mueul&pw_user=agrum1&m=breedprg&language=ge&frame=Login&g=..%2Fref_breedprg%2Fetc%2Fforms%2FEmpty.frm&o=htm2htm');
+  
+  $f_obj    = Apiis::Form::HTML->new(
+      xmlfile => $apiis->APIIS_LOCAL . "/etc/forms/$testform"
+  );
+
+$f_obj->{_query}=$query;
+$f_obj->PrintHeader;
+my @ar_mfiles=$f_obj->PrintMenue;
+$f_obj->run;
+$f_obj->PrintForm;
+$f_obj->check_status;
+

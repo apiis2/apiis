@@ -1,0 +1,337 @@
+#!/usr/bin/env perl
+###########################################################################
+# $Id: mkLOfForm,v 1.12 2005/04/29 08:06:56 haboe Exp $
+###########################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use Apiis;
+use Apiis::Misc qw( mychomp );
+Apiis->initialize( VERSION => '$Revision: 1.12 $' );
+
+use Getopt::Std;
+use File::Basename;
+use Data::Dumper;
+
+my $programname = $apiis->programname;
+
+use vars qw( $opt_h $opt_v $opt_f );
+my $loadobj;
+
+# allowed parameters:
+use Getopt::Std;
+getopts('hvf:y:'); 
+                # option -h  => Help
+                #        -v  => Version
+
+# Version:
+die "$programname: ",$apiis->version,"\n" if $opt_v;
+
+## help:
+if ($opt_h or $#ARGV < 0) {
+    print  __("\n$programname creates a *formatted* GUI-Form from each given loadobject file\n".
+           '          by parsing the loadobject file about variable @LO_keys'."\n\n");
+    print  "usage: $programname [-f length] [-y deltaY] <load_object_files> \n".
+           "       $programname -h | -v\n".
+           "          -h      ", __('Help'), "\n".
+           "          -v      ", __('Version'), "\n".
+	   "          -y      deltaY\n".
+           "          -f      ", __('fieldlength'), " (",__('default value'), " 25)\n\n".
+           __("Example:"), " $programname LO_* \n\n";
+
+    exit;
+}
+
+my $form_path = 'default_forms/';
+if(! -d $form_path) {
+   print __('make directory [_1]', $form_path),"\n";
+   mkdir $form_path,~022;
+   die __('unable to make directory [_1] \n', $form_path) if(! -d $form_path);
+}
+
+# defaults 
+# Form fonts 
+my ($titlefont, $normalfont, $labelfont);
+if($^O eq 'MSWin32') {
+   # MS Windows fonts
+   $titlefont = '{Arial Black} 18 bold';
+   $normalfont= 'Arial 9 normal';
+   $labelfont = 'Arial 8 normal';
+} else {
+   # X Window fonts
+   $titlefont = '-adobe-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*';
+   $normalfont= '-adobe-helvetica-normal-r-normal-*-12-*-*-*-*-*-*-*';
+   $labelfont = '-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*';
+}
+my $type = 'E';
+my $clear= 'Y';
+
+my $deltaY = 48;
+$deltaY = $opt_y if($opt_y);
+my $section = 100;  # start value
+my $incr = 10;      # section increment
+my $fl = 25;     # fieldlenght
+$fl = $opt_f if($opt_f);
+
+
+# create a formfile for each loadobjectfile
+foreach my $loadobj (@ARGV) {
+
+   print "\n*****  $loadobj  *****\n";
+
+   if(-r $loadobj) {
+      require $loadobj;
+   }else {
+      warn __("unable to read [_1]\n",$loadobj);
+      next;
+   }
+
+   (my $ba = basename($loadobj)) =~ s/\.pm//;
+
+   my @LO_keys = ();
+   my $loline;
+
+   # open loadobject file scan for LO_keys
+   open (LOF,"<$loadobj") or die "Problems: $loadobj: $!\n"; 
+   my ($i,$c) = (0,0);
+   LINE:
+   while (my $line = <LOF>) { 
+      mychomp($line);
+      if(($loline=$line) =~ s/my \@LO_keys = qw\s*\((\w*)/$1/) { #first line of LO_keys
+         #print "$i: $loline\n";
+         push(@{$LO_keys[$i]}, split(' ',$loline));
+         $i++;
+         $c++;
+
+         if($loline =~ /\)/) {
+            last LINE; 
+         } else {
+            next LINE; 
+         }
+      }
+      if($c and $line =~ /\);/) { # last line of LO_keys
+         ($loline = $line) =~ s/\);//;
+         #print "$i: $loline\n";
+         push(@{$LO_keys[$i]}, split(' ',$loline));
+         $i++;
+         last LINE if($line =~ /\)/);
+      } elsif($c) { # intermediate lines
+         #print "$i: $line\n";
+         push(@{$LO_keys[$i]}, split(' ',$loline));
+         $i++;
+      }
+   }
+   close LOF;
+
+   if(!@LO_keys) {
+      warn __("[_1]: No loadobject keys found in [_2]\n", $programname, $loadobj);
+      next;
+   }
+
+   # calculate the HEIGHT and WIDTH
+   $i = 0;
+   my $maxc = 0;
+   my $lineFlag = 0;
+   my $flag = 0;
+   foreach my $z (@LO_keys) {
+      $c = 0;
+      $lineFlag += 1;
+      if($lineFlag > 2) {
+	 $i -= 2;
+      }
+      foreach my $sp (@{$z}) {
+         print "Row $i: Column $c: LO_key: $sp\n";
+         $c++;
+	 $lineFlag = 0;
+      }
+      $maxc = $maxc<$c?$c:$maxc;
+      $i++;
+   }
+   my $width = ($fl * 8 +15) * $maxc + 10; # WIDHT
+   my $height = $i * $deltaY + 65;
+
+   
+   # open new formfile 
+   open (FORM, ">$form_path$ba.frm") || die __('Problems opening file [_1]',$ba),".frm\n";
+   print __("   create [_1][_2].frm\n",$form_path,$ba);
+
+   my $title = $ba;
+
+   my $header = '# $'.'Id$'."\n".
+                "# This file was created by $programname ",$apiis->version,"\n".
+                "# ".localtime()."\n".
+                "#\n";
+   
+
+   my $general = "[GENERAL]\n".   # GENERAL section
+                 "TITLE=$title\n".
+                 "TITLEFONT=$titlefont\n".
+                 "NORMALFONT=$normalfont\n".
+                 "LABELFONT=$labelfont\n".
+                 "HEIGHT=$height\nWIDTH=$width\n".
+                 "BALLOON=balloon\n".
+                 'STARTUP=$$form{GENERAL}{BUTTONBAR}->destroy'."\n".
+                 'ID=$'.'Id:'.localtime().'$'."\n\n";
+
+   print FORM "$header\n";
+   print FORM "$general\n";
+
+   $i = 0;
+   my $yloc = 15;
+   $lineFlag = 0;
+   $flag = 0;
+   foreach my $z (@LO_keys) { # each row
+      $c = 0;
+
+      # if there are 2 empty lines in the LO_keys specification,
+      # next LO_keys will not have field-labels!
+      $lineFlag += 1;
+      if($lineFlag > 2) {
+	 $flag = 1;
+	 $yloc -= 2*$deltaY;
+      }
+      foreach my $sp (@{$z}) { # each column
+         my $xl = $c*($fl*8+15) + 10;
+         my $field = "[sec$section]\n".
+                     "TYPE=$type\n".
+                     "XLOCATION=$xl\n".
+                     "YLOCATION=$yloc\n".
+                     "FIELDLENGTH=$fl\n".
+                     # "LABEL=$sp\n".
+                     "COLUMN=$sp\n".
+                     "CLEAR=$clear\n";
+	 $field .= "LABEL=$sp\n" if($flag != 1);
+
+         $c++;
+         print FORM "$field\n";
+         $section += $incr;
+	 $lineFlag = 0;
+	 
+      }
+      $i++;
+      $yloc += $deltaY;
+   }
+
+
+   # buttons
+   #$yloc += 2;
+   my $buttons = "### three buttons\n";
+   my $xl = int($width/3 - $fl*8);
+   $buttons .= "[sec$section]\n".
+                 "BORDER=2\n".
+                 "COMMAND=&call_LO(\'$ba\',".'$form);'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Insert\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=$xl\n".
+                 "YLOCATION=$yloc\n\n";
+
+   $section += $incr;
+
+   $xl = int($width/2 - $fl*4);
+   $buttons .= "[sec$section]\n".
+                 "BORDER=2\n".
+                 'COMMAND=clearForm($form);resetBalloons($form);resetBGCOLOR($form)'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Clear\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=$xl\n".
+                 "YLOCATION=$yloc\n\n";
+   
+   $section += $incr;
+
+   $xl = int(2*$width/3);
+   $buttons .= "[sec$section]\n".
+                 "BORDER=2\n".
+                 'COMMAND=$$form{GENERAL}{TOPLEVEL}->destroy'."\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TEXT=Quit\n".
+                 "TYPE=P\n".
+                 "WIDTH=$fl\n".
+                 "XLOCATION=$xl\n".
+                 "YLOCATION=$yloc\n\n";
+
+   print FORM "$buttons";
+
+   $section += $incr;
+
+   $yloc += 2;
+   my $ll = $width - 9;
+   my $hr = "### a ruler\n";
+   $hr .= "[sec$section]\n".
+                 "BORDER=1\n".
+                 "HEIGHT=1\n".
+                 "RELIEF=raised\n".
+                 "TYPE=I\n".
+                 "WIDTH=$ll\n".
+                 "XLOCATION=9\n".
+                 "YLOCATION=$yloc\n\n";
+
+   print FORM "$hr";
+
+   close FORM;
+
+}
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+=over 13
+
+=item mkLOfForm -
+
+create a B<formatted> form file from each given loadobject
+by parsing the loadobject file about variable @LO_keys
+
+=back
+
+=head1 SYNOPSIS
+
+mkLOfForm [-y] [-f] <load_object_files>
+
+mkLOfForm -h | -v
+
+=over 3
+
+=item B<-y> vertical field spacing.
+
+Formfile parameter YLOCATION (default 48)
+
+=item B<-f> fieldlength
+
+fieldlength of each field (default 25)
+
+=item B<-v> version
+
+=item B<-h> help
+
+=back
+
+=head1 EXAMPLE
+
+mkLOfForm LO_*
+
+=head1 SEE ALSO
+
+mkform, mkLOform
+
+=head1 AUTHOR
+
+Hartmut Boerner (haboe@tzv.fal.de)
+
+
+=cut

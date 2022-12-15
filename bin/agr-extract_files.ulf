@@ -1,0 +1,261 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: agr-extract_files,v 1.9 2008-10-07 07:17:06 frits Exp $
+##############################################################################
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.9 $ ');
+our $apiis;
+use FindBin qw($RealBin);
+use File::Copy;
+
+# Command line parameters:
+use vars qw( $opt_h $opt_u $opt_p $opt_P $opt_b $opt_g $opt_m $opt_t $opt_e);
+use Getopt::Std;
+getopts('hu:p:P:b:e:g:m:t');
+
+usage() if $opt_h;
+usage() if ! $opt_p;
+usage() if ! $opt_u;
+usage() if ! $opt_P;
+usage() if ! $opt_b;
+#usage() if ! $opt_e;
+
+my $loginname = $opt_u;
+my $passwd    = $opt_P;
+my $breed     = $opt_b;
+
+my $classbreed= $opt_e || 'BREED';
+print "Breed = $breed \n";
+print "Class = $classbreed \n";
+
+my ( $project_name, $gen );
+if ($opt_p) {
+    $project_name = $opt_p;
+    print "Project = $project_name\n";
+}
+
+my $male = $opt_m || 'male';
+print "Sex = $male\n";
+
+if ($opt_g) {
+    $gen = $opt_g;
+    print "generation interval = $gen\n";
+}
+else {
+    print "generation fetched from tables \n";
+}
+
+
+# create User object and load the model file:
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new(
+    id       => $loginname,
+    password => $passwd,
+);
+$thisobj->check_status( die => 'ERR' );
+
+$apiis->join_model( $project_name, userobj => $thisobj );
+$apiis->check_status( die => 'ERR' );
+
+
+# Additive Genetic Relationsship:
+my ( $dbbname, $dbb, $short, %delfiles, $tmp );
+my $sql1 = "select 
+            case when long_name isnull then ext_code else long_name end,
+            db_code,
+            case when short_name isnull then ext_code else short_name end
+            from codes
+            where (ext_code='$breed' or short_name='$breed' or long_name='$breed') and 
+                   class='$classbreed'";
+my $sql_ref1 = $apiis->DataBase->sys_sql($sql1);
+$sql_ref1->check_status( die => 'ERR' );
+
+while ( my $line_ref = $sql_ref1->handle->fetch ) {
+    $dbbname = $line_ref->[0];
+    $dbb     = $line_ref->[1];
+    $short   = $line_ref->[2];
+}
+die sprintf "\n ***** The breed $breed does not exist in the database *****\n\n" if ! $dbb;
+$sql1 = "select db_code
+            from codes
+            where (ext_code='$male' or short_name='$male' or long_name='$male') and 
+                   (class='SEX' or class='GESCHLECHT')";
+$sql_ref1 = $apiis->DataBase->sys_sql($sql1);
+$sql_ref1->check_status( die => 'ERR' );
+
+while ( my $line_ref = $sql_ref1->handle->fetch ) {
+    $tmp = $line_ref->[0];
+}
+die sprintf "\n ***** The SEX $male does not exist in the database *****\n\n" if ! $tmp;
+
+my ( %ped, %newid, %sortid );
+my $sql2 = "select a.db_animal, a.db_sire, a.db_dam, a.birth_dt, 
+                   case when c.short_name isnull then c.ext_code else c.short_name end 
+           from animal a, codes c
+           where a.db_sex=c.db_code
+           and a.db_breed = $dbb";
+
+my $sql_ref2 = $apiis->DataBase->sys_sql($sql2);
+$sql_ref2->check_status( die => 'ERR' );
+
+print "Loading pedigrees ...\n";
+my $i;
+while ( my $line_ref3 = $sql_ref2->handle->fetch ) {
+    my $zero  = $line_ref3->[0]; # animal.db_animal
+    my $one   = $line_ref3->[1]; # animal.db_sire
+    my $two   = $line_ref3->[2]; # animal.db_dam
+    my $three = $line_ref3->[3]; # animal.birth_dt
+    my $four  = $line_ref3->[4]; # codes.short_name
+
+    $three    || ( $three = '1900-01-01' );
+    $one == 2 && ( $one = 0 );
+    $two == 1 && ( $two = 0 );
+    # Male and Female hard coded for par3 calculations:
+    $four eq "$male" ? ( $four = 1 ) : ( $four = '2' );
+    my ( $y, $m, $d ) = split '-', $three;
+
+    $ped{ $three . '|' . $zero }[0] = $zero;     # animalid
+    $ped{ $three . '|' . $zero }[1] = $one;      # sire
+    $ped{ $three . '|' . $zero }[2] = $two;      # dam
+    $ped{ $three . '|' . $zero }[5] = $three;    # birth_dt
+    $ped{ $three . '|' . $zero }[4] = $four;     # sex
+    $ped{ $three . '|' . $zero }[3] = $y;        # birth year
+
+    print '.'         unless ++$i % 1000;
+    print " --> $i\n" unless $i % 10000;
+}
+print "\n\nPedigree loaded for $i records\n";
+
+print "\nCreating new sequence numbers ...\n";
+my $new = 0;
+my @tel;
+foreach my $id ( keys %ped ) {
+    push @tel, ++$new;
+    $newid{$new}[0]            = $id;
+    $newid{$new}[1]            = $ped{$id}[1];    # sire
+    $newid{$new}[2]            = $ped{$id}[2];    # dam
+    $newid{$new}[3]            = $ped{$id}[3];    # birth year
+    $newid{$new}[4]            = $ped{$id}[4];    # sex
+    $newid{$new}[5]            = 1;
+    $newid{$new}[6]            = 0;
+    $newid{$new}[7]            = $ped{$id}[5];    # birth dt
+    $sortid{ $ped{$id}[0] }[0] = $new;            # animal
+
+    print '.'           if !( $new % 1000 );
+    print " --> $new\n" if !( $new % 10000 );
+}
+print "\n";
+print "$new new sequence numbers created\n";
+undef %ped;
+
+foreach my $id ( keys %newid ) {
+    $newid{$id}[1] = $sortid{ $newid{$id}[1] }[0];
+    $newid{$id}[2] = $sortid{ $newid{$id}[2] }[0];
+}
+
+# former: 'Ped' . $short . '.txt';
+my $pedfile = $short . '_all.ped';
+print "Printing now $pedfile ...\n";
+$delfiles{$pedfile} = 1; # mark for later deletion
+open my $fh_pedfile, '>', $pedfile or die "Can't open $pedfile: $!\n";
+
+my $small = 9999999999;
+my $j = 0;
+foreach my $id (@tel) {
+    if ( $newid{$id}[3] > 1900 ) {
+        if ( $newid{$id}[3] < $small ) { $small = $newid{$id}[3]; }
+    }
+    my $str = 'A10';
+    my $a;
+    print $fh_pedfile pack( $str, $id );
+    for ( $a = 1 ; $a < 7 ; $a++ ) {
+        if ( !$newid{$id}[$a] ) { $newid{$id}[$a] = '0'; }
+        print $fh_pedfile pack( $str, ( $newid{$id}[$a] * 1 ) );
+    }
+    print $fh_pedfile "\n";
+
+    print '.'         unless ++$j % 1000;
+    print " --> $j\n" unless $j % 10000;
+}
+close $fh_pedfile;
+print "\nPedigree printed with $j records\n";
+
+print "Create now the data files per year\n\n";
+my ( %datafiles, %fh_of );
+foreach my $id (@tel) {
+    my $new_id_3 = $newid{$id}[3];
+    next if $new_id_3 < 1901;
+    my $new_id_4 = $newid{$id}[4];
+    my $datafile = $short . '_' . $new_id_3 . '.in';
+
+    # store filehandles in hash with filename as key:
+    if ( !exists $fh_of{$datafile} ) {
+        print "$datafile \n";
+        $datafiles{$datafile} = 1;
+        open $fh_of{$datafile}, '>', $datafile
+          or die "Can't open $datafile: $!\n";
+    }
+
+    # write to files:
+    my $str = 'A10';
+    print { $fh_of{$datafile} } pack( $str, $id );
+    print { $fh_of{$datafile} } pack( $str, $new_id_4 );
+    print { $fh_of{$datafile} } "\n";
+}
+
+# close the filehandles:
+close $_ for keys %fh_of;
+
+if ($opt_t) {
+    # write a tar archive of all relevant files:
+    print "Creating a tar archive of all relevant files ...\n";
+    my $tarfile  = $short . '_infiles.tar.gz';
+    my @tarfiles = ( keys %fh_of );
+    push @tarfiles, $pedfile;
+
+    # copy files from $APIIS_HOME/bin temporarily into the current dir to get
+    # a tar file without the pathnames:
+    my %copied;
+    my @bin_files = (qw/ add_gen_didier agr-run_parallel /);
+    for my $bin (@bin_files) {
+        next if -e "./$bin";    # if it already exists in .
+        my $realbin = $RealBin . '/' . $bin;
+        copy( $realbin, "./$bin" ) or warn "Copy failed: $!";
+        $copied{$bin} = 1;
+        chmod 0755, $bin;
+        push @tarfiles, $bin;
+    }
+
+    my @system_args = qw/ tar czf /;
+    push @system_args, $tarfile;
+    push @system_args, @tarfiles;
+    system(@system_args) == 0 or die "tar failed: $?\n";
+    unlink keys %copied;         # remove the temp binaries
+    print "... done. Look for $tarfile\n";
+}
+
+
+##############################################################################
+sub usage {
+    print "usage:\n"
+      . "    -h this message \n"
+      . "    -p <project_name> (required)\n"
+      . "    -u <> database user (required)\n"
+      . "    -P <> database password (required)\n"
+      . "    -b <> breed  (required)\n"
+      . "    -e <> name of class for breed  (Default = BREED)\n"
+      . "    -m <> your table codes short_name for Male (Default = Male) \n"
+      . "    -g <> generation interval if you want a fixed generation else\n"
+      . "          the generation will be pigup from Population report\n"
+      . "    -t    creates a tar archive of all relevant files \n";
+    die "\n";
+}

@@ -1,0 +1,198 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: xtract_undoc,v 1.10 2005/03/01 07:27:40 haboe Exp $
+# extract undocumented subroutines in $APIIS_HOME/bin and $APIIS_HOME/lib
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.10 $' );
+
+use Data::Dumper;
+
+# search directories recursively
+my @dirs = ("$APIIS_HOME/lib", "$APIIS_HOME/bin");
+
+# exceptions for files, directories and filetypes
+@nfiles = qw / needed_modules / ;    # no documents needed for this files
+@ndirs = qw / images CVS . .. / ;    # no documents needed for files in this dirs
+# no documents needed for this types
+@nsuffix = qw/ gif GIF xpm jpg JPG tmp swp cvsignore mo conf test log ini bat xml Errors Model Init html Report Statement Record User Form frm Date Recordset AppAuth XML bak PseudoStatement/ ;
+
+use vars qw($opt_p);
+use Getopt::Std;
+getopts('p'); # option -p  => print only on stdout
+
+# write to $APIIS_HOME/doc/developer/undocumented/undocumented.tex
+open(UNDOC, ">$APIIS_HOME/doc/developer/undocumented/undocumented.tex")
+     or die __("Problems opening file $APIIS_HOME/doc/developer/undocumented/undocumented.tex"),": $!" if(!$opt_p);
+
+foreach $dir (@dirs) {
+   print __("DIRECTORY: [_1]", $dir),":\n" if($opt_p);
+   dirlist($dir);
+}
+
+print "-------- ",__("ready")," --------\n" if($opt_p);
+
+
+##############################################################################
+sub dirlist {
+
+   my $dir = shift;
+
+   # filehandle is $dir because we use this subroutine recursively.
+   # for each subdirectory we need a differend filehandle.
+   opendir($dir, $dir) or die __("Problems opening file [_1]", $dir),": $!";
+
+   while(defined(my $file = readdir $dir)) {
+      my ($name,$suffix) = $file =~ /(^\w*[\.\w]*)\.(\w*)$/;
+      next if($suffix and suffix($suffix)); # nicht stott_ttot_ttern ;-)
+      next if($file and name($file));
+      next if(-d "$dir/$file" and dir($file));
+
+      # process files
+      if( -d "$dir/$file") {
+         print " SUBDIR: $dir/$file\n" if( -d "$dir/$file" and $opt_p);
+	    ;
+         dirlist("$dir/$file"); # recursive subdirs
+	 next;
+      }
+
+      print "  FILE: $dir/$file\n" if( -f "$dir/$file" and $opt_p);
+      open (FILE, "$dir/$file") or die __("Problems opening file [_1]", $dir/$file),": $!\n";
+      my %subs;
+      while (<FILE>) { $subs{$1} = 1 if /^\s*sub ([^ _]\w+)/ }
+      seek(FILE,0,0);
+      my %head;
+      while (<FILE>) { $head{$1} = 1 if /^\s*=head\w+ (\w+)/ };
+
+      my %undoc = compare(\%subs,\%head); # extract missing description of subroutines of $file
+      $undoc{NAME} = 2 if(!$head{NAME});  # generell description of $file missing 
+      #print Dumper(%undoc);
+
+      if($opt_p) {  # print result on stdout
+	 if($undoc{NAME} and $undoc{NAME} == 2 or scalar(keys %undoc) > 1) {
+	    print "   Missing documentation of file $file:\n";
+	    print "\tGenerell documentation missing.\n";
+	 }
+         foreach (sort keys %undoc) {
+	    print "\t$_ Documentation is missing.\n" if($undoc{$_} == 1);
+         }
+      } else { # print result into file undocumented.tex
+	 (my $apiis = $dir) =~ s/$APIIS_HOME/APIIS\\_HOME/;  # $APIIS_HOME -> APIIS_HOME
+	 if($undoc{NAME} and $undoc{NAME} == 2 or scalar(keys %undoc) > 1) {
+	    (my $sec = $file) =~ s/_/\\_/g;        # for latex: '_' -> '\_'
+	    print UNDOC "\\section{$apiis/$sec} \\index{$apiis!$sec}\n";
+	 }
+	 my $flag;  # checkes begin and end of 'enumerate'
+         foreach (sort keys %undoc) {
+	    if(!$flag and $undoc{$_} == 1) {
+	       print UNDOC "\\begin{enumerate}\n"; 
+	       $flag = 1;
+	    }
+	    (my $sub = $_) =~ s/_/\\_/g;           # for latex: '_' -> '\_'
+	    (my $mfile = "$file!$_") =~ s/_/\\_/g; # for latex: '_' -> '\_'
+	    print UNDOC "\\item{$sub} \\index{$apiis!$mfile}\n" if($undoc{$_} == 1);
+         }
+	 print UNDOC "\\end{enumerate}\n" if($flag);
+	 $flag = '';
+      }
+   }
+   
+   return;
+   
+} # dirlist
+
+
+##############################################################################
+# ignore files with @nsuffix 
+sub suffix {
+   my $s = shift;
+   foreach (@nsuffix) { return 1 if($s eq $_) }
+   return 0;
+} # suffix
+
+
+##############################################################################
+# with the exception of files in @nfiles
+sub name {
+   my $n = shift;
+   foreach (@nfiles) { return 1 if($n eq $_) }
+   return 0;
+} # name
+
+
+##############################################################################
+# with the exception of dirs in @ndirs
+sub dir {
+   my $d = shift;
+   foreach (@ndirs) { return 1 if($d eq $_) }
+   return 0;
+} # dir
+
+
+##############################################################################
+# compare subroutinen with embedded perl-doc
+sub compare {
+   my ($subs, $heads) = @_;
+   my %undoc;
+   foreach $s (keys %$subs) { $undoc{$s} = 1 if(!$$heads{$s}) }
+   return %undoc;
+} # compare
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+xtract_undoc
+
+=head1 SYNOPSIS
+
+xtract_undoc [-p]
+
+=head1 DESCRIPTION
+
+Extracts undocumented programs and subroutines in $APIIS_HOME/bin and $APIIS_HOME/lib.
+Writes to $APIIS_HOME/doc/developer/undocumented/undocumented.tex
+or if option -p is given on stdout.
+
+=head1 SUBROUTINES
+
+=head2 dirlist
+
+this subroutine does the main things and is called recursively for all subdirectories
+
+=head2 suffix
+
+throws out files with unwanted suffixes 
+
+=head2 name
+
+throws out unwanted files 
+
+=head2 dir
+
+throws out unwanted directories 
+
+=head2 compare
+
+compares defined subroutines with documented sections
+
+=head1 FILES
+
+$APIIS_HOME/doc/developer/undocumented/undocumented.tex
+
+=head1 AUTHOR
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+=cut

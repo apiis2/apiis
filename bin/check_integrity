@@ -1,0 +1,434 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: check_integrity,v 1.55 2014/12/08 08:56:55 heli Exp $
+# check the existing database table by table and record by record against
+# the business rules from the modelfile.
+# See POD at end of file.
+##############################################################################
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.55 $' );
+our $apiis;
+
+use Apiis::DataBase::Record;
+use Apiis::Misc qw( show_progress find_pod_path is_true );
+use List::Util qw( first );
+use List::MoreUtils qw( uniq );
+
+# name of the column to flag dirty records:
+my $dirtycol = 'dirty';
+
+# handle command-line options:
+my %args;
+my $args_ref = \%args;
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+my $pod_path = find_pod_path();
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'version|v',
+    'project|p=s',
+    'user|u=s',
+    'password|P=s',
+    'table|t=s@',    # comma separated list of tables allowed!
+    'stop|s=i',
+    'errfile|e',
+    'filename|f=s',
+    'dirtyflag|D',
+    'skipdirty|S',
+) or pod2usage( -verbose => 1, -input => $pod_path );
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1, -input => $pod_path ) if $args_ref->{'help'};
+pod2usage( -verbose => 2, -input => $pod_path ) if $args_ref->{'man'};
+
+if ( $args_ref->{version} ) {
+    die sprintf "%s: %s\n", $apiis->programname, $apiis->version;
+}
+
+my $stop_at = $args_ref->{stop};
+my $dirtyflag = $args_ref->{dirtyflag};
+my $skipdirty = $args_ref->{skipdirty};
+
+$apiis->running_check_integrity(1);  # used in some rules (LastAction, DateDiff)
+$| = 1;                              # output autoflush
+
+# summary report:
+my $check_erg = $args_ref->{filename} || 'check_integrity.erg';
+
+# model file:
+my $model_file = $args_ref->{'project'};
+if ( !$model_file ) {
+    printf "%s!\n", __('No [_1] given', 'project');
+    pod2usage( -verbose => 1, -input => $pod_path );
+}
+
+# connect to project:
+if ( $args_ref->{user} and $args_ref->{password} ) {
+    require Apiis::DataBase::User;
+    my $thisobj = Apiis::DataBase::User->new(
+        id       => $args_ref->{user},
+        password => $args_ref->{password},
+    );
+    $thisobj->check_status;
+    $apiis->join_model( $model_file, userobj => $thisobj );
+}
+$apiis->join_model($model_file) if !$apiis->exists_model;
+$apiis->check_status( die => 'ERR' );
+
+# stop logging to speed it up:
+$apiis->use_filelog(0);
+$apiis->use_syslog(0);
+$apiis->use_sql_logging(0);
+
+# which table(s) to check:
+my @tables;
+if ( $args_ref->{table} ) {
+    my @alltables = $apiis->Model->tables;
+    my @cli_tables;
+    for my $t ( @{ $args_ref->{table} } ) {
+        my @tmp_tables = split( /,/, $t );
+        push @cli_tables, @tmp_tables;
+    }
+    @cli_tables = uniq @cli_tables;
+
+    TAB:
+    for my $thistable (@cli_tables) {
+        if ( first { $_ eq $thistable; } @alltables ) {
+            push @tables, $thistable;
+            next TAB;
+        }
+        warn __( "Table '[_1]' not valid, skipped!", $thistable ) . "\n";
+    }
+}
+
+# reporting:
+open my $REP, '>', $check_erg
+    or die __( 'Problems opening file [_1]: [_2]', $check_erg, $! ) . "\n";
+my $err_details = $args_ref->{errfile};
+my $extension  = '.err';
+my $model_base = lc $apiis->Model->basename;
+my $oidname    = $apiis->DataBase->rowid;
+
+my ( $i, $j, $k, $l, $count, $ges, $proz, $rep, $rep2, $rep3, $rep4, $skipped );
+my %code_err;
+
+TABLE:
+foreach my $table (@tables) {
+    my ( %report, $err_file );
+    print __('Name of table to check'), ": $table ...\n";
+
+    # table scoped error files:
+    my $ERR;
+    if ($err_details) {
+        $err_file = "${model_base}_${table}$extension";
+        open $ERR, '>', $err_file
+            or die __( 'Problems opening file [_1]: [_2]', $err_file, $! )
+            . "\n";
+    }
+
+    # get the column names:
+    my $table_obj_0 = Apiis::DataBase::Record->new( tablename => $table, );
+    if ( $table_obj_0->status ){
+        $_->print for $table_obj_0->errors;
+        next TABLE;
+    }
+    my @columns = $table_obj_0->columns();
+    if ( ! first { $_ eq $oidname } @columns ){
+        # add oidname to list of columns if not already there:
+        unshift @columns, $oidname;
+    }
+
+    # SQL - update dirty flag (prepare only):
+    my $dirty_handle;
+    if ($dirtyflag) {
+        my $sql_u1 = "UPDATE $table SET $dirtycol = ? WHERE $oidname = ?";
+        my $dirty_sql_obj = $apiis->DataBase->sql(
+            {   statement => $sql_u1,
+                user      => 'system',
+                execute   => 0,
+            }
+        );
+        if ( $dirty_sql_obj->status ){
+            $_->print for $dirty_sql_obj->errors;
+            next TABLE;
+        }
+        $dirty_handle = $dirty_sql_obj->handle;
+    }
+
+    # SQL - select all columns:
+    my $select = sprintf 'SELECT %s FROM %s', join( q{,}, @columns ), $table;
+#     if ( $stop_at and $apiis->Model->db_driver eq 'Pg' ) {
+#         $select .= " limit $stop_at";
+#     }
+    my $sql_obj = $apiis->DataBase->sql(
+        {   statement => $select,
+            user      => 'system',
+        }
+    );
+    if ( $sql_obj->status ) {
+        $_->print for $sql_obj->errors;
+        next TABLE;
+    }
+
+    $i = $j = $k = $l = 0;
+    my $rows   = [];                   # cache for batches of rows
+    my $get_no = $stop_at || 1_000;    # how many rows to fetch
+    # while ( my $row_ref = $sql_obj->handle->fetch ) { # }
+    RECORD:
+    while ( my $row_ref = ( shift(@$rows) || shift(
+            @{$rows = $sql_obj->handle->fetchall_arrayref(undef, $get_no) || []}
+            ) )
+          )
+    {
+        my @data = @{$row_ref};
+
+        # fill table object with data:
+        my $table_obj = Apiis::DataBase::Record->new( tablename => $table, );
+        foreach my $thiscolumn (@columns) {
+            my $intdata = shift @data;
+            $table_obj->column($thiscolumn)->intdata($intdata)
+                if defined $intdata;
+        }
+
+        # Skip records, which are already flagged as dirty (if -S given):
+        if ($skipdirty) {
+            if ( is_true( $table_obj->column($dirtycol)->intdata ) ) {
+                $skipped++;
+                next RECORD;
+            }
+        }
+
+        # set action to check_integrity:
+        $table_obj->action('check_integrity');
+
+        # Now check the integrity:
+        $table_obj->check_record;
+
+        my $thisrowid;
+        my $tempcount = 0;
+        if ( $table_obj->status ) {
+            $thisrowid = $table_obj->column($oidname)->intdata;
+            $j++;
+            $tempcount++;
+            ERR:
+            foreach my $thiserr ( @{ $table_obj->errors } ) {
+                $thiserr->record_id($thisrowid);    # add rowid to errorobject
+                $thiserr->print( filehandle => $ERR ) if $err_details;
+
+                my $err_type = $thiserr->type;
+                my $db_col   = $thiserr->db_column;
+                if ( $err_type =~ /DATA/ ) {
+                    $l++ if $tempcount == 1; # incr. only once
+                    $tempcount++;
+                    $report{$table}{$db_col}{ $thiserr->from }{$err_type}++;
+                    next ERR;
+                }
+                # use msg_short:
+                $report{$table}{$db_col}{ $thiserr->msg_short }{$err_type}++;
+            }
+        }
+        else {    # data ok
+            $k++;
+        }
+
+        # tables have 'dirty' flag/column
+        if ($dirtyflag) {
+            if ( !$thisrowid ) {
+                $thisrowid = $table_obj->column($oidname)->intdata;
+            }
+            my $flag;
+            $tempcount ? ( $flag = 'true' ) : ( $flag = 'false' );
+            $dirty_handle->execute( $flag, $thisrowid );
+            if ( !( $i % 100 ) ) {
+                # commit every 100 records
+                $apiis->DataBase->dbh->commit;
+            }
+        }
+
+        $i++ && show_progress( \$i );
+
+        if ($stop_at) {
+            # finish after $stop_at records:
+            last RECORD if $i >= $stop_at;
+        }
+    }    # RECORD:
+
+    $apiis->DataBase->dbh->commit if $dirtyflag;
+    print ' ' x ( 11 - int( substr $i, -3 ) / 100 ), " ==> ", $i, "\n";
+
+    $ges   = 0;
+    $count = undef;
+    # avoid illegal division by zero
+    $i ? ( $proz = $l * 100 / $i ) : ( $proz = 0 );
+
+    foreach $rep ( keys %report ) {
+        foreach $rep2 ( keys %{ $report{$rep} } ) {
+            foreach $rep3 ( keys %{ $report{$rep}{$rep2} } ) {
+                foreach $rep4 ( keys %{ $report{$rep}{$rep2}{$rep3} } ) {
+                    if ( $rep4 eq 'DATA' ) {
+                        $count = $report{$rep}{$rep2}{$rep3}{$rep4};
+                        $ges += $count;
+                        select $REP;
+                        $^ = "REPORT_TOP";
+                        $~ = "REPORT";
+                        write;
+                        select STDOUT;
+                    }
+                    else {
+                        $code_err{$rep3}++;
+                    }
+                }
+            }
+        }
+    }
+
+    my $m = $i - $l;
+    if ( $l == 0 ) {    # no errors in table
+        print $REP __( "no business rules errors in table [_1]", $table ),"\n";
+    }
+    else {
+        select $REP;
+        $~ = "GES";
+        write;
+        $- = 0;
+        select STDOUT;
+    }
+
+    # some summaries for this table:
+    my @stdout;
+    push @stdout,
+        __( '[_1]: [_2] records successfully checked against the rules',
+        $table, $m );
+    if ( $skipped ) {
+        push @stdout, __( '[_1]: [_2] records skipped due to true dirty flag',
+            $table, $skipped );
+        $skipped = 0;
+    }
+    push @stdout, __( '[_1]: [_2] from [_3] checked records violate rules',
+        $table, $l, $i );
+
+    foreach my $ce ( keys %code_err ) {
+        my $string = __('Non-DATA error: [_1]', $ce);
+        push @stdout, $string;
+        print $REP $string, "\n";
+    }
+
+    if ($err_details) {
+        push @stdout, __( 'written into [_1]', $err_file ) if $j;
+        close $ERR;
+        unlink $err_file if -z $err_file;    # remove empty files
+    }
+
+    print STDOUT join("\n", @stdout), "\n";
+}    # foreach tables
+
+close $REP;
+
+#################################################
+format REPORT_TOP =
+
+TABLE: @<<<<<<<<<<<<<<<
+       $rep
+COLUMN             RULE VIOL.              COUNT
+------------------------------------------------
+.
+#################################################
+format REPORT =
+@<<<<<<<<<<<<<<<<< @<<<<<<<<<<<<<<<<<< @>>>>>>>>
+$rep2, $rep3, $count
+.
+#################################################
+format GES =
+                                      ----------
+number of violated rules:             @>>>>>>>>>
+                                      $ges
+representing number of lines: @>>>>>>>>>>>>>>>>> (@###.## % )
+                                "$l from $i", $proz
+                                      ==========
+.
+#################################################
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+check_integrity
+
+=head1 SYNOPSIS
+
+check_integrity -p <project> [Options]
+
+=head1 OPTIONS
+
+ -p | --project <project>  defines the project to check (r)
+
+ -u | --user  <user>       provide username <user> to connect to project (o)
+ -P | --password <passwd>  provide password <passwd> to connect to project (o)
+
+ -t | --table  <table>     check only this table. You can provide several -t
+                           options or a list of comma separated tables (o)
+ -s | --stop   <number>    stop checking after <number> records (o)
+
+ -e | --errfile            write detailed errors into files of the form
+                           <project>_<table>.err (o)
+ -f | --filename <file>    writes summary of check results into <file>
+                           instead of the default file check_integrity.erg. (o)
+ -D | --dirtyflag          use column 'dirty' to flag checked records (o)
+ -S | --skipdirty          skip records which are already flagged as dirty (o)
+
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -v | --version            current version of check_integrity (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<check_integrity> checks your database for data integrity according to the
+defined rule in the project's model file.
+
+The option B<-p <project>> is the only required one.
+
+The B<-t <table>> options allows specifying either a single table or several
+tables in a comma separated list. The list must not contain any blanks. You
+can also give several B<-t <table>> options on the command line.
+
+=head1 EXAMPLES
+
+ check_integrity -p breedprg
+ check_integrity -p breedprg -u demo -P 'my secret' -t animal -s 100
+ check_integrity -p breedprg -t animal -t transfer -t codes -D -S
+ check_integrity -p breedprg -t animal,transfer,codes -DSe -f check_report.txt
+
+=head1 BUGS
+
+B<check_integrity> is slow. The main area to speed it up will be an
+optimization of the Record objects.
+
+=head1 VERSION
+
+$Revision: 1.55 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+ Ralf Fischer <ralf@tzv.fal.de>
+
+=cut
+

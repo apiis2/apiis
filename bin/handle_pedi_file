@@ -1,0 +1,819 @@
+#!/usr/bin/perl
+############################################################################
+# $Id: handle_pedi_file,v 1.45 2018/02/21 12:27:50 heli Exp $
+############################################################################
+# does some basic checks on the data and loads it into the database
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.45 $' );
+our $apiis;
+use Apiis::DataBase::User;
+use Apiis::Misc qw( show_progress MaskForLatex );
+use Popreport;
+
+use open OUT => ':utf8';
+# use open IN => ':perlio', OUT => ':utf8';
+use Encode;
+use File::Basename;
+use List::Util;
+use Data::Dumper;
+use Date::Calc qw/ check_date Delta_Days /;
+use Mail::Sendmail;
+
+# put global needed variables together:
+my $cfg = {
+    err_mesgs     => [],
+    err_stat_die  => 0,
+    err_mesgs_die => [],
+    loop_animals  => {},
+    loop_counter  => 500,
+    listfile      => undef,
+    texfile       => undef,
+    extended      => undef,
+    ped           => {},
+    allped        => {},
+    male_code     => undef,
+    female_code   => undef,
+    max_loops     => 1000,
+    sex_class     => 'SEX',
+    breed         => undef,
+    empty_bdate   => 0,
+    emptied_bdate => 0,
+    max_errors    => 16,       # for handle_errors
+    email         => undef,    # for handle_errors
+    breed         => undef,    # for handle_errors
+};
+$cfg->{apiis} = $apiis;
+
+our $pedref = $cfg->{ped};
+our $allpedref = $cfg->{allped};
+my ( $listfile, $texfile );
+
+our @conf_date;           # store dateformat parts globally
+
+# handle command-line options:
+use Getopt::Long;
+Getopt::Long::Configure ("bundling"); # allow argument bundling
+use Pod::Usage;
+my %args;
+my $args_ref = \%args;
+
+# allowed parameters:
+GetOptions( $args_ref,
+    'help|h|?',
+    'man|m',
+    'version|v',
+    'user|u=s',
+    'male|m=s',
+    'female|f=s',
+    'listfile|l=s',
+    'infile|i=s',
+    'dateformat|d=s',
+    'datesep|s=s',
+    'breed|b=s',
+    'email|e=s',
+) or pod2usage( -verbose => 1 );
+
+# short help, longer man page, and version:
+pod2usage( -verbose => 1 ) if $args_ref->{'help'};
+pod2usage( -verbose => 2 ) if $args_ref->{'man'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'infile'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'dateformat'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'user'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'male'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'female'};
+pod2usage( -verbose => 1 ) if !$args_ref->{'breed'};
+
+my $user  = $args_ref->{'user'};
+my $breed = $cfg->{breed} = $args_ref->{'breed'};
+my $email = $cfg->{email} = $args_ref->{'email'};
+my %valid_sex = (
+    $args_ref->{'male'}   => 0,
+    $args_ref->{'female'} => 0,
+);
+
+$texfile = 'tp_baseinfo.tex'; 
+if ( $args_ref->{'listfile'} ) {
+    $cfg->{'listfile'} = $listfile = $args_ref->{'listfile'};
+    my $dirname  = dirname($listfile);
+    $texfile = $dirname . '/' . $texfile;
+    $cfg->{'texfile'} = $texfile;
+}
+
+our ( $line_no, $empty_lines, $comment_lines, $dup_animals );
+$line_no = $empty_lines = $comment_lines = $dup_animals = 0;
+# date handling occurs only for data from files:
+our $dateformat = $args_ref->{'dateformat'} || 'YYYY-MM-DD';
+our $datesep    = $args_ref->{'datesep'}    || '';
+check_date_conf( $dateformat, $datesep );
+handle_errors($cfg);
+
+select STDERR; $| = 1; # autoflush
+select STDOUT; $| = 1; # autoflush
+
+if ( $args_ref->{version} ) {
+    die sprintf "%s: %s\n", $apiis->programname, $apiis->version;
+}
+
+my $infile = $args_ref->{'infile'};
+exit 255 if check_mime_type($infile);
+my $infile_enc;
+$infile_enc = check_encoding($infile);
+$infile_enc = 'perlio' if ! $infile_enc;
+
+my $IN;
+# if ( ! open $IN, "<:$infile_enc", $infile ){
+if ( ! open $IN, "<:encoding(utf8)", $infile ){
+    my $msg = "ERROR: Cannot open infile $infile: $!";
+    push @{$cfg->{err_mesgs_die}} , MaskForLatex($msg);
+    handle_errors($cfg);
+}
+
+# fill the %ped hash with data from the file:
+my %empty_cols;
+LINE:
+while (<$IN>) {
+    my $line = $_;
+    # some files from M$-Windows (or Mac?) have no newline at end of file, but
+    # instead ^Z (hex 0x1A). This leads to an error message of having a line
+    # without any | separator. 0x1A now gets deleted.
+    $line =~ s!\x1a$!!g;
+    mychomp($line);
+    $line_no++;
+    # emtpy lines:
+    if ( $line =~ /^\s*$/ ) {
+        $empty_lines++;
+        next LINE;
+    }
+    # comment lines:
+    if ( $line =~ /^#/ ) {
+        $comment_lines++;
+        next LINE;
+    }
+    if ( ( $line =~ tr/\|// ) <= 3 ) {
+        my @err;
+        push @err, sprintf "Line %d of your data looks like this:", $line_no;
+        # mask special latex chars
+        my $firstline = '\begin{verbatim}   ' . substr( $line, 0, 80 ) . '\end{verbatim}';
+        push @err, $firstline;
+        push @err, "The separator | (pipe) is required at least 4 times!";
+        push @err, 'The Popreport run terminated. Correct your data and try it again.';
+        push @err, "\\\\The input format of the pedigree file is described in detail at:";
+        my $link = 'http://popreport.fli.de/doc/poprep-manual.html.LyXconv/index.html';
+        push @err, "\\hyperref{$link}{}{}{$link}";
+        push @{ $cfg->{err_mesgs_die} }, @err;
+        handle_errors($cfg);
+        exit 255;
+    }
+    $line =~ s/^\s*//;
+    $line =~ s/\s*$//;
+    my ( @in_arr, @in_desc );
+    @in_desc = (qw/animal sire dam birthdate sex/);
+    @in_arr = split /\|/, $line;
+
+    # check for empty columns:
+    my ( $err, $i );
+    $err = $i = 0;
+    COL:
+    for $i ( 0 .. 4 ) {
+        $in_arr[$i] =~ s/^\s*//;
+        $in_arr[$i] =~ s/\s*$//;
+        # rewrite unknown dam/sire to defined state:
+        if (   !defined $in_arr[$i]
+            or $in_arr[$i] eq ''
+            or lc $in_arr[$i] eq 'unknown' )
+        {
+            if ( $i == 0 ) {
+                # animal is empty:
+                my @err;
+                push @err, sprintf "Line %d of your data looks like this:", $line_no;
+                my $firstline =
+                      '\begin{verbatim}   ' . substr( $line, 0, 80 ) . '\end{verbatim}';
+                push @err, $firstline;
+                push @err, "The animal ID is empty!";
+                push @err, 'The Popreport run terminated. Correct your data and try it again.';
+                push @{ $cfg->{err_mesgs_die} }, @err;
+                handle_errors($cfg);
+                exit 255;
+            }
+            if ( $i == 1 ) {
+                # sire:
+                $in_arr[$i] = 'unknown_sire';
+                next COL;
+            }
+            if ( $i == 2 ) {
+                # dam:
+                $in_arr[$i] = 'unknown_dam';
+                next COL;
+            }
+            if ( $i == 3 ) {
+                # birthdate can be empty:
+                $cfg->{empty_bdate}++;
+                next COL;
+            }
+            $err++;
+            $in_arr[$i] = '';
+            push @{ $empty_cols{ $in_desc[$i] } }, $line;
+        }
+        else {
+            next COL if $i == 3;
+            if ( $in_arr[$i] eq '' ) {
+                $err++;
+                push @{ $empty_cols{ $in_desc[$i] } }, $line;
+            }
+        }
+    }
+    # check for sex encoding that differs from the webpage (fe)male code:
+    if ( !exists $valid_sex{ $in_arr[4] } ) {
+        my $given_sex = '<empty>';
+        $given_sex = $in_arr[4] if defined $in_arr[4] and $in_arr[4] ne '';
+        my $msg1 = "Unknown or wrong representation of sex codes:";
+        my $msg2 = sprintf "On the webpage, you configured: %s (male), %s (female)",
+            $args_ref->{male}, $args_ref->{female};
+        my $msg3 = sprintf "Your data file contains (line %u): \\textbf{%s}",
+            $line_no, MaskForLatex($given_sex);
+
+        push @{ $cfg->{err_mesgs_die} }, $msg1;
+        push @{ $cfg->{err_mesgs_die} }, $msg2;
+        push @{ $cfg->{err_mesgs_die} }, $msg3;
+        handle_errors($cfg);
+        exit 255;
+    }
+    else {
+        $valid_sex{ $in_arr[4] }++;
+    }
+    fill_ped( \@in_arr, $cfg );
+}
+
+# check if both sex entries exist in the data:
+for my $sss ( keys %valid_sex ) {
+    if ( not $valid_sex{$sss} ) {
+        my $msg1 = "Sex $sss does not appear in your data!";
+        my $msg2 = "With one sex, neither a Population nor an Inbreeding Report make any sense.";
+        my $msg3 = "Please correct your data and try it again.";
+        push @{ $cfg->{err_mesgs_die} }, $msg1;
+        push @{ $cfg->{err_mesgs_die} }, $msg2;
+        push @{ $cfg->{err_mesgs_die} }, $msg3;
+        handle_errors($cfg);
+        exit 255;
+    }
+}
+handle_errors($cfg);
+
+# error handling with empty columns:
+for my $ecol ( keys %empty_cols ) {
+    my @elines;
+    # we need additional lines for \verbatim-commands:
+    my $max_err   = $cfg->{'max_errors'} - 4;
+    my $no_elines = scalar @{ $empty_cols{$ecol} };
+    push @elines, sprintf "%u lines with empty column %s rejected:",
+        $no_elines, $ecol;
+    my $i = 0;
+    push @elines, '\begin{verbatim}';
+    for my $line ( @{ $empty_cols{$ecol} } ) {
+        if ( ++$i <= $max_err ) {
+            push @elines, substr( $line, 0, 80 );
+        }
+    }
+    if ( $i > $max_err ) {
+        push @elines, sprintf '.... %u additional lines not displayed',
+            $i - $max_err;
+    }
+    push @elines, '\end{verbatim}';
+    push @{ $cfg->{err_mesgs} }, join( "\n", @elines );
+}
+undef %empty_cols;
+
+# print some basic infos:
+{
+    my @baseinfos;
+    push @baseinfos,
+        sprintf "INFO: Your entered dateformat was '%s', your dateseparator '%s'.",
+        $dateformat, ( $datesep || 'undef' );
+    push @baseinfos, sprintf "%u input lines processed.", $line_no;
+    push @baseinfos, sprintf "-- %u empty lines skipped.",   $empty_lines
+        if $empty_lines;
+    push @baseinfos, sprintf "-- %u comment lines skipped.", $comment_lines
+        if $comment_lines;
+    push @baseinfos, sprintf "-- %u duplicate animals skipped.", $dup_animals
+        if $dup_animals;
+    push @baseinfos, sprintf "%u animals accepted.", scalar keys %{$pedref};
+    push @baseinfos, sprintf "%s lines with empty birthdates accepted.",
+        $cfg->{empty_bdate}
+        if $cfg->{empty_bdate};
+    push @baseinfos, sprintf "%s faulty birthdates cleared.",
+        $cfg->{emptied_bdate}
+        if $cfg->{emptied_bdate};
+
+    print_tex_item( join( '\\\\', @baseinfos ), $texfile );
+}
+
+my $animal_count = scalar keys %{$pedref};
+my $bdate_count = $cfg->{empty_bdate};
+if ( ( $animal_count - $bdate_count ) < 10 ) {
+    push @{ $cfg->{err_mesgs_die} },
+        sprintf "ERROR: Seems you have no valid birthdates. Stopped.";
+    handle_errors($cfg);
+    exit 255;
+}
+handle_errors($cfg);
+
+my $thisobj = Apiis::DataBase::User->new(
+    id       => 'heli',
+    password => 'pass',
+);
+$thisobj->check_status( die => 'ERR' );
+
+# $user = $project:
+$apiis->join_model( $user, userobj => $thisobj );
+$apiis->check_status( die => 'ERR' );
+
+# stop logging to speed it up:
+$apiis->use_filelog(0);
+$apiis->use_syslog(0);
+$apiis->use_sql_logging(0);
+
+my %db_sex_of;
+my $codes = Apiis::DataBase::Record->new( tablename => $apiis->codes_table, );
+$codes->check_status( die => 'ERR' );
+# codes entry male:
+$codes->column('class')->extdata('SEX');
+$codes->column('short_name')->extdata( Encode::decode_utf8($args_ref->{'male'}) );
+$codes->column('ext_code')->extdata('M');
+$codes->insert;
+$codes->check_status( die => 'ERR' );
+my $db_male = $codes->column('db_code')->intdata;
+$db_sex_of{ $args_ref->{'male'} } = $codes->column('db_code')->intdata;
+
+# codes entry female:
+$codes->column('short_name')->extdata( Encode::decode_utf8($args_ref->{'female'}) );
+$codes->column('ext_code')->extdata('F');
+$codes->insert;
+$codes->check_status( die => 'ERR' );
+my $db_female = $codes->column('db_code')->intdata;
+$db_sex_of{ $args_ref->{'female'} } = $codes->column('db_code')->intdata;
+
+# codes entry breed:
+$codes->column('class')->extdata('BREED');
+$codes->column('ext_code')->extdata( Encode::decode_utf8($breed) );
+$codes->column('short_name')->extdata( Encode::decode_utf8($breed) );
+$codes->insert;
+$codes->check_status( die => 'ERR' );
+my $db_breed = $codes->column('db_code')->intdata;
+
+# standard entry in unit:
+my $unit = Apiis::DataBase::Record->new( tablename => 'unit' );
+$unit->check_status( die => 'ERR' );
+$unit->column('ext_unit')->extdata('EU');
+$unit->column('ext_id')->extdata('EI');
+$unit->insert;
+$unit->check_status( die => 'ERR' );
+my $db_unit = $unit->column('db_unit')->intdata;
+
+# fill transfer:
+print "Inserting data into table transfer ....\n";
+my $i;
+my %db_animal_of;
+my $db_animal_seq = 5000;    # startvalue for db_animal;
+
+my ( @sth_db_animals, @sth_ext_animals );
+for my $key ( keys %{$allpedref} ) {
+    push @sth_ext_animals, $key;
+    if ( $key eq 'unknown_sire' ) {
+        push @sth_db_animals, 1;
+        $db_animal_of{'unknown_sire'} = 1;
+    }
+    elsif ( $key eq 'unknown_dam' ) {
+        push @sth_db_animals, 2;
+        $db_animal_of{'unknown_dam'} = 2;
+    }
+    else {
+        push @sth_db_animals, $db_animal_seq;
+        $db_animal_of{$key} = $db_animal_seq;
+        $db_animal_seq++;
+    }
+    $i++;
+}
+
+my $err_ext_animal;
+eval {
+    my $sth = $apiis->DataBase->dbh->prepare(
+        "INSERT INTO transfer (db_animal, ext_animal, db_unit ) VALUES(?, ?, ?)"
+    );
+
+    for my $index ( 0 .. @sth_db_animals - 1 ) {
+        $err_ext_animal = $sth_ext_animals[$index];
+        $sth->execute( $sth_db_animals[$index], $sth_ext_animals[$index],
+            $db_unit );
+    }
+};
+if ($@) {
+    my $msg = 'FATAL ERROR: Your data produced an unspecified database error ';
+    $msg .= "while inserting animal:";
+    $msg .= sprintf '\begin{center} %s \end{center}\\\\', MaskForLatex($err_ext_animal);
+    $msg .= 'Most often this is the result of an incompatible character set encoding ';
+    $msg .= 'of your data. Try converting your data to UTF-8 or ISO-8859-1. \\\\';
+    $msg .= 'Feel free to contact popmaster@fli.de for further help.\\\\';
+    print_tex_item( $msg, $texfile );
+    die sprintf "%s", $msg;
+}
+
+my $j;
+print "Inserting data into table animal ....\n";
+my $sth2 = $apiis->DataBase->dbh->prepare(
+    "INSERT INTO animal (db_animal, db_sire, db_dam, birth_dt, db_sex, db_breed)
+     VALUES(?, ?, ?, ?, ?, ?)"
+);
+
+my ( @sth2_db_animals, @sth2_db_sires, @sth2_db_dams, @sth2_bdt, @sth2_db_sex );
+for my $key ( keys %{$pedref} ) {
+    push @sth2_db_animals, $db_animal_of{$key};
+    my $sire = $pedref->{$key}[0];
+    my $dam  = $pedref->{$key}[1];
+    if ( $sire eq 'unknown_sire' ) {
+        push @sth2_db_sires, 1;
+    }
+    else {
+        push @sth2_db_sires, $db_animal_of{ $pedref->{$key}[0] };
+    }
+    if ( $dam eq 'unknown_dam' ) {
+        push @sth2_db_dams, 2;
+    }
+    else {
+        push @sth2_db_dams, $db_animal_of{ $pedref->{$key}[1] };
+    }
+    push @sth2_bdt,    $pedref->{$key}[2];
+    push @sth2_db_sex, $db_sex_of{ $pedref->{$key}[3] };
+    $j++;
+}
+
+$sth2->bind_param_array( 1, \@sth2_db_animals );
+$sth2->bind_param_array( 2, \@sth2_db_sires );
+$sth2->bind_param_array( 3, \@sth2_db_dams );
+$sth2->bind_param_array( 4, \@sth2_bdt );
+$sth2->bind_param_array( 5, \@sth2_db_sex );
+$sth2->bind_param_array( 6, $db_breed );
+my $inserted2 =
+    $sth2->execute_array( { ArrayTupleStatus => \my @tuple_status2 } );
+if ($inserted2) {
+    $apiis->DataBase->commit;
+    print "$inserted2 records inserted\n";
+}
+
+# finally:
+handle_errors($cfg);
+
+##############################################################################
+# Subroutines:
+##############################################################################
+# fill the pedigree hash with data from the file
+sub fill_ped {
+    my ( $arr_ref, $cfg ) = @_;
+    my $animal = $arr_ref->[0];
+
+    my $sire = $arr_ref->[1];
+    return if !defined $sire;
+    $dup_animals++ if exists $pedref->{$animal};
+    $pedref->{$animal}[0] = $sire;
+
+    my $dam = $arr_ref->[2];
+    return if !defined $dam;
+    $pedref->{$animal}[1] = $dam;
+    # store birthdates in ISO format:
+    my $bdate = $arr_ref->[3];
+    if ($bdate) {
+        $bdate = extdate2iso( $bdate );
+        $pedref->{$animal}[2] = $bdate;
+        $cfg->{emptied_bdate}++ if !$bdate;
+    }
+
+    $pedref->{$animal}[3] = $arr_ref->[4];    # sex
+    $pedref->{$animal}[5] = 0;                # clean flag
+
+    # collect all pedigrees for table transfer:
+    $allpedref->{$animal} = 1;
+    $allpedref->{$sire}   = 1;
+    $allpedref->{$dam}    = 1;
+}
+
+##############################################################################
+sub check_date_conf {
+    my ( $order, $sep ) = @_;
+    EXIT: {
+        if ( $sep eq '' ) {
+            # empty separator for YYYYMMDD format:
+            push @{$cfg->{err_mesgs_die}},
+                "Dateformat without separators must be exactly 8 chars long"
+                if length($order) ne 8;
+
+            if ( index( $order, 'YYYY' ) == 0 ) {
+                $conf_date[0] = 'YYYY';
+                if ( index( $order, 'MM' ) == 4 ) {
+                    $conf_date[1] = 'MM';
+                    $conf_date[2] = 'DD';
+                }
+                else {
+                    $conf_date[1] = 'DD';
+                    $conf_date[2] = 'MM';
+                }
+            }
+            elsif ( index( $order, 'YYYY' ) == 2 ) {
+                $conf_date[1] = 'YYYY';
+                if ( index( $order, 'MM' ) == 0 ) {
+                    $conf_date[0] = 'MM';
+                    $conf_date[2] = 'DD';
+                }
+                else {
+                    $conf_date[0] = 'DD';
+                    $conf_date[2] = 'MM';
+                }
+            }
+            elsif ( index( $order, 'YYYY' ) == 4 ) {
+                $conf_date[2] = 'YYYY';
+                if ( index( $order, 'MM' ) == 0 ) {
+                    $conf_date[0] = 'MM';
+                    $conf_date[1] = 'DD';
+                }
+                else {
+                    $conf_date[0] = 'DD';
+                    $conf_date[1] = 'MM';
+                }
+            }
+            else {
+                push @{$cfg->{err_mesgs_die}}, "Error in date order string without separators";
+            }
+        }
+        else {
+            if ( $order =~ /[^${sep}YMD]/ ) {
+                push @{$cfg->{err_mesgs_die}}, "Unsupported characters in dateformat";
+            }
+
+            @conf_date = split /[$sep]/, $order;
+            if ( length($order) ne 10 ) {
+                push @{$cfg->{err_mesgs_die}},
+                    "Dateformat with separators must be exactly 10 chars long";
+            }
+            if ( $#conf_date != 2 ) {
+                push @{$cfg->{err_mesgs_die}}, sprintf
+                    "Dateseparator '%s' does not split date into 3 parts", $sep;
+            }
+            for ( my $i = 0; $i <= $#conf_date; $i++ ) {
+                if ( $conf_date[$i] =~ /Y+/i ) {
+                    # year part must have 4 digits
+                    if ( $conf_date[$i] ne 'YYYY' ) {
+                        push @{$cfg->{err_mesgs_die}},
+                            "Only YYYY year is allowed (4 digits, upper case)";
+                    }
+                }
+            }
+        }
+    }
+}
+
+##############################################################################
+# 11.6.2009: bei fehlerhaften Geburtsdaten (z.B. animal älter als
+# sire/dam) soll lt. Eildert das Geburtsdatum aller beteiligten auf NULL
+# gesetzt werden. Ebenso bei fehlerhaften Datumsangaben.
+sub extdate2iso {
+    my $date = shift;
+    return unless defined $date;
+    return if $date eq '';
+    my $blankout;    # blank out the date if error
+    my @return_date;
+
+    EXIT: {
+        my @date;
+        if ( $datesep eq '' ) {
+            if ( $date =~ /\D/ ) {
+                $date =~ tr/0-9//d;
+                push @{$cfg->{err_mesgs}}, sprintf
+                    "Unsupported chars in date (%s), line %u. Date deleted",
+                    MaskForLatex($date), $line_no;
+                $blankout = 1;
+                last EXIT;
+            }
+
+            if ( length($date) != 8 ) {
+                push @{$cfg->{err_mesgs}}, sprintf
+                    "Date length without separator must be 8. Line %u",
+                    $line_no;
+                $blankout = 1;
+                last EXIT;
+            }
+
+            my $template;
+            $template = 'a4a2a2' if $conf_date[0] eq 'YYYY';
+            $template = 'a2a4a2' if $conf_date[1] eq 'YYYY';
+            $template = 'a2a2a4' if $conf_date[2] eq 'YYYY';
+            @date = unpack $template, $date;
+        }
+        else {
+            @date = split /[$datesep]/, $date;    # [] to catch . as sep
+            for my $part (@date) {
+                my $err_string = $part;
+                $err_string =~ tr/0-9//d;
+                if ($err_string) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Unsupported chars in date (%s), line %u. Date deleted",
+                        MaskForLatex($err_string), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+            }
+        }
+
+        if ( $#date != 2 ) {
+            my $err_msg;
+            if ( !@date ) {
+                $err_msg = sprintf "Empty date on line %u", $line_no;
+            }
+            else {
+                $err_msg = sprintf
+                    "Cannot split date into 3 parts. Line %u. Date deleted",
+                    $line_no;
+            }
+            push @{ $cfg->{err_mesgs} }, $err_msg;
+            $blankout = 1;
+            last EXIT;
+        }
+
+        for ( my $i = 0; $i <= $#conf_date; $i++ ) {
+            if ( $conf_date[$i] eq 'YYYY' ) {
+                # year part:
+                if ( length( $date[$i] ) != 4 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Only 4 digit years allowed (%s). Line %u. Date deleted",
+                        join('-', @date), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+                $return_date[0] = $date[$i];
+            }
+            elsif ( $conf_date[$i] eq 'MM' ) {
+                # month part:
+                if ( length( $date[$i] ) > 2 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Month longer then 2 digits (%s). Line %u. Date deleted",
+                        join('-', @date), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+                if ( $date[$i]  > 12 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Month beyond 12 (%s). Line %u. Date deleted",
+                        join('-', @date), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+                $return_date[1] = $date[$i];
+            }
+            elsif ( $conf_date[$i] eq 'DD' ) {
+                # day part:
+                if ( length( $date[$i] ) > 2 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Day longer then 2 digits (%s). Line %u. Date deleted",
+                        join('-', @date), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+                if ( $date[$i] > 31 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Day beyond 31 (%s). Line %u. Date deleted",
+                        join('-', @date), $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+                $return_date[2] = $date[$i];
+            }
+            else {
+                # Error:
+                if ( length( $date[$i] ) > 2 ) {
+                    push @{$cfg->{err_mesgs}}, sprintf
+                        "Unspecified date error. Line %u. Date deleted",
+                        $line_no;
+                    $blankout = 1;
+                    last EXIT;
+                }
+            }
+        }
+        # check if date is valid:
+        if ( not check_date(@return_date) ) {
+            push @{$cfg->{err_mesgs}}, sprintf "Invalid date (%s) on line %u. Date deleted",
+                join('-', @return_date), $line_no;
+            $blankout = 1;
+            last EXIT;
+        }
+    }
+    return undef if $blankout;    # return blank date
+
+    # format date:
+    $return_date[0] = sprintf( "%04d", $return_date[0] );
+    $return_date[1] = sprintf( "%02d", $return_date[1] );
+    $return_date[2] = sprintf( "%02d", $return_date[2] );
+
+    return join( '-', @return_date );
+}
+##############################################################################
+sub check_mime_type {
+    my $infile = shift;
+    my $result = `file -b -i $infile`;
+    chomp $result;
+
+    if ( $result !~ m|^text/plain| ) {
+        my $result2 = `file -b $infile`;
+        chomp $result2;
+        # special case (bug in file), rely on later tests:
+        return if $result2 =~ m|^Netpbm PPM image text|;
+
+        my $msg =
+            "The uploaded file has to be simple ASCII-Text. Yours has been recognized as:";
+        my $msg2 = "$result ($result2)";
+        my $msg3 = "\\\\The input format of the pedigree file is described in detail at:";
+        my $msg4 = "http://popreport.fli.de/doc/poprep-manual.html.LyXconv/index.html";
+        push @{ $cfg->{err_mesgs_die} }, "$msg $msg2";
+        push @{ $cfg->{err_mesgs_die} }, "$msg3";
+        push @{ $cfg->{err_mesgs_die} }, "\\hyperref{$msg4}{}{}{$msg4}";
+        handle_errors($cfg);
+        return 1;
+    }
+    return;
+}
+##############################################################################
+sub check_encoding {
+    my $infile = shift;
+    my $result = `file -b $infile`;
+    chomp $result;
+
+    return 'utf8' if $result =~ m|^UTF-8|;
+    return 'perlio';    # default
+}
+##############################################################################
+sub mychomp {
+   return unless @_;
+   local ($/) = ( $_[0] =~ /(\015?\012|\015)\z/ );
+   chomp @_;
+}
+##############################################################################
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+handle_pedi_file
+
+=head1 SYNOPSIS
+
+handle_pedi_file [Options]
+
+=head1 OPTIONS
+
+ -i | --infile <infile>    name of the data infile (r)
+
+ -m | --male               External representation (code.ext_code) of male sex   (r)
+ -f | --female             External representation (code.ext_code) of female sex (r)
+ -d | --dateformat         Combination of YYYY, MM, and DD. Example: YYYY-MM-DD  (r)
+ -s | --datesep            Separator for dateformat parts, e.g.: -               (r)
+ -u | --user               Database user (equals to project name here)           (r)
+ -e | --email              Email to send errors to                               (o)
+
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -v | --version            current version of this handle_pedi_file (o)
+
+                           (r) - required, (o) - optional
+
+=head1 DESCRIPTION
+
+B<handle_pedi_file> does some basic checks on the data and loads it into the
+database
+
+=head1 EXAMPLES
+
+Example usage:
+
+    handle_pedi_file -p DSN -u heli -P top_secret
+
+=head1 BUGS
+
+=head1 VERSION
+
+$Revision: 1.45 $
+
+=head1 AUTHOR
+
+ Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut
+

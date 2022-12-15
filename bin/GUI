@@ -1,0 +1,1070 @@
+#!/usr/bin/env perl 
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Getopt::Std;
+use Encode qw( decode );
+use JSON;
+use Term::ReadKey;
+use Apache::Session::File;
+use CGI qw/:standard :html3 :html4 /; 
+#use CGI qw(-utf8);
+use URI::Escape;
+use Digest::MD5 qw(md5_base64);
+
+use Apiis;
+use Apiis::Misc;
+use Apiis::GUI;
+use Apiis::GUI::HTML;
+use Apiis::GUI::Excel;
+use Apiis::GUI::PDF;
+use Apiis::GUI::XML;
+use Apiis::GUI::Hash;
+use Apiis::GUI::Ascii;
+use Apiis::GUI::FixPDF;
+use Apiis::Form::HTML;
+use Apiis::GUI::Json2Html;
+use Apiis::Form::WWWUtilities;
+use Apiis::Errors;
+use Apiis::Init;
+use Apiis::DataBase::Init;
+use Apiis::DataBase::User;
+use Apiis::DataBase::Record;
+
+#use Devel::DProf;
+
+our $debug;
+our $apiis;
+my ($cgi, $form, %session, $formtype, $language, $user, $password, $project, $sid, $session_dir, $json, $gui);
+
+Apiis->initialize( VERSION => '$Revision: 1.66 $' );
+
+#-- Debug-option einstellen
+$debug = 1 if $apiis->syslog_priority  eq 'debug' or $apiis->filelog_priority eq 'debug';
+$debug=1;
+
+if ($ARGV[0]) {
+    $cgi=CGI->new($ARGV[0] );
+}
+else {
+    $cgi=CGI->new();
+}
+my $query=$cgi;
+
+$language    = scalar($cgi->param('language')) if ($cgi and $cgi->param('language'));
+
+#-- set language
+if ($language) {
+    my  $lexicon = $apiis->APIIS_HOME . "/lib/Apiis/I18N/L10N/$language.mo";
+    $apiis->l10n_import( $language, $lexicon ) if -f $lexicon;
+    $apiis->l10n_init( $language )             if -f $lexicon;
+} 
+
+
+#-- wenn ein Report, dann apiisajax ausschalten
+if ((scalar($cgi->param('g')) and (scalar($cgi->param('g')=~/^\/etc\/.+?\.rpt$/))) and 
+   ((scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq 'apiisajax')))) {
+   $cgi->param('formtype'=>''); 
+}
+
+#-- Login, create a new sessionID
+if ((scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'login')) or
+    (scalar($cgi->param('frame'))  and (scalar($cgi->param('frame'))=~/login/i))) { 
+
+
+    # Set debuglevel and open logfile
+    $apiis->status( Apiis::Form::WWWUtilities::SetDebug() );
+    goto ERR if ( $apiis->status );
+
+    # make several tests as preparation for access
+    $apiis->status( Apiis::Form::WWWUtilities::TestSystemForWWWAccess() );
+    goto ERR if ( $apiis->status );
+
+
+    #--  create/use a sessiondir
+    my $session_dir = "$ENV{'APIIS_HOME'}/tmp/sessiondata";
+    eval { 
+        tie %session, 'Apache::Session::File', 0 , { Directory => $session_dir, }; 
+    };
+
+    #Informationen dazu:
+    #--https://geekflare.com/de/cors-basics/
+
+    #-- data from login-form 
+    $user        = scalar($cgi->param('user'));
+    $password    = md5_base64(scalar($cgi->param('pwd')))     if (scalar($cgi->param('pwd')));
+    $password    = md5_base64(scalar($cgi->param('pw_user'))) if (scalar($cgi->param('pw_user')));
+    $project     = scalar($cgi->param('project'))             if (scalar($cgi->param('project')));
+    $project     = scalar($cgi->param('m'))                   if (scalar($cgi->param('m')));
+    $sid         = $session{'_session_id'};
+
+    #-- save information about login into session 
+    $session{'_user'}       = $user;
+    $session{'_pwd'}        = $password;
+    $session{'_project'}    = $project;
+    $session{'_language'}   = $language;
+    $session{'_apiis_local'}= $ENV{'DOCUMENT_ROOT'} if (exists $ENV{'DOCUMENT_ROOT'});
+
+#untie %session;
+} 
+elsif (scalar($cgi->param('sid')) or scalar($cgi->param('json'))) {
+
+
+    my $value = Encode::decode_utf8(scalar($cgi->param('json')),Encode::FB_CROAK);
+
+    if (scalar($cgi->param('json'))) {        
+        $json=from_json(scalar($cgi->param('json')));
+        $sid        =$json->{'sid'};
+    }
+    else {
+        $sid    = scalar($cgi->param('sid'));
+    }
+
+    #-- define session directory 
+    $session_dir = "$ENV{'APIIS_HOME'}/tmp/sessiondata";
+   
+    if ($debug) {
+        $user       = 'debug';
+        $password   = 'ln/7y6m8F+yOy5/1sDED5A';
+        $project    = 'federvieh';
+        $language   = 'ge';
+        $session{'_user'}       =$user;
+        $session{'_pwd'}        =$password;
+        $session{'_project'}    =$project;
+        $session{'_language'}   =$language;
+    }
+    else {
+        eval{  
+            tie %session, 'Apache::Session::File', $sid, { Directory => $session_dir,}; 
+        };
+
+        #-- parameter from sessionid
+        $user       = $session{'_user'};
+        $password   = $session{'_pwd'};
+        $project    = $session{'_project'};
+        $language   = $session{'_language'};
+    }
+} 
+else {
+}
+
+#-- extra-Behandlung without apiis-framework
+#####################################################################################################
+if (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'configuration')) {
+
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    print "Content-type: text/html; charset=UTF-8 \n\n";
+
+    print '"Logo":"'.$ENV{'APIIS_LOGO'}.'" ,"Favicon":"'.$ENV{'APIIS_FAVICON'}.'"';
+    exit;
+}
+
+
+#####################################################################################################
+elsif (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'login')) {
+    
+
+
+    #-- interne oder externe language verwenden 
+    if (!$language) {
+        $language="(select iso_lang from languages where lang_id=a.user_language_id)";
+    }
+    else {
+        $language="'$language'";
+    }
+
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    print "Content-type: text/html; charset=UTF-8\n\n";
+   
+    my $error;
+
+    if ($user ne 'debug') {
+        #-- create sql-string 
+        my $sql="update ar_users set user_session_id='".$sid."', user_last_login=current_timestamp where user_login='".$user."'";
+
+        #-- create command with sql-string 
+        my $command='psql '.$project.' -U apiis_admin -A -q -c "'.$sql.'"';
+
+        #-- if error  
+        if (system($command)>0 ) {
+            #-- print answer
+            
+            my $message=__('Fehler beim Erstellen der Session-ID'); 
+
+            print Encode::decode('UTF-8', JSON::to_json( { 'Error'     => "$message" } ));
+
+            $error=1;
+        }
+    }
+
+    if (!$error) {
+   
+        my $message0=__('No sessionID');
+        my $message1=__('Wrong password');
+        my $message2=__('User unknown');
+        my $message3=__('No menu for this language');
+    
+        $message0=Encode::decode('UTF-8',$message0);
+        $message1=Encode::decode('UTF-8',$message1);
+        $message2=Encode::decode('UTF-8',$message2);
+        $message3=Encode::decode('UTF-8',$message3);
+
+        my $sql="select 
+                    case when a.user_login isnull 
+                    then
+                        '".'{\"Error\":\"'.$message2.'\"}'."' 
+                    else    
+                    case when b.user_password isnull 
+                    then
+                        '".'{\"Error\":\"'.$message1.'\"}'."' 
+                    else   
+                    case when b.user_session_id isnull 
+                    then
+                        '".'{\"Error\":\"'.$message0.'\"}'."' 
+                    else  
+                    case when
+        
+                        /* Check, ob es das Formular für die Rechtegruppe und die Sprache gibt */
+                        d.menu isnull
+                    then 
+                        '".'{\"Error\":\"'.$message3.'\"}'."' 
+                    else
+                        '".'{\"sessionID\":\"'."' || b.user_session_id || '".'\",\"Menu\":'."' || d.menu || '}"."' 
+                    end end end end
+                    from 
+                    (select count(*) as t, 't' as connect from ar_users where user_login='".$user."') as z 
+                    left outer join (select user_login, 't' as connect   from ar_users where user_login='".$user."') as a on z.connect=a.connect 
+                    left outer join (select user_disabled, 't' as connect   from ar_users where user_login='".$user."') as c on a.connect=c.connect 
+                    left outer join (select user_password, user_session_id, 't' as connect from ar_users where user_login='".$user."' and user_password='".$password."') as b on a.connect=b.connect
+                    
+                    left outer join (select (select value from configurations where user_login='SYS' and db_key=user_get_db_code('CONFIG','1') and key=a.user_category || ':::' || ".$language.") as menu, 't' as connect from ar_users a where user_login='".$user."' and user_password='".$password."') as d on a.connect=d.connect
+
+                    ";
+
+        #-- create command with sql-string 
+        my $command='psql '.$project.' -U apiis_admin -A -q -t -c "'.$sql.'"';
+
+        my $message=__('Can not execute Login-SQL without errors');
+        
+        #-- if -error  
+        if (system($command)>0 ) {
+            #-- print answer
+            
+            print Encode::decode('UTF-8',JSON::to_json( { 'Error'     => "$message" } ));
+            exit;
+        }
+    }
+}
+
+#####################################################################################################
+elsif (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'do_execute_sql')) {
+
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    print "Content-type: text/html; charset=UTF-8\n\n";
+   
+    my $error;
+    my $function=scalar($cgi->param('function'));
+
+    my $sql="select jsonb_agg(jsonb_build_object(a, b)) from $function() as ( a text, b text);";
+    
+    #-- create command with sql-string 
+    my $command='psql '.$project.' -U apiis_admin -A -q -t -c "'.$sql.'"';
+
+    my $message=__('Can not execute Login-SQL without errors');
+    
+    #-- if -error  
+    if (system($command)>0 ) {
+        #-- print answer
+        
+        print Encode::decode('UTF-8',JSON::to_json( { 'Error'     => "$message" } ));
+        exit;
+    }
+}    
+##########################################################################################################
+elsif (scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq 'evonta')) {
+
+    #-- parameter from cgi 
+    my $opt_f=$cgi->param('formid')  if ($cgi and $cgi->param('formid'));
+    my $opt_a=$cgi->param('ar')      if ($cgi and $cgi->param('ar'));
+
+    #-- overwrite user_language 
+    $language=$cgi->param('language') if ($cgi and $cgi->param('language'));
+  
+    my $where; my $wheremsg;
+    $opt_f='' if (!$opt_f);
+    $opt_a='' if (!$opt_a);
+    $language='' if (!$language);
+
+    $wheremsg=$opt_f.':::'.$opt_a.':::'.$language;
+    
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    print "Content-type: text/html; charset=UTF-8\n\n";
+    
+    if (exists $ENV{'DOCUMENT_ROOT'} and !%session) {
+   
+        my $message=__('SessionID ungültig');
+
+        print JSON::to_json( { 'Error'     => "$message" } );
+        exit;
+    }
+    
+    #-- form:::ar:::language combination 
+
+    if (!$opt_a and !$language) {
+        $where="'".$opt_f."' || ':::' || (select user_category as uc from ar_users where user_login='$user' ) || ':::' || (select iso_lang as la from ar_users a inner join languages b on a.user_language_id=b.lang_id where user_login='$user')";
+
+    }
+    elsif (!$opt_a) {
+        $where="'".$opt_f."|| ':::' || (select user_category as uc from ar_users where user_login='$user' ) || ':::' || ".$language."'";
+    }
+    else {
+        $where="'".$opt_f.':::'.$opt_a.':::'.$language."'";
+    }    
+
+    if ($where=~/.+?::::::$/) {
+    }
+
+    #-- prepare error messages 
+    my $message0=__('Die Anmeldung ist nicht mehr gültig');
+    my $message1=__('Kein Formular für die Kombination [_1] verfügbar',$wheremsg);
+    my $message2=__('Sie besitzen nicht die erforderlichen Zugriffsrechte für das Formular [_1]', $opt_f);
+
+    $message0=Encode::decode('UTF-8',$message0);
+    $message1=Encode::decode('UTF-8',$message1);
+    $message2=Encode::decode('UTF-8',$message2);
+
+    my $sql="
+        select 
+       
+        /* Check sid and user*/
+        case when (select user_login from ar_users where user_login='$user' and user_session_id='$sid') isnull
+        
+        then
+        '".'{\"Error\":\"'.$message0.'\"}'."' 
+        
+        else
+        case when
+        
+        /* Check, ob es das Formular für die Rechtegruppe und die Sprache gibt */
+        (select key from configurations where key=$where) isnull
+
+        then 
+        '".'{\"Error\":\"'.$message1.'\"}'."' 
+        
+        else 
+            case when 
+
+            /* Check, ob der User das Recht hat, das Formular zu sehen*/
+            (($where like '%admin%' ) notnull and  (select user_category as uc from ar_users where user_login='$user')='admin')
+            or
+            (($where like '%coord%' ) notnull and ((select user_category as uc from ar_users where user_login='$user')='admin') or
+                                  ((select user_category as uc from ar_users where user_login='$user')='coord'))
+            or
+            (($where like '%user%' ) notnull and  ((select user_category as uc from ar_users where user_login='$user')='admin') or
+                                  ((select user_category as uc from ar_users where user_login='$user')='coord') or
+                                  ((select user_category as uc from ar_users where user_login='$user')='user'))
+            or 			     	
+            ($where like '%anon%')
+            then 
+                value 
+            else 
+             '".'{\"Error\":\"'.$message2.'\"}'."' 
+            end 
+        end
+        end 
+        from configurations a where key=$where;
+    ";
+
+    #print $sql;
+
+    #-- create command with sql-string 
+    my $command='psql '.$project.' -U apiis_admin -A -q -t -c "'.$sql.'"';
+
+
+    #-- if error  
+    if (system($command)>0 ) {
+
+        #-- print answer
+        my $message=__('Can not execute Login-SQL without errors');
+
+        print Encode::decode('UTF-8',JSON::to_json( { 'Error'     => "$message" }));
+        
+        exit;
+    }
+
+    untie %session;
+}
+
+###############################################################################################################
+elsif (scalar($cgi->param('json'))) {
+
+    $form       =$json->{'form'};
+    $formtype   =$json->{'formtype'} if (exists $json->{'formtype'});
+    
+    #-- define user-object for authentification
+    my $user_obj = Apiis::DataBase::User->new( id => $user,'session_id'=>$sid );
+
+    #-- if error 
+    goto ERR1 if ( $user_obj->status );
+
+    #-- set password 
+    $user_obj->password( $password,'encrypted'=>1 );
+    
+    #-- if error 
+    goto ERR1 if ( $user_obj->status );
+
+    #-- load modelfile $APIIS_LOCAL/etc/$model.xml 
+    $apiis->join_model( $project, userobj => $user_obj );
+
+    #-- if error
+    goto ERR1 if ( $apiis->status );
+   
+    my $gui = Apiis::Form::HTML->new( xmlfile => $form );
+
+    if ($gui->status) {
+
+        #-- print answer
+        my $message=$gui->errors->[0]->msg_short;
+
+        print Encode::decode('UTF-8',JSON::to_json( { 'Error'     => "$message" }));
+        
+        exit;
+
+    }
+
+    $gui->gui_type('HTML');
+
+    # make several tests as preparation for access
+    my $cgit = Apiis::Form::WWWUtilities::EvalCGIParameter($cgi);
+
+    $gui->{'_cgi'}              = $cgit;
+    $gui->{'_cgi'}->{'command'} = $json->{'command'};
+    $gui->{'_cgi'}->{'sid'}     = $sid;
+
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    print "Content-type: text/html; charset=UTF-8\n\n";
+     
+    if ($json->{'command'} and ($json->{'command'} =~/do_query_block/)) {
+
+        #-- if default, create an empty json-string and replace each other 
+        if ($json->{'command'} =~/do_query_block_default/) {
+             $gui->{_cgi}->{json}=$gui->InitJSONData();
+         }
+            
+         print $gui->QueryJSONData();
+    }
+    elsif ($json->{'command'} and  ($json->{'command'} eq 'do_runevents')) {
+         
+        print $gui->RunJSONEvents();
+    } 
+    elsif ($json->{'command'} and ($json->{'command'} eq 'do_save_block')) {    
+        print $gui->SaveJSONData();
+    }
+
+    exit;
+    ERR1:
+
+    #-- print answer
+    my $message;
+    
+    if ($apiis->status and ($apiis->status == 1)) {
+        $message=__($apiis->errors->[0]->msg_short);
+    }
+    else {
+        $message=__('Error');
+    }
+
+    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Methods: GET,POST\n";
+    print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
+    
+    print "Content-type: text/html; charset=UTF-8\n\n";
+    
+    print Encode::decode('UTF-8',JSON::to_json( { 'Error'     => "$message" }));
+    
+    exit;
+}
+
+######################################################################################################
+elsif (scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq 'apiisajax')) {
+
+    #-- define user-object for authentification
+    my $user_obj = Apiis::DataBase::User->new( id => $user,'session_id'=>$sid );
+
+    #-- if error 
+    goto ERR1 if ( $user_obj->status );
+
+    #-- set password 
+    $user_obj->password( $password,'encrypted'=>1 );
+    
+    #-- if error 
+    goto ERR1 if ( $user_obj->status );
+
+    #-- load modelfile $APIIS_LOCAL/etc/$model.xml 
+    $apiis->join_model( $project, userobj => $user_obj );
+
+    my ($form, $mem_cache);
+    $form   = scalar($cgi->param('g'));
+    $form   = $session{'_apiis_local'}.$form if ($form and ($form=~/^\/etc/));
+
+    if (scalar($cgi->param('formtype') eq 'Extjs')) {
+        $gui = Apiis::Form::Extjs->new( xmlfile => $form );
+    }
+    else {
+        $gui = Apiis::Form::HTML->new( xmlfile => $form );
+        $gui->gui_type('HTML');
+    }
+
+    # make several tests as preparation for access
+    my $cgit = Apiis::Form::WWWUtilities::EvalCGIParameter($cgi);
+
+    if ( $gui->status ) {
+        $apiis->errors( $gui->errors );
+        $apiis->status(1);
+        goto ERR1 if $apiis->status;
+    }
+
+    $gui->{_cgi}   = $cgit;
+    $gui->{_query} = $query;
+
+#    my $mem_cache;
+#    if ( $apiis->Cache->hasMemcached() and $apiis->Cache->hasMemcached() eq '1' ) {
+#        $mem_cache = $apiis->Cache->memcache();
+#    }
+#    my $mem_key_form = 'form::' . $apiis->Model->db_name . ':::' .  scalar($cgi->param('g'));
+#    my $mem_form;
+#    if ($mem_cache) {
+#        $mem_form = $mem_cache->get($mem_key_form);
+#    }
+#    if ( !$mem_form ) {
+
+        $gui->PrintHeaderInit();
+        $gui->CreateJSONData();
+        $gui->PrintBody();
+#        $mem_form=$gui->{_table};
+        $gui->PrintForm;
+        
+        $apiis->errors($gui->errors) if ($gui->status);
+        goto ERR1                    if ($gui->status );
+        
+#        if ($mem_cache) {
+#            $mem_cache->set($mem_key_form, $mem_form, 3600);
+#        }
+#    }
+}
+##################################################################################################
+################################################# GUI/GUIAjax
+##################################################################################################
+else {
+
+    use vars qw($opt_g $opt_o $opt_f $gui $opt_e $zw $user_obj $opt_t $vgui $opt_a);
+    getopts('o:f:g:e:t:'); 
+
+    #--- test arguments
+    $opt_a=$query->param('frame');
+    $opt_o=$query->param('o')               if ($query and $query->param('o'));
+    $opt_o=$query->param('_exportfilter')   if ($query and $query->param('_exportfilter'));
+    $opt_g=$query->param('g')               if ($query and $query->param('g'));
+    $opt_g=$query->param('__form')          if ($query and $query->param('__form') and ($query->param('__form') ne ''));
+    $query->param(-name=>'__form',-value=>$opt_g);
+    $opt_f=$query->param('f')               if ($query and $query->param('f'));
+
+    if (($query->{param}->{'filename'}[0]) and ( $query->{param}->{'filename'}[0]!~/\d+\.\d+\.\d+\.\d+_\d+/ ))  {
+
+        my $file=$query->param('filename');
+        my $filename=$ENV{'REMOTE_ADDR'}.'_'.time().'_'.$file;
+        
+        open(OUT,">/tmp/$filename") || die 'Error processing file: ',$!;
+        binmode $file;
+        binmode OUT;
+        my $data;
+        
+        while (read $file,$data,1024) {
+            print OUT $data;
+        }
+        close (OUT);
+    
+        $query->param(-name=>'filename',-value=>'/tmp/'.$filename);
+    }
+    else {
+        my $filename=$query->{param}->{'filename'}[0];
+        $query->param(-name=>'filename',-value=>'/tmp/'.$filename);
+    }
+
+    if ( (!exists $ENV{'DOCUMENT_ROOT'}) and (!$sid)) {
+        my $not_ok = 1;
+        while ($not_ok) {
+            if (! $user) {
+                print __("Please enter your login name: ");
+                chomp( $user = <> );
+            }
+            if (! $password) {
+                print __("... and your password: ");
+                ReadMode 2;
+                chomp( $password = <> );
+            }  
+            ReadMode 0;
+            print "\n";
+            $not_ok = 0 if $user and $password;
+        }
+    }
+
+
+    #-- get model from session if not exists
+    $opt_o='htm2htm'            if (!$opt_o);
+
+    if (! ($opt_o and $opt_g and $project)) {
+        $apiis->errors(Apiis::Errors->new(
+            type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("-o or -g or -m option wasn't set"),
+        ));
+        goto ERR; 
+    }
+
+    if (!$sid) { 
+        #--- Test ob es Files gibt
+        my $vapiis=$apiis->APIIS_HOME;
+        if (! -e $apiis->APIIS_HOME."/tmp/sessiondata") {
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("Can't open [_1]/tmp/sessiondata", $vapiis),
+            ));
+            goto ERR; 
+        }
+        if ((-e $apiis->APIIS_HOME."/tmp/sessiondata") and (! -w $apiis->APIIS_HOME."/tmp/sessiondata")) {
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("Can't write [_1]/tmp/sessiondata", $vapiis),
+            ));
+            goto ERR; 
+        }
+        if (! -e $apiis->APIIS_HOME."/etc/apiis.css") {
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("Can't open [_1]/etc/apiis.css", $vapiis),
+            ));
+            goto ERR; 
+        }
+        if (-e $apiis->sql_logfile and ! -w $apiis->sql_logfile) {
+            my  $a=$apiis->sql_logfile;
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("[_1] Can't write $a", $ENV{'REMOTE_IDENT'}),
+            ));
+            goto ERR; 
+        }
+        if (! -w $apiis->filelog_filename) {
+            my  $a=$apiis->filelog_filename;
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("[_1] Can't write $a", $ENV{'REMOTE_IDENT'}),
+            ));
+            goto ERR; 
+        }
+        if (! -r "$APIIS_HOME/etc/apiisrc") {
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("[_1] Can't read $APIIS_HOME/etc/apiisrc", $ENV{'REMOTE_IDENT'}),
+            ));
+            goto ERR; 
+        }
+        
+        #--- Test ob es Files gibt
+        $vapiis=$apiis->APIIS_LOCAL;
+        if (! -e $apiis->APIIS_LOCAL."/etc/menu") {
+            $apiis->errors(Apiis::Errors->new(
+            type      => 'OS',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("Can't open [_1]/etc/menu", $vapiis),
+            ));
+            goto ERR; 
+        }
+    }
+
+    $user_obj = Apiis::DataBase::User->new( id => $session{'_user'},'session_id'=>$session{'_session_id'} );
+    goto ERR if ($apiis->status);
+
+    $user_obj->password($password,'encrypted'=>1);
+    goto ERR if ($apiis->status);
+
+    $apiis->join_model($project, userobj => $user_obj); 
+    goto ERR if ($apiis->status);
+
+    $query->param(-name=>'sid',-value=>$sid);
+
+    my @querystring=map {"$_=".$query->param($_)} keys %{$query->Vars};
+    map {$apiis->{'_cgisave'}->{$_}=$query->param($_)} keys %{$query->Vars};
+
+    $apiis->log( 'debug','?'.join('&',@querystring));
+
+    $opt_g=$apiis->APIIS_LOCAL.$opt_g if ($opt_g=~/^\/etc\//);
+
+    #--- set dtd depend on extension *.rpt or *.frm
+    my $dtd;
+
+    #-- if extension rpt|frpt then it is a report
+    if ($opt_g=~/\.(rpt|frpt)$/) {
+
+        #-- set dtd-file 
+        $dtd=$apiis->APIIS_HOME.'/etc/report.dtd';
+
+        #-- store type 
+        $vgui='Report';
+    } 
+    
+    #-- it is a form
+    elsif ($opt_g=~/\.(pfrm|mfrm|frm)$/) {
+
+        #-- set dtd-file 
+        $dtd=$apiis->APIIS_HOME.'/etc/form.dtd';
+
+        #-- set scalar 
+        $vgui='Form';
+    }
+
+    #-- initiate an error 
+    else { 
+        $apiis->errors(Apiis::Errors->new(
+            type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+            msg_short => __("[_1] hasn't the extension *.rpt for a report or *.frm for a from", $opt_g),
+        ));
+    
+        goto ERR; 
+    }
+
+    #-- write debug message
+    if ($debug) {
+        $apiis->log('debug', "use model: ".$apiis->project($project)."/model/$project.model");
+        goto ERR if $apiis->status;
+    }
+
+    #-- create guiobject as merge from xml and dtd
+    my $guio;
+    my $hs_parameter;
+    if ($vgui eq 'Report') {
+        $guio=Apiis::Init::XML->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui);
+        $hs_parameter=$guio->Parameter;
+    } 
+    else {  
+        $guio=Apiis::Form::HTML->new( xmlfile =>$opt_g );
+        $guio->{'_query'}=$query;
+    }  
+    
+    goto ERR if $apiis->status;
+
+    #--- Test, ob Parameter belegt sind, nur bei Reports
+    #-- Argumente zuordnen von console oder aus CGI
+    my $ok; 
+    
+    while ((my $key, my $parameter)=each %{$hs_parameter}) {
+        my $field;
+        if ($parameter->[1]=~/Name:(.*)/) {
+            $field=$1;
+        } 
+        else {
+            $field=$parameter->[1];
+        }
+        
+        push(@{$parameter},$field);
+    
+        if (! $opt_t) {
+            if (($opt_o eq 'htm2htm') or ($opt_o eq 'htm2pdf') or 
+                ($opt_o eq 'htm2exl' ) or ($opt_o eq 'htm2xml' ) or 
+                ($opt_o eq 'htm2hash' ) or ($opt_o eq 'htm2ascii' ) or
+                ($opt_o eq 'json2html' ) ) {
+
+            
+                if (exists $query->{param}->{$field}) {
+                    no warnings;
+                    push(@{$parameter}, join(':::',@{$query->{param}->{$parameter->[2]}}) );
+                    use warnings;
+                }
+            }
+        } 
+        else {
+            foreach (split(';',$opt_t)) {
+                if ($_=~/$parameter->[2]\s*\=\s*(.*)/) {
+                    my $a=$1;
+                    push(@{$parameter},$a) ;
+                }
+            }
+        }
+        
+        $ok=1  if (! $parameter->[3]);
+    }
+
+    if (($vgui eq 'Report') and (! $opt_f) and ($guio->{$guio->General->[0]}->StrictParameter eq 'yes')){
+        #--- Abbruch wenn nicht genügend Parameter oder Einfordern bei HTML
+        if ($ok) {
+
+            if ((($opt_o eq 'htm2htm')  or ($opt_o eq 'htm2hash') or ($opt_o eq 'htm2pdf') or 
+                ($opt_o eq 'htm2exl' ) or ($opt_o eq 'htm2xml' ) or ($opt_o eq 'htm2ascii' ) ) and (! $opt_t)) {
+            
+                #-- if exists no Form to input parameter then make a general html
+                if ($guio->{$guio->General->[0]}->UseForm eq '') {
+                    my ($tablecontent, $key, $parameter);
+
+                    print $query->header(-charset=>"$guio->General->[0]->CharSet");
+                    print $query->start_form(-action=>"/cgi-bin/GUI",-method=>"POST");
+                    
+                    while (($key,$parameter)=each %{$hs_parameter}) {
+                        $tablecontent.=$query->TR($query->td($parameter->[2]),
+                                    $query->td($query->textfield(
+                                                    -name=>$parameter->[1],
+                                                    -size=>20,
+                                                    -maxlength=>20,
+                                                    -override=>1)));
+                    }
+                    
+                    $tablecontent.=$query->TR($query->td($query->submit(-class=>'res',-name=>'l',-value=>__("Execute"))),
+                                $query->td($query->reset(-class=>'res',-value=>'Reset')));
+                    
+                    print $query->table($tablecontent);
+                    print $query->hidden(-name=>'m',-default=>"$project");
+                    print $query->hidden(-name=>'o',-default=>"$opt_o");
+                    print $query->hidden(-name=>'g',-default=>"$opt_g");
+                    print $query->hidden(-name=>'user',-default=>"$user");
+                    print $query->hidden(-name=>'sid',-default=>"$password");
+                    print $query->end_form();
+                
+                    exit 0;
+                } else {
+                    $opt_g=$guio->{$guio->General->[0]}->UseForm;
+                    $opt_g=$apiis->APIIS_LOCAL.$opt_g if ($opt_g=~/^\/etc\//);
+                
+                    $guio=Apiis::Form::HTML->new( xmlfile =>$opt_g );
+                    goto ERR if ($guio->status);
+                
+                    $guio->{_query}=$query;
+                    $guio->run;
+                    goto ERR if ($guio->status);
+                    
+                    $guio->{_table} = '<form id="F" method="POST" action="/cgi-bin/GUI"
+                                    enctype="multipart/form-data" target="_blank">
+                        <input type="hidden" name="sid" value="'.$sid.'"  />
+                        <input type="hidden" name="m" value="'.$project.'"  />
+                        <input type="hidden" name="o" value="'.$opt_o.'"  />
+                        <input type="hidden" name="g" value="'. $guio->{_query}->param('g') .'"  />
+                        <input type="hidden" name="f" value="1"  />
+                        <input type="hidden" name="user" value="'.$user.'" />'.
+                            $guio->{_table} .  '</form>';
+                
+                    $guio->PrintHeader;
+                
+                    goto ERR if ($guio->status);
+                
+                    $guio->PrintForm;
+        
+                    goto ERR if ($guio->status);
+                    exit;
+                }
+            } else {
+                $apiis->errors(Apiis::Errors->new(
+                type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+                msg_short => __("[_1] there are not enough parameters", $opt_g),
+                ));
+                goto ERR;
+            }  
+        }
+    }
+     
+    #--- init gui-object
+    if ($vgui eq 'Report') {
+        if ((($opt_o eq 'htm2pdf') or ($opt_o eq 'con2pdf') or ($opt_o eq 'htm2htm')) and 
+             ($guio->{$guio->General->[0]}->CreatePDF ne '')) {  
+            $gui=Apiis::GUI::FixPDF->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'htm2htm') or ($opt_o eq 'con2htm')) {
+            $gui=Apiis::GUI::HTML->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($vgui eq 'Report') and (($opt_o eq 'htm2pdf') or ($opt_o eq 'con2pdf'))) {
+            $gui=Apiis::GUI::PDF->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'htm2exl') or ($opt_o eq 'con2exl')) {
+            $gui=Apiis::GUI::Excel->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'htm2xml') or ($opt_o eq 'con2xml')) {
+            $gui=Apiis::GUI::XML->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'htm2hash') or ($opt_o eq 'con2hash')) {
+            $gui=Apiis::GUI::Hash->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'htm2ascii') or ($opt_o eq 'con2ascii')) {
+            $gui=Apiis::GUI::Ascii->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } elsif (($opt_o eq 'json2html') ) {
+            $gui=Apiis::GUI::Json2Html->new(apiis=>$apiis, query=>$query, xml=>$opt_g, dtd=>$dtd, gui=>$vgui,guio=>$guio);
+        } else {
+            $apiis->errors(Apiis::Errors->new(
+                type      => 'PARAM',severity  => 'ERR',from      => 'GUI',
+                msg_short => __("[_1] isn't a valid option", $opt_o),
+            ));
+            goto ERR; 
+        }
+        if ($gui->Apiis->status) {
+            goto ERR;
+        }  
+    } 
+        else {  
+        $gui=$guio;
+        if ($gui->status) {
+            goto ERR;
+        }     
+    }  
+  
+    if ($vgui eq 'Report' ) {
+        $gui->GUIobj->{'ExportFile'}=$opt_e if ($opt_e);
+
+        #--- alle xml-Elemente aller GUIs durchgehen und Verweise '{.*}' in parameterarray speichern
+        my $subguis={};
+        $subguis=$gui->GUIobj->GetAllSubGUIs if ($gui->GUIobj);
+
+        if ($guio->{$guio->General->[0]}->CreatePDF ne '') {  
+            $opt_o='htm2pdf' if ($opt_o eq 'htm2htm');
+        }
+
+        $gui->{'_Parameter'}=$hs_parameter;
+
+        #--- Schleife über alle Subguis, ausführen und Ergebnis zum Hash $subguis speichern
+        foreach my $sr (keys %{$subguis}) {
+            my $vsr;
+            $sr=$apiis->APIIS_LOCAL.$sr;
+            if (($opt_o eq 'htm2htm') or ($opt_o eq 'con2htm')) {
+                $guio=Apiis::Init::XML->new(apiis=>$apiis, query=>$query, xml=>$sr, dtd=>$dtd, gui=>$vgui);
+                $vsr=Apiis::GUI::HTML->new(apiis=>$apiis, query=>$query, xml=>$sr, dtd=>$dtd, gui=>$vgui, guio=>$guio);
+            };
+            $gui->{$sr}=$vsr;
+        }
+        $gui->SetParameter(opt_g=>$opt_g,opt_m=>$project,opt_o=>$opt_o,opt_u=>$user,opt_p=>$password,opt_e=>$opt_e);
+        
+        $gui->PrintHeader;
+        
+        my $ch=$gui->GUIobj->children if ($gui->GUI eq 'Form');
+        
+        $gui->MakeGUI($ch);
+        
+        if ($gui->Apiis->status) {
+            goto ERR;
+        }  
+        $gui->PrintGUI ($opt_o, $opt_e);
+    } 
+    #-- a form
+    else {
+        if ($opt_a) {
+            $gui->PrintMenue2;
+            #$gui->PrintMenue;
+            goto ERR if ($gui->status);
+            $gui->run;
+            goto ERR if ($gui->status);
+        } 
+        else {
+            $gui->run;
+            goto ERR if ($gui->status);
+
+            $gui->{_table} = '<form id="F" method="POST" action="/cgi-bin/GUI"
+                                enctype="multipart/form-data" target="_blank">
+                    <input type="hidden" name="sid" value="'.$sid.'"  />
+                    <input type="hidden" name="g" value="'. $guio->{'_query'}->param('g') .'"  />
+                    <input type="hidden" name="f" value="1"  />'.$gui->{_table} .  '</form>';
+    
+            $gui->PrintHeader();
+            goto ERR if ($gui->status);
+        }
+        
+        $gui->PrintForm;
+        goto ERR if ($gui->status);
+    }
+  
+    exit;
+
+    ERR:
+
+    $apiis->errors($guio->errors) if ($guio and ($guio->errors));
+
+    if ($ENV{'DOCUMENT_ROOT'}) {
+
+        print $query->header();# if (! $vgui);
+        my $rawcontent='';
+        
+        foreach (@{$apiis->errors}) {
+            $rawcontent.=TR(td("ERROR"),td());
+            $rawcontent.=TR(td("type: "),td($_->type)) if ($_->type ne '');
+            $rawcontent.=TR(td("severity: "),td($_->severity)) if ($_->severity ne '');
+            $rawcontent.=TR(td("from: "),td($_->from)) if ($_->from ne '');
+            $rawcontent.=TR(td("data: "),td($_->data)) if ($_->data);
+            $rawcontent.=TR(td("msg_short: "),td($_->msg_short)) if ($_->msg_short);
+            $rawcontent.=TR(td("msg_long: "),td($_->msg_long)) if ($_->msg_long);
+        }  
+        print $query->table({-style=>"tablegui"},$rawcontent);
+    } 
+    else {
+        if ( $apiis->errors ) {
+            $_->print for $apiis->errors;
+        }
+    }
+}
+__END__
+
+=pod
+
+=head1 NAME
+
+GUI - creates a form or a report
+
+=head1 SYNOPSIS
+
+GUI [-u user] [-p password] [-e outfile] [-g xmlfile ] [-o htm2ascii|con2ascii|htm2exl|con2exl|htm2htm|htm2pdf|con2htm|con2pdf|tk] [-t "Name1=Value1;Name2=Value2"] [-m modelname] 
+
+=head1 DESCRIPTION
+
+GUI read the definition in "-g xmlfile" and init an object with the information from the xml-definition and the default values from the corresponding dtd-file. 
+
+if option -u or -p not set, the user will be asked for his user-identifikation and his password. 
+
+=head1 Parameter
+
+ -u = user-identification (optional ) 
+ -p = password for the user (optional)
+      please note, if -p used everybody can see the password
+ -m = modelname like in apiisrc (necessary)
+ -g = full path of xml-file (necessary) (f.e. -g ../ref_breedprg/etc/reports/Codes.rpt)
+ -o = what kind of output (necessary)
+        htm2htm -> creates html-code over web
+        con2htm -> creates html-code over console
+	con2pdf -> creates pdf over console
+	htm2pdf -> creates pdf over web
+	con2exl -> creates an excel-file over console
+	htm2exl -> creates an excel-file over web
+	con2ascii -> creates an asciil-file over console
+	htm2ascii -> creates an asciil-file over web
+        tk   -> create a tk-window
+ -e = writes the output into this file (optional)
+      if parameter -o is used and not -e GUI writes the result to the console
+ -t = Parameter, which are needed in section "DataSource" 
+      parameters must be in apostrophes
+      more than one parameter are seperated with a semicolen
+
+=head1 Example 
+
+ GUI -u b08guest -p password -o con2pdf -e test -m ref_breedprg -g ../ref_breedprg/etc/reports/Codes.rpt -t "Class='BREED'"
+
+=head1 SEE ALSO
+
+ Apiis::Init::XML.pm
+ Apiis::GUI.pm
+ Apiis::GUI::HTML.pm
+ Apiis::GUI::Excel.pm
+
+=head1 AUTHOR
+
+ Ulf Müller (ulf.mueller@koellitsch.lfl.smul.sachsen.de)
+
+=cut

@@ -1,0 +1,32 @@
+
+=head1 NAME
+
+apiish
+
+=head1 SYNOPSIS
+
+apiish [Options]
+
+=head1 OPTIONS
+
+   -h | -? | --help                 short help
+   -m | --man | -p | --pod          detailed man page
+   -F <path> | --formpath <path>    non-default path to find
+                                    form definition files
+   -R <path> | --reportpath <path>  non-default path to find
+                                    report definition files
+
+
+=head1 DESCRIPTION
+
+B<apiish> is a graphical Tk interface for common task in Apiis.
+
+=head1 VERSION
+
+   $Revision: 1.1 $
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut

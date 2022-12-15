@@ -1,0 +1,326 @@
+#!/bin/bash
+##############################################################################
+# $Id: run_popreport,v 1.52 2015/07/03 10:25:30 heli Exp $
+# This script wraps together the (Perl-)parts of the PopulationReport.
+##############################################################################
+
+PROG=`basename $0`
+##############################################################################
+function usage () {
+    echo "
+Usage: $PROG Options
+    Options are:   (r) required, (o) optional
+
+    -p <project>          (r) configured APIIS project name
+    -u <user>             (r) database username
+    -P <password>         (r) database password
+    -b <breed>            (r) code for breed in table codes.short_name
+
+    -m <male>             (o) code for male sex in table codes.short_name (default M)
+    -f <female>           (o) code for female sex in table codes.short_name (default F)
+    -B <class_for_breed>  (o) class for breed in table codes.class (default BREED)
+
+    -D [0|1]              (o) should $PROG die, if parts fail [0|1] (default 1)
+    -h                    (o) this help
+
+    Special option for check_pedi_stack:
+    -E                    (o) Extended error output (including db_animal and unit-part of ext_animal)
+    -d                    (o) Delete wrong birthdates permanently (!) in the database
+    -L                    (o) run the checks for pedigree loops from check_pedi_stack.
+
+    Special options for Create_Population_tables.pl:
+    -l <1|2>              (o) service and litter information available (1 = yes, 2 = no, default 2)
+    -g <number>           (o) Gestation measure year, month or day (Default = year)
+    -e <fieldname>        (o) Field name in litter for number born alive (default born_alive_no)
+    -i <fieldname>        (o) Field name in litter for parity number (default parity)
+    -j <fieldname>        (o) Field name in litter for birth date (default delivery_dt)
+    -x                    (o) explain queries
+    -o <outfile>          (o) output file for -x (default explain_query.txt)
+    -r <number>           (o) restart execution at sql statement <number>
+    -n <number>           (o) stop after <number> statements
+
+    Special options for Create_inbreeding_tables.pl:
+    -F                    (o) formatted print of external animal id
+    -A                    (o) print all animals with inbreeding coefficient
+    -O                    (o) print only animals with inbreeding coefficient
+    -U <unknown>          (o) <> unknown animal
+    -T <outfile>          (o) create <outfile> with numerical sorted ped and translation file
+    -G <number>           (o) 1 - n for max generation depth in pedigree completeness (default 5)
+    -I <number>           (o) generation interval
+
+    Special options for InbreedingReport.pl:
+    -N <number>           (o) no of animals (agr-run_parallel)
+    -I <number>           (o) generation interval if you want a fixed generation, else
+                              the generation will be picked up from Population report
+                              (agr-extract_files)
+    -t                    (o) creates a tar archive of all relevant files
+                              (agr-extract_files and agr-run_parallel)
+
+"
+}
+
+while getopts "p:u:P:m:f:b:D:B:l:g:e:i:j:o:r:n:xcdEFAOU:RT:C:K:G:thdLI:" Option
+do
+  case $Option in
+    p) PROJECT=$OPTARG;;
+    u) WHOAMI=$OPTARG;;
+    P) PASSWD=$OPTARG;;
+    b) BREED=$OPTARG;;
+    B) BREED_CLASS=$OPTARG;;
+    m) MALE=${OPTARG};;
+    f) FEMALE=${OPTARG};;
+    e) ALIVE=$OPTARG;;
+    g) GEST=${OPTARG};;
+    i) PARITY=${OPTARG};;
+    j) BIRTH=${OPTARG};;
+    l) LITTER=${OPTARG};;
+    x) EXPLAIN=${OPTIND};;
+    o) OUT=${OPTARG};;
+    r) START=${OPTARG};;
+    t) TAR=${OPTIND};;
+    n) STOP=${OPTARG};;
+    E) EXTENDED=${OPTIND};;
+    F) FORMAT=${OPTIND};;
+    A) ALL=${OPTIND};;
+    I) INTERVAL=${OPTARG};;
+    N) NO_ANIMAL=${OPTARG};;
+    O) ONLY=${OPTIND};;
+    U) UNKNOWN=${OPTARG};;
+    T) SORTED=${OPTARG};;
+    G) GENDEPTH=${OPTARG};;
+    D) DIE_ON_ERROR=${OPTARG};;
+    h) HELP=$OPTIND;;
+    d) DELETE=${OPTIND};;
+    L) LOOP=${OPTIND};;
+    *) echo "Unknown parameter -${Option}."; exit;;
+  esac
+done
+
+# defaults:
+MALE=${MALE=M}
+FEMALE=${FEMALE=F}
+LITTER=${LITTER=2}
+GEST=${GEST=year}
+ALIVE=${ALIVE=born_alive_no}
+PARITY=${PARITY=parity}
+BIRTH=${BIRTH=delivery_dt}
+OUT=${OUT=explain_query.txt}
+BREED_CLASS=${BREED_CLASS=BREED}
+GENDEPTH=${GENDEPTH=5}
+DIE_ON_ERROR=${DIE_ON_ERROR=1}
+
+[ -n "$START" ] && START="-r $START"
+[ -n "$STOP" ] && STOP="-n $STOP"
+[ -n "$EXTENDED" ] && EXTENDED="-E"
+[ -n "$FORMAT" ] && FORMAT="-f"
+[ -n "$ALL" ] && ALL="-a"
+[ -n "$ONLY" ] && ONLY="-o"
+[ -n "$UNKNOWN" ] && UNKNOWN="-u $UNKNOWN"
+[ -n "$SORTED" ] && SORTED="-t $SORTED"
+[ -n "$NO_ANIMAL" ] && NO_ANIMAL="-n $NO_ANIMAL"
+# [ -n "$INTERVAL" ] && INTERVAL="-g $INTERVAL"
+[ -n "$TAR" ] && TAR="-t"
+[ -n "$DELETE" ] && DELETE="-d"
+[ -n "$LOOP" ] && LOOP="-L"
+if [ -n "$EXPLAIN" ]; then
+    EXPLAIN='-x -o $OUT'
+fi
+
+if [ "$HELP" ]; then
+    usage
+    exit 1
+fi
+
+DIE=0
+if [ -z "$PROJECT" ]; then echo "Parameter -p <project> missing"  ; DIE=1; fi
+if [ -z "$WHOAMI" ];  then echo "Parameter -u <user> missing"     ; DIE=1; fi
+if [ -z "$PASSWD" ];  then echo "Parameter -P <password> missing" ; DIE=1; fi
+if [ -z "$BREED" ];   then echo "Parameter -b <breed> missing"    ; DIE=1; fi
+
+if [ "$DIE" -eq 1 ]; then
+    echo
+    echo "Not enough parameters given!"
+    usage
+    exit 1
+fi
+
+MYLOG=maincontrol.lst
+MYLOG_TEX="/var/lib/postgresql/projects/${PROJECT}/tp_early_info.tex"
+STDOUTLOG=${PROG}.stdout
+STDERRLOG=${PROG}.stderr
+
+##############################################################################
+function mylogmsg () {
+    MSG=$1
+    echo -e "$MSG"
+    echo -e "`date '+%F %H:%M:%S'`: $MSG" >>$MYLOG
+}
+
+# log important info in tex format (as item):
+function mylogtex () {
+    MSG=$1
+    TMP_DIR=`dirname $MYLOG_TEX`
+    if [ -d "$TMP_DIR" ]; then
+        echo -e "\item $MSG" >>$MYLOG_TEX
+    fi
+}
+# same but without date and indented:
+function mylogmsg_indent () {
+    MSG=$1
+    INDENT='                     '
+    echo -e "$MSG"
+    echo -e "${INDENT}$MSG" >>$MYLOG
+}
+##############################################################################
+function logmsg () {
+    MSG=$1
+    echo "#####################################################################" >>$STDOUTLOG
+    echo "#####################################################################" >>$STDERRLOG
+    echo "# $MSG" >>$STDOUTLOG
+    echo "# $MSG" >>$STDERRLOG
+    echo "#####################################################################" >>$STDOUTLOG
+    echo "#####################################################################" >>$STDERRLOG
+}
+##############################################################################
+
+MYDATE=`date '+%F %H:%M:%S'`
+MACHINE=`hostname --fqdn`
+MEM=`cat /proc/meminfo  |grep MemTotal |sed -s 's/  */ /g'`
+CPU=`cat /proc/cpuinfo |grep ^processor |wc -l`
+mylogmsg "Starting $PROG $*"
+mylogmsg_indent "on machine $MACHINE with $CPU CPUs and ${MEM}\n"
+mylogtex "INFO: This job ran on machine $MACHINE with $CPU CPUs and ${MEM}\n"
+
+# option parade for the programs:
+REQUIRED1="-p $PROJECT -u $WHOAMI -w $PASSWD -a $BREED_CLASS -b $BREED -L $MYLOG"
+REQUIRED2="-p $PROJECT -d $WHOAMI -w $PASSWD -L $MYLOG"
+CRE_POPREP_OPTS2="$REQUIRED1 -m $MALE -f $FEMALE -l $LITTER -g $GEST -e $ALIVE -i $PARITY -j $BIRTH $EXPLAIN $START $STOP -c"
+CRE_POPREP_OPTS1="$CRE_POPREP_OPTS2 -d"
+POPREP_OPTS="$REQUIRED1 -L $MYLOG"
+
+# 1. run: Create_inbreeding_tables.pl -p $PROJECT -d $WHOAMI -w $PASSWD -k 1
+CRE_INBREED_OPTS1="$REQUIRED2 -k 1"
+# 2. run: Create_inbreeding_tables.pl -p $PROJECT -d $WHOAMI -w $PASSWD -r 1 -c 1 -s 1 -e BREED
+CRE_INBREED_OPTS2="$REQUIRED2 -b $BREED -e $BREED_CLASS -c -r -s -g $GENDEPTH $UNKNOWN $FORMAT $ALL $ONLY"
+INBREED_OPTS="-p $PROJECT -u $WHOAMI -P $PASSWD -b $BREED -m $MALE -e $BREED_CLASS -L $MYLOG $NO_ANIMAL $TAR"
+
+### check_pedi_stack:
+CHECK_PEDI_STACK_OPTS="-p $PROJECT -u $WHOAMI -P $PASSWD -m $MALE -f $FEMALE -l $MYLOG $EXTENDED $DELETE $LOOP"
+mylogmsg "Running check_pedi_stack ..."
+logmsg "Running: check_pedi_stack $CHECK_PEDI_STACK_OPTS"
+check_pedi_stack $CHECK_PEDI_STACK_OPTS 2>>$STDERRLOG
+ret1=$?
+
+if [ $ret1 -ne 0 ]; then
+    if [ $ret1 -eq 77 -o $ret1 -eq 255 ]; then
+        echo -e "check_pedi_stack found an unrecoverable data error.\nTerminated ..."
+        cat $STDERRLOG
+        exit 1
+    else
+        echo "check_pedi_stack returned Errors ($ret1)"
+        [ $DIE_ON_ERROR -eq 1 ] && exit 1
+    fi
+fi
+
+### Create_Population_tables.pl (1):
+mylogmsg "Running Create_Population_tables.pl the first time ..."
+logmsg "Running: Create_Population_tables.pl $CRE_POPREP_OPTS1"
+Create_Population_tables.pl $CRE_POPREP_OPTS1 >>$STDOUTLOG 2>>$STDERRLOG
+ret2=$?
+
+if [ $ret2 -ne 0 ]; then
+    echo "Create_Population_tables.pl (1) returned Error ($ret2)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+### Create_Population_tables.pl (2):
+mylogmsg "Running Create_Population_tables.pl the second time ..."
+logmsg "Running: Create_Population_tables.pl $CRE_POPREP_OPTS2"
+Create_Population_tables.pl $CRE_POPREP_OPTS2 >>$STDOUTLOG 2>>$STDERRLOG
+ret3=$?
+
+if [ $ret3 -ne 0 ]; then
+    echo "Create_Population_tables.pl (2) returned Error ($ret3)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+### PopulationReport.pl:
+mylogmsg "Running PopulationReport.pl ..."
+logmsg "Running: PopulationReport.pl $POPREP_OPTS"
+PopulationReport.pl $POPREP_OPTS >>$STDOUTLOG 2>>$STDERRLOG
+ret4=$?
+
+if [ $ret4 -ne 0 ]; then
+    echo "PopulationReport.pl returned Error ($ret4)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+# create auxiliary tex file for the coverpage (Population):
+echo '\textbf{\Huge PopReport \\[.1em] A Population Structure Report}' >"Population-${BREED}-coverpage.tex"
+
+### Create_inbreeding_tables.pl (1):
+mylogmsg "Running Create_inbreeding_tables.pl ..."
+logmsg "Running: Create_inbreeding_tables.pl $CRE_INBREED_OPTS1"
+Create_inbreeding_tables.pl $CRE_INBREED_OPTS1 >>$STDOUTLOG 2>>$STDERRLOG
+ret5=$?
+
+if [ $ret5 -ne 0 ]; then
+    echo "Create_inbreeding_tables.pl returned Error ($ret5)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+### Create_inbreeding_tables.pl (2):
+# retrieve already computed Generation Interval from the database:
+GI=$(get_generation_interval $PROJECT)
+CRE_INBREED_OPTS2="$CRE_INBREED_OPTS2 -I $GI"
+
+mylogmsg "Running Create_inbreeding_tables.pl second time ..."
+logmsg "Running: Create_inbreeding_tables.pl $CRE_INBREED_OPTS2"
+Create_inbreeding_tables.pl $CRE_INBREED_OPTS2 >>$STDOUTLOG 2>>$STDERRLOG
+ret6=$?
+
+if [ $ret6 -ne 0 ]; then
+    echo "Create_inbreeding_tables.pl (2) returned Error ($ret6)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+### InbreedingReport.pl:
+INBREED_OPTS="$INBREED_OPTS -I $GI"
+mylogmsg "Running InbreedingReport.pl ..."
+logmsg "Running: InbreedingReport.pl $INBREED_OPTS"
+InbreedingReport.pl $INBREED_OPTS >>$STDOUTLOG 2>>$STDERRLOG
+ret6=$?
+
+# create auxiliary tex file for the coverpage (Inbreeding):
+echo '\textbf{\Huge PopReport \\[.1em] A Pedigree Analysis Report}' >"Inbreeding-${BREED}-coverpage.tex"
+
+if [ $ret6 -ne 0 ]; then
+    echo "InbreedingReport.pl returned Error ($ret6)"
+    [ $DIE_ON_ERROR -eq 1 ] && exit 1
+fi
+
+# create auxiliary tex file for the coverpage (Monitoring):
+echo '\textbf{\Huge PopReport \\[.1em] A Population Monitoring Report}' >"Monitoring-${BREED}-coverpage.tex"
+
+mylogmsg "Done with the reports..."
+
+# some cleanup before tar:
+MAXLINES=3000
+KEEPLINES=1000
+CNT=`wc -l $STDERRLOG |awk '{print $1}'`
+if [ $CNT -gt $MAXLINES ]; then
+   head -$KEEPLINES $STDERRLOG >${STDERRLOG}_head$KEEPLINES
+   tail -$KEEPLINES $STDERRLOG >${STDERRLOG}_tail$KEEPLINES
+   rm -f $STDERRLOG
+fi
+
+rm -f *.agr *.in *.lof *_agr_files.tar.gz *_infiles.tar.gz *.ps
+
+CURR_DIR=`pwd`
+CURR_DIR=`basename $CURR_DIR`
+echo -e "\nAll output files written to subdirectory:\n\t${CURR_DIR}/"
+echo -e "\nProgram output directed:"
+echo -e "\tOverview ==> ${CURR_DIR}/${MYLOG}\n\tSTDOUT   ==> ${CURR_DIR}/${STDOUTLOG}\n\tSTDERR   ==> ${CURR_DIR}/${STDERRLOG}\n"
+
+
+# vim:tw=300

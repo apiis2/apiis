@@ -1,0 +1,32 @@
+
+=head1 NAME
+
+apiish
+
+=head1 SYNOPSIS
+
+apiish [Optionen]
+
+=head1 OPTIONS
+
+   -h | -? | --help                 kurze Hilfe
+   -m | --man | -p | --pod          ausführliche Hilfe
+   -F <path> | --formpath <path>    nicht standardgemäßer Pfad zu den
+                                    Definitionsdateien der Masken
+   -R <path> | --reportpath <path>  nicht standardgemäßer Pfad zu den
+                                    Definitionsdateien der Reports
+
+
+=head1 DESCRIPTION
+
+B<apiish> ist eine grafische Oberfläche für wesentliche Apiis-Funktionen.
+
+=head1 VERSION
+
+   $Revision: 1.1 $
+
+=head1 AUTHOR
+
+Helmut Lichtenberg <heli@tzv.fal.de>
+
+=cut

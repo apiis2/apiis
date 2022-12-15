@@ -1,0 +1,373 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: agr-extract_files,v 1.28 2013/08/08 17:42:58 kehr Exp $
+##############################################################################
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+
+use Apiis;
+use Popreport;    # provides print_list()
+Apiis->initialize( VERSION => '$Revision: 1.28 $ ' );
+our $apiis;
+use FindBin qw($RealBin);
+use File::Copy;
+
+# Command line parameters:
+use vars qw(
+    $opt_h $opt_u $opt_p $opt_P $opt_b $opt_I $opt_m $opt_t $opt_e $opt_L);
+use Getopt::Std;
+getopts('hu:p:P:b:e:I:m:tL:');
+
+usage() if $opt_h;
+usage() if !$opt_p;
+usage() if !$opt_u;
+usage() if !$opt_P;
+usage() if !$opt_b;
+my $debug = 1;
+
+my $loginname = $opt_u;
+my $passwd    = $opt_P;
+my $breed     = $opt_b;
+our $listfile = $opt_L if $opt_L;
+my $texlist   = $listfile;
+$texlist      =~ s/lst$/tex/;
+
+my $classbreed = $opt_e || 'BREED';
+print "Breed = $breed \n" if $debug;
+print "Class = $classbreed \n" if $debug;
+
+my $project_name = $opt_p;
+print "Project = $project_name\n" if $debug;
+
+my $male = $opt_m || 'male';
+print "Sex = $male\n" if $debug;
+
+my $gen = $opt_I;
+if   ($gen) { print "generation interval = $gen\n"      if $debug; }
+else        { print "generation fetched from tables \n" if $debug; }
+
+# create User object and load the model file:
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new(
+    id       => $loginname,
+    password => $passwd,
+);
+$thisobj->check_status( die => 'ERR' );
+$apiis->join_model( $project_name, userobj => $thisobj );
+$apiis->check_status( die => 'ERR' );
+
+# Additive Genetic Relationsship:
+my ( $dbbname, $dbb, $short, %delfiles, $tmp );
+my $sql1 = "SELECT CASE WHEN long_name isnull THEN ext_code ELSE long_name END,
+                   db_code,
+                   CASE WHEN short_name isnull THEN ext_code ELSE short_name END
+            FROM   codes
+            WHERE (ext_code   = '$breed' OR
+                   short_name = '$breed' OR
+                   long_name  = '$breed')
+                   AND class  = '$classbreed'";
+my $sql_ref1 = $apiis->DataBase->sys_sql($sql1);
+$sql_ref1->check_status( die => 'ERR' );
+
+while ( my $line_ref1 = $sql_ref1->handle->fetch ) {
+    $dbbname = $line_ref1->[0];
+    $dbb     = $line_ref1->[1];
+    $short   = $line_ref1->[2];
+}
+
+if ( !$dbb ) {
+    my @die_msg_breed;
+    push @die_msg_breed, "ERROR:\n";
+    push @die_msg_breed, "Breed $breed does not exist in the database\n";
+    push @die_msg_breed, "No inbreeding report can be created.\n";
+    print_tex_item( join( '\\\\', @die_msg_breed ), $texlist );
+    die sprintf
+        "\n **** The breed $breed does not exist in the database ****\n\n";
+}
+
+my $sql2 = "SELECT db_code FROM codes
+            WHERE (ext_code   = '$male' OR
+                   short_name = '$male' OR
+                   long_name  = '$male')
+                   AND class  = 'SEX'";
+my $sql_ref2 = $apiis->DataBase->sys_sql($sql2);
+$sql_ref2->check_status( die => 'ERR' );
+while ( my $line_ref2 = $sql_ref2->handle->fetch ) {
+    $tmp = $line_ref2->[0];
+}
+
+if ( !$tmp ) {
+    my @die_msg_sex;
+    push @die_msg_sex, "ERROR:\n";
+    push @die_msg_sex, "Sex $male does not exist in the database\n";
+    push @die_msg_sex, "No inbreeding report can be created.\n";
+    print_tex_item( join( '\\\\', @die_msg_sex ), $texlist );
+    die sprintf
+        "\n ***** The SEX $male does not exist in the database *****\n\n";
+}
+
+my ( %ped, %newid, %sortid );
+my $sql3 = "SELECT a.db_animal, a.db_sire, a.db_dam, a.birth_dt, 
+                   CASE WHEN c.short_name isnull
+                        THEN c.ext_code
+                        ELSE c.short_name
+                   END
+            FROM animal a, codes c
+            WHERE a.db_sex   = c.db_code AND
+                  a.db_breed = $dbb AND
+                  a.birth_dt notnull";
+my $sql_ref3 = $apiis->DataBase->sys_sql($sql3);
+$sql_ref3->check_status( die => 'ERR' );
+
+print "Loading pedigrees ...\n" if $debug;
+my ( $i, %yy );
+my $yyy = 0;
+while ( my $line_ref3 = $sql_ref3->handle->fetch ) {
+    my $zero  = $line_ref3->[0];    # animal.db_animal
+    my $one   = $line_ref3->[1];    # animal.db_sire
+    my $two   = $line_ref3->[2];    # animal.db_dam
+    my $three = $line_ref3->[3];    # animal.birth_dt
+    my $four  = $line_ref3->[4];    # codes.short_name
+
+    $three || ( $three = '1300-01-01' );    # done 20100420 by Frits
+    $one == 2 && ( $one = 0 );
+    $two == 1 && ( $two = 0 );
+    # Male and Female hard coded for par3 calculations:
+    $four eq "$male" ? ( $four = 1 ) : ( $four = '2' );
+    my ( $y, $m, $d ) = split '-', $three;
+
+    $yy{$y}                         = 1;
+    $ped{ $three . '|' . $zero }[0] = $zero;     # animalid
+    $ped{ $three . '|' . $zero }[1] = $one;      # sire
+    $ped{ $three . '|' . $zero }[2] = $two;      # dam
+    $ped{ $three . '|' . $zero }[5] = $three;    # birth_dt
+    $ped{ $three . '|' . $zero }[4] = $four;     # sex
+    $ped{ $three . '|' . $zero }[3] = $y;        # birth year
+
+    if ($debug) {
+        print '.' unless ++$i % 1000;
+        print " --> $i\n" unless $i % 10000;
+    }
+}
+print "\n" if $debug;
+
+foreach my $tt ( sort keys %yy ) {
+    $yyy++;
+}
+print "\nPedigree loaded with $i records over $yyy year(s)\n" if $debug;
+
+if ( $yyy < 3 ) {
+    my @die_msg_year;
+    push @die_msg_year, "WARNING:\n";
+    push @die_msg_year,
+        "Data set consists of only $yyy year(s), need at least 3 years.\n";
+    push @die_msg_year, "No inbreeding report can be created.\n";
+    print_tex_item( join( '\\\\', @die_msg_year ), $texlist );
+    die sprintf
+        "\n ***** Data set consist of only $yyy year(s), need at least 3 years *****\n\n";
+}
+undef %yy;
+
+print "\nCreating new sequence numbers ...\n" if $debug;
+my $new = 0;
+my @tel;
+foreach my $id ( sort keys %ped ) {
+    push @tel, ++$new;
+    $newid{$new}[0]            = $id;
+    $newid{$new}[1]            = $ped{$id}[1];    # sire
+    $newid{$new}[2]            = $ped{$id}[2];    # dam
+    $newid{$new}[3]            = $ped{$id}[3];    # birth year
+    $newid{$new}[4]            = $ped{$id}[4];    # sex
+    $newid{$new}[5]            = 1;
+    $newid{$new}[6]            = 0;
+    $newid{$new}[7]            = $ped{$id}[5];    # birth dt
+    $sortid{ $ped{$id}[0] }[0] = $new;            # animal
+
+    if ($debug) {
+        print '.'           if !( $new % 1000 );
+        print " --> $new\n" if !( $new % 10000 );
+    }
+}
+print "\n" if $debug;
+print "$new new sequence numbers created\n" if $debug;
+undef %ped;
+
+foreach my $id ( sort keys %newid ) {
+    $newid{$id}[1] = $sortid{ $newid{$id}[1] }[0];
+    $newid{$id}[2] = $sortid{ $newid{$id}[2] }[0];
+}
+
+my $pedfile = $short . '_all.ped';
+print "Printing now $pedfile ...\n" if $debug;
+$delfiles{$pedfile} = 1;    # mark for later deletion
+open my $fh_pedfile, '>', $pedfile or die "Can't open $pedfile: $!\n";
+
+my $small = 9999999999;
+my $j = 0;
+foreach my $id (@tel) {
+    if ( $newid{$id}[3] < $small ) { $small = $newid{$id}[3]; }
+    my $str = 'A10';
+    my $a;
+    print $fh_pedfile pack( $str, $id );
+    for ( $a = 1; $a < 7; $a++ ) {
+        if ( !$newid{$id}[$a] ) { $newid{$id}[$a] = '0'; }
+        print $fh_pedfile pack( $str, ( $newid{$id}[$a] * 1 ) );
+    }
+    print $fh_pedfile "\n";
+
+    if ($debug) {
+        print '.' unless ++$j % 1000;
+        print " --> $j\n" unless $j % 10000;
+    }
+}
+close $fh_pedfile;
+print "\nPedigree printed with $j records\n" if $debug;
+
+#carina ##################################
+#one year = all animals from one generation############
+#######################################
+print "# Delete tmp3_agr_ped table\n";
+my $sql12 ="Drop TABLE IF EXISTS tmp3_agr_ped";
+print "SQL: $sql12\n";
+my $sql_ref12 = $apiis->DataBase->sys_sql($sql12);
+$sql_ref12->check_status( die => 'ERR' );
+#
+## AGR-Ped: tmp3_agr_ped , Tabelle
+#################################
+
+my $sql4 ="CREATE TABLE tmp3_agr_ped (
+               animal real,                  
+               year   real,
+               sex    real)";
+print "SQL: $sql4\n" if $debug;
+my $sql_ref4 = $apiis->DataBase->sys_sql($sql4);
+$sql_ref4->check_status( die => 'ERR' );
+
+# write pedigree for AGR into DB:
+my $infile = "${breed}_all.ped";
+open my $IN, '<', $infile or die "Problems opening infile $infile: $!\n";
+my %animal1;
+foreach (<$IN>) {
+    next if /^#/;      # Kommentare überspringen
+    next if /^\s*$/;
+    chomp;
+    s/^\s*//;
+    s/\s*$//;
+    my ( $animal, $sire, $dam, $dbyear, $sex ) = split /\s+/, $_;
+    my $sql5 = "INSERT INTO tmp3_agr_ped(animal,year,sex)
+                VALUES ($animal, $dbyear, $sex)";
+    my $sql_ref5 = $apiis->DataBase->sys_sql($sql5);
+    $sql_ref5->check_status( die => 'ERR' );
+}
+close $IN;
+ 
+###loop for birth-years###########
+my @tarfiles; # for later use
+my $sql6 = "SELECT year FROM  gene_stuff, codes
+           WHERE db_code    = breed AND
+                 short_name = '$breed' AND
+                 year      != 'unknown'
+           GROUP by year
+           ORDER BY year DESC";
+my $sql_ref6 = $apiis->DataBase->sys_sql($sql6);
+$sql_ref6->check_status( die => 'ERR' );
+while ( my $line_ref6 = $sql_ref6->handle->fetch ) {
+    my @years = @$line_ref6;
+
+    # create .in-files for agr-run-parallel:
+    foreach my $year (@years) {
+        my $sql7 =
+            "SELECT animal, sex
+             FROM   tmp3_agr_ped
+             WHERE  year BETWEEN $year -($gen-1) AND $year";
+        my $sql_ref7 = $apiis->DataBase->sys_sql($sql7);
+        $sql_ref7->check_status( die => 'ERR' );
+
+        my $agr_outfile = "${breed}_$year.in";
+        push @tarfiles, $agr_outfile; # for later use
+        open my $AGR_OUT, ">", $agr_outfile
+            or die "Problems opening $agr_outfile: $!\n";
+        while ( my $line_ref7 = $sql_ref7->handle->fetch ) {
+            my @line7 = @$line_ref7;
+            print $AGR_OUT "@line7\n";
+        }
+        close $AGR_OUT;
+    }
+}
+#end carina#######################################
+
+# This is replaced by Carina above:
+# print "Create now the data files per year\n\n" if $debug;
+# my ( %datafiles, %fh_of );
+# foreach my $id (@tel) {
+#     my $new_id_3 = $newid{$id}[3]; # birth year
+#     my $new_id_4 = $newid{$id}[4]; # sex
+#     my $datafile = $short . '_' . $new_id_3 . '.test_in';
+# 
+#     # store filehandles in hash with filename as key:
+#     if ( !exists $fh_of{$datafile} ) {
+#         $datafiles{$datafile} = 1;
+#         open $fh_of{$datafile}, '>', $datafile
+#             or die "Can't open $datafile: $!\n";
+#     }
+# 
+#     # write to files:
+#     my $str = 'A10';
+#     print { $fh_of{$datafile} } pack( $str, $id );
+#     print { $fh_of{$datafile} } pack( $str, $new_id_4 );
+#     print { $fh_of{$datafile} } "\n";
+# }
+# 
+# # close the filehandles:
+# close $_ for keys %fh_of;
+
+if ($opt_t) {
+    # write a tar archive of all relevant files:
+    print "Creating a tar archive of all relevant files ...\n" if $debug;
+    my $tarfile  = $short . '_infiles.tar.gz';
+    push @tarfiles, $pedfile;
+
+    # copy files from $APIIS_HOME/bin temporarily into the current dir to get
+    # a tar file without the pathnames:
+    my %copied;
+    my @bin_files = (qw/ add_gen_didier agr-run_parallel /);
+    for my $bin (@bin_files) {
+        next if -e "./$bin";    # if it already exists in .
+        my $realbin = $RealBin . '/' . $bin;
+        copy( $realbin, "./$bin" ) or warn "Copy failed: $!";
+        $copied{$bin} = 1;
+        chmod 0755, $bin;
+        push @tarfiles, $bin;
+    }
+
+    my @system_args = qw/ tar cvzf /;
+    push @system_args, $tarfile;
+    push @system_args, @tarfiles;
+    my $cmd = join( ' ', @system_args );
+    system($cmd) == 0 or warn "tar failed: $?\n";
+    unlink keys %copied;    # remove the temp binaries
+    print "... done. Look for $tarfile\n" if $debug;
+}
+
+##############################################################################
+sub usage {
+    print "usage:\n"
+        . "    -h this message \n"
+        . "    -p <project_name> (required)\n"
+        . "    -u <> database user (required)\n"
+        . "    -P <> database password (required)\n"
+        . "    -b <> breed  (required)\n"
+        . "    -e <> name of class for breed  (Default = BREED)\n"
+        . "    -m <> your table codes short_name for Male (Default = Male) \n"
+        . "    -I <> generation interval if you want a fixed generation else\n"
+        . "          the generation will be picked up from Population report\n"
+        . "    -t    creates a tar archive of all relevant files \n";
+    die "\n";
+}
+##############################################################################
