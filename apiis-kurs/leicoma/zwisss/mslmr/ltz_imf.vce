@@ -1,0 +1,50 @@
+Comment
+  test mastitis
+
+DATA
+ datfile='blupdata.txt.vce' format='(5f12.0,8f8.0)' header=1
+ dependent   =  ltz imf  
+ independent = LMF PELM SKMW ANIMAL SEX SH BJQ BG WU USS ABT
+c group by permu;
+c group_by dim;
+
+ pedfile= 'blupped.txt.vce' link = animal  ;
+
+MODEL
+  ltz  =          sex bjq bg wu animal;
+  imf  = p1(skmw) sex abt bg animal;
+
+
+Covariance
+   wu;
+   animal;
+
+SYSTEM
+   non_zero=  25250000; 
+   total =    80000000;
+c   inbreeding = .false.
+cc   solve = ioc;
+c  tot_mat = 900000000;
+
+OUTPUT
+  covfile  ;
+  debug = .false.;
+c  solutions;
+c  inbreeding;
+c next=1 ;
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,441 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{eurosym}
+\end_preamble
+\language english
+\inputencoding latin9
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 5
+\tocdepth 4
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Loading historic data with APIIS
+\layout Abstract
+
+This is a one week course which gives an introduction to APIIS.
+ It is detailed in the loading of historic data.
+ The assumption is that students have their own set of data which they will
+ load into the APIIS structure.
+ Further assumptions are:
+\begin_deeper 
+\layout Itemize
+
+5 day full time course
+\layout Itemize
+
+three lectures per day (usually morning)
+\layout Itemize
+
+start at 8:00 or 9:00, end at 18:00, with one hour lunch and two 30 minute
+ breaks for coffee
+\layout Itemize
+
+each student has access to a Linux machine which all software installed
+ and acts as application and database server
+\layout Itemize
+
+there may be two students per machine
+\layout Itemize
+
+access from the client to the server may either be through windows/vnc or
+ knoppix
+\layout Itemize
+
+apart from lectures students will spend most of their time working on their
+ projects
+\end_deeper 
+\layout Enumerate
+
+day: The general framework of Information Systems in Animal Breeding
+\begin_deeper 
+\layout Enumerate
+
+Lectures:
+\begin_deeper 
+\layout Enumerate
+
+why OS and Generalisation (33 slides)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill so
+\backslash 
+_what.lyx
+\end_inset 
+
+
+\layout Enumerate
+
+Information systems and BLUP - the problems (14 slides)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill IB-module-1.sxi
+\end_inset 
+
+
+\layout Enumerate
+
+Information systems and BLUP - the solution (11 steps) (16 slides)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill IB-module-2.sxi
+\end_inset 
+
+
+\layout Enumerate
+
+The 11 steps - catching up with history (20 slides)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill IB-module-3.sxi
+\end_inset 
+
+
+\layout Enumerate
+
+The 11 steps - the model file (17 slides 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill IB-module-4.sdd
+\end_inset 
+
+
+\layout Enumerate
+
+The 11 steps - business and modify rules (9 slides)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill IB-module-5.sdd
+\end_inset 
+
+
+\layout Enumerate
+
+Introduction to Linux and the desktop (may be interspersed with the practical
+ work and start after lunch
+\end_deeper 
+\layout Enumerate
+
+Practical work (5 hours open ended)
+\begin_deeper 
+\layout Enumerate
+
+login
+\layout Enumerate
+
+desktop
+\layout Enumerate
+
+pgsql ...
+\layout Enumerate
+
+running SQL commands (here we need assignments)
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+day: Database Theory and Background and Normalization
+\begin_deeper 
+\layout Enumerate
+
+why databases? This includes the two principles for normalization (repeated
+ records etc) 45 minuten
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+dotfill EG IntroDB.lyx
+\end_inset 
+
+
+\layout Enumerate
+
+The Model file (Ralf 10 min)
+\layout Enumerate
+
+workshop: Vorstellen der Daten: 1 Stunde
+\layout Enumerate
+
+Wiederholen: Normalisierungsvorgang (Ralf)
+\layout Enumerate
+
+Normalisierung der Kursdaten auf Papier durch Kursteilnehmer: 2 Stunde
+\layout Enumerate
+
+Normalisierung in Rechnerform bringen durch Xerlin (1 Std Vortrag (Ralf),
+ 2 Stunden Teilnehmer)
+\begin_deeper 
+\layout Enumerate
+
+XML (5min)
+\layout Enumerate
+
+Standard APIIS Struktur (10 min)
+\layout Enumerate
+
+Datentypen (10 min)
+\layout Enumerate
+
+wie bekomme ich meine neuen Tabellen da rein? (10min)
+\layout Enumerate
+
+Normalisierung durch Kursteilnehmer als Ergebnis XML Modelldatei 2 Stunden
+\layout Enumerate
+
+DB erzeugen und mit psql prüfen
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+day: ID and Codes:
+\begin_deeper 
+\layout Enumerate
+
+Principles of treating Codes and ID (ext-codes.sxi EG 30min)
+\begin_deeper 
+\layout Enumerate
+
+Codes und Nummern sind FK
+\layout Enumerate
+
+bei Codes FK: viele Tabellen, unpraktisch - CODES
+\layout Enumerate
+
+Anforderung: langlebige Bank: Wiederverwendung von Codes und Nummern
+\layout Enumerate
+
+deshalb: extern-intern Trennung
+\end_deeper 
+\layout Enumerate
+
+Sammlung aller ID und Codes in allen Quelldateien
+\begin_deeper 
+\layout Enumerate
+
+CODES Vortrag Ralf (20min)
+\begin_deeper 
+\layout Enumerate
+
+Prinzip für: code definition
+\layout Enumerate
+
+Prinzip für: Codekonsolidierung
+\layout Enumerate
+
+Ladeskripte CODES erklären
+\end_deeper 
+\layout Enumerate
+
+Teilnehmer 2 Std
+\begin_deeper 
+\layout Enumerate
+
+CODES anpassen,
+\layout Enumerate
+
+ausführen 
+\layout Enumerate
+
+Konsolidieren
+\layout Enumerate
+
+und erklären lassen vor Plenum (Teilnehmer 90min)
+\end_deeper 
+\layout Enumerate
+
+UNITS Vortrag Ralf 10min
+\begin_deeper 
+\layout Enumerate
+
+Ladeskripte UNITS erklären (Ralf)
+\end_deeper 
+\layout Enumerate
+
+Teilnehmer
+\begin_deeper 
+\layout Enumerate
+
+UNITS anpassen
+\layout Enumerate
+
+und ausführen
+\layout Enumerate
+
+Konsolidieren und erklären lassen vor Plenum
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+Mittag
+\begin_deeper 
+\layout Enumerate
+
+Vortrag IDs und ihre Konkatenierung erklären (Ralf)
+\begin_deeper 
+\layout Enumerate
+
+Prinzip erklären
+\layout Enumerate
+
+ID definition
+\layout Enumerate
+
+ID-konsolidierung
+\layout Enumerate
+
+Ladeskripte ID erklären
+\end_deeper 
+\layout Enumerate
+
+Teilnehmer 2 Std
+\begin_deeper 
+\layout Enumerate
+
+ID anpassen,
+\layout Enumerate
+
+ausführen 
+\layout Enumerate
+
+Konsolidieren
+\layout Enumerate
+
+und erklären lassen vor Plenum (Teilnehmer 90min)
+\end_deeper 
+\layout Enumerate
+
+Modelldateianpassen (sex-> db_sex)
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+day: Loading Data
+\begin_deeper 
+\layout Enumerate
+
+Vortrag: 1 std
+\begin_deeper 
+\layout Enumerate
+
+für alle input datenelemente zielspalte/tabelle aufschreiben (Papier)
+\layout Enumerate
+
+Programmcodebeispiel ref_breedprg
+\layout Enumerate
+
+SQL in nötiger Tiefe (insert/update/select)
+\end_deeper 
+\layout Enumerate
+
+Teilnehmer 6std;
+\begin_deeper 
+\layout Enumerate
+
+Ladeprogramme anpassen und laufen lassen
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+day: Verfügbare Anwendungen
+\begin_deeper 
+\layout Enumerate
+
+Check_integrity
+\layout Enumerate
+
+Pedigreeloops
+\layout Enumerate
+
+Inzucht
+\layout Enumerate
+
+Populationsreport
+\layout Enumerate
+
+Geburtsdatumskontrolle
+\layout Enumerate
+
+Rassencheck
+\layout Enumerate
+
+Datenextraktion 
+\begin_deeper 
+\layout Enumerate
+
+Daten
+\layout Enumerate
+
+Pedigree
+\layout Enumerate
+
+genetische Gruppen
+\end_deeper 
+\end_deeper 
+\layout Enumerate
+
+day: using APIIS in regular Breeding programs living databases
+\begin_deeper 
+\layout Enumerate
+
+Umnummerierung
+\layout Enumerate
+
+ZWISSS
+\layout Enumerate
+
+CALCTBV
+\layout Enumerate
+
+FORMS
+\layout Enumerate
+
+Ladeobjekte
+\layout Enumerate
+
+Reports
+\the_end

@@ -1,0 +1,872 @@
+1|NATURAL|wu|R|ltz||546.10000|
+1|NATURAL|animal|A|ltz||3312.00000|
+1|NATURAL|animal|A|ltz|usf|19.67000
+1|NATURAL|animal|A|usf||6.22300|
+1|NATURAL|residual|E|ltz||373.50000|
+1|NATURAL|residual|E|ltz|usf|17.14000
+1|NATURAL|residual|E|usf||0.78630|
+1|Phenotypic|||ltz||4231.00000|
+1|Phenotypic|||ltz|usf|36.81000
+1|Phenotypic|||usf||7.00900|
+1|RATIOS|wu|R|ltz||0.12910|
+1|RATIOS|animal|A|ltz||0.78270|
+1|RATIOS|animal|A|ltz|usf|0.13700
+1|RATIOS|animal|A|usf||0.88780|
+1|RATIOS|residual|E|ltz||0.08826|
+1|RATIOS|residual|E|ltz|usf|1.00000
+1|RATIOS|residual|E|usf||0.11220|
+2|NATURAL|wu|R|ltz||467.40000|
+2|NATURAL|animal|A|ltz||3573.00000|
+2|NATURAL|animal|A|ltz|imf|-2.78000
+2|NATURAL|animal|A|imf||0.17730|
+2|NATURAL|residual|E|ltz||163.10000|
+2|NATURAL|residual|E|ltz|imf|4.09000
+2|NATURAL|residual|E|imf||0.10260|
+2|Phenotypic|||ltz||4203.00000|
+2|Phenotypic|||ltz|imf|1.31000
+2|Phenotypic|||imf||0.27990|
+2|RATIOS|wu|R|ltz||0.11120|
+2|RATIOS|animal|A|ltz||0.85000|
+2|RATIOS|animal|A|ltz|imf|-0.11050
+2|RATIOS|animal|A|imf||0.63340|
+2|RATIOS|residual|E|ltz||0.03879|
+2|RATIOS|residual|E|ltz|imf|1.00000
+2|RATIOS|residual|E|imf||0.36660|
+2|STD_ERR of components|wu|R|ltz||2.43400|
+2|STD_ERR of components|animal|A|ltz||1.17400|
+2|STD_ERR of components|animal|A|ltz|imf|2.07600
+2|STD_ERR of components|animal|A|imf||0.03131|
+2|STD_ERR of components|residual|E|ltz||0.90460|
+2|STD_ERR of components|residual|E|ltz|imf|16.98000
+2|STD_ERR of components|residual|E|imf||0.02403|
+2|STD_ERR of ratios|wu|R|ltz||0.03475|
+2|STD_ERR of ratios|animal|A|ltz||0.03620|
+2|STD_ERR of ratios|animal|A|ltz|imf|0.04888
+2|STD_ERR of ratios|animal|A|imf||0.05316|
+2|STD_ERR of ratios|residual|E|ltz||0.01478|
+2|STD_ERR of ratios|residual|E|ltz|imf|0.00375
+2|STD_ERR of ratios|residual|E|imf||0.05316|
+3|NATURAL|wu|R|ltz||467.20000|
+3|NATURAL|animal|A|ltz||3591.00000|
+3|NATURAL|animal|A|ltz|fuvz|-302.90000
+3|NATURAL|animal|A|fuvz||242.30000|
+3|NATURAL|residual|E|ltz||150.10000|
+3|NATURAL|residual|E|ltz|fuvz|-39.25000
+3|NATURAL|residual|E|fuvz||143.40000|
+3|Phenotypic|||ltz||4208.00000|
+3|Phenotypic|||ltz|fuvz|-342.10000
+3|Phenotypic|||fuvz||385.70000|
+3|RATIOS|wu|R|ltz||0.11100|
+3|RATIOS|animal|A|ltz||0.85330|
+3|RATIOS|animal|A|ltz|fuvz|-0.32470
+3|RATIOS|animal|A|fuvz||0.62810|
+3|RATIOS|residual|E|ltz||0.03566|
+3|RATIOS|residual|E|ltz|fuvz|-0.26760
+3|RATIOS|residual|E|fuvz||0.37190|
+3|STD_ERR of components|wu|R|ltz||2.77600|
+3|STD_ERR of components|animal|A|ltz||1.22300|
+3|STD_ERR of components|animal|A|ltz|fuvz|1.05400
+3|STD_ERR of components|animal|A|fuvz||0.82110|
+3|STD_ERR of components|residual|E|ltz||0.96320|
+3|STD_ERR of components|residual|E|ltz|fuvz|0.30370
+3|STD_ERR of components|residual|E|fuvz||0.60730|
+3|STD_ERR of ratios|wu|R|ltz||0.03960|
+3|STD_ERR of ratios|animal|A|ltz||0.04065|
+3|STD_ERR of ratios|animal|A|ltz|fuvz|0.03591
+3|STD_ERR of ratios|animal|A|fuvz||0.05882|
+3|STD_ERR of ratios|residual|E|ltz||0.01573|
+3|STD_ERR of ratios|residual|E|ltz|fuvz|0.03073
+3|STD_ERR of ratios|residual|E|fuvz||0.05882|
+4|NATURAL|wu|R|ltz||463.80000|
+4|NATURAL|animal|A|ltz||3569.00000|
+4|NATURAL|animal|A|ltz|ffl|37.90000
+4|NATURAL|animal|A|ffl||12.24000|
+4|NATURAL|residual|E|ltz||166.30000|
+4|NATURAL|residual|E|ltz|ffl|24.71000
+4|NATURAL|residual|E|ffl||3.67100|
+4|Phenotypic|||ltz||4199.00000|
+4|Phenotypic|||ltz|ffl|62.62000
+4|Phenotypic|||ffl||15.91000|
+4|RATIOS|wu|R|ltz||0.11050|
+4|RATIOS|animal|A|ltz||0.84990|
+4|RATIOS|animal|A|ltz|ffl|0.18130
+4|RATIOS|animal|A|ffl||0.76930|
+4|RATIOS|residual|E|ltz||0.03961|
+4|RATIOS|residual|E|ltz|ffl|1.00000
+4|RATIOS|residual|E|ffl||0.23070|
+4|STD_ERR of components|wu|R|ltz||2.51600|
+4|STD_ERR of components|animal|A|ltz||0.99970|
+4|STD_ERR of components|animal|A|ltz|ffl|2.00300
+4|STD_ERR of components|animal|A|ffl||0.22520|
+4|STD_ERR of components|residual|E|ltz||0.79010|
+4|STD_ERR of components|residual|E|ltz|ffl|10.32000
+4|STD_ERR of components|residual|E|ffl||0.17470|
+4|STD_ERR of ratios|wu|R|ltz||0.03599|
+4|STD_ERR of ratios|animal|A|ltz||0.03677|
+4|STD_ERR of ratios|animal|A|ltz|ffl|0.03850
+4|STD_ERR of ratios|animal|A|ffl||0.05160|
+4|STD_ERR of ratios|residual|E|ltz||0.01292|
+4|STD_ERR of ratios|residual|E|ltz|ffl|0.00045
+4|STD_ERR of ratios|residual|E|ffl||0.05160|
+5|NATURAL|wu|R|ltz||286.20000|
+5|NATURAL|animal|A|ltz||3475.00000|
+5|NATURAL|animal|A|ltz|usmd|46.10000
+5|NATURAL|animal|A|usmd||10.99000|
+5|NATURAL|residual|E|ltz||245.90000|
+5|NATURAL|residual|E|ltz|usmd|-2.50600
+5|NATURAL|residual|E|usmd||0.02553|
+5|Phenotypic|||ltz||4007.00000|
+5|Phenotypic|||ltz|usmd|43.59000
+5|Phenotypic|||usmd||11.02000|
+5|RATIOS|wu|R|ltz||0.07143|
+5|RATIOS|animal|A|ltz||0.86720|
+5|RATIOS|animal|A|ltz|usmd|0.23580
+5|RATIOS|animal|A|usmd||0.99770|
+5|RATIOS|residual|E|ltz||0.06138|
+5|RATIOS|residual|E|ltz|usmd|-1.00000
+5|RATIOS|residual|E|usmd||0.00232|
+6|NATURAL|wu|R|ltz||469.30000|
+6|NATURAL|animal|A|ltz||3569.00000|
+6|NATURAL|animal|A|ltz|rmfl|-32.88000
+6|NATURAL|animal|A|rmfl||20.60000|
+6|NATURAL|residual|E|ltz||166.00000|
+6|NATURAL|residual|E|ltz|rmfl|-15.28000
+6|NATURAL|residual|E|rmfl||1.40800|
+6|Phenotypic|||ltz||4204.00000|
+6|Phenotypic|||ltz|rmfl|-48.16000
+6|Phenotypic|||rmfl||22.01000|
+6|RATIOS|wu|R|ltz||0.11160|
+6|RATIOS|animal|A|ltz||0.84890|
+6|RATIOS|animal|A|ltz|rmfl|-0.12130
+6|RATIOS|animal|A|rmfl||0.93600|
+6|RATIOS|residual|E|ltz||0.03947|
+6|RATIOS|residual|E|ltz|rmfl|-1.00000
+6|RATIOS|residual|E|rmfl||0.06396|
+6|STD_ERR of components|wu|R|ltz||2.94600|
+6|STD_ERR of components|animal|A|ltz||1.13000|
+6|STD_ERR of components|animal|A|ltz|rmfl|2.44300
+6|STD_ERR of components|animal|A|rmfl||0.30820|
+6|STD_ERR of components|residual|E|ltz||0.85920|
+6|STD_ERR of components|residual|E|ltz|rmfl|2.21800
+6|STD_ERR of components|residual|E|rmfl||0.21340|
+6|STD_ERR of ratios|wu|R|ltz||0.04207|
+6|STD_ERR of ratios|animal|A|ltz||0.04273|
+6|STD_ERR of ratios|animal|A|ltz|rmfl|0.04134
+6|STD_ERR of ratios|animal|A|rmfl||0.05078|
+6|STD_ERR of ratios|residual|E|ltz||0.01406|
+6|STD_ERR of ratios|residual|E|ltz|rmfl|0.00385
+6|STD_ERR of ratios|residual|E|rmfl||0.05078|
+7|NATURAL|wu|R|ltz||480.60000|
+7|NATURAL|wu|R|ltz|ptz|211.20000
+7|NATURAL|wu|R|ptz||644.70000|
+7|NATURAL|animal|A|ltz||3543.00000|
+7|NATURAL|animal|A|ltz|ptz|4241.00000
+7|NATURAL|animal|A|ptz||6564.00000|
+7|NATURAL|residual|E|ltz||191.00000|
+7|NATURAL|residual|E|ltz|ptz|130.70000
+7|NATURAL|residual|E|ptz||1689.00000|
+7|Phenotypic|||ltz||4215.00000|
+7|Phenotypic|||ltz|ptz|4583.00000
+7|Phenotypic|||ptz||8897.00000|
+7|RATIOS|wu|R|ltz||0.11400|
+7|RATIOS|wu|R|ltz|ptz|0.37940
+7|RATIOS|wu|R|ptz||0.07246|
+7|RATIOS|animal|A|ltz||0.84070|
+7|RATIOS|animal|A|ltz|ptz|0.87940
+7|RATIOS|animal|A|ptz||0.73770|
+7|RATIOS|residual|E|ltz||0.04531|
+7|RATIOS|residual|E|ltz|ptz|0.23020
+7|RATIOS|residual|E|ptz||0.18980|
+7|STD_ERR of components|wu|R|ltz||2.39800|
+7|STD_ERR of components|wu|R|ltz|ptz|2.71800
+7|STD_ERR of components|wu|R|ptz||3.58300|
+7|STD_ERR of components|animal|A|ltz||1.09700|
+7|STD_ERR of components|animal|A|ltz|ptz|2.21100
+7|STD_ERR of components|animal|A|ptz||4.45700|
+7|STD_ERR of components|residual|E|ltz||0.80460|
+7|STD_ERR of components|residual|E|ltz|ptz|1.51800
+7|STD_ERR of components|residual|E|ptz||3.21700|
+7|STD_ERR of ratios|wu|R|ltz||0.03408|
+7|STD_ERR of ratios|wu|R|ltz|ptz|0.46170
+7|STD_ERR of ratios|wu|R|ptz||0.03769|
+7|STD_ERR of ratios|animal|A|ltz||0.03524|
+7|STD_ERR of ratios|animal|A|ltz|ptz|0.02626
+7|STD_ERR of ratios|animal|A|ptz||0.04774|
+7|STD_ERR of ratios|residual|E|ltz||0.01317|
+7|STD_ERR of ratios|residual|E|ltz|ptz|0.24220
+7|STD_ERR of ratios|residual|E|ptz||0.03973|
+8|NATURAL|animal|A|usf||6.81100|
+8|NATURAL|animal|A|usf|imf|0.59660
+8|NATURAL|animal|A|imf||0.19480|
+8|NATURAL|residual|E|usf||0.16490|
+8|NATURAL|residual|E|usf|imf|0.12600
+8|NATURAL|residual|E|imf||0.09620|
+8|Phenotypic|||usf||6.97600|
+8|Phenotypic|||usf|imf|0.72260
+8|Phenotypic|||imf||0.29100|
+8|RATIOS|animal|A|usf||0.97640|
+8|RATIOS|animal|A|usf|imf|0.51790
+8|RATIOS|animal|A|imf||0.66940|
+8|RATIOS|residual|E|usf||0.02364|
+8|RATIOS|residual|E|usf|imf|1.00000
+8|RATIOS|residual|E|imf||0.33060|
+8|STD_ERR of components|animal|A|usf||0.03277|
+8|STD_ERR of components|animal|A|usf|imf|0.10290
+8|STD_ERR of components|animal|A|imf||0.03170|
+8|STD_ERR of components|residual|E|usf||0.02570|
+8|STD_ERR of components|residual|E|usf|imf|0.43340
+8|STD_ERR of components|residual|E|imf||0.02333|
+8|STD_ERR of ratios|animal|A|usf||0.01095|
+8|STD_ERR of ratios|animal|A|usf|imf|0.03818
+8|STD_ERR of ratios|animal|A|imf||0.05011|
+8|STD_ERR of ratios|residual|E|usf||0.01095|
+8|STD_ERR of ratios|residual|E|usf|imf|0.00087
+8|STD_ERR of ratios|residual|E|imf||0.05011|
+9|NATURAL|animal|A|usf||6.84100|
+9|NATURAL|animal|A|usf|fuvz|18.22000
+9|NATURAL|animal|A|fuvz||269.90000|
+9|NATURAL|residual|E|usf||0.14630|
+9|NATURAL|residual|E|usf|fuvz|4.29500
+9|NATURAL|residual|E|fuvz||126.10000|
+9|Phenotypic|||usf||6.98700|
+9|Phenotypic|||usf|fuvz|22.52000
+9|Phenotypic|||fuvz||396.00000|
+9|RATIOS|animal|A|usf||0.97910|
+9|RATIOS|animal|A|usf|fuvz|0.42420
+9|RATIOS|animal|A|fuvz||0.68150|
+9|RATIOS|residual|E|usf||0.02093|
+9|RATIOS|residual|E|usf|fuvz|1.00000
+9|RATIOS|residual|E|fuvz||0.31850|
+9|STD_ERR of components|animal|A|usf||0.03669|
+9|STD_ERR of components|animal|A|usf|fuvz|0.06900
+9|STD_ERR of components|animal|A|fuvz||0.79320|
+9|STD_ERR of components|residual|E|usf||0.02774|
+9|STD_ERR of components|residual|E|usf|fuvz|0.16980
+9|STD_ERR of components|residual|E|fuvz||0.60910|
+9|STD_ERR of ratios|animal|A|usf||0.01181|
+9|STD_ERR of ratios|animal|A|usf|fuvz|0.04383
+9|STD_ERR of ratios|animal|A|fuvz||0.05526|
+9|STD_ERR of ratios|residual|E|usf||0.01181|
+9|STD_ERR of ratios|residual|E|usf|fuvz|0.00059
+9|STD_ERR of ratios|residual|E|fuvz||0.05526|
+10|NATURAL|animal|A|usf||6.91700|
+10|NATURAL|animal|A|usf|ffl|8.73700
+10|NATURAL|animal|A|ffl||13.96000|
+10|NATURAL|residual|E|usf||0.09078|
+10|NATURAL|residual|E|usf|ffl|0.55620
+10|NATURAL|residual|E|ffl||3.40800|
+10|Phenotypic|||usf||7.00800|
+10|Phenotypic|||usf|ffl|9.29300
+10|Phenotypic|||ffl||17.37000|
+10|RATIOS|animal|A|usf||0.98700|
+10|RATIOS|animal|A|usf|ffl|0.88910
+10|RATIOS|animal|A|ffl||0.80380|
+10|RATIOS|residual|E|usf||0.01295|
+10|RATIOS|residual|E|usf|ffl|1.00000
+10|RATIOS|residual|E|ffl||0.19620|
+10|STD_ERR of components|animal|A|usf||0.03279|
+10|STD_ERR of components|animal|A|usf|ffl|0.10900
+10|STD_ERR of components|animal|A|ffl||0.20900|
+10|STD_ERR of components|residual|E|usf||0.02183|
+10|STD_ERR of components|residual|E|usf|ffl|0.27140
+10|STD_ERR of components|residual|E|ffl||0.15470|
+10|STD_ERR of ratios|animal|A|usf||0.00927|
+10|STD_ERR of ratios|animal|A|usf|ffl|0.01820
+10|STD_ERR of ratios|animal|A|ffl||0.04186|
+10|STD_ERR of ratios|residual|E|usf||0.00927|
+10|STD_ERR of ratios|residual|E|usf|ffl|0.00181
+10|STD_ERR of ratios|residual|E|ffl||0.04186|
+11|NATURAL|animal|A|usf||6.07900|
+11|NATURAL|animal|A|usf|usmd|-0.90300
+11|NATURAL|animal|A|usmd||9.35500|
+11|NATURAL|residual|E|usf||0.76660|
+11|NATURAL|residual|E|usf|usmd|0.55170
+11|NATURAL|residual|E|usmd||1.06100|
+11|Phenotypic|||usf||6.84500|
+11|Phenotypic|||usf|usmd|-0.35120
+11|Phenotypic|||usmd||10.42000|
+11|RATIOS|animal|A|usf||0.88800|
+11|RATIOS|animal|A|usf|usmd|-0.11970
+11|RATIOS|animal|A|usmd||0.89810|
+11|RATIOS|residual|E|usf||0.11200|
+11|RATIOS|residual|E|usf|usmd|0.61170
+11|RATIOS|residual|E|usmd||0.10190|
+12|NATURAL|animal|A|usf||7.01600|
+12|NATURAL|animal|A|usf|rmfl|-7.52200
+12|NATURAL|animal|A|rmfl||23.27000|
+12|NATURAL|residual|E|usf||0.00657|
+12|NATURAL|residual|E|usf|rmfl|-0.01419
+12|NATURAL|residual|E|rmfl||0.03068|
+12|Phenotypic|||usf||7.02300|
+12|Phenotypic|||usf|rmfl|-7.53700
+12|Phenotypic|||rmfl||23.30000|
+12|RATIOS|animal|A|usf||0.99910|
+12|RATIOS|animal|A|usf|rmfl|-0.58870
+12|RATIOS|animal|A|rmfl||0.99870|
+12|RATIOS|residual|E|usf||0.00093|
+12|RATIOS|residual|E|usf|rmfl|-1.00000
+12|RATIOS|residual|E|rmfl||0.00132|
+13|NATURAL|animal|A|usf||6.62500|
+13|NATURAL|animal|A|usf|ptz|4.74700
+13|NATURAL|animal|A|ptz||3983.00000|
+13|NATURAL|wu|R|usf||3399.00000|
+13|NATURAL|residual|E|usf||0.33950|
+13|NATURAL|residual|E|usf|ptz|4.93300
+13|NATURAL|residual|E|ptz||3326.00000|
+13|Phenotypic|||usf||6.96400|
+13|Phenotypic|||usf|ptz|9.68000
+13|Phenotypic|||ptz||10710.00000|
+13|RATIOS|animal|A|usf||0.95120|
+13|RATIOS|animal|A|usf|ptz|0.02922
+13|RATIOS|animal|A|ptz||0.37200|
+13|RATIOS|wu|R|usf||0.31740|
+13|RATIOS|residual|E|usf||0.04875|
+13|RATIOS|residual|E|usf|ptz|0.14680
+13|RATIOS|residual|E|ptz||0.31060|
+14|NATURAL|animal|A|imf||0.18160|
+14|NATURAL|animal|A|imf|fuvz|0.08441
+14|NATURAL|animal|A|fuvz||254.90000|
+14|NATURAL|residual|E|imf||0.10020|
+14|NATURAL|residual|E|imf|fuvz|1.35400
+14|NATURAL|residual|E|fuvz||132.70000|
+14|Phenotypic|||imf||0.28180|
+14|Phenotypic|||imf|fuvz|1.43900
+14|Phenotypic|||fuvz||387.60000|
+14|RATIOS|animal|A|imf||0.64450|
+14|RATIOS|animal|A|imf|fuvz|0.01241
+14|RATIOS|animal|A|fuvz||0.65770|
+14|RATIOS|residual|E|imf||0.35550|
+14|RATIOS|residual|E|imf|fuvz|0.37150
+14|RATIOS|residual|E|fuvz||0.34230|
+14|STD_ERR of components|animal|A|imf||0.02962|
+14|STD_ERR of components|animal|A|imf|fuvz|0.01493
+14|STD_ERR of components|animal|A|fuvz||0.84200|
+14|STD_ERR of components|residual|E|imf||0.02110|
+14|STD_ERR of components|residual|E|imf|fuvz|0.01131
+14|STD_ERR of components|residual|E|fuvz||0.60010|
+14|STD_ERR of ratios|animal|A|imf||0.04765|
+14|STD_ERR of ratios|animal|A|imf|fuvz|0.07344
+14|STD_ERR of ratios|animal|A|fuvz||0.05811|
+14|STD_ERR of ratios|residual|E|imf||0.04765|
+14|STD_ERR of ratios|residual|E|imf|fuvz|0.10250
+14|STD_ERR of ratios|residual|E|fuvz||0.05811|
+15|NATURAL|animal|A|imf||0.18120|
+15|NATURAL|animal|A|imf|ffl|0.41290
+15|NATURAL|animal|A|ffl||12.38000|
+15|NATURAL|residual|E|imf||0.10000|
+15|NATURAL|residual|E|imf|ffl|0.11680
+15|NATURAL|residual|E|ffl||3.51300|
+15|Phenotypic|||imf||0.28130|
+15|Phenotypic|||imf|ffl|0.52970
+15|Phenotypic|||ffl||15.90000|
+15|RATIOS|animal|A|imf||0.64430|
+15|RATIOS|animal|A|imf|ffl|0.27560
+15|RATIOS|animal|A|ffl||0.77900|
+15|RATIOS|residual|E|imf||0.35570|
+15|RATIOS|residual|E|imf|ffl|0.19700
+15|RATIOS|residual|E|ffl||0.22100|
+15|STD_ERR of components|animal|A|imf||0.03198|
+15|STD_ERR of components|animal|A|imf|ffl|0.02324
+15|STD_ERR of components|animal|A|ffl||0.24130|
+15|STD_ERR of components|residual|E|imf||0.02410|
+15|STD_ERR of components|residual|E|imf|ffl|0.01738
+15|STD_ERR of components|residual|E|ffl||0.16880|
+15|STD_ERR of ratios|animal|A|imf||0.05368|
+15|STD_ERR of ratios|animal|A|imf|ffl|0.06185
+15|STD_ERR of ratios|animal|A|ffl||0.05143|
+15|STD_ERR of ratios|residual|E|imf||0.05368|
+15|STD_ERR of ratios|residual|E|imf|ffl|0.12020
+15|STD_ERR of ratios|residual|E|ffl||0.05143|
+16|NATURAL|animal|A|imf||0.17890|
+16|NATURAL|animal|A|imf|usmd|-0.19730
+16|NATURAL|animal|A|usmd||10.78000|
+16|NATURAL|residual|E|imf||0.10080|
+16|NATURAL|residual|E|imf|usmd|-0.00243
+16|NATURAL|residual|E|usmd||0.00006|
+16|Phenotypic|||imf||0.27970|
+16|Phenotypic|||imf|usmd|-0.19970
+16|Phenotypic|||usmd||10.78000|
+16|RATIOS|animal|A|imf||0.63960|
+16|RATIOS|animal|A|imf|usmd|-0.14210
+16|RATIOS|animal|A|usmd||1.00000|
+16|RATIOS|residual|E|imf||0.36040|
+16|RATIOS|residual|E|imf|usmd|-0.99970
+16|RATIOS|residual|E|usmd||0.00001|
+16|STD_ERR of components|animal|A|imf||0.03109|
+16|STD_ERR of components|animal|A|imf|usmd|0.03111
+16|STD_ERR of components|animal|A|usmd||0.01884|
+16|STD_ERR of components|residual|E|imf||0.02292|
+16|STD_ERR of components|residual|E|imf|usmd|0.00622
+16|STD_ERR of components|residual|E|usmd||0.00030|
+16|STD_ERR of ratios|animal|A|imf||0.05177|
+16|STD_ERR of ratios|animal|A|imf|usmd|0.09600
+16|STD_ERR of ratios|animal|A|usmd||0.00012|
+16|STD_ERR of ratios|residual|E|imf||0.05177|
+16|STD_ERR of ratios|residual|E|imf|usmd|0.02136
+16|STD_ERR of ratios|residual|E|usmd||0.00012|
+17|NATURAL|animal|A|imf||0.18080|
+17|NATURAL|animal|A|imf|rmfl|-0.58920
+17|NATURAL|animal|A|rmfl||21.37000|
+17|NATURAL|residual|E|imf||0.10050|
+17|NATURAL|residual|E|imf|rmfl|-0.14960
+17|NATURAL|residual|E|rmfl||0.71000|
+17|Phenotypic|||imf||0.28120|
+17|Phenotypic|||imf|rmfl|-0.73880
+17|Phenotypic|||rmfl||22.08000|
+17|RATIOS|animal|A|imf||0.64270|
+17|RATIOS|animal|A|imf|rmfl|-0.29980
+17|RATIOS|animal|A|rmfl||0.96780|
+17|RATIOS|residual|E|imf||0.35730|
+17|RATIOS|residual|E|imf|rmfl|-0.56000
+17|RATIOS|residual|E|rmfl||0.03215|
+17|STD_ERR of components|animal|A|imf||0.03138|
+17|STD_ERR of components|animal|A|imf|rmfl|0.02336
+17|STD_ERR of components|animal|A|rmfl||0.33050|
+17|STD_ERR of components|residual|E|imf||0.02386|
+17|STD_ERR of components|residual|E|imf|rmfl|0.01982
+17|STD_ERR of components|residual|E|rmfl||0.22320|
+17|STD_ERR of ratios|animal|A|imf||0.05310|
+17|STD_ERR of ratios|animal|A|imf|rmfl|0.05293
+17|STD_ERR of ratios|animal|A|rmfl||0.05243|
+17|STD_ERR of ratios|residual|E|imf||0.05310|
+17|STD_ERR of ratios|residual|E|imf|rmfl|0.44550
+17|STD_ERR of ratios|residual|E|rmfl||0.05243|
+18|NATURAL|animal|A|imf||0.18220|
+18|NATURAL|animal|A|imf|ptz|5.50500
+18|NATURAL|animal|A|ptz||5769.00000|
+18|NATURAL|wu|R|imf||3203.00000|
+18|NATURAL|residual|E|imf||0.09943|
+18|NATURAL|residual|E|imf|ptz|-2.22900
+18|NATURAL|residual|E|ptz||1848.00000|
+18|Phenotypic|||imf||0.28170|
+18|Phenotypic|||imf|ptz|3.27600
+18|Phenotypic|||ptz||10820.00000|
+18|RATIOS|animal|A|imf||0.64700|
+18|RATIOS|animal|A|imf|ptz|0.16980
+18|RATIOS|animal|A|ptz||0.53310|
+18|RATIOS|wu|R|imf||0.29600|
+18|RATIOS|residual|E|imf||0.35300|
+18|RATIOS|residual|E|imf|ptz|-0.16440
+18|RATIOS|residual|E|ptz||0.17080|
+18|STD_ERR of components|animal|A|imf||0.02945|
+18|STD_ERR of components|animal|A|imf|ptz|0.02290
+18|STD_ERR of components|animal|A|ptz||5.00700|
+18|STD_ERR of components|wu|R|imf||18.65000|
+18|STD_ERR of components|residual|E|imf||0.02258|
+18|STD_ERR of components|residual|E|imf|ptz|0.01546
+18|STD_ERR of components|residual|E|ptz||3.43000|
+18|STD_ERR of ratios|animal|A|imf||0.14410|
+18|STD_ERR of ratios|animal|A|imf|ptz|0.06870
+18|STD_ERR of ratios|animal|A|ptz||0.03800|
+18|STD_ERR of ratios|wu|R|imf||0.12230|
+18|STD_ERR of ratios|residual|E|imf||0.09573|
+18|STD_ERR of ratios|residual|E|imf|ptz|0.12480
+18|STD_ERR of ratios|residual|E|ptz||0.03396|
+19|NATURAL|animal|A|fuvz||268.00000|
+19|NATURAL|animal|A|fuvz|ffl|-10.18000
+19|NATURAL|animal|A|ffl||12.38000|
+19|NATURAL|residual|E|fuvz||122.60000|
+19|NATURAL|residual|E|fuvz|ffl|20.77000
+19|NATURAL|residual|E|ffl||3.51700|
+19|Phenotypic|||fuvz||390.60000|
+19|Phenotypic|||fuvz|ffl|10.58000
+19|Phenotypic|||ffl||15.90000|
+19|RATIOS|animal|A|fuvz||0.68610|
+19|RATIOS|animal|A|fuvz|ffl|-0.17680
+19|RATIOS|animal|A|ffl||0.77880|
+19|RATIOS|residual|E|fuvz||0.31390|
+19|RATIOS|residual|E|fuvz|ffl|1.00000
+19|RATIOS|residual|E|ffl||0.22120|
+19|STD_ERR of components|animal|A|fuvz||0.76530|
+19|STD_ERR of components|animal|A|fuvz|ffl|0.69190
+19|STD_ERR of components|animal|A|ffl||0.51570|
+19|STD_ERR of components|residual|E|fuvz||0.53290|
+19|STD_ERR of components|residual|E|fuvz|ffl|0.78910
+19|STD_ERR of components|residual|E|ffl||0.28100|
+19|STD_ERR of ratios|animal|A|fuvz||0.05100|
+19|STD_ERR of ratios|animal|A|fuvz|ffl|0.09515
+19|STD_ERR of ratios|animal|A|ffl||0.09363|
+19|STD_ERR of ratios|residual|E|fuvz||0.05100|
+19|STD_ERR of ratios|residual|E|fuvz|ffl|0.00001
+19|STD_ERR of ratios|residual|E|ffl||0.09363|
+20|NATURAL|animal|A|fuvz||249.00000|
+20|NATURAL|animal|A|fuvz|usmd|-2.26000
+20|NATURAL|animal|A|usmd||10.78000|
+20|NATURAL|residual|E|fuvz||135.40000|
+20|NATURAL|residual|E|fuvz|usmd|0.38410
+20|NATURAL|residual|E|usmd||0.00109|
+20|Phenotypic|||fuvz||384.40000|
+20|Phenotypic|||fuvz|usmd|-1.87500
+20|Phenotypic|||usmd||10.78000|
+20|RATIOS|animal|A|fuvz||0.64780|
+20|RATIOS|animal|A|fuvz|usmd|-0.04362
+20|RATIOS|animal|A|usmd||0.99990|
+20|RATIOS|residual|E|fuvz||0.35220|
+20|RATIOS|residual|E|fuvz|usmd|1.00000
+20|RATIOS|residual|E|usmd||0.00010|
+21|NATURAL|animal|A|fuvz||254.30000|
+21|NATURAL|animal|A|fuvz|rmfl|-15.81000
+21|NATURAL|animal|A|rmfl||21.34000|
+21|NATURAL|residual|E|fuvz||133.00000|
+21|NATURAL|residual|E|fuvz|rmfl|-5.81800
+21|NATURAL|residual|E|rmfl||0.84840|
+21|Phenotypic|||fuvz||387.30000|
+21|Phenotypic|||fuvz|rmfl|-21.63000
+21|Phenotypic|||rmfl||22.18000|
+21|RATIOS|animal|A|fuvz||0.65660|
+21|RATIOS|animal|A|fuvz|rmfl|-0.21460
+21|RATIOS|animal|A|rmfl||0.96180|
+21|RATIOS|residual|E|fuvz||0.34340|
+21|RATIOS|residual|E|fuvz|rmfl|-0.54770
+21|RATIOS|residual|E|rmfl||0.03825|
+21|STD_ERR of components|animal|A|fuvz||0.78410|
+21|STD_ERR of components|animal|A|fuvz|rmfl|0.98770
+21|STD_ERR of components|animal|A|rmfl||0.33270|
+21|STD_ERR of components|residual|E|fuvz||0.57910|
+21|STD_ERR of components|residual|E|fuvz|rmfl|0.85450
+21|STD_ERR of components|residual|E|rmfl||0.21770|
+21|STD_ERR of ratios|animal|A|fuvz||0.05538|
+21|STD_ERR of ratios|animal|A|fuvz|rmfl|0.06131
+21|STD_ERR of ratios|animal|A|rmfl||0.05116|
+21|STD_ERR of ratios|residual|E|fuvz||0.05538|
+21|STD_ERR of ratios|residual|E|fuvz|rmfl|0.38690
+21|STD_ERR of ratios|residual|E|rmfl||0.05116|
+22|NATURAL|animal|A|fuvz||254.40000|
+22|NATURAL|animal|A|fuvz|ptz|-497.80000
+22|NATURAL|animal|A|ptz||5655.00000|
+22|NATURAL|wu|R|fuvz||2364.00000|
+22|NATURAL|residual|E|fuvz||133.10000|
+22|NATURAL|residual|E|fuvz|ptz|-166.80000
+22|NATURAL|residual|E|ptz||1927.00000|
+22|Phenotypic|||fuvz||387.50000|
+22|Phenotypic|||fuvz|ptz|-664.60000
+22|Phenotypic|||ptz||9946.00000|
+22|RATIOS|animal|A|fuvz||0.65660|
+22|RATIOS|animal|A|fuvz|ptz|-0.41500
+22|RATIOS|animal|A|ptz||0.56850|
+22|RATIOS|wu|R|fuvz||0.23770|
+22|RATIOS|residual|E|fuvz||0.34340|
+22|RATIOS|residual|E|fuvz|ptz|-0.32940
+22|RATIOS|residual|E|ptz||0.19380|
+22|STD_ERR of components|animal|A|fuvz||0.77580|
+22|STD_ERR of components|animal|A|fuvz|ptz|0.95460
+22|STD_ERR of components|animal|A|ptz||5.46500|
+22|STD_ERR of components|wu|R|fuvz||14.62000|
+22|STD_ERR of components|residual|E|fuvz||0.58040|
+22|STD_ERR of components|residual|E|fuvz|ptz|0.69610
+22|STD_ERR of components|residual|E|ptz||3.73400|
+22|STD_ERR of ratios|animal|A|fuvz||0.28680|
+22|STD_ERR of ratios|animal|A|fuvz|ptz|0.05653
+22|STD_ERR of ratios|animal|A|ptz||0.04462|
+22|STD_ERR of ratios|wu|R|fuvz||0.11320|
+22|STD_ERR of ratios|residual|E|fuvz||0.15000|
+22|STD_ERR of ratios|residual|E|fuvz|ptz|0.10230
+22|STD_ERR of ratios|residual|E|ptz||0.04070|
+23|NATURAL|animal|A|ffl||12.24000|
+23|NATURAL|animal|A|ffl|usmd|-2.46300
+23|NATURAL|animal|A|usmd||10.78000|
+23|NATURAL|residual|E|ffl||3.56200|
+23|NATURAL|residual|E|ffl|usmd|0.00085
+23|NATURAL|residual|E|usmd||0.00000|
+23|Phenotypic|||ffl||15.81000|
+23|Phenotypic|||ffl|usmd|-2.46200
+23|Phenotypic|||usmd||10.78000|
+23|RATIOS|animal|A|ffl||0.77470|
+23|RATIOS|animal|A|ffl|usmd|-0.21430
+23|RATIOS|animal|A|usmd||1.00000|
+23|RATIOS|residual|E|ffl||0.22530|
+23|RATIOS|residual|E|ffl|usmd|0.93370
+23|RATIOS|residual|E|usmd||0.00000|
+24|NATURAL|animal|A|ffl||12.43000|
+24|NATURAL|animal|A|ffl|rmfl|0.48720
+24|NATURAL|animal|A|rmfl||20.81000|
+24|NATURAL|residual|E|ffl||3.46900|
+24|NATURAL|residual|E|ffl|rmfl|-2.04700
+24|NATURAL|residual|E|rmfl||1.20700|
+24|Phenotypic|||ffl||15.90000|
+24|Phenotypic|||ffl|rmfl|-1.55900
+24|Phenotypic|||rmfl||22.02000|
+24|RATIOS|animal|A|ffl||0.78180|
+24|RATIOS|animal|A|ffl|rmfl|0.03029
+24|RATIOS|animal|A|rmfl||0.94520|
+24|RATIOS|residual|E|ffl||0.21820|
+24|RATIOS|residual|E|ffl|rmfl|-1.00000
+24|RATIOS|residual|E|rmfl||0.05483|
+24|STD_ERR of components|animal|A|ffl||0.24390|
+24|STD_ERR of components|animal|A|ffl|rmfl|0.16520
+24|STD_ERR of components|animal|A|rmfl||0.20520|
+24|STD_ERR of components|residual|E|ffl||0.18140|
+24|STD_ERR of components|residual|E|ffl|rmfl|0.19150
+24|STD_ERR of components|residual|E|rmfl||0.13880|
+24|STD_ERR of ratios|animal|A|ffl||0.05439|
+24|STD_ERR of ratios|animal|A|ffl|rmfl|0.05422
+24|STD_ERR of ratios|animal|A|rmfl||0.03277|
+24|STD_ERR of ratios|residual|E|ffl||0.05439|
+24|STD_ERR of ratios|residual|E|ffl|rmfl|0.00119
+24|STD_ERR of ratios|residual|E|rmfl||0.03277|
+25|NATURAL|animal|A|ffl||12.65000|
+25|NATURAL|animal|A|ffl|ptz|82.31000
+25|NATURAL|animal|A|ptz||5903.00000|
+25|NATURAL|wu|R|ffl||3385.00000|
+25|NATURAL|residual|E|ffl||3.34800|
+25|NATURAL|residual|E|ffl|ptz|-19.16000
+25|NATURAL|residual|E|ptz||1748.00000|
+25|Phenotypic|||ffl||16.00000|
+25|Phenotypic|||ffl|ptz|63.15000
+25|Phenotypic|||ptz||11040.00000|
+25|RATIOS|animal|A|ffl||0.79070|
+25|RATIOS|animal|A|ffl|ptz|0.30120
+25|RATIOS|animal|A|ptz||0.53490|
+25|RATIOS|wu|R|ffl||0.30670|
+25|RATIOS|residual|E|ffl||0.20930|
+25|RATIOS|residual|E|ffl|ptz|-0.25040
+25|RATIOS|residual|E|ptz||0.15840|
+25|STD_ERR of components|animal|A|ffl||0.26140|
+25|STD_ERR of components|animal|A|ffl|ptz|0.19480
+25|STD_ERR of components|animal|A|ptz||4.81400|
+25|STD_ERR of components|wu|R|ffl||1.49600|
+25|STD_ERR of components|residual|E|ffl||0.19010|
+25|STD_ERR of components|residual|E|ffl|ptz|0.12670
+25|STD_ERR of components|residual|E|ptz||3.23900|
+25|STD_ERR of ratios|animal|A|ffl||0.05940|
+25|STD_ERR of ratios|animal|A|ffl|ptz|0.06414
+25|STD_ERR of ratios|animal|A|ptz||0.03543|
+25|STD_ERR of ratios|wu|R|ffl||0.01192|
+25|STD_ERR of ratios|residual|E|ffl||0.05700|
+25|STD_ERR of ratios|residual|E|ffl|ptz|0.20510
+25|STD_ERR of ratios|residual|E|ptz||0.03137|
+26|NATURAL|animal|A|usmd||10.78000|
+26|NATURAL|animal|A|usmd|rmfl|6.47600
+26|NATURAL|animal|A|rmfl||20.90000|
+26|NATURAL|residual|E|usmd||0.00002|
+26|NATURAL|residual|E|usmd|rmfl|0.00430
+26|NATURAL|residual|E|rmfl||0.91810|
+26|Phenotypic|||usmd||10.78000|
+26|Phenotypic|||usmd|rmfl|6.48000
+26|Phenotypic|||rmfl||21.81000|
+26|RATIOS|animal|A|usmd||1.00000|
+26|RATIOS|animal|A|usmd|rmfl|0.43140
+26|RATIOS|animal|A|rmfl||0.95790|
+26|RATIOS|residual|E|usmd||0.00000|
+26|RATIOS|residual|E|usmd|rmfl|0.96370
+26|RATIOS|residual|E|rmfl||0.04209|
+27|NATURAL|animal|A|usmd||10.75000|
+27|NATURAL|animal|A|usmd|ptz|99.05000
+27|NATURAL|animal|A|ptz||5075.00000|
+27|NATURAL|wu|R|usmd||3539.00000|
+27|NATURAL|residual|E|usmd||0.02106|
+27|NATURAL|residual|E|usmd|ptz|-7.08400
+27|NATURAL|residual|E|ptz||2383.00000|
+27|Phenotypic|||usmd||10.77000|
+27|Phenotypic|||usmd|ptz|91.96000
+27|Phenotypic|||ptz||11000.00000|
+27|RATIOS|animal|A|usmd||0.99800|
+27|RATIOS|animal|A|usmd|ptz|0.42410
+27|RATIOS|animal|A|ptz||0.46150|
+27|RATIOS|wu|R|usmd||0.32190|
+27|RATIOS|residual|E|usmd||0.00196|
+27|RATIOS|residual|E|usmd|ptz|-1.00000
+27|RATIOS|residual|E|ptz||0.21670|
+27|STD_ERR of components|animal|A|usmd||0.01812|
+27|STD_ERR of components|animal|A|usmd|ptz|0.09897
+27|STD_ERR of components|animal|A|ptz||4.34800|
+27|STD_ERR of components|wu|R|usmd||0.63070|
+27|STD_ERR of components|residual|E|usmd||0.00619|
+27|STD_ERR of components|residual|E|usmd|ptz|0.49430
+27|STD_ERR of components|residual|E|ptz||3.24900|
+27|STD_ERR of ratios|animal|A|usmd||0.01066|
+27|STD_ERR of ratios|animal|A|usmd|ptz|0.04967
+27|STD_ERR of ratios|animal|A|ptz||0.03445|
+27|STD_ERR of ratios|wu|R|usmd||0.00414|
+27|STD_ERR of ratios|residual|E|usmd||0.00243|
+27|STD_ERR of ratios|residual|E|usmd|ptz|0.00249
+27|STD_ERR of ratios|residual|E|ptz||0.03141|
+28|NATURAL|animal|A|rmfl||21.71000|
+28|NATURAL|animal|A|rmfl|ptz|-71.59000
+28|NATURAL|animal|A|ptz||5791.00000|
+28|NATURAL|wu|R|rmfl||3190.00000|
+28|NATURAL|residual|E|rmfl||0.57520|
+28|NATURAL|residual|E|rmfl|ptz|28.95000
+28|NATURAL|residual|E|ptz||1825.00000|
+28|Phenotypic|||rmfl||22.29000|
+28|Phenotypic|||rmfl|ptz|-42.64000
+28|Phenotypic|||ptz||10810.00000|
+28|RATIOS|animal|A|rmfl||0.97420|
+28|RATIOS|animal|A|rmfl|ptz|-0.20190
+28|RATIOS|animal|A|ptz||0.53590|
+28|RATIOS|wu|R|rmfl||0.29520|
+28|RATIOS|residual|E|rmfl||0.02581|
+28|RATIOS|residual|E|rmfl|ptz|0.89360
+28|RATIOS|residual|E|ptz||0.16890|
+28|STD_ERR of components|animal|A|rmfl||0.31630|
+28|STD_ERR of components|animal|A|rmfl|ptz|0.24100
+28|STD_ERR of components|animal|A|ptz||4.71900|
+28|STD_ERR of components|wu|R|rmfl||10.28000|
+28|STD_ERR of components|residual|E|rmfl||0.20710|
+28|STD_ERR of components|residual|E|rmfl|ptz|1.64900
+28|STD_ERR of components|residual|E|ptz||3.37200|
+28|STD_ERR of ratios|animal|A|rmfl||0.08643|
+28|STD_ERR of ratios|animal|A|rmfl|ptz|0.06401
+28|STD_ERR of ratios|animal|A|ptz||0.03572|
+28|STD_ERR of ratios|wu|R|rmfl||0.06477|
+28|STD_ERR of ratios|residual|E|rmfl||0.05052|
+28|STD_ERR of ratios|residual|E|rmfl|ptz|1.08700
+28|STD_ERR of ratios|residual|E|ptz||0.03262|
+29|NATURAL|wu|R|ltz||556.10000|
+29|NATURAL|animal|A|ltz||3310.00000|
+29|NATURAL|animal|A|ltz|usf|19.72000
+29|NATURAL|animal|A|usf||6.23400|
+29|NATURAL|residual|E|ltz||375.00000|
+29|NATURAL|residual|E|ltz|usf|17.15000
+29|NATURAL|residual|E|usf||0.78450|
+29|Phenotypic|||ltz||4241.00000|
+29|Phenotypic|||ltz|usf|36.87000
+29|Phenotypic|||usf||7.01800|
+29|RATIOS|wu|R|ltz||0.13110|
+29|RATIOS|animal|A|ltz||0.78040|
+29|RATIOS|animal|A|ltz|usf|0.13730
+29|RATIOS|animal|A|usf||0.88820|
+29|RATIOS|residual|E|ltz||0.08842|
+29|RATIOS|residual|E|ltz|usf|1.00000
+29|RATIOS|residual|E|usf||0.11180|
+30|NATURAL|wu|R|ltz||467.40000|
+30|NATURAL|animal|A|ltz||3573.00000|
+30|NATURAL|animal|A|ltz|imf|-2.78000
+30|NATURAL|animal|A|imf||0.17730|
+30|NATURAL|residual|E|ltz||163.10000|
+30|NATURAL|residual|E|ltz|imf|4.09000
+30|NATURAL|residual|E|imf||0.10260|
+30|Phenotypic|||ltz||4203.00000|
+30|Phenotypic|||ltz|imf|1.31100
+30|Phenotypic|||imf||0.27990|
+30|RATIOS|wu|R|ltz||0.11120|
+30|RATIOS|animal|A|ltz||0.85000|
+30|RATIOS|animal|A|ltz|imf|-0.11050
+30|RATIOS|animal|A|imf||0.63340|
+30|RATIOS|residual|E|ltz||0.03879|
+30|RATIOS|residual|E|ltz|imf|1.00000
+30|RATIOS|residual|E|imf||0.36660|
+30|STD_ERR of components|wu|R|ltz||2.43500|
+30|STD_ERR of components|animal|A|ltz||1.17300|
+30|STD_ERR of components|animal|A|ltz|imf|2.07400
+30|STD_ERR of components|animal|A|imf||0.03130|
+30|STD_ERR of components|residual|E|ltz||0.90430|
+30|STD_ERR of components|residual|E|ltz|imf|17.07000
+30|STD_ERR of components|residual|E|imf||0.02404|
+30|STD_ERR of ratios|wu|R|ltz||0.03476|
+30|STD_ERR of ratios|animal|A|ltz||0.03620|
+30|STD_ERR of ratios|animal|A|ltz|imf|0.04884
+30|STD_ERR of ratios|animal|A|imf||0.05317|
+30|STD_ERR of ratios|residual|E|ltz||0.01478|
+30|STD_ERR of ratios|residual|E|ltz|imf|0.00366
+30|STD_ERR of ratios|residual|E|imf||0.05317|
+31|NATURAL|wu|R|ltz||467.20000|
+31|NATURAL|animal|A|ltz||3591.00000|
+31|NATURAL|animal|A|ltz|fuvz|-302.90000
+31|NATURAL|animal|A|fuvz||242.30000|
+31|NATURAL|residual|E|ltz||150.10000|
+31|NATURAL|residual|E|ltz|fuvz|-39.25000
+31|NATURAL|residual|E|fuvz||143.40000|
+31|Phenotypic|||ltz||4208.00000|
+31|Phenotypic|||ltz|fuvz|-342.10000
+31|Phenotypic|||fuvz||385.70000|
+31|RATIOS|wu|R|ltz||0.11100|
+31|RATIOS|animal|A|ltz||0.85330|
+31|RATIOS|animal|A|ltz|fuvz|-0.32470
+31|RATIOS|animal|A|fuvz||0.62810|
+31|RATIOS|residual|E|ltz||0.03566|
+31|RATIOS|residual|E|ltz|fuvz|-0.26760
+31|RATIOS|residual|E|fuvz||0.37190|
+31|STD_ERR of components|wu|R|ltz||2.77600|
+31|STD_ERR of components|animal|A|ltz||1.22300|
+31|STD_ERR of components|animal|A|ltz|fuvz|1.05400
+31|STD_ERR of components|animal|A|fuvz||0.82110|
+31|STD_ERR of components|residual|E|ltz||0.96320|
+31|STD_ERR of components|residual|E|ltz|fuvz|0.30370
+31|STD_ERR of components|residual|E|fuvz||0.60730|
+31|STD_ERR of ratios|wu|R|ltz||0.03960|
+31|STD_ERR of ratios|animal|A|ltz||0.04065|
+31|STD_ERR of ratios|animal|A|ltz|fuvz|0.03591
+31|STD_ERR of ratios|animal|A|fuvz||0.05882|
+31|STD_ERR of ratios|residual|E|ltz||0.01573|
+31|STD_ERR of ratios|residual|E|ltz|fuvz|0.03073
+31|STD_ERR of ratios|residual|E|fuvz||0.05882|
+32|NATURAL|wu|R|ltz||463.70000|
+32|NATURAL|animal|A|ltz||3569.00000|
+32|NATURAL|animal|A|ltz|ffl|37.91000
+32|NATURAL|animal|A|ffl||12.24000|
+32|NATURAL|residual|E|ltz||166.40000|
+32|NATURAL|residual|E|ltz|ffl|24.72000
+32|NATURAL|residual|E|ffl||3.67100|
+32|Phenotypic|||ltz||4199.00000|
+32|Phenotypic|||ltz|ffl|62.62000
+32|Phenotypic|||ffl||15.91000|
+32|RATIOS|wu|R|ltz||0.11040|
+32|RATIOS|animal|A|ltz||0.84990|
+32|RATIOS|animal|A|ltz|ffl|0.18130
+32|RATIOS|animal|A|ffl||0.76930|
+32|RATIOS|residual|E|ltz||0.03962|
+32|RATIOS|residual|E|ltz|ffl|1.00000
+32|RATIOS|residual|E|ffl||0.23070|
+32|STD_ERR of components|wu|R|ltz||2.38000|
+32|STD_ERR of components|animal|A|ltz||1.06900|
+32|STD_ERR of components|animal|A|ltz|ffl|2.02800
+32|STD_ERR of components|animal|A|ffl||0.22520|
+32|STD_ERR of components|residual|E|ltz||0.84560|
+32|STD_ERR of components|residual|E|ltz|ffl|8.98200
+32|STD_ERR of components|residual|E|ffl||0.16790|
+32|STD_ERR of ratios|wu|R|ltz||0.03404|
+32|STD_ERR of ratios|animal|A|ltz||0.03483|
+32|STD_ERR of ratios|animal|A|ltz|ffl|0.03916
+32|STD_ERR of ratios|animal|A|ffl||0.05031|
+32|STD_ERR of ratios|residual|E|ltz||0.01387|
+32|STD_ERR of ratios|residual|E|ltz|ffl|0.00082
+32|STD_ERR of ratios|residual|E|ffl||0.05031|
+33|NATURAL|wu|R|ltz||286.40000|
+33|NATURAL|animal|A|ltz||3475.00000|
+33|NATURAL|animal|A|ltz|usmd|46.11000
+33|NATURAL|animal|A|usmd||11.00000|
+33|NATURAL|residual|E|ltz||246.00000|
+33|NATURAL|residual|E|ltz|usmd|-2.50600
+33|NATURAL|residual|E|usmd||0.02553|
+33|Phenotypic|||ltz||4007.00000|
+33|Phenotypic|||ltz|usmd|43.60000
+33|Phenotypic|||usmd||11.02000|
+33|RATIOS|wu|R|ltz||0.07148|
+33|RATIOS|animal|A|ltz||0.86710|
+33|RATIOS|animal|A|ltz|usmd|0.23590
+33|RATIOS|animal|A|usmd||0.99770|
+33|RATIOS|residual|E|ltz||0.06139|
+33|RATIOS|residual|E|ltz|usmd|-1.00000
+33|RATIOS|residual|E|usmd||0.00232|
+34|NATURAL|wu|R|ltz||469.70000|
+34|NATURAL|animal|A|ltz||3569.00000|
+34|NATURAL|animal|A|ltz|rmfl|-32.79000
+34|NATURAL|animal|A|rmfl||20.59000|
+34|NATURAL|residual|E|ltz||166.10000|
+34|NATURAL|residual|E|ltz|rmfl|-15.32000
+34|NATURAL|residual|E|rmfl||1.41300|
+34|Phenotypic|||ltz||4205.00000|
+34|Phenotypic|||ltz|rmfl|-48.11000
+34|Phenotypic|||rmfl||22.00000|
+34|RATIOS|wu|R|ltz||0.11170|
+34|RATIOS|animal|A|ltz||0.84880|
+34|RATIOS|animal|A|ltz|rmfl|-0.12100
+34|RATIOS|animal|A|rmfl||0.93580|
+34|RATIOS|residual|E|ltz||0.03950|
+34|RATIOS|residual|E|ltz|rmfl|-1.00000
+34|RATIOS|residual|E|rmfl||0.06422|
+34|STD_ERR of components|wu|R|ltz||2.90400|
+34|STD_ERR of components|animal|A|ltz||1.14700|
+34|STD_ERR of components|animal|A|ltz|rmfl|2.03100
+34|STD_ERR of components|animal|A|rmfl||0.27690|
+34|STD_ERR of components|residual|E|ltz||0.86340|
+34|STD_ERR of components|residual|E|ltz|rmfl|2.86800
+34|STD_ERR of components|residual|E|rmfl||0.18900|
+34|STD_ERR of ratios|wu|R|ltz||0.04143|
+34|STD_ERR of ratios|animal|A|ltz||0.04093|
+34|STD_ERR of ratios|animal|A|ltz|rmfl|0.03543
+34|STD_ERR of ratios|animal|A|rmfl||0.04492|
+34|STD_ERR of ratios|residual|E|ltz||0.01432|
+34|STD_ERR of ratios|residual|E|ltz|rmfl|0.00432
+34|STD_ERR of ratios|residual|E|rmfl||0.04492|

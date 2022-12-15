@@ -1,0 +1,27 @@
+C traits / effects
+   animal 999999 1 15
+     ltz       0      16      15 
+     usf       0      31      15 
+    usmd       0      46      15 
+     ptz       0      61      15 
+    ph1k       0      76      15 
+    rmfl       0      91      15 
+     ffl       0     106      15 
+     imf       0     121      15 
+    fuvz       0     136      15 
+      dv       0     151      15 
+     alt      71     166      15 
+     lmf     118     181      15 
+    pelm      96     196      15 
+    skmw     230     211      15 
+     sex       4     226      15 
+      br      15     241      15 
+    bder      27     256      15 
+      sh       3     271      15 
+     bjq     459     286      15 
+      wn      13     301      15 
+      rk       3     316      15 
+      bg       6     331      15 
+      wu    1083     346      15 
+     uss       9     361      15 
+     abt     295     376      15 

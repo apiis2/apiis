@@ -1,0 +1,339 @@
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:27:39            ffl_rmfl.vce                              page 1
+ 
+ 
+ 
+    ********************************************************************************
+    *                    T R A I T S   A N D   E F F E C T S                       *
+    ********************************************************************************
+ 
+    Code Trait name  List of effects
+    ________________________________________________________________________________
+      1 ffl         skmw      sex       abt       bg        animal
+      2 rmfl        skmw      sex       abt       bg        animal
+ 
+    ********************************************************************************
+    *               E F F E C T S   A N D   C O V A R I A N C E S                  *
+    ********************************************************************************
+ 
+    Code   Effect name Type Length Level Start COVARIANCE  Type Length Level Start Pattern
+    ______________________________________________________________________________________
+       1   skmw       :  F     2      1      1
+       2   sex        :  F     2      3      3
+       3   abt        :  F     2      2      9
+       4   bg         :  F     2    306     13
+       5   animal     :  A     2  36408    625  animal     :  A     2      1      1 T T
+                                                residual   :  E     2      1      2 T T
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *                    G E N E R A L  I N F O R M A T I O N                      *
+    ********************************************************************************
+ 
+    VCE was started on :  at Tue Oct 16 14:27:39 2007 by: b08mueul
+ 
+    Comments:
+    ________________________________________________________________________________
+    |                 ************************************************             |
+    |                 *                     VCE-5                    *             |
+    |                 *                 version 5.1.2                *             |
+    |                 *            17-Dez-2003   14:42:53            *             |
+    |                 *         Linux 2.6.0-test11-bk11 i686         *             |
+    |                 *                  written by                  *             |
+    |                 *       Milena Kovac, Eildert Groeneveld       *             |
+    |                 *           and Alberto Garcia-Cortez          *             |
+    |                 ************************************************             |
+    | test mastitis                                                                |
+    ________________________________________________________________________________
+ 
+    Files involved
+    ________________________________________________________________________________
+    Current directory                  : /home/b08mueul/apiis/apiis-kurs/leicoma/zwisss/mslmr
+    Parameter file                     : ffl_rmfl.vce
+    Data input file                    : blupdata.txt.vce
+    Pedigree input file                : blupped.txt.vce
+    Log list file                      : ffl_rmfl.vce.lst
+    Covariances for dumped into        : ffl_rmfl.vce.cov-bin
+    Covariance matrices written in     : ffl_rmfl.vce.cov-fmt
+ 
+    ********************************************************************************
+    *                       D A T A  I N F O R M A T I O N                         *
+    ********************************************************************************
+ 
+    General statistics
+    ___________________________________________________________________
+ 
+    Variables   # rec.      min.        max.        avg.        std.
+    ___________________________________________________________________
+    ffl          1746    10.60000    43.71000    21.89962     4.50922
+    rmfl         1745    29.67000    64.72000    43.79741     5.12380
+    skmw         1746    77.00000   108.40000    88.19685     4.40709
+    ___________________________________________________________________
+ 
+    Pattern of traits
+    ________________________________
+     Count           ffl      rmfl
+    ________________________________
+       1745        x         x
+          1        x         -
+          1        x         -
+    ________________________________
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:27:39            ffl_rmfl.vce                              page 2
+ 
+ 
+    ********************************************************************************
+    *                  P E D I G R E E   I N F O R M A T I O N                     *
+    ********************************************************************************
+ 
+    Inbreeding             # of animals
+    ________________________________________________________________________________
+        0                   36408
+    ________________________________________________________________________________
+    Number of inbred animals           :            0
+    Average inbreeding (inbred animals):         0.00
+    Maximum inbreeding                 :         0.00
+ 
+    ********************************************************************************
+    *         C O V A R I A N C E   M A T R I X   I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    The following (co)variance matrices will be estimated (starting values):
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        5  1  1 A  animal                          36408 T T
+              0.1017E+02  0.8169E+00
+                          0.1319E+02
+ 
+        6  2  1 E  residual                        1745 T T
+              0.1017E+02  0.8169E+00
+                          0.1319E+02
+ 
+    ________________________________________________________________________________
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        5  1  1 A  animal                        
+              0.5000E+00  0.7053E-01
+                          0.5000E+00
+ 
+        6  2  1 E  residual                      
+              0.5000E+00  0.7053E-01
+                          0.5000E+00
+ 
+    ________________________________________________________________________________
+    Thus, optimization is in 6 dimensions.
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        ffl      rmfl
+    ________________________________________________________________________________
+    skmw                  F      1               1         1
+    sex                   F      3               1         1
+    abt                   F      2               1         1
+    bg                    F    306               1         1
+    animal                A  36408               1         1
+    ________________________________________________________________________________
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     1346
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     6664
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:    14956
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    21195
+    All non zeros are loaded           :       267971
+    Number of equations                :        73440
+    Filling rate of LHS storage space  :       0.8490
+    Hit rate by setting up LHS         :       1.0018
+    Zero diagonal coefficients stored  :            2
+    IS - allocated for ordering with   :     80000000
+    Dimension of equation system       :        73440
+    Rank of equation system            :        73433
+    Time for solving MME (h:min:sec)   :      0:00:02
+    Time for inversion (h:min:sec)     :      0:00:02
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        73440
+    Rank of the system                 :        73433
+    Equations set to zero              :  abt/1 abt/2 abt/3 abt/4 bg/1 bg/2 bg/66
+    # of nonzero coefficients (HS)     :       267971
+    Fill of coefficient matrix         :        0.005
+    # of NZE in factor                 :       207711
+    Total storage required             :      1771502
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:02
+    CPU-time for inverting (per rnd)   :      0:00:02
+    MFLOPs during factorization        :        98.70
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:27:42            ffl_rmfl.vce                              page 3
+ 
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        73440
+    Rank of the system                 :        73433
+    Equations set to zero              :  abt/1 abt/2 abt/3 abt/4 bg/1 bg/2 bg/66
+    # of nonzero coefficients (HS)     :       267971
+    Fill of coefficient matrix         :        0.005
+    # of NZE in factor                 :       207711
+    Total storage required             :      1771502
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:02
+    CPU-time for inverting (per rnd)   :      0:00:02
+    MFLOPs during factorization        :        98.70
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     2205
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     9233
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:    16400
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    31911
+    All non zeros are loaded           :       255117
+    Number of equations                :        73440
+    Filling rate of LHS storage space  :       0.8083
+    Hit rate by setting up LHS         :       1.0018
+    Zero diagonal coefficients stored  :            7
+    AG   4.6     1  20492.88     500   0   0   0   0   0   0   0   0 --  500  70 500 500  70 500
+    AG   0.9     2  56270.84     481 500   0   0   0   0   0   0   0 --  313 551 301 686 458 698
+    AG   0.9     3  52108.11       0 481 500   0   0   0   0   0   0 --  312 552 301 687 458 698
+    AG   0.9     4  46731.56       2   0 481 500   0   0   0   0   0 --  312 554 300 687 459 699
+    AG   0.9     5  41131.00       5   2   0 481 500   0   0   0   0 --  310 560 298 689 463 701
+    AG   0.9     6  34664.24      19   5   2   0 481 500   0   0   0 --  303 579 293 696 473 706
+    AG   0.9     7  26539.51      88  19   5   2   0 481 500   0   0 --  271 668 272 728 521 727
+    AG   0.9     8  39507.01    1615  88  19   5   2   0 481 500   0 --    0-947 331 999 869 668
+    AG   0.9     9  20355.90     9641615  88  19   5   2   0 481 500 --  526  16 529 473   0 470
+    AG   1.0    10  20333.50     182 9641615  88  19   5   2   0 481 --  567-108 577 432-181 422
+    AG   1.0    11  20321.81      31 182 9641615  88  19   5   2   0 --  578 -77 596 421-156 403
+    AG   0.9    12  20316.30      41  31 182 9641615  88  19   5   2 --  608 -67 638 391-173 361
+    AG   0.9    13  20305.37     205  41  31 182 9641615  88  19   5 --  761 -25 843 238-337 156
+    AG   0.9    14  20299.69      37 205  41  31 182 9641615  88  19 --  734 -36 813 265-300 186
+    AG   0.9    15  20297.22      51  37 205  41  31 182 9641615  88 --  758 -36 845 241-351 154
+    AG   0.9    16  20295.05     133  51  37 205  41  31 182 9641615 --  800 -32 898 199-485 101
+    AG   0.9    17  20294.48      93 133  51  37 205  41  31 182 964 --  816 -30 918 183-579  81
+    AG   0.9    18  20294.16      92  93 133  51  37 205  41  31 182 --  825 -26 932 174-671  67
+    AG   1.0    19  20293.92     111  92  93 133  51  37 205  41  31 --  830 -20 943 169-783  56
+    AG   1.2    20  20293.55     140 111  92  93 133  51  37 205  41 --  829  -8 950 170-923  49
+    AG   1.1    21  20293.62      75 140 111  92  93 133  51  37 205 --  825  12 945 174-999  54
+    AG   0.9    22  20293.40      18  75 140 111  92  93 133  51  37 --  827   0 950 172-980  49
+    AG   0.9    23  20293.10      23  18  75 140 111  92  93 133  51 --  807  24 940 192-992  59
+    AG   0.9    24  20293.00      16  23  18  75 140 111  92  93 133 --  791  36 935 208-982  64
+    AG   0.9    25  20292.98       8  16  23  18  75 140 111  92  93 --  791  37 936 208-991  63
+    AG   0.9    26  20292.96       7   8  16  23  18  75 140 111  92 --  791  38 937 208-998  62
+    AG   0.9    27  20292.95       1   7   8  16  23  18  75 140 111 --  790  36 939 209-999  60
+    AG   1.0    28  20292.93       4   1   7   8  16  23  18  75 140 --  785  33 941 214-999  58
+    AG   0.9    29  20292.92       4   4   1   7   8  16  23  18  75 --  781  30 944 218-999  55
+    AG   0.9    30  20292.92       0   4   4   1   7   8  16  23  18 --  781  30 945 218-999  54
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:28:12            ffl_rmfl.vce                              page 4
+ 
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        ffl      rmfl
+    ________________________________________________________________________________
+    skmw                  F      1               1         1
+    sex                   F      3               1         1
+    abt                   F      2 .             1         1
+    bg                    F    306 .             1         1
+    animal                A  36408               1         1
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        73440
+    Rank of the system                 :        73440
+    Equations set to zero              :  abt/1 abt/2 abt/3 abt/4 bg/1 bg/2 bg/66
+    # of nonzero coefficients (HS)     :       255117
+    Fill of coefficient matrix         :        0.005
+    # of NZE in factor                 :       207711
+    Total storage required             :      1771502
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:02
+    CPU-time for inverting (per rnd)   :      0:00:32
+    MFLOPs during factorization        :        61.03
+ 
+    ********************************************************************************
+    *                 E S T I M A T E S   I N F O R M A T I O N                    *
+    ********************************************************************************
+ 
+    Tue Oct 16 14:28:12 2007 bg/1 bg/2 bg/66              CPU time used:     0:00:32
+ 
+    AG Log likelihood :   20292.9202  status :  1   at iteration:      30 /    30
+ 
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        5  1  1 A  animal                          36408 T T
+              0.1243E+02  0.4872E+00
+                          0.2081E+02
+ 
+        6  2  1 E  residual                        1745 T T
+              0.3469E+01 -0.2047E+01
+                          0.1207E+01
+ 
+    --------------------------- Matrices: Phenotypic  ------------------------------
+              0.1590E+02 -0.1559E+01
+                          0.2202E+02
+ 
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        5  1  1 A  animal                        
+              0.7818E+00  0.3029E-01
+                          0.9452E+00
+ 
+        6  2  1 E  residual                      
+              0.2182E+00 -0.1000E+01
+                          0.5483E-01
+ 
+    ---------------------- Matrices: STD_ERR of components  ------------------------
+        5  1  1 A  animal                        
+              0.2439E+00  0.1652E+00
+                          0.2052E+00
+ 
+        6  2  1 E  residual                      
+              0.1814E+00  0.1915E+00
+                          0.1388E+00
+ 
+    ------------------------ Matrices: STD_ERR of ratios  --------------------------
+        5  1  1 A  animal                        
+              0.5439E-01  0.5422E-01
+                          0.3277E-01
+ 
+        6  2  1 E  residual                      
+              0.5439E-01  0.1191E-02
+                          0.3277E-01
+ 

@@ -1,0 +1,399 @@
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:08:25            usf_usmd.vce                              page 1
+ 
+ 
+ 
+    ********************************************************************************
+    *                    T R A I T S   A N D   E F F E C T S                       *
+    ********************************************************************************
+ 
+    Code Trait name  List of effects
+    ________________________________________________________________________________
+      1 usf         lmf       sex       bjq       bg        uss       animal
+      2 usmd        lmf       sex       bjq       bg        uss       animal
+ 
+    ********************************************************************************
+    *               E F F E C T S   A N D   C O V A R I A N C E S                  *
+    ********************************************************************************
+ 
+    Code   Effect name Type Length Level Start COVARIANCE  Type Length Level Start Pattern
+    ______________________________________________________________________________________
+       1   lmf        :  F     2      1      1
+       2   sex        :  F     2      2      3
+       3   bjq        :  F     2      5      7
+       4   bg         :  F     2   1072     17
+       5   uss        :  F     2    188   2161
+       6   animal     :  A     2  36408   2537  animal     :  A     2      1      1 T T
+                                                residual   :  E     2      1      2 T T
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *                    G E N E R A L  I N F O R M A T I O N                      *
+    ********************************************************************************
+ 
+    VCE was started on :  at Tue Oct 16 14:08:25 2007 by: b08mueul
+ 
+    Comments:
+    ________________________________________________________________________________
+    |                 ************************************************             |
+    |                 *                     VCE-5                    *             |
+    |                 *                 version 5.1.2                *             |
+    |                 *            17-Dez-2003   14:42:53            *             |
+    |                 *         Linux 2.6.0-test11-bk11 i686         *             |
+    |                 *                  written by                  *             |
+    |                 *       Milena Kovac, Eildert Groeneveld       *             |
+    |                 *           and Alberto Garcia-Cortez          *             |
+    |                 ************************************************             |
+    | test mastitis                                                                |
+    ________________________________________________________________________________
+ 
+    Files involved
+    ________________________________________________________________________________
+    Current directory                  : /home/b08mueul/apiis/apiis-kurs/leicoma/zwisss/mslmr
+    Parameter file                     : usf_usmd.vce
+    Data input file                    : blupdata.txt.vce
+    Pedigree input file                : blupped.txt.vce
+    Log list file                      : usf_usmd.vce.lst
+    Covariances for dumped into        : usf_usmd.vce.cov-bin
+    Covariance matrices written in     : usf_usmd.vce.cov-fmt
+ 
+    ********************************************************************************
+    *                       D A T A  I N F O R M A T I O N                         *
+    ********************************************************************************
+ 
+    General statistics
+    ___________________________________________________________________
+ 
+    Variables   # rec.      min.        max.        avg.        std.
+    ___________________________________________________________________
+    usf         32688     4.70000    49.70000    14.19030     2.96071
+    usmd        18916    40.00000    71.00000    53.00550     4.22305
+    lmf         32688     0.00000   160.00000   110.12735    14.15177
+    ___________________________________________________________________
+ 
+    Pattern of traits
+    ________________________________
+     Count           usf      usmd
+    ________________________________
+      18916        x         x
+      13772        x         -
+      13772        x         -
+    ________________________________
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:08:25            usf_usmd.vce                              page 2
+ 
+ 
+    ********************************************************************************
+    *                  P E D I G R E E   I N F O R M A T I O N                     *
+    ********************************************************************************
+ 
+    Inbreeding             # of animals
+    ________________________________________________________________________________
+        0                   36408
+    ________________________________________________________________________________
+    Number of inbred animals           :            0
+    Average inbreeding (inbred animals):         0.00
+    Maximum inbreeding                 :         0.00
+ 
+    ********************************************************************************
+    *         C O V A R I A N C E   M A T R I X   I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    The following (co)variance matrices will be estimated (starting values):
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        6  1  1 A  animal                          36408 T T
+              0.4383E+01  0.4421E+00
+                          0.8962E+01
+ 
+        7  2  1 E  residual                        18916 T T
+              0.4383E+01  0.4421E+00
+                          0.8962E+01
+ 
+    ________________________________________________________________________________
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        6  1  1 A  animal                        
+              0.5000E+00  0.7053E-01
+                          0.5000E+00
+ 
+        7  2  1 E  residual                      
+              0.5000E+00  0.7053E-01
+                          0.5000E+00
+ 
+    ________________________________________________________________________________
+    Thus, optimization is in 6 dimensions.
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        usf      usmd
+    ________________________________________________________________________________
+    lmf                   F      1               1         1
+    sex                   F      2               1         1
+    bjq                   F      5               1         1
+    bg                    F   1072               1         1
+    uss                   F    188               1         1
+    animal                A  36408               1         1
+    ________________________________________________________________________________
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     1441
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     4576
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:     7880
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    11205
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    14562
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    17988
+    Non zero coefficients stored       :     400000, filled:   1.3% hit rate:    1.0 at line:    21391
+    Non zero coefficients stored       :     450000, filled:   1.4% hit rate:    1.0 at line:    24864
+    Non zero coefficients stored       :     500000, filled:   1.6% hit rate:    1.0 at line:    28347
+    Non zero coefficients stored       :     550000, filled:   1.7% hit rate:    1.0 at line:    31792
+    Non zero coefficients stored       :     600000, filled:   1.9% hit rate:    1.0 at line:    36709
+    Non zero coefficients stored       :     650000, filled:   2.1% hit rate:    1.0 at line:    46587
+    Non zero coefficients stored       :     700000, filled:   2.2% hit rate:    1.0 at line:    61542
+    All non zeros are loaded           :       706546
+    Number of equations                :        75352
+    Filling rate of LHS storage space  :       2.2386
+    Hit rate by setting up LHS         :       1.0024
+    Zero diagonal coefficients stored  :          101
+    IS - allocated for ordering with   :     80000000
+    Dimension of equation system       :        75352
+    Rank of equation system            :        75241
+    Time for solving MME (h:min:sec)   :      0:00:50
+    Time for inversion (h:min:sec)     :      0:00:50
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:09:15            usf_usmd.vce                              page 3
+ 
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75352
+    Rank of the system                 :        75241
+    Equations set to zero              :  bjq/9 bjq/10 bg/4 bg/6 bg/8 bg/10 bg/12 bg/28 bg/30
+                                       : bg/32 bg/34 bg/36 bg/60 bg/190 bg/192 bg/194 bg/196
+                                       : bg/590 bg/1522 bg/1524 bg/1616 bg/2098 bg/2100 bg/2102
+                                       : bg/2131 bg/2132 bg/2134 bg/2136 bg/2138 bg/2144 uss/4
+                                       : uss/6 uss/8 uss/10 uss/12 uss/14 uss/16 uss/18 uss/20
+                                       : uss/22 uss/24 uss/26 uss/28 uss/30 uss/32 uss/34
+                                       : uss/36 uss/38 uss/40 uss/42 uss/44 uss/46 uss/48
+                                       : uss/50 uss/52 uss/54 uss/56 uss/58 uss/60 uss/62
+                                       : uss/64 uss/66 uss/68 uss/70 uss/72 uss/74 uss/76
+                                       : uss/78 uss/80 uss/82 uss/84 uss/86 uss/88 uss/90
+                                       : uss/91 uss/92 uss/94 uss/96 uss/98 uss/100 uss/102
+                                       : uss/104 uss/106 uss/108 uss/110 uss/112 uss/114
+                                       : uss/116 uss/129 uss/135 uss/313 uss/314 uss/340
+                                       : uss/342 uss/344 uss/346 uss/348 uss/350 uss/352
+                                       : uss/354 uss/356 uss/358 uss/360 uss/362 uss/364
+                                       : uss/366 uss/368 uss/370 uss/372 uss/374 uss/376
+    # of nonzero coefficients (HS)     :       706546
+    Fill of coefficient matrix         :        0.012
+    # of NZE in factor                 :       680798
+    Total storage required             :      4224084
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:50
+    CPU-time for inverting (per rnd)   :      0:00:50
+    MFLOPs during factorization        :        67.31
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75352
+    Rank of the system                 :        75241
+    Equations set to zero              :  bjq/9 bjq/10 bg/4 bg/6 bg/8 bg/10 bg/12 bg/28 bg/30
+                                       : bg/32 bg/34 bg/36 bg/60 bg/190 bg/192 bg/194 bg/196
+                                       : bg/590 bg/1522 bg/1524 bg/1616 bg/2098 bg/2100 bg/2102
+                                       : bg/2131 bg/2132 bg/2134 bg/2136 bg/2138 bg/2144 uss/4
+                                       : uss/6 uss/8 uss/10 uss/12 uss/14 uss/16 uss/18 uss/20
+                                       : uss/22 uss/24 uss/26 uss/28 uss/30 uss/32 uss/34
+                                       : uss/36 uss/38 uss/40 uss/42 uss/44 uss/46 uss/48
+                                       : uss/50 uss/52 uss/54 uss/56 uss/58 uss/60 uss/62
+                                       : uss/64 uss/66 uss/68 uss/70 uss/72 uss/74 uss/76
+                                       : uss/78 uss/80 uss/82 uss/84 uss/86 uss/88 uss/90
+                                       : uss/91 uss/92 uss/94 uss/96 uss/98 uss/100 uss/102
+                                       : uss/104 uss/106 uss/108 uss/110 uss/112 uss/114
+                                       : uss/116 uss/129 uss/135 uss/313 uss/314 uss/340
+                                       : uss/342 uss/344 uss/346 uss/348 uss/350 uss/352
+                                       : uss/354 uss/356 uss/358 uss/360 uss/362 uss/364
+                                       : uss/366 uss/368 uss/370 uss/372 uss/374 uss/376
+    # of nonzero coefficients (HS)     :       706546
+    Fill of coefficient matrix         :        0.012
+    # of NZE in factor                 :       680798
+    Total storage required             :      4224084
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:50
+    CPU-time for inverting (per rnd)   :      0:00:50
+    MFLOPs during factorization        :        67.31
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:09:15            usf_usmd.vce                              page 4
+ 
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     1607
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     5038
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:     8735
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    12410
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    16180
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    20001
+    Non zero coefficients stored       :     400000, filled:   1.3% hit rate:    1.0 at line:    23819
+    Non zero coefficients stored       :     450000, filled:   1.4% hit rate:    1.0 at line:    27664
+    Non zero coefficients stored       :     500000, filled:   1.6% hit rate:    1.0 at line:    31534
+    Non zero coefficients stored       :     550000, filled:   1.7% hit rate:    1.0 at line:    36216
+    Non zero coefficients stored       :     600000, filled:   1.9% hit rate:    1.0 at line:    46363
+    Non zero coefficients stored       :     650000, filled:   2.1% hit rate:    1.0 at line:    59543
+    All non zeros are loaded           :       658545
+    Number of equations                :        75352
+    Filling rate of LHS storage space  :       2.0865
+    Hit rate by setting up LHS         :       1.0025
+    Zero diagonal coefficients stored  :          111
+    AG  53.6     1  47372.33     500   0   0   0   0   0   0   0   0 --  500  70 500 500  70 500
+    AG   3.2     2  696835.5     200 500   0   0   0   0   0   0   0 --  330 192 299 669 116 700
+    AG   3.5     3  626782.1       0 200 500   0   0   0   0   0   0 --  330 192 298 669 116 701
+    AG   3.2     4  537501.2       0   0 200 500   0   0   0   0   0 --  330 192 298 669 116 701
+    AG   3.2     5  447025.6       1   0   0 200 500   0   0   0   0 --  328 194 296 671 116 703
+    AG   3.4     6  347036.1       4   1   0   0 200 500   0   0   0 --  325 197 292 674 117 707
+    AG   3.5     7  229169.2      14   4   1   0   0 200 500   0   0 --  311 210 278 688 120 721
+    AG   3.1     8  76840.16      97  14   4   1   0   0 200 500   0 --  232 308 195 767 137 804
+    AG   3.3     9  599509.7    1023  97  14   4   1   0   0 200 500 --  999-172 974   0-885  25
+    AG   3.8    10  44751.99     9501023  97  14   4   1   0   0 200 --  516  61 519 483  65 480
+    AG   3.1    11  55163.04     242 9501023  97  14   4   1   0   0 --  604-128 753 395-177 246
+    AG   3.2    12  42881.99     218 242 9501023  97  14   4   1   0 --  534  31 552 465  41 447
+    AG   3.3    13  42978.51     134 218 242 9501023  97  14   4   1 --  596-102 651 403 -74 348
+    AG   3.6    14  42229.17      75 134 218 242 9501023  97  14   4 --  563 -27 594 436  -4 405
+    AG   3.1    15  42148.14      45  75 134 218 242 9501023  97  14 --  604 -73 632 395 -12 367
+    AG   3.4    16  42005.40      75  45  75 134 218 242 9501023  97 --  680-112 707 319  40 292
+    AG   3.2    17  42259.55     555  75  45  75 134 218 242 9501023 --  926-187 912  73 595  87
+    AG   3.2    18  41762.07     396 555  75  45  75 134 218 242 950 --  793-145 812 206 198 187
+    AG   3.1    19  41689.55     259 396 555  75  45  75 134 218 242 --  875-145 882 124 458 117
+    AG   3.5    20  41609.99      48 259 396 555  75  45  75 134 218 --  871-120 881 128 506 118
+    AG   3.1    21  41623.41     144  48 259 396 555  75  45  75 134 --  896-119 902 103 651  97
+    AG   3.1    22  41641.12      91 144  48 259 396 555  75  45  75 --  881-120 890 118 559 109
+    AG   3.1    23  41651.35      47  91 144  48 259 396 555  75  45 --  872-120 882 127 512 117
+    AG   3.7    24  41608.77       5  47  91 144  48 259 396 555  75 --  871-120 881 128 506 118
+    AG   3.4    25  41608.45     304   5  47  91 144  48 259 396 555 --  922-127 920  77 811  79
+    AG   3.2    26  41578.06      43 304   5  47  91 144  48 259 396 --  925-124 925  74 855  74
+    AG   3.1    27  41597.82      86  43 304   5  47  91 144  48 259 --  937-119 931  62 942  68
+    AG   3.3    28  41621.72      72  86  43 304   5  47  91 144  48 --  927-124 926  72 869  73
+    AG   3.1    29  41622.30      12  72  86  43 304   5  47  91 144 --  925-124 925  74 856  74
+    AG   3.2    30  41622.36       1  12  72  86  43 304   5  47  91 --  925-124 925  74 855  74
+    AG   3.1    31  41598.73       0   1  12  72  86  43 304   5  47 --  925-124 925  74 855  74
+    AG   3.3    32  41579.17       0   0   1  12  72  86  43 304   5 --  925-124 925  74 855  74
+    AG   3.1    33  41599.64       0   0   0   1  12  72  86  43 304 --  925-124 925  74 855  74
+    AG   3.1    34  41601.63       0   0   0   0   1  12  72  86  43 --  925-124 925  74 855  74
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:11:08            usf_usmd.vce                              page 5
+ 
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        usf      usmd
+    ________________________________________________________________________________
+    lmf                   F      1               1         1
+    sex                   F      2               1         1
+    bjq                   F      5 .             1         1
+    bg                    F   1072 .             1         1
+    uss                   F    188 .             1         1
+    animal                A  36408               1         1
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75352
+    Rank of the system                 :        75349
+    Equations set to zero              :  bjq/9 bjq/10 bg/4 bg/6 bg/8 bg/10 bg/12 bg/28 bg/30
+                                       : bg/32 bg/34 bg/36 bg/60 bg/190 bg/192 bg/194 bg/196
+                                       : bg/590 bg/1522 bg/1524 bg/1616 bg/2098 bg/2100 bg/2102
+                                       : bg/2131 bg/2132 bg/2134 bg/2136 bg/2138 bg/2144 uss/4
+                                       : uss/6 uss/8 uss/10 uss/12 uss/14 uss/16 uss/18 uss/20
+                                       : uss/22 uss/24 uss/26 uss/28 uss/30 uss/32 uss/34
+                                       : uss/36 uss/38 uss/40 uss/42 uss/44 uss/46 uss/48
+                                       : uss/50 uss/52 uss/54 uss/56 uss/58 uss/60 uss/62
+                                       : uss/64 uss/66 uss/68 uss/70 uss/72 uss/74 uss/76
+                                       : uss/78 uss/80 uss/82 uss/84 uss/86 uss/88 uss/90
+                                       : uss/91 uss/92 uss/94 uss/96 uss/98 uss/100 uss/102
+                                       : uss/104 uss/106 uss/108 uss/110 uss/112 uss/114
+                                       : uss/116 uss/129 uss/135 uss/313 uss/314 uss/340
+                                       : uss/342 uss/344 uss/346 uss/348 uss/350 uss/352
+                                       : uss/354 uss/356 uss/358 uss/360 uss/362 uss/364
+                                       : uss/366 uss/368 uss/370 uss/372 uss/374 uss/376
+    # of nonzero coefficients (HS)     :       658545
+    Fill of coefficient matrix         :        0.012
+    # of NZE in factor                 :       680798
+    Total storage required             :      4224084
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:50
+    CPU-time for inverting (per rnd)   :      0:02:42
+    MFLOPs during factorization        :        68.10
+ 
+    ********************************************************************************
+    *                 E S T I M A T E S   I N F O R M A T I O N                    *
+    ********************************************************************************
+ 
+    Tue Oct 16 14:11:08 2007uss/372 uss/374 uss/376       CPU time used:     0:02:44
+ 
+    AG Log likelihood :   41578.0559  status :  3   at iteration:      26 /    34
+ 
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        6  1  1 A  animal                          36408 T T
+              0.6361E+01 -0.9783E+00
+                          0.9641E+01
+ 
+        7  2  1 E  residual                        18916 T T
+              0.5102E+00  0.5373E+00
+                          0.7735E+00
+ 
+    --------------------------- Matrices: Phenotypic  ------------------------------
+              0.6871E+01 -0.4409E+00
+                          0.1041E+02
+ 
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        6  1  1 A  animal                        
+              0.9257E+00 -0.1249E+00
+                          0.9257E+00
+ 
+        7  2  1 E  residual                      
+              0.7426E-01  0.8553E+00
+                          0.7427E-01
+ 
+    Optimization did not finish with status 1
+    Results may not be meaningful with a status greater than 1.
+    As a result standard errors are not meaningful
+    and are therefore not computed.
+    Look at the documentation for discussion of status!

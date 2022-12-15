@@ -1,0 +1,1000 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass prosper-by-Weiss
+\begin_preamble
+\hypersetup{pdfpagemode=FullScreen}
+\Logo(-1,-1.2){\includegraphics[width=15mm]{./logo.eps}}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{fancyvrb}
+\usepackage{german}
+\usepackage{umlaut}
+\usepackage{graphicx}
+\end_preamble
+\options default,final,colorBG
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Software Development in Agricultural Computer Science: Status and Perspectives
+\layout Author
+
+Eildert Groeneveld
+\layout Institution
+
+Institute for Animal Breeding, FAL, Mariensee
+\layout E-mail
+
+eg@tzv.fal.de
+\layout Slide
+
+Outline
+\layout Enumerate
+
+Objectives in Computer Science in Agriculture
+\layout Enumerate
+
+The Framework
+\layout Enumerate
+
+Thesis
+\layout Enumerate
+
+the 
+\begin_inset Quotes eld
+\end_inset 
+
+so what?
+\begin_inset Quotes erd
+\end_inset 
+
+ projects
+\layout Enumerate
+
+examples of dead-end developments
+\layout Enumerate
+
+possible solutions and development paths
+\layout Enumerate
+
+examples of the OS development model
+\layout Enumerate
+
+Open Source development
+\layout Enumerate
+
+outlook
+\layout Slide
+
+Objectives in Agr.
+ Computer Science
+\layout Standard
+\align center 
+Facilitate IT solutions in Agriculture
+\layout Itemize
+
+quick development and implementation of new solutions
+\begin_deeper 
+\layout Itemize
+
+requires research and development
+\end_deeper 
+\layout Itemize
+
+essentiell framework:
+\begin_deeper 
+\layout Itemize
+
+cumulative mode of development
+\layout Itemize
+
+leads to accelerated development
+\layout Itemize
+
+is based on original research
+\end_deeper 
+\layout Itemize
+
+progress resulting from the general development in SW/HW does not count
+\layout Comment
+
+erfordert allgemeine Lösungen, abstraction, Strukturunterschiede nicht in
+ Code sondern in die Daten legen
+\layout Slide
+
+The Framework
+\layout Standard
+\align center 
+Information processing in Agriculture:
+\layout Itemize
+
+in the scientific area: 
+\begin_deeper 
+\layout Itemize
+
+design and evaluation of experiments
+\layout Itemize
+
+development of computing algorithms
+\layout Itemize
+
+well defined inputs -> problem solution -> Output (IPO)
+\end_deeper 
+\layout Slide
+
+The Framework ff
+\layout Standard
+\align center 
+Information processing in Agriculture:
+\layout Itemize
+
+on farm area: 
+\begin_deeper 
+\layout Itemize
+
+solutions to local problems: optimization of feed rations (IPO)
+\layout Itemize
+
+area of global information: collection, management and evaluation
+\layout Itemize
+
+merging data from various sources:
+\begin_deeper 
+\layout Itemize
+
+lots of land, soil samples
+\layout Itemize
+
+performance recording: milk, growth, reproduction
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+across farms:
+\begin_deeper 
+\layout Itemize
+
+aggregation of data from many sources (InfoSys)
+\layout Itemize
+
+in animal production: BLUP genetic evaluation
+\end_deeper 
+\layout Slide
+
+The Framework fff
+\layout Standard
+\align center 
+Information processing in Agriculture:
+\layout Itemize
+
+animal breeding, crop production, agricultural engineering, agricultural
+ economics
+\layout Itemize
+
+different kind of systems (IPO 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+$
+\backslash 
+Leftrightarrow$
+\end_inset 
+
+InfoSys):
+\begin_deeper 
+\layout Description
+
+IPO: production of data -> problem solution->decision->throw data away
+\layout Description
+
+InfoSys: integrated data utilization: breeding, milk recording, labs, AI,
+ utilization of the WEB, networking of farms
+\end_deeper 
+\layout Slide
+
+IPO vs InfoSys
+\layout Standard
+\align center 
+conceptual differences:
+\layout Description
+
+IPO:
+\begin_deeper 
+\layout Itemize
+
+simple well defined inputs
+\layout Itemize
+
+complex processing but usually in a simple program environment (F90, C,
+ ...)
+\layout Itemize
+
+well defined outputs
+\layout Itemize
+
+processing layer is disconnected from the inputs
+\end_deeper 
+\layout Slide
+
+Examples IPO
+\layout Itemize
+
+statistical procedures through use of packages (SAS, R...)
+\layout Itemize
+
+analysis of inbreeding (SW)
+\layout Itemize
+
+computation of BLUP (SW)
+\layout Itemize
+
+estimation of covariance components (SW)
+\layout Itemize
+
+etc.
+\layout Slide
+
+IPO vs InfoSys ff
+\layout Standard
+\align center 
+conceptual differences:
+\layout Description
+
+InfoSys:
+\begin_deeper 
+\layout Itemize
+
+many sources of data from different origin/systems
+\layout Itemize
+
+as a result: different SW
+\layout Itemize
+
+as a result: different operating systems
+\layout Itemize
+
+includes data transfer
+\layout Itemize
+
+different data structures among different problems (organizations)
+\layout Itemize
+
+everything is connected with everything
+\end_deeper 
+\layout Slide
+
+Examples InfoSys
+\layout Itemize
+
+gene banks in plants and animals
+\layout Itemize
+
+e-Commerce Systems
+\layout Itemize
+
+query and information systems
+\layout Itemize
+
+integrierted data bases: plants/animals
+\layout Itemize
+
+many components: 
+\begin_deeper 
+\layout Itemize
+
+Webserver, 
+\layout Itemize
+
+DBMS,
+\layout Itemize
+
+programming languages,
+\layout Itemize
+
+OS
+\end_deeper 
+\layout Slide
+
+Thesis
+\layout Description
+
+IPO:
+\layout Enumerate
+
+many developments with large impact: DFREML, MTDFREML, ASREML, VCE, ABTK,
+ PEST
+\layout Description
+
+InfoSys:
+\layout Enumerate
+
+many developments that solve ONE problem 
+\layout Enumerate
+
+are thus irrelevant for the industry as a whole: 
+\layout Enumerate
+
+the 
+\begin_inset Quotes eld
+\end_inset 
+
+So What?
+\begin_inset Quotes erd
+\end_inset 
+
+ projects.
+\begin_deeper 
+\layout Comment
+
+Systementwicklung wird in vielen Fällen nicht als Forschung angesehen
+\layout Comment
+
+Hier sollten einige Beispiele rein.
+ Aus Armidale WCGAL
+\end_deeper 
+\layout Slide
+
+The Problem: An Example
+\layout Standard
+\align center 
+WCGALP Australia in Section :
+\newline 
+
+\begin_inset Quotes erd
+\end_inset 
+
+Computing Techniques in Animal Breeding
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Itemize
+
+total of 26 contributions
+\layout Itemize
+
+17 IPO
+\layout Itemize
+
+4 InfoSys:
+\begin_deeper 
+\layout Itemize
+
+NZ sheep improvement scheme 
+\layout Itemize
+
+QTL detection
+\layout Itemize
+
+WEB Animal Recording Scheme
+\layout Itemize
+
+AMNOS Dairy Sheep Management
+\layout Itemize
+
+all SW
+\end_deeper 
+\layout Slide
+
+Analysis of the Problem: own examples
+\layout Itemize
+
+1970: central database for the BHZP:
+\begin_deeper 
+\layout Itemize
+
+HP-1000
+\layout Itemize
+
+network type database
+\layout Itemize
+
+electronic on-farm data recording
+\layout Itemize
+
+electronic automated data transfer
+\layout Itemize
+
+remote program execution
+\end_deeper 
+\layout Itemize
+
+Effect:
+\begin_deeper 
+\layout Itemize
+
+solves the BHZP problem, but no other despite publication
+\layout Itemize
+
+sorry to say: SW project
+\end_deeper 
+\layout Slide
+
+Analysis of the Problem: own examples ff
+\layout Itemize
+
+End 1980:
+\begin_deeper 
+\layout Itemize
+
+new attempt at generalization: 
+\layout Itemize
+
+ORACLE
+\layout Itemize
+
+SUN-OS
+\layout Itemize
+
+pig breding program Slovenia
+\layout Itemize
+
+transfered to Chinese Swine Herd at U of I (USA):
+\layout Itemize
+
+no transfer beyond
+\layout Itemize
+
+solved a problem in Slovenia and U of I but nothing else despite Master's
+ thesis
+\layout Itemize
+
+sorry to say: SW project
+\end_deeper 
+\layout Slide
+
+A Key Experience
+\layout Itemize
+
+meeting of developers of integrated databases
+\begin_deeper 
+\layout Itemize
+
+different countries
+\layout Itemize
+
+different external circumstances
+\layout Itemize
+
+remarkable:
+\begin_deeper 
+\layout Itemize
+
+different systems and tools (dBase, Clipper, Oracle...)
+\layout Itemize
+
+totally different development paths
+\layout Itemize
+
+every system a completely new development without reference to previous
+ work (literature?)
+\layout Itemize
+
+no way to use software across
+\layout Itemize
+
+nothing worked really well
+\end_deeper 
+\end_deeper 
+\layout Slide
+
+Critical Question
+\layout Standard
+\added_space_top 1.5cm \align center 
+How many 
+\layout Standard
+\align center 
+development projects 
+\layout Standard
+\align center 
+in the different areas 
+\layout Standard
+\align center 
+are of the kind: 
+\layout Standard
+\align center 
+
+\begin_inset Quotes eld
+\end_inset 
+
+So What
+\begin_inset Quotes erd
+\end_inset 
+
+?
+\layout Slide
+
+What to do?
+\layout Itemize
+
+the basic problem:
+\begin_deeper 
+\layout Itemize
+
+solution of ONE problem
+\layout Itemize
+
+thus: not transferable
+\layout Itemize
+
+because solution of one problems includes all side conditions:
+\begin_deeper 
+\layout Itemize
+
+operating system
+\layout Itemize
+
+RDBMS
+\layout Itemize
+
+system tools and software
+\end_deeper 
+\layout Itemize
+
+this is hardly ever an issue in ONE problem
+\layout Itemize
+
+but strong restriction on transfer
+\layout Itemize
+
+software is generally not available 
+\end_deeper 
+\layout Slide
+
+What to do? ff
+\layout Itemize
+
+solution can only lie in:
+\begin_deeper 
+\layout Itemize
+
+generalization: find the Poodle's core
+\layout Itemize
+
+also: never develop for ONE case, but always for many
+\layout Itemize
+
+parallel implementation
+\layout Itemize
+
+implement a layered system which allows replacing components (non monolithic)
+\layout Itemize
+
+release software
+\end_deeper 
+\layout Comment
+
+Generalisierung ist der Forschungsgegenstand
+\layout Slide
+
+A New Development Path
+\layout Itemize
+
+started as 
+\begin_inset Quotes eld
+\end_inset 
+
+Integrated Database of Performance Records in Pig Populations
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_deeper 
+\layout Itemize
+
+any animal identification system
+\layout Itemize
+
+any data structure
+\layout Itemize
+
+installation free of licencing costs
+\layout Itemize
+
+scales from on-farm to national
+\layout Itemize
+
+development of procedures for development and migration
+\layout Itemize
+
+development of software toolbox
+\layout Itemize
+
+development of general evaluation software
+\end_deeper 
+\layout Slide
+
+A New Development Path ff
+\layout Itemize
+
+avoid proprietary software
+\layout Itemize
+
+use standards (SQL-99)
+\layout Itemize
+
+use Open source
+\layout Itemize
+
+developer group
+\layout Itemize
+
+implementation in at least two environments
+\layout Slide
+
+Development
+\layout Itemize
+
+Strategy/Procedure
+\begin_deeper 
+\layout Itemize
+
+can be used independently from software
+\layout Itemize
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+$
+\backslash 
+Rightarrow$
+\end_inset 
+
+migration steps of an information system
+\end_deeper 
+\layout Itemize
+
+Software
+\begin_deeper 
+\layout Itemize
+
+for the implementation of the procedures
+\end_deeper 
+\layout Itemize
+
+generic solution for BR
+\layout Slide
+
+Closed or Open Development?
+\layout Itemize
+
+IPO can work without program modification
+\begin_deeper 
+\layout Itemize
+
+InfoSys: different data structures require software modification
+\layout Itemize
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+$
+\backslash 
+Rightarrow$
+\end_inset 
+
+ System without source code not conceivable
+\layout Itemize
+
+closed development:
+\begin_deeper 
+\layout Itemize
+
+few people have the knowledge
+\layout Itemize
+
+restricted pool for future development
+\end_deeper 
+\layout Itemize
+
+need to create development capacity
+\layout Itemize
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+$
+\backslash 
+Rightarrow$
+\end_inset 
+
+OpenSource
+\end_deeper 
+\layout Slide
+
+Open Source Development
+\layout Standard
+\align center 
+The Cathedral & the Bazaar
+\layout Standard
+\align center 
+(Eric S.
+ Raymond)
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+given enough eyeballs, all bugs are shallow
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Itemize
+
+big project:
+\begin_deeper 
+\layout Itemize
+
+EMACS, LINUX, FETCHMAIL
+\layout Itemize
+
+KDE, GNOME
+\end_deeper 
+\layout Itemize
+
+requires infrastructure:
+\begin_deeper 
+\layout Itemize
+
+Internet connection
+\layout Itemize
+
+Software management system (CVS)
+\end_deeper 
+\layout Slide
+
+Open Source: Advantages
+\layout Itemize
+
+get help with debugging
+\layout Itemize
+
+expand developers base
+\layout Itemize
+
+enhances future system safety through expanded knowledge base
+\layout Itemize
+
+help during conceptual development
+\layout Itemize
+
+cost effective developer and test capacity via the Internet
+\layout Itemize
+
+the world is the limit (cooperation space)
+\layout Slide
+
+Implementers
+\layout Itemize
+
+Institute of Animal Production, Irene, South Africa
+\layout Itemize
+
+Landesanstalt für Tierzucht, Köllitsch
+\layout Itemize
+
+University of Ljubljana, Slovenia
+\layout Itemize
+
+Research Institute Nitra, Slovakia
+\layout Itemize
+
+University Debrecen, Hungary
+\layout Itemize
+
+Veterinary Academy Kaunas, Lithuania
+\layout Itemize
+
+University Stara Zagora, Bulgaria
+\layout Itemize
+
+FAO
+\layout Itemize
+
+University Göttingen
+\layout Itemize
+
+TZ, Mariensee
+\layout Slide
+
+Current Projects
+\layout Itemize
+
+PISSA South Africa, Pigs, Cheetah
+\layout Itemize
+
+Beef South Africa, Cattle
+\layout Itemize
+
+PIS Lithuania, Pigs
+\layout Itemize
+
+CryoDB Netherlands, Germany, Genebank
+\layout Itemize
+
+MINIPIGS Göttingen, pigs
+\layout Itemize
+
+MOLABIS Germany, DNA Material
+\layout Itemize
+
+SCHAF-OT Germany, Sheep
+\layout Itemize
+
+Saxonian Pig System, Germany
+\layout Itemize
+
+EFABIS (FAO, F, PL, D), Biodiversity Database
+\layout Itemize
+
+a number in Slovenia: Rabbits, Horses, Cattle, Pigs, ..
+\layout Slide
+
+Platforms create Utility
+\layout Itemize
+
+many developers in CC, Research Inst.
+ but SW generally not usable in InfoSys
+\layout Itemize
+
+on generic platforms software can be used:
+\begin_deeper 
+\layout Itemize
+
+Population report
+\layout Itemize
+
+ZWISSS
+\layout Itemize
+
+...
+\end_deeper 
+\layout Itemize
+
+cumulative development model
+\layout Slide
+
+Population Report 1
+\layout Standard
+
+
+\begin_inset Graphics
+	filename ./PISSAreport1A.eps
+	lyxscale 50
+	display none
+	scale 40
+	keepAspectRatio
+	clip
+	rotateAngle 90.0001
+
+\end_inset 
+
+
+\layout Slide
+
+Population Report 1 ff
+\layout Standard
+
+
+\begin_inset Graphics
+	filename ./PISSAreport1B.eps
+	display none
+	scale 40
+	keepAspectRatio
+	clip
+	rotateAngle 90.0001
+	rotateOrigin leftTop
+
+\end_inset 
+
+
+\layout Slide
+
+Population Report 2
+\layout Standard
+
+
+\begin_inset Graphics
+	filename ./miniA.eps
+	display none
+	scale 40
+	keepAspectRatio
+	clip
+	rotateAngle 90.001
+	rotateOrigin leftTop
+
+\end_inset 
+
+
+\layout Slide
+
+Population Report 2 ff
+\layout Standard
+
+
+\begin_inset Graphics
+	filename ./miniB.eps
+	display none
+	scale 40
+	keepAspectRatio
+	clip
+	rotateAngle 90.0001
+	rotateOrigin leftTop
+
+\end_inset 
+
+
+\layout Slide
+
+Publications
+\layout Itemize
+
+is SW development in InfoSys or IPO research?
+\layout Itemize
+
+I think it is.
+ Need to change attitudes.
+\layout Itemize
+
+general problem with OS projects
+\layout Itemize
+
+may be: we are part of the problem?
+\layout Slide
+
+Summing Up
+\layout Description
+
+Commercial\SpecialChar ~
+Development: solve ONE problem
+\layout Description
+
+Research\SpecialChar ~
+in\SpecialChar ~
+CS: develop generic solutions
+\layout Itemize
+
+research in this area is not uncontested
+\layout Itemize
+
+clean definition of layers
+\layout Itemize
+
+Open Source
+\layout Itemize
+
+avoid proprietary solutions
+\layout Itemize
+
+push for a cumulative development model
+\the_end

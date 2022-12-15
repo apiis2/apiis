@@ -1,0 +1,231 @@
+\documentclass[10pt,a4paper,DIV14]{scrartcl}
+\usepackage{german}
+\usepackage{umlaut}
+\usepackage{longtable}
+\usepackage{fancyvrb}
+
+\pagestyle{myheadings}
+\markright{\today}
+\begin{document}
+
+\centerline{\Large \bf Teaching}
+\vspace{5mm}
+\centerline{\Large SQL I}
+\vspace{12mm}
+
+% The SQL statements should be others than used in the assignments.
+use dump, internal psql, simple selects and structure from insert and update
+
+\begin{itemize}
+\item use dump
+  \begin{itemize}
+  \item \verb/createdb <name>/
+  \item \verb/psql <name> -e < course_dump/
+  \end{itemize}
+\item psql
+  \begin{itemize}
+  \item \verb/\?/ - overview about internal functions
+  \item \verb/\l/ - list all existing databases
+  \item \verb/\d/ - list all existing relations
+  \item \verb/\d <tablename>/ - give info about this table including indices
+  \item \verb/\h <sql command>/ - info about this SQL-command
+  \item \verb/\q/ - exit psql
+  \end{itemize}
+\item SQL (inside psql)
+  \begin{enumerate}
+  \item SELECT
+    \begin{itemize}
+    \item \verb/select * from animal/
+    \item \verb/select db_animal, born_alive_no, delivery_dt from litter/ \\
+      \hspace{10mm} \verb/ where delivery_dt > '01-01-1990' order by db_animal, delivery_dt desc/
+    \item \verb/select * from codes where class = 'BREED'/
+    \item \verb/select * from codes where ext_code like '%DE%'/
+    \item \verb/select db_breed from animal where db_breed isNULL limit 10/
+    \item \verb/select distinct db_society from animal/
+    \end{itemize}
+  \end{enumerate}
+\end{itemize}
+
+
+\newpage
+
+\centerline{\Large \bf Teaching}
+\vspace{5mm}
+\centerline{\Large  SQL II}
+\vspace{12mm}
+
+aggregate functions and more than one table
+
+\begin{itemize}
+\item SQL (inside psql)
+  \begin{enumerate}
+  \item SELECT
+    \begin{itemize}
+    \item \verb/\da/
+    \item \verb/select count(*) from transfer/
+    \item \verb/select count(*) from animal/
+    \item \verb/select count(distinct db_animal) from transfer/
+    \item \verb/select distinct db_breed from animal/
+    \item \verb/select db_breed, count(db_breed) from animal group by db_breed/
+    \item \verb/select db_animal, min(born_alive_no), count(born_alive_no) from litter/ \\
+      \hspace{10mm} \verb/ group by db_animal having count(born_alive_no) > 1/ \\
+      \hspace{10mm} \verb/ order by min(born_alive_no) desc;/
+    \item two tables
+    \item \verb/select a.db_animal, a.db_sex, b.long_name from animal as a, codes as b/ \\
+      \hspace{10mm} \verb/ where a.db_sex = b.db_code/
+    \item \verb/select a.db_animal, a.birth_dt, b.teats_l_no, b.teats_r_no/ \\
+      \hspace{10mm} \verb/ from animal as a, exterior as b/ \\
+      \hspace{10mm} \verb/ where a.db_animal = b.db_animal/
+    \item \verb/select a.db_breed, avg(b.teats_l_no) from animal as a, exterior as b/ \\
+      \hspace{10mm} \verb/ where a.db_animal =b.db_animal group by a.db_breed/
+    \end{itemize}
+  \item INSERT
+    \begin{itemize}
+    \item \verb/insert into animal ( db_animal, birth_dt, comment )/\\
+      \hspace{10mm} \verb/ values ( 987654, '2005-01-11', 'new animal')/
+    \item \verb/select * from codes where class = 'SERVICE_TYPE'/
+    \item \verb/select distinct db_sire from animal/
+    \item \verb/insert into service ( db_animal, service_dt, db_sire, db_service_type )/ \\
+      \hspace{10mm} \verb/ values ( 1123, '21-08-2004', 1025, 8 )/
+    \item \verb/select * from service order by service_dt desc/
+    \end{itemize}
+  \item UPDATE
+    \begin{itemize}
+    \item \verb/update weight set test_wt = 111/ \\
+      \hspace{10mm} \verb/ where db_animal = 742 and test_dt = '1997-05-22'/
+    \item \verb/update service set db_service_type = 9/ \\
+      \hspace{10mm} \verb/where db_animal = 1123 and service_dt = '21-08-2004'/
+    \end{itemize}
+\end{enumerate}
+\end{itemize}
+
+\newpage
+
+\centerline{\Large \bf Teaching}
+\vspace{5mm}
+\centerline{\Large  SQL XX}
+\vspace{12mm}
+
+union / subselects /joins / datum
+
+\begin{itemize}
+\item SQL
+  \begin{itemize}
+  \item combine the output from more selects
+    \begin{itemize}
+    \item {\bf union}
+    \item combine the select statements, same number of rows needed
+
+    \item union * from animal with different where clause
+    \item \begin{verbatim}select '0' as db_animal, ext_code, class from codes
+ union select db_animal, '0' as ext_code, '0' from animal;
+\end{verbatim}
+      \item example for all three forms \\[-4mm] %\newline
+\begin{verbatim}select db_animal from transfer 
+[except|intersect|union]
+select db_animal from animal order by db_animal;
+\end{verbatim}
+    \item {\bf intersect}
+    \item if in both result sets
+    \item {\bf except}
+    \item in left but not in the right result set
+    \end{itemize}
+  \item subselects 
+    \begin{enumerate}
+    \item als geklammerte selects im column teil
+    \item als backreferencen in from 
+    \item als wert in bedingungen
+    \end{enumerate}
+    \begin{itemize}
+    \item \begin{verbatim}select a.db_animal, 
+( select b.ext_code from codes as b where a.db_sex=b.db_code), 
+  birth_dt from animal as a;
+\end{verbatim}
+      \item \begin{verbatim}select animal, sex from 
+( select a.db_animal as animal, b.ext_code as sex from animal as a, 
+   codes as b where a.db_sex = b.db_code) as x;
+\end{verbatim}
+    \item \begin{verbatim}select a.db_animal, db_sex from animal as a 
+where db_sex = ( select db_code from codes where class = 'SEX' and ext_code = 2); 
+\end{verbatim}
+      \item zwz
+        \begin{enumerate}
+        \item bezogen auf was (db\_animal, delivery\_dt)
+        \item 2x selbe tabelle ( as a, as b)
+        \item wir suchen das delivery\_dt vor dem bezug (größte was
+          kleiner ist als)
+        \end{enumerate}
+      \item \begin{verbatim}select a.db_animal, a.delivery_dt, a.delivery_dt - b.delivery_dt as zwz
+      from litter a, litter b
+       where a.db_animal = b.db_animal
+                  and b.delivery_dt =
+                    (select max(c.delivery_dt) from litter c
+                       where a.db_animal = c.db_animal
+                         and c.delivery_dt < a.delivery_dt)
+                order by a.db_animal, a.delivery_dt;\end{verbatim}
+             \item \begin{verbatim} select a.db_animal, a.delivery_dt, a.delivery_dt - b.birth_dt as efa
+             from litter a, animal b
+               where a.db_animal = b.db_animal
+                 and a.delivery_dt =
+                   (select min(c.delivery_dt) from litter c
+                      where a.db_animal = c.db_animal)
+                 and ( a.parity < 2 or a.parity isnull )
+               order by a.db_animal, a.delivery_dt;
+\end{verbatim}
+
+    \end{itemize}
+  \item joins
+    \begin{itemize}
+    \item {\bf inner join}
+    \item all joined rows (where is in both)
+    \item \verb/ select a.db_animal, b.ext_code from animal a/ \newline
+      \verb/ join codes as b on a.db_sex= b.db_code;/
+    \item equivalent to where clause
+    \item {\bf [left$|$right] outer join}
+    \item all joined rows plus one of the [right$|$left] table
+    \item \verb/ select a.db_animal, b.ext_code from animal a/ \newline
+      \verb/ left join codes as b on a.db_sex= b.db_code;/
+    \item {\bf full outer join}
+    \item all rows inside
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+some functions....
+
+\begin{itemize}
+\item date/time
+  \begin{itemize}
+  \item date\_part
+  \item \begin{verbatim}select db_animal, 
+  date_part('year', birth_dt) from animal where birth_dt notnull;
+\end{verbatim}
+    \item \verb/ select date_part('dow', date '1965-12-21');/
+    \item \verb/ age()/
+    \item \verb/ now(), timeofday()/
+    \end{itemize}
+  \item strings
+    \begin{itemize}
+    \item \verb/ ||, lower, substr('string', from 2 for 3), trim(both 'x' from 'xTomxx')/
+    \end{itemize}
+\end{itemize}
+
+
+next:
+\begin{enumerate}
+\item typeconversion
+\item CASE (conditional expressions)
+\item IN (subquery)
+\item SIMILAR TO
+\end{enumerate}
+
+\end{document}
+
+%    \item \verb/select db_animal, db_breeder, db_society from animal/
+%    \item \verb/select db_animal, ext_animal, ext_breeder, ext_society from v_animal/
+%    \item \verb/select distinct on (db_animal) db_animal, ext_animal, ext_breeder,
+%       ext_society from v_animal limit 100/
+
+
+
+

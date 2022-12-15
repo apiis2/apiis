@@ -1,0 +1,841 @@
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:14:35             usf_ptz.vce                              page 1
+ 
+ 
+ 
+    ********************************************************************************
+    *                    T R A I T S   A N D   E F F E C T S                       *
+    ********************************************************************************
+ 
+    Code Trait name  List of effects
+    ________________________________________________________________________________
+      1 usf         lmf       sex       bjq       bg        uss       animal
+      2 ptz                   sex                 bg                  animal    pelm      abt       wu
+ 
+    ********************************************************************************
+    *               E F F E C T S   A N D   C O V A R I A N C E S                  *
+    ********************************************************************************
+ 
+    Code   Effect name Type Length Level Start COVARIANCE  Type Length Level Start Pattern
+    ______________________________________________________________________________________
+       1   lmf        :  F     1      1      1
+       2   sex        :  F     2      3      2
+       3   bjq        :  F     1      5      8
+       4   bg         :  F     2   1163     13
+       5   uss        :  F     1    295   2339
+       6   animal     :  A     2  36408   2634  animal     :  A     2      1      1 T T
+       7   pelm       :  F     1      1  75450
+       8   abt        :  F     1      3  75451
+       9   wu         :  R     1      9  75454  wu         :  R     1      1      2 T
+                                                residual   :  E     2      1      3 T T
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *                    G E N E R A L  I N F O R M A T I O N                      *
+    ********************************************************************************
+ 
+    VCE was started on :  at Tue Oct 16 14:14:35 2007 by: b08mueul
+ 
+    Comments:
+    ________________________________________________________________________________
+    |                 ************************************************             |
+    |                 *                     VCE-5                    *             |
+    |                 *                 version 5.1.2                *             |
+    |                 *            17-Dez-2003   14:42:53            *             |
+    |                 *         Linux 2.6.0-test11-bk11 i686         *             |
+    |                 *                  written by                  *             |
+    |                 *       Milena Kovac, Eildert Groeneveld       *             |
+    |                 *           and Alberto Garcia-Cortez          *             |
+    |                 ************************************************             |
+    | test mastitis                                                                |
+    ________________________________________________________________________________
+ 
+    Files involved
+    ________________________________________________________________________________
+    Current directory                  : /home/b08mueul/apiis/apiis-kurs/leicoma/zwisss/mslmr
+    Parameter file                     : usf_ptz.vce
+    Data input file                    : blupdata.txt.vce
+    Pedigree input file                : blupped.txt.vce
+    Log list file                      : usf_ptz.vce.lst
+    Covariances for dumped into        : usf_ptz.vce.cov-bin
+    Covariance matrices written in     : usf_ptz.vce.cov-fmt
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:14:35             usf_ptz.vce                              page 2
+ 
+ 
+    ********************************************************************************
+    *                       D A T A  I N F O R M A T I O N                         *
+    ********************************************************************************
+ 
+    General statistics
+    ___________________________________________________________________
+ 
+    Variables   # rec.      min.        max.        avg.        std.
+    ___________________________________________________________________
+    usf         32688     4.70000    49.70000    14.19030     2.96071
+    ptz          2211   379.00000  1246.00000   913.70285   100.99708
+    lmf         34054     0.00000   160.00000   105.73849    25.61802
+    pelm        34054     0.00000   135.00000     7.22998    27.60484
+    ___________________________________________________________________
+ 
+    Pattern of traits
+    ________________________________
+     Count           usf       ptz
+    ________________________________
+        845        x         x
+      31843        x         -
+       1366        -         x
+       1366        -         x
+    ________________________________
+ 
+    ********************************************************************************
+    *                  P E D I G R E E   I N F O R M A T I O N                     *
+    ********************************************************************************
+ 
+    Inbreeding             # of animals
+    ________________________________________________________________________________
+        0                   36408
+    ________________________________________________________________________________
+    Number of inbred animals           :            0
+    Average inbreeding (inbred animals):         0.00
+    Maximum inbreeding                 :         0.00
+ 
+    ********************************************************************************
+    *         C O V A R I A N C E   M A T R I X   I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    The following (co)variance matrices will be estimated (starting values):
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        6  1  1 A  animal                          36408 T T
+              0.2922E+01  0.5755E+01
+                          0.3411E+04
+ 
+        9  2  1 R  wu                              9 T
+              0.3400E+04
+ 
+        10  3  1 E  residual                        845 T T
+              0.2922E+01  0.5755E+01
+                          0.3411E+04
+ 
+    ________________________________________________________________________________
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        6  1  1 A  animal                        
+              0.5000E+00  0.5764E-01
+                          0.3337E+00
+ 
+        9  2  1 R  wu                            
+              0.3326E+00
+ 
+        10  3  1 E  residual                      
+              0.5000E+00  0.5764E-01
+                          0.3337E+00
+ 
+    ________________________________________________________________________________
+    Thus, optimization is in 7 dimensions.
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        usf       ptz
+    ________________________________________________________________________________
+    lmf                   F      1               1         -
+    sex                   F      3               1         1
+    bjq                   F      5               1         -
+    bg                    F   1163               1         1
+    uss                   F    295               1         -
+    animal                A  36408               1         1
+    pelm                  F      1               -         1
+    abt                   F      3               -         1
+    wu                    R      9               -         1
+    ________________________________________________________________________________
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:14:36             usf_ptz.vce                              page 3
+ 
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     3925
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:    12612
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:    21604
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    30646
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    36880
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    45839
+    Non zero coefficients stored       :     400000, filled:   1.3% hit rate:    1.0 at line:    51102
+    All non zeros are loaded           :       430275
+    Number of equations                :        75462
+    Filling rate of LHS storage space  :       1.3632
+    Hit rate by setting up LHS         :       1.0022
+    Zero diagonal coefficients stored  :         1003
+    IS - allocated for ordering with   :     80000000
+    Dimension of equation system       :        75462
+    Rank of equation system            :        74450
+    Time for solving MME (h:min:sec)   :      0:00:28
+    Time for inversion (h:min:sec)     :      0:00:28
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg  avg
+    Number of equations                :        75462
+    Rank of the system                 :        74450
+    Equations set to zero              :  sex/5 sex/6 bjq/5 bg/4 bg/10 bg/13 bg/16 bg/18 bg/20
+                                       : bg/22 bg/24 bg/27 bg/29 bg/32 bg/33 bg/35 bg/37 bg/41
+                                       : bg/43 bg/45 bg/47 bg/49 bg/51 bg/53 bg/55 bg/57 bg/59
+                                       : bg/61 bg/63 bg/65 bg/69 bg/71 bg/73 bg/75 bg/78 bg/81
+                                       : bg/83 bg/85 bg/89 bg/91 bg/94 bg/96 bg/100 bg/102
+                                       : bg/104 bg/106 bg/108 bg/110 bg/114 bg/118 bg/124
+                                       : bg/128 bg/130 bg/132 bg/134 bg/136 bg/138 bg/140
+                                       : bg/142 bg/144 bg/146 bg/148 bg/150 bg/152 bg/156
+                                       : bg/158 bg/162 bg/164 bg/166 bg/170 bg/172 bg/174
+                                       : bg/176 bg/178 bg/188 bg/192 bg/196 bg/198 bg/200
+                                       : bg/202 bg/204 bg/206 bg/208 bg/210 bg/212 bg/214
+                                       : bg/216 bg/218 bg/220 bg/222 bg/223 bg/226 bg/228
+                                       : bg/230 bg/236 bg/238 bg/241 bg/249 bg/251 bg/258
+                                       : bg/261 bg/264 bg/268 bg/270 bg/272 bg/274 bg/276
+                                       : bg/278 bg/280 bg/282 bg/286 bg/288 bg/290 bg/292
+                                       : bg/294 bg/302 bg/306 bg/314 bg/316 bg/318 bg/322
+                                       : bg/324 bg/326 bg/328 bg/334 bg/338 bg/340 bg/342
+                                       : bg/346 bg/348 bg/350 bg/352 bg/354 bg/356 bg/358
+                                       : bg/360 bg/362 bg/364 bg/368 bg/370 bg/372 bg/374
+                                       : bg/378 bg/380 bg/386 bg/400 bg/402 bg/404 bg/410
+                                       : bg/412 bg/414 bg/416 bg/418 bg/420 bg/422 bg/424
+                                       : bg/426 bg/428 bg/434 bg/436 bg/438 bg/440 bg/442
+                                       : bg/444 bg/446 bg/448 bg/450 bg/452 bg/454 bg/456
+                                       : bg/458 bg/460 bg/462 bg/464 bg/466 bg/468 bg/472
+                                       : bg/474 bg/478 bg/480 bg/482 bg/484 bg/492 bg/494
+                                       : bg/498 bg/500 bg/504 bg/506 bg/508 bg/512 bg/514
+                                       : bg/518 bg/520 bg/522 bg/526 bg/528 bg/530 bg/532
+                                       : bg/536 bg/538 bg/540 bg/542 bg/544 bg/546 bg/548
+                                       : bg/550 bg/552 bg/554 bg/560 bg/562 bg/564 bg/566
+                                       : bg/572 bg/574 bg/576 bg/578 bg/584 bg/586 bg/588
+                                       : bg/590 bg/592 bg/594 bg/596 bg/598 bg/600 bg/602
+                                       : bg/604 bg/606 bg/610 bg/612 bg/616 bg/620 bg/622
+                                       : bg/624 bg/626 bg/628 bg/630 bg/632 bg/634 bg/636
+                                       : bg/638 bg/640 bg/642 bg/644 bg/646 bg/648 bg/650
+                                       : bg/652 bg/655 bg/658 bg/660 bg/662 bg/664 bg/665
+                                       : bg/667 bg/670 bg/672 bg/674 bg/676 bg/678 bg/688
+                                       : bg/690 bg/696 bg/698 bg/700 bg/702 bg/704 bg/706
+                                       : bg/708 bg/710 bg/712 bg/714 bg/716 bg/718 bg/720
+                                       : bg/722 bg/724 bg/726 bg/730 bg/732 bg/736 bg/738
+                                       : bg/742 bg/744 bg/746 bg/748 bg/750 bg/752 bg/754
+                                       : bg/758 bg/760 bg/764 bg/766 bg/768 bg/770 bg/772
+                                       : bg/774 bg/776 bg/778 bg/780 bg/784 bg/790 bg/794
+                                       : bg/796 bg/798 bg/800 bg/802 bg/804 bg/806 bg/808
+                                       : bg/810 bg/812 bg/814 bg/816 bg/818 bg/822 bg/824
+                                       : bg/826 bg/828 bg/830 bg/832 bg/834 bg/838 bg/840
+                                       : bg/842 bg/844 bg/850 bg/852 bg/854 bg/856 bg/858
+                                       : bg/860 bg/862 bg/864 bg/866 bg/868 bg/870 bg/872
+                                       : bg/874 bg/876 bg/878 bg/880 bg/882 bg/884 bg/886
+                                       : bg/888 bg/890 bg/892 bg/894 bg/896 bg/898 bg/900
+                                       : bg/902 bg/904 bg/906 bg/908 bg/910 bg/914 bg/916
+                                       : bg/918 bg/920 bg/922 bg/924 bg/926 bg/928 bg/930
+                                       : bg/932 bg/936 bg/938 bg/944 bg/946 bg/948 bg/952
+                                       : bg/954 bg/956 bg/958 bg/960 bg/962 bg/964 bg/966
+                                       : bg/968 bg/970 bg/972 bg/974 bg/976 bg/978 bg/980
+                                       : bg/982 bg/984 bg/986 bg/988 bg/990 bg/992 bg/994
+                                       : bg/996 bg/998 bg/1000 bg/1002 bg/1004 bg/1006 bg/1008
+                                       : bg/1010 bg/1012 bg/1014 bg/1016 bg/1018 bg/1020
+                                       : bg/1022 bg/1026 bg/1028 bg/1030 bg/1036 bg/1038
+                                       : bg/1040 bg/1042 bg/1044 bg/1048 bg/1052 bg/1054
+                                       : bg/1056 bg/1058 bg/1060 bg/1062 bg/1064 bg/1066
+                                       : bg/1068 bg/1070 bg/1072 bg/1074 bg/1076 bg/1078
+                                       : bg/1080 bg/1082 bg/1084 bg/1086 bg/1088 bg/1090
+                                       : bg/1092 bg/1094 bg/1096 bg/1098 bg/1100 bg/1102
+                                       : bg/1104 bg/1106 bg/1108 bg/1110 bg/1112 bg/1114
+                                       : bg/1116 bg/1118 bg/1120 bg/1122 bg/1124 bg/1132
+                                       : bg/1134 bg/1138 bg/1140 bg/1146 bg/1148 bg/1152
+                                       : bg/1160 bg/1162 bg/1164 bg/1166 bg/1168 bg/1170
+                                       : bg/1172 bg/1174 bg/1176 bg/1178 bg/1180 bg/1182
+                                       : bg/1184 bg/1186 bg/1188 bg/1190 bg/1192 bg/1194
+                                       : bg/1196 bg/1198 bg/1202 bg/1204 bg/1206 bg/1208
+                                       : bg/1210 bg/1214 bg/1218 bg/1220 bg/1224 bg/1228
+                                       : bg/1230 bg/1232 bg/1234 bg/1236 bg/1238 bg/1242
+                                       : bg/1244 bg/1246 bg/1248 bg/1250 bg/1254 bg/1256
+                                       : bg/1258 bg/1260 bg/1262 bg/1264 bg/1266 bg/1268
+                                       : bg/1272 bg/1276 bg/1278 bg/1282 bg/1284 bg/1286
+                                       : bg/1288 bg/1290 bg/1292 bg/1294 bg/1296 bg/1298
+                                       : bg/1300 bg/1302 bg/1304 bg/1306 bg/1310 bg/1312
+                                       : bg/1314 bg/1316 bg/1318 bg/1320 bg/1322 bg/1324
+                                       : bg/1326 bg/1328 bg/1330 bg/1332 bg/1334 bg/1336
+                                       : bg/1338 bg/1340 bg/1342 bg/1344 bg/1350 bg/1352
+                                       : bg/1354 bg/1356 bg/1358 bg/1360 bg/1362 bg/1364
+                                       : bg/1366 bg/1368 bg/1370 bg/1372 bg/1374 bg/1376
+                                       : bg/1378 bg/1380 bg/1382 bg/1384 bg/1386 bg/1388
+                                       : bg/1390 bg/1392 bg/1394 bg/1396 bg/1398 bg/1400
+                                       : bg/1402 bg/1404 bg/1406 bg/1408 bg/1410 bg/1412
+                                       : bg/1414 bg/1416 bg/1418 bg/1420 bg/1422 bg/1424
+                                       : bg/1426 bg/1428 bg/1430 bg/1434 bg/1436 bg/1438
+                                       : bg/1440 bg/1442 bg/1444 bg/1446 bg/1448 bg/1450
+                                       : bg/1452 bg/1454 bg/1456 bg/1458 bg/1460 bg/1462
+                                       : bg/1464 bg/1468 bg/1470 bg/1472 bg/1474 bg/1476
+                                       : bg/1478 bg/1480 bg/1482 bg/1484 bg/1486 bg/1488
+                                       : bg/1490 bg/1492 bg/1494 bg/1496 bg/1498 bg/1500
+                                       : bg/1502 bg/1504 bg/1506 bg/1509 bg/1514 bg/1516
+                                       : bg/1518 bg/1522 bg/1526 bg/1528 bg/1530 bg/1532
+                                       : bg/1536 bg/1538 bg/1540 bg/1546 bg/1550 bg/1552
+                                       : bg/1560 bg/1562 bg/1564 bg/1566 bg/1568 bg/1570
+                                       : bg/1572 bg/1574 bg/1576 bg/1578 bg/1582 bg/1584
+                                       : bg/1586 bg/1588 bg/1590 bg/1592 bg/1593 bg/1595
+                                       : bg/1597 bg/1601 bg/1605 bg/1607 bg/1609 bg/1611
+                                       : bg/1614 bg/1616 bg/1618 bg/1620 bg/1622 bg/1624
+                                       : bg/1628 bg/1630 bg/1632 bg/1638 bg/1640 bg/1642
+                                       : bg/1644 bg/1646 bg/1648 bg/1650 bg/1652 bg/1654
+                                       : bg/1656 bg/1658 bg/1662 bg/1666 bg/1668 bg/1670
+                                       : bg/1672 bg/1674 bg/1676 bg/1678 bg/1680 bg/1684
+                                       : bg/1686 bg/1688 bg/1690 bg/1692 bg/1694 bg/1696
+                                       : bg/1698 bg/1700 bg/1702 bg/1703 bg/1705 bg/1707
+                                       : bg/1727 bg/1729 bg/1737 bg/1741 bg/1743 bg/1745
+                                       : bg/1747 bg/1751 bg/1754 bg/1756 bg/1758 bg/1760
+                                       : bg/1762 bg/1764 bg/1766 bg/1768 bg/1770 bg/1772
+                                       : bg/1774 bg/1778 bg/1780 bg/1782 bg/1784 bg/1786
+                                       : bg/1788 bg/1790 bg/1792 bg/1794 bg/1796 bg/1798
+                                       : bg/1802 bg/1804 bg/1806 bg/1808 bg/1810 bg/1812
+                                       : bg/1814 bg/1816 bg/1818 bg/1820 bg/1822 bg/1824
+                                       : bg/1826 bg/1830 bg/1832 bg/1834 bg/1836 bg/1838
+                                       : bg/1840 bg/1842 bg/1846 bg/1850 bg/1852 bg/1856
+                                       : bg/1858 bg/1860 bg/1864 bg/1866 bg/1868 bg/1870
+                                       : bg/1872 bg/1876 bg/1884 bg/1886 bg/1888 bg/1890
+                                       : bg/1892 bg/1894 bg/1896 bg/1898 bg/1900 bg/1902
+                                       : bg/1904 bg/1906 bg/1908 bg/1912 bg/1914 bg/1916
+                                       : bg/1920 bg/1924 bg/1926 bg/1928 bg/1930 bg/1934
+                                       : bg/1948 bg/1950 bg/1952 bg/1968 bg/1972 bg/1976
+                                       : bg/1982 bg/1984 bg/1988 bg/1994 bg/1996 bg/2000
+                                       : bg/2004 bg/2006 bg/2008 bg/2010 bg/2012 bg/2014
+                                       : bg/2018 bg/2020 bg/2024 bg/2026 bg/2028 bg/2029
+                                       : bg/2034 bg/2042 bg/2044 bg/2046 bg/2048 bg/2050
+                                       : bg/2054 bg/2060 bg/2072 bg/2074 bg/2079 bg/2088
+                                       : bg/2090 bg/2098 bg/2100 bg/2101 bg/2108 bg/2112
+                                       : bg/2120 bg/2124 bg/2126 bg/2128 bg/2129 bg/2132
+                                       : bg/2140 bg/2144 bg/2150 bg/2154 bg/2156 bg/2157
+                                       : bg/2160 bg/2163 bg/2171 bg/2174 bg/2175 bg/2180
+                                       : bg/2182 bg/2184 bg/2190 bg/2191 bg/2196 bg/2197
+                                       : bg/2199 bg/2201 bg/2203 bg/2208 bg/2212 bg/2214
+                                       : bg/2216 bg/2217 bg/2221 bg/2225 bg/2229 bg/2231
+                                       : bg/2234 bg/2236 bg/2237 bg/2239 bg/2241 bg/2243
+                                       : bg/2246 bg/2249 bg/2251 bg/2253 bg/2255 bg/2257
+                                       : bg/2259 bg/2261 bg/2263 bg/2274 bg/2276 bg/2278
+                                       : bg/2280 bg/2282 bg/2284 bg/2286 bg/2288 bg/2290
+                                       : bg/2292 bg/2294 bg/2296 bg/2298 bg/2299 bg/2307
+                                       : bg/2309 bg/2312 bg/2315 bg/2317 bg/2319 bg/2321
+                                       : bg/2323 uss/1 uss/2 uss/3 uss/4 uss/5 uss/6 uss/7
+                                       : uss/8 uss/9 uss/10 uss/11 uss/12 uss/13 uss/14 uss/15
+                                       : uss/16 uss/17 uss/18 uss/19 uss/20 uss/21 uss/22
+                                       : uss/23 uss/24 uss/25 uss/26 uss/27 uss/28 uss/29
+                                       : uss/30 uss/31 uss/32 uss/33 uss/34 uss/35 uss/36
+                                       : uss/40 uss/41 uss/42 uss/56 uss/69 uss/86 uss/92
+                                       : uss/95 uss/101 uss/107 uss/113 uss/115 uss/118 uss/123
+                                       : uss/125 uss/126 uss/130 uss/132 uss/140 uss/141
+                                       : uss/155 uss/157 uss/158 uss/159 uss/163 uss/167
+                                       : uss/170 uss/174 uss/178 uss/179 uss/180 uss/181
+                                       : uss/183 uss/184 uss/185 uss/187 uss/194 uss/196
+                                       : uss/198 uss/202 uss/208 uss/211 uss/220 uss/230
+                                       : uss/235 uss/241 uss/242 uss/243 uss/245 uss/246
+                                       : uss/247 uss/248 uss/250 uss/253 uss/257 uss/258
+                                       : uss/259 uss/260 uss/261 uss/262 uss/263 uss/264
+                                       : uss/265 uss/266 uss/267 uss/268 uss/269 uss/270
+                                       : uss/271 uss/272 uss/282 uss/284 uss/290 uss/292 abt/1
+                                       : abt/2
+    # of nonzero coefficients (HS)     :       430275
+    Fill of coefficient matrix         :        0.008
+    # of NZE in factor                 :       386176
+    Total storage required             :      2707966
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:28
+    CPU-time for inverting (per rnd)   :      0:00:28
+    MFLOPs during factorization        :        54.36
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:15:04             usf_ptz.vce                              page 4
+ 
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg  avg
+    Number of equations                :        75462
+    Rank of the system                 :        74450
+    Equations set to zero              :  sex/5 sex/6 bjq/5 bg/4 bg/10 bg/13 bg/16 bg/18 bg/20
+                                       : bg/22 bg/24 bg/27 bg/29 bg/32 bg/33 bg/35 bg/37 bg/41
+                                       : bg/43 bg/45 bg/47 bg/49 bg/51 bg/53 bg/55 bg/57 bg/59
+                                       : bg/61 bg/63 bg/65 bg/69 bg/71 bg/73 bg/75 bg/78 bg/81
+                                       : bg/83 bg/85 bg/89 bg/91 bg/94 bg/96 bg/100 bg/102
+                                       : bg/104 bg/106 bg/108 bg/110 bg/114 bg/118 bg/124
+                                       : bg/128 bg/130 bg/132 bg/134 bg/136 bg/138 bg/140
+                                       : bg/142 bg/144 bg/146 bg/148 bg/150 bg/152 bg/156
+                                       : bg/158 bg/162 bg/164 bg/166 bg/170 bg/172 bg/174
+                                       : bg/176 bg/178 bg/188 bg/192 bg/196 bg/198 bg/200
+                                       : bg/202 bg/204 bg/206 bg/208 bg/210 bg/212 bg/214
+                                       : bg/216 bg/218 bg/220 bg/222 bg/223 bg/226 bg/228
+                                       : bg/230 bg/236 bg/238 bg/241 bg/249 bg/251 bg/258
+                                       : bg/261 bg/264 bg/268 bg/270 bg/272 bg/274 bg/276
+                                       : bg/278 bg/280 bg/282 bg/286 bg/288 bg/290 bg/292
+                                       : bg/294 bg/302 bg/306 bg/314 bg/316 bg/318 bg/322
+                                       : bg/324 bg/326 bg/328 bg/334 bg/338 bg/340 bg/342
+                                       : bg/346 bg/348 bg/350 bg/352 bg/354 bg/356 bg/358
+                                       : bg/360 bg/362 bg/364 bg/368 bg/370 bg/372 bg/374
+                                       : bg/378 bg/380 bg/386 bg/400 bg/402 bg/404 bg/410
+                                       : bg/412 bg/414 bg/416 bg/418 bg/420 bg/422 bg/424
+                                       : bg/426 bg/428 bg/434 bg/436 bg/438 bg/440 bg/442
+                                       : bg/444 bg/446 bg/448 bg/450 bg/452 bg/454 bg/456
+                                       : bg/458 bg/460 bg/462 bg/464 bg/466 bg/468 bg/472
+                                       : bg/474 bg/478 bg/480 bg/482 bg/484 bg/492 bg/494
+                                       : bg/498 bg/500 bg/504 bg/506 bg/508 bg/512 bg/514
+                                       : bg/518 bg/520 bg/522 bg/526 bg/528 bg/530 bg/532
+                                       : bg/536 bg/538 bg/540 bg/542 bg/544 bg/546 bg/548
+                                       : bg/550 bg/552 bg/554 bg/560 bg/562 bg/564 bg/566
+                                       : bg/572 bg/574 bg/576 bg/578 bg/584 bg/586 bg/588
+                                       : bg/590 bg/592 bg/594 bg/596 bg/598 bg/600 bg/602
+                                       : bg/604 bg/606 bg/610 bg/612 bg/616 bg/620 bg/622
+                                       : bg/624 bg/626 bg/628 bg/630 bg/632 bg/634 bg/636
+                                       : bg/638 bg/640 bg/642 bg/644 bg/646 bg/648 bg/650
+                                       : bg/652 bg/655 bg/658 bg/660 bg/662 bg/664 bg/665
+                                       : bg/667 bg/670 bg/672 bg/674 bg/676 bg/678 bg/688
+                                       : bg/690 bg/696 bg/698 bg/700 bg/702 bg/704 bg/706
+                                       : bg/708 bg/710 bg/712 bg/714 bg/716 bg/718 bg/720
+                                       : bg/722 bg/724 bg/726 bg/730 bg/732 bg/736 bg/738
+                                       : bg/742 bg/744 bg/746 bg/748 bg/750 bg/752 bg/754
+                                       : bg/758 bg/760 bg/764 bg/766 bg/768 bg/770 bg/772
+                                       : bg/774 bg/776 bg/778 bg/780 bg/784 bg/790 bg/794
+                                       : bg/796 bg/798 bg/800 bg/802 bg/804 bg/806 bg/808
+                                       : bg/810 bg/812 bg/814 bg/816 bg/818 bg/822 bg/824
+                                       : bg/826 bg/828 bg/830 bg/832 bg/834 bg/838 bg/840
+                                       : bg/842 bg/844 bg/850 bg/852 bg/854 bg/856 bg/858
+                                       : bg/860 bg/862 bg/864 bg/866 bg/868 bg/870 bg/872
+                                       : bg/874 bg/876 bg/878 bg/880 bg/882 bg/884 bg/886
+                                       : bg/888 bg/890 bg/892 bg/894 bg/896 bg/898 bg/900
+                                       : bg/902 bg/904 bg/906 bg/908 bg/910 bg/914 bg/916
+                                       : bg/918 bg/920 bg/922 bg/924 bg/926 bg/928 bg/930
+                                       : bg/932 bg/936 bg/938 bg/944 bg/946 bg/948 bg/952
+                                       : bg/954 bg/956 bg/958 bg/960 bg/962 bg/964 bg/966
+                                       : bg/968 bg/970 bg/972 bg/974 bg/976 bg/978 bg/980
+                                       : bg/982 bg/984 bg/986 bg/988 bg/990 bg/992 bg/994
+                                       : bg/996 bg/998 bg/1000 bg/1002 bg/1004 bg/1006 bg/1008
+                                       : bg/1010 bg/1012 bg/1014 bg/1016 bg/1018 bg/1020
+                                       : bg/1022 bg/1026 bg/1028 bg/1030 bg/1036 bg/1038
+                                       : bg/1040 bg/1042 bg/1044 bg/1048 bg/1052 bg/1054
+                                       : bg/1056 bg/1058 bg/1060 bg/1062 bg/1064 bg/1066
+                                       : bg/1068 bg/1070 bg/1072 bg/1074 bg/1076 bg/1078
+                                       : bg/1080 bg/1082 bg/1084 bg/1086 bg/1088 bg/1090
+                                       : bg/1092 bg/1094 bg/1096 bg/1098 bg/1100 bg/1102
+                                       : bg/1104 bg/1106 bg/1108 bg/1110 bg/1112 bg/1114
+                                       : bg/1116 bg/1118 bg/1120 bg/1122 bg/1124 bg/1132
+                                       : bg/1134 bg/1138 bg/1140 bg/1146 bg/1148 bg/1152
+                                       : bg/1160 bg/1162 bg/1164 bg/1166 bg/1168 bg/1170
+                                       : bg/1172 bg/1174 bg/1176 bg/1178 bg/1180 bg/1182
+                                       : bg/1184 bg/1186 bg/1188 bg/1190 bg/1192 bg/1194
+                                       : bg/1196 bg/1198 bg/1202 bg/1204 bg/1206 bg/1208
+                                       : bg/1210 bg/1214 bg/1218 bg/1220 bg/1224 bg/1228
+                                       : bg/1230 bg/1232 bg/1234 bg/1236 bg/1238 bg/1242
+                                       : bg/1244 bg/1246 bg/1248 bg/1250 bg/1254 bg/1256
+                                       : bg/1258 bg/1260 bg/1262 bg/1264 bg/1266 bg/1268
+                                       : bg/1272 bg/1276 bg/1278 bg/1282 bg/1284 bg/1286
+                                       : bg/1288 bg/1290 bg/1292 bg/1294 bg/1296 bg/1298
+                                       : bg/1300 bg/1302 bg/1304 bg/1306 bg/1310 bg/1312
+                                       : bg/1314 bg/1316 bg/1318 bg/1320 bg/1322 bg/1324
+                                       : bg/1326 bg/1328 bg/1330 bg/1332 bg/1334 bg/1336
+                                       : bg/1338 bg/1340 bg/1342 bg/1344 bg/1350 bg/1352
+                                       : bg/1354 bg/1356 bg/1358 bg/1360 bg/1362 bg/1364
+                                       : bg/1366 bg/1368 bg/1370 bg/1372 bg/1374 bg/1376
+                                       : bg/1378 bg/1380 bg/1382 bg/1384 bg/1386 bg/1388
+                                       : bg/1390 bg/1392 bg/1394 bg/1396 bg/1398 bg/1400
+                                       : bg/1402 bg/1404 bg/1406 bg/1408 bg/1410 bg/1412
+                                       : bg/1414 bg/1416 bg/1418 bg/1420 bg/1422 bg/1424
+                                       : bg/1426 bg/1428 bg/1430 bg/1434 bg/1436 bg/1438
+                                       : bg/1440 bg/1442 bg/1444 bg/1446 bg/1448 bg/1450
+                                       : bg/1452 bg/1454 bg/1456 bg/1458 bg/1460 bg/1462
+                                       : bg/1464 bg/1468 bg/1470 bg/1472 bg/1474 bg/1476
+                                       : bg/1478 bg/1480 bg/1482 bg/1484 bg/1486 bg/1488
+                                       : bg/1490 bg/1492 bg/1494 bg/1496 bg/1498 bg/1500
+                                       : bg/1502 bg/1504 bg/1506 bg/1509 bg/1514 bg/1516
+                                       : bg/1518 bg/1522 bg/1526 bg/1528 bg/1530 bg/1532
+                                       : bg/1536 bg/1538 bg/1540 bg/1546 bg/1550 bg/1552
+                                       : bg/1560 bg/1562 bg/1564 bg/1566 bg/1568 bg/1570
+                                       : bg/1572 bg/1574 bg/1576 bg/1578 bg/1582 bg/1584
+                                       : bg/1586 bg/1588 bg/1590 bg/1592 bg/1593 bg/1595
+                                       : bg/1597 bg/1601 bg/1605 bg/1607 bg/1609 bg/1611
+                                       : bg/1614 bg/1616 bg/1618 bg/1620 bg/1622 bg/1624
+                                       : bg/1628 bg/1630 bg/1632 bg/1638 bg/1640 bg/1642
+                                       : bg/1644 bg/1646 bg/1648 bg/1650 bg/1652 bg/1654
+                                       : bg/1656 bg/1658 bg/1662 bg/1666 bg/1668 bg/1670
+                                       : bg/1672 bg/1674 bg/1676 bg/1678 bg/1680 bg/1684
+                                       : bg/1686 bg/1688 bg/1690 bg/1692 bg/1694 bg/1696
+                                       : bg/1698 bg/1700 bg/1702 bg/1703 bg/1705 bg/1707
+                                       : bg/1727 bg/1729 bg/1737 bg/1741 bg/1743 bg/1745
+                                       : bg/1747 bg/1751 bg/1754 bg/1756 bg/1758 bg/1760
+                                       : bg/1762 bg/1764 bg/1766 bg/1768 bg/1770 bg/1772
+                                       : bg/1774 bg/1778 bg/1780 bg/1782 bg/1784 bg/1786
+                                       : bg/1788 bg/1790 bg/1792 bg/1794 bg/1796 bg/1798
+                                       : bg/1802 bg/1804 bg/1806 bg/1808 bg/1810 bg/1812
+                                       : bg/1814 bg/1816 bg/1818 bg/1820 bg/1822 bg/1824
+                                       : bg/1826 bg/1830 bg/1832 bg/1834 bg/1836 bg/1838
+                                       : bg/1840 bg/1842 bg/1846 bg/1850 bg/1852 bg/1856
+                                       : bg/1858 bg/1860 bg/1864 bg/1866 bg/1868 bg/1870
+                                       : bg/1872 bg/1876 bg/1884 bg/1886 bg/1888 bg/1890
+                                       : bg/1892 bg/1894 bg/1896 bg/1898 bg/1900 bg/1902
+                                       : bg/1904 bg/1906 bg/1908 bg/1912 bg/1914 bg/1916
+                                       : bg/1920 bg/1924 bg/1926 bg/1928 bg/1930 bg/1934
+                                       : bg/1948 bg/1950 bg/1952 bg/1968 bg/1972 bg/1976
+                                       : bg/1982 bg/1984 bg/1988 bg/1994 bg/1996 bg/2000
+                                       : bg/2004 bg/2006 bg/2008 bg/2010 bg/2012 bg/2014
+                                       : bg/2018 bg/2020 bg/2024 bg/2026 bg/2028 bg/2029
+                                       : bg/2034 bg/2042 bg/2044 bg/2046 bg/2048 bg/2050
+                                       : bg/2054 bg/2060 bg/2072 bg/2074 bg/2079 bg/2088
+                                       : bg/2090 bg/2098 bg/2100 bg/2101 bg/2108 bg/2112
+                                       : bg/2120 bg/2124 bg/2126 bg/2128 bg/2129 bg/2132
+                                       : bg/2140 bg/2144 bg/2150 bg/2154 bg/2156 bg/2157
+                                       : bg/2160 bg/2163 bg/2171 bg/2174 bg/2175 bg/2180
+                                       : bg/2182 bg/2184 bg/2190 bg/2191 bg/2196 bg/2197
+                                       : bg/2199 bg/2201 bg/2203 bg/2208 bg/2212 bg/2214
+                                       : bg/2216 bg/2217 bg/2221 bg/2225 bg/2229 bg/2231
+                                       : bg/2234 bg/2236 bg/2237 bg/2239 bg/2241 bg/2243
+                                       : bg/2246 bg/2249 bg/2251 bg/2253 bg/2255 bg/2257
+                                       : bg/2259 bg/2261 bg/2263 bg/2274 bg/2276 bg/2278
+                                       : bg/2280 bg/2282 bg/2284 bg/2286 bg/2288 bg/2290
+                                       : bg/2292 bg/2294 bg/2296 bg/2298 bg/2299 bg/2307
+                                       : bg/2309 bg/2312 bg/2315 bg/2317 bg/2319 bg/2321
+                                       : bg/2323 uss/1 uss/2 uss/3 uss/4 uss/5 uss/6 uss/7
+                                       : uss/8 uss/9 uss/10 uss/11 uss/12 uss/13 uss/14 uss/15
+                                       : uss/16 uss/17 uss/18 uss/19 uss/20 uss/21 uss/22
+                                       : uss/23 uss/24 uss/25 uss/26 uss/27 uss/28 uss/29
+                                       : uss/30 uss/31 uss/32 uss/33 uss/34 uss/35 uss/36
+                                       : uss/40 uss/41 uss/42 uss/56 uss/69 uss/86 uss/92
+                                       : uss/95 uss/101 uss/107 uss/113 uss/115 uss/118 uss/123
+                                       : uss/125 uss/126 uss/130 uss/132 uss/140 uss/141
+                                       : uss/155 uss/157 uss/158 uss/159 uss/163 uss/167
+                                       : uss/170 uss/174 uss/178 uss/179 uss/180 uss/181
+                                       : uss/183 uss/184 uss/185 uss/187 uss/194 uss/196
+                                       : uss/198 uss/202 uss/208 uss/211 uss/220 uss/230
+                                       : uss/235 uss/241 uss/242 uss/243 uss/245 uss/246
+                                       : uss/247 uss/248 uss/250 uss/253 uss/257 uss/258
+                                       : uss/259 uss/260 uss/261 uss/262 uss/263 uss/264
+                                       : uss/265 uss/266 uss/267 uss/268 uss/269 uss/270
+                                       : uss/271 uss/272 uss/282 uss/284 uss/290 uss/292 abt/1
+                                       : abt/2
+    # of nonzero coefficients (HS)     :       430275
+    Fill of coefficient matrix         :        0.008
+    # of NZE in factor                 :       386176
+    Total storage required             :      2707966
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:28
+    CPU-time for inverting (per rnd)   :      0:00:28
+    MFLOPs during factorization        :        54.36
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:15:05             usf_ptz.vce                              page 5
+ 
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     5259
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:    16991
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:    29103
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    36651
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    45662
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    50955
+    All non zeros are loaded           :       381971
+    Number of equations                :        75462
+    Filling rate of LHS storage space  :       1.2102
+    Hit rate by setting up LHS         :       1.0023
+    Zero diagonal coefficients stored  :         1012
+    AG  29.5     1  39488.61     500   0   0   0   0   0   0   0   0 --  500  57 333 332 500  57 333
+    AG   1.8     2  480556.4     888 500   0   0   0   0   0   0   0 --  740-395 601   0 259 946 398
+    AG   1.8     3  431095.1       5 888 500   0   0   0   0   0   0 --  740-389 604   0 259 941 395
+    AG   1.7     4  365941.2      18   5 888 500   0   0   0   0   0 --  739-372 611   2 260 922 385
+    AG   1.7     5  295805.3      61  18   5 888 500   0   0   0   0 --  738-325 616  19 261 860 363
+    AG   1.7     6  212828.0     240  61  18   5 888 500   0   0   0 --  732-204 559 114 267 620 325
+    AG   1.7     7  115449.1     401 240  61  18   5 888 500   0   0 --  701 -29 403 274 298 219 322
+    AG   1.7     8  45848.50     142 401 240  61  18   5 888 500   0 --  584  46 341 326 415  76 332
+    AG   1.8     9  39404.21      68 142 401 240  61  18   5 888 500 --  516  56 334 331 483  60 333
+    AG   1.7    10  39368.07       9  68 142 401 240  61  18   5 888 --  526  55 335 331 473  61 333
+    AG   1.7    11  39307.86      25   9  68 142 401 240  61  18   5 --  551  53 336 330 448  64 332
+    AG   1.7    12  39207.21      86  25   9  68 142 401 240  61  18 --  637  48 341 327 362  75 331
+    AG   1.7    13  39053.09     237  86  25   9  68 142 401 240  61 --  875  31 357 315 124 111 326
+    AG   2.1    14  39043.61      54 237  86  25   9  68 142 401 240 --  821  36 353 319 178 102 327
+    AG   1.7    15  39008.23      32  54 237  86  25   9  68 142 401 --  853  33 356 317 146 109 325
+    AG   1.7    16  38996.59      35  32  54 237  86  25   9  68 142 --  888  31 359 316 111 118 323
+    AG   1.7    17  39008.49      18  35  32  54 237  86  25   9  68 --  906  30 362 316  93 124 320
+    AG   1.7    18  38993.28      13  18  35  32  54 237  86  25   9 --  893  30 360 316 106 119 322
+    AG   1.9    19  38994.99      37  13  18  35  32  54 237  86  25 --  930  29 367 317  69 135 315
+    AG   1.7    20  38978.98      18  37  13  18  35  32  54 237  86 --  912  30 363 316  87 127 319
+    AG   1.7    21  38971.29      29  18  37  13  18  35  32  54 237 --  941  29 369 317  58 141 312
+    AG   1.7    22  38967.36      19  29  18  37  13  18  35  32  54 --  961  29 374 318  38 153 307
+    AG   1.7    23  38986.87      12  19  29  18  37  13  18  35  32 --  973  30 379 319  26 164 301
+    AG   1.7    24  38968.12      11  12  19  29  18  37  13  18  35 --  962  29 375 318  37 154 306
+    AG   1.7    25  38966.80       1  11  12  19  29  18  37  13  18 --  961  29 374 318  38 153 307
+    AG   1.9    26  38965.38      17   1  11  12  19  29  18  37  13 --  978  31 382 319  21 169 298
+    AG   1.7    27  38966.28       6  17   1  11  12  19  29  18  37 --  982  33 385 320  17 176 294
+    AG   1.7    28  38986.47       4   6  17   1  11  12  19  29  18 --  980  32 383 319  19 171 297
+    AG   1.7    29  38966.18       1   4   6  17   1  11  12  19  29 --  979  31 382 319  20 170 298
+    AG   1.9    30  38986.75       0   1   4   6  17   1  11  12  19 --  978  31 382 319  21 169 298
+    AG   1.7    31  38986.75       0   0   1   4   6  17   1  11  12 --  978  31 382 319  21 169 298
+    AG   1.8    32  38986.75       0   0   0   1   4   6  17   1  11 --  978  31 382 319  21 169 298
+    AG   1.7    33  38966.56       0   0   0   0   1   4   6  17   1 --  978  31 382 319  21 169 298
+    AG   1.7    34  38964.86       0   0   0   0   0   1   4   6  17 --  978  31 382 319  21 169 298
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:16:12             usf_ptz.vce                              page 6
+ 
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        usf       ptz
+    ________________________________________________________________________________
+    lmf                   F      1               1         -
+    sex                   F      3 .             1         1
+    bjq                   F      5 .             1         -
+    bg                    F   1163 .             1         1
+    uss                   F    295 .             1         -
+    animal                A  36408               1         1
+    pelm                  F      1               -         1
+    abt                   F      3 .             -         1
+    wu                    R      9               -         1
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg  avg
+    Number of equations                :        75462
+    Rank of the system                 :        75462
+    Equations set to zero              :  sex/5 sex/6 bjq/5 bg/4 bg/10 bg/13 bg/16 bg/18 bg/20
+                                       : bg/22 bg/24 bg/27 bg/29 bg/32 bg/33 bg/35 bg/37 bg/41
+                                       : bg/43 bg/45 bg/47 bg/49 bg/51 bg/53 bg/55 bg/57 bg/59
+                                       : bg/61 bg/63 bg/65 bg/69 bg/71 bg/73 bg/75 bg/78 bg/81
+                                       : bg/83 bg/85 bg/89 bg/91 bg/94 bg/96 bg/100 bg/102
+                                       : bg/104 bg/106 bg/108 bg/110 bg/114 bg/118 bg/124
+                                       : bg/128 bg/130 bg/132 bg/134 bg/136 bg/138 bg/140
+                                       : bg/142 bg/144 bg/146 bg/148 bg/150 bg/152 bg/156
+                                       : bg/158 bg/162 bg/164 bg/166 bg/170 bg/172 bg/174
+                                       : bg/176 bg/178 bg/188 bg/192 bg/196 bg/198 bg/200
+                                       : bg/202 bg/204 bg/206 bg/208 bg/210 bg/212 bg/214
+                                       : bg/216 bg/218 bg/220 bg/222 bg/223 bg/226 bg/228
+                                       : bg/230 bg/236 bg/238 bg/241 bg/249 bg/251 bg/258
+                                       : bg/261 bg/264 bg/268 bg/270 bg/272 bg/274 bg/276
+                                       : bg/278 bg/280 bg/282 bg/286 bg/288 bg/290 bg/292
+                                       : bg/294 bg/302 bg/306 bg/314 bg/316 bg/318 bg/322
+                                       : bg/324 bg/326 bg/328 bg/334 bg/338 bg/340 bg/342
+                                       : bg/346 bg/348 bg/350 bg/352 bg/354 bg/356 bg/358
+                                       : bg/360 bg/362 bg/364 bg/368 bg/370 bg/372 bg/374
+                                       : bg/378 bg/380 bg/386 bg/400 bg/402 bg/404 bg/410
+                                       : bg/412 bg/414 bg/416 bg/418 bg/420 bg/422 bg/424
+                                       : bg/426 bg/428 bg/434 bg/436 bg/438 bg/440 bg/442
+                                       : bg/444 bg/446 bg/448 bg/450 bg/452 bg/454 bg/456
+                                       : bg/458 bg/460 bg/462 bg/464 bg/466 bg/468 bg/472
+                                       : bg/474 bg/478 bg/480 bg/482 bg/484 bg/492 bg/494
+                                       : bg/498 bg/500 bg/504 bg/506 bg/508 bg/512 bg/514
+                                       : bg/518 bg/520 bg/522 bg/526 bg/528 bg/530 bg/532
+                                       : bg/536 bg/538 bg/540 bg/542 bg/544 bg/546 bg/548
+                                       : bg/550 bg/552 bg/554 bg/560 bg/562 bg/564 bg/566
+                                       : bg/572 bg/574 bg/576 bg/578 bg/584 bg/586 bg/588
+                                       : bg/590 bg/592 bg/594 bg/596 bg/598 bg/600 bg/602
+                                       : bg/604 bg/606 bg/610 bg/612 bg/616 bg/620 bg/622
+                                       : bg/624 bg/626 bg/628 bg/630 bg/632 bg/634 bg/636
+                                       : bg/638 bg/640 bg/642 bg/644 bg/646 bg/648 bg/650
+                                       : bg/652 bg/655 bg/658 bg/660 bg/662 bg/664 bg/665
+                                       : bg/667 bg/670 bg/672 bg/674 bg/676 bg/678 bg/688
+                                       : bg/690 bg/696 bg/698 bg/700 bg/702 bg/704 bg/706
+                                       : bg/708 bg/710 bg/712 bg/714 bg/716 bg/718 bg/720
+                                       : bg/722 bg/724 bg/726 bg/730 bg/732 bg/736 bg/738
+                                       : bg/742 bg/744 bg/746 bg/748 bg/750 bg/752 bg/754
+                                       : bg/758 bg/760 bg/764 bg/766 bg/768 bg/770 bg/772
+                                       : bg/774 bg/776 bg/778 bg/780 bg/784 bg/790 bg/794
+                                       : bg/796 bg/798 bg/800 bg/802 bg/804 bg/806 bg/808
+                                       : bg/810 bg/812 bg/814 bg/816 bg/818 bg/822 bg/824
+                                       : bg/826 bg/828 bg/830 bg/832 bg/834 bg/838 bg/840
+                                       : bg/842 bg/844 bg/850 bg/852 bg/854 bg/856 bg/858
+                                       : bg/860 bg/862 bg/864 bg/866 bg/868 bg/870 bg/872
+                                       : bg/874 bg/876 bg/878 bg/880 bg/882 bg/884 bg/886
+                                       : bg/888 bg/890 bg/892 bg/894 bg/896 bg/898 bg/900
+                                       : bg/902 bg/904 bg/906 bg/908 bg/910 bg/914 bg/916
+                                       : bg/918 bg/920 bg/922 bg/924 bg/926 bg/928 bg/930
+                                       : bg/932 bg/936 bg/938 bg/944 bg/946 bg/948 bg/952
+                                       : bg/954 bg/956 bg/958 bg/960 bg/962 bg/964 bg/966
+                                       : bg/968 bg/970 bg/972 bg/974 bg/976 bg/978 bg/980
+                                       : bg/982 bg/984 bg/986 bg/988 bg/990 bg/992 bg/994
+                                       : bg/996 bg/998 bg/1000 bg/1002 bg/1004 bg/1006 bg/1008
+                                       : bg/1010 bg/1012 bg/1014 bg/1016 bg/1018 bg/1020
+                                       : bg/1022 bg/1026 bg/1028 bg/1030 bg/1036 bg/1038
+                                       : bg/1040 bg/1042 bg/1044 bg/1048 bg/1052 bg/1054
+                                       : bg/1056 bg/1058 bg/1060 bg/1062 bg/1064 bg/1066
+                                       : bg/1068 bg/1070 bg/1072 bg/1074 bg/1076 bg/1078
+                                       : bg/1080 bg/1082 bg/1084 bg/1086 bg/1088 bg/1090
+                                       : bg/1092 bg/1094 bg/1096 bg/1098 bg/1100 bg/1102
+                                       : bg/1104 bg/1106 bg/1108 bg/1110 bg/1112 bg/1114
+                                       : bg/1116 bg/1118 bg/1120 bg/1122 bg/1124 bg/1132
+                                       : bg/1134 bg/1138 bg/1140 bg/1146 bg/1148 bg/1152
+                                       : bg/1160 bg/1162 bg/1164 bg/1166 bg/1168 bg/1170
+                                       : bg/1172 bg/1174 bg/1176 bg/1178 bg/1180 bg/1182
+                                       : bg/1184 bg/1186 bg/1188 bg/1190 bg/1192 bg/1194
+                                       : bg/1196 bg/1198 bg/1202 bg/1204 bg/1206 bg/1208
+                                       : bg/1210 bg/1214 bg/1218 bg/1220 bg/1224 bg/1228
+                                       : bg/1230 bg/1232 bg/1234 bg/1236 bg/1238 bg/1242
+                                       : bg/1244 bg/1246 bg/1248 bg/1250 bg/1254 bg/1256
+                                       : bg/1258 bg/1260 bg/1262 bg/1264 bg/1266 bg/1268
+                                       : bg/1272 bg/1276 bg/1278 bg/1282 bg/1284 bg/1286
+                                       : bg/1288 bg/1290 bg/1292 bg/1294 bg/1296 bg/1298
+                                       : bg/1300 bg/1302 bg/1304 bg/1306 bg/1310 bg/1312
+                                       : bg/1314 bg/1316 bg/1318 bg/1320 bg/1322 bg/1324
+                                       : bg/1326 bg/1328 bg/1330 bg/1332 bg/1334 bg/1336
+                                       : bg/1338 bg/1340 bg/1342 bg/1344 bg/1350 bg/1352
+                                       : bg/1354 bg/1356 bg/1358 bg/1360 bg/1362 bg/1364
+                                       : bg/1366 bg/1368 bg/1370 bg/1372 bg/1374 bg/1376
+                                       : bg/1378 bg/1380 bg/1382 bg/1384 bg/1386 bg/1388
+                                       : bg/1390 bg/1392 bg/1394 bg/1396 bg/1398 bg/1400
+                                       : bg/1402 bg/1404 bg/1406 bg/1408 bg/1410 bg/1412
+                                       : bg/1414 bg/1416 bg/1418 bg/1420 bg/1422 bg/1424
+                                       : bg/1426 bg/1428 bg/1430 bg/1434 bg/1436 bg/1438
+                                       : bg/1440 bg/1442 bg/1444 bg/1446 bg/1448 bg/1450
+                                       : bg/1452 bg/1454 bg/1456 bg/1458 bg/1460 bg/1462
+                                       : bg/1464 bg/1468 bg/1470 bg/1472 bg/1474 bg/1476
+                                       : bg/1478 bg/1480 bg/1482 bg/1484 bg/1486 bg/1488
+                                       : bg/1490 bg/1492 bg/1494 bg/1496 bg/1498 bg/1500
+                                       : bg/1502 bg/1504 bg/1506 bg/1509 bg/1514 bg/1516
+                                       : bg/1518 bg/1522 bg/1526 bg/1528 bg/1530 bg/1532
+                                       : bg/1536 bg/1538 bg/1540 bg/1546 bg/1550 bg/1552
+                                       : bg/1560 bg/1562 bg/1564 bg/1566 bg/1568 bg/1570
+                                       : bg/1572 bg/1574 bg/1576 bg/1578 bg/1582 bg/1584
+                                       : bg/1586 bg/1588 bg/1590 bg/1592 bg/1593 bg/1595
+                                       : bg/1597 bg/1601 bg/1605 bg/1607 bg/1609 bg/1611
+                                       : bg/1614 bg/1616 bg/1618 bg/1620 bg/1622 bg/1624
+                                       : bg/1628 bg/1630 bg/1632 bg/1638 bg/1640 bg/1642
+                                       : bg/1644 bg/1646 bg/1648 bg/1650 bg/1652 bg/1654
+                                       : bg/1656 bg/1658 bg/1662 bg/1666 bg/1668 bg/1670
+                                       : bg/1672 bg/1674 bg/1676 bg/1678 bg/1680 bg/1684
+                                       : bg/1686 bg/1688 bg/1690 bg/1692 bg/1694 bg/1696
+                                       : bg/1698 bg/1700 bg/1702 bg/1703 bg/1705 bg/1707
+                                       : bg/1727 bg/1729 bg/1737 bg/1741 bg/1743 bg/1745
+                                       : bg/1747 bg/1751 bg/1754 bg/1756 bg/1758 bg/1760
+                                       : bg/1762 bg/1764 bg/1766 bg/1768 bg/1770 bg/1772
+                                       : bg/1774 bg/1778 bg/1780 bg/1782 bg/1784 bg/1786
+                                       : bg/1788 bg/1790 bg/1792 bg/1794 bg/1796 bg/1798
+                                       : bg/1802 bg/1804 bg/1806 bg/1808 bg/1810 bg/1812
+                                       : bg/1814 bg/1816 bg/1818 bg/1820 bg/1822 bg/1824
+                                       : bg/1826 bg/1830 bg/1832 bg/1834 bg/1836 bg/1838
+                                       : bg/1840 bg/1842 bg/1846 bg/1850 bg/1852 bg/1856
+                                       : bg/1858 bg/1860 bg/1864 bg/1866 bg/1868 bg/1870
+                                       : bg/1872 bg/1876 bg/1884 bg/1886 bg/1888 bg/1890
+                                       : bg/1892 bg/1894 bg/1896 bg/1898 bg/1900 bg/1902
+                                       : bg/1904 bg/1906 bg/1908 bg/1912 bg/1914 bg/1916
+                                       : bg/1920 bg/1924 bg/1926 bg/1928 bg/1930 bg/1934
+                                       : bg/1948 bg/1950 bg/1952 bg/1968 bg/1972 bg/1976
+                                       : bg/1982 bg/1984 bg/1988 bg/1994 bg/1996 bg/2000
+                                       : bg/2004 bg/2006 bg/2008 bg/2010 bg/2012 bg/2014
+                                       : bg/2018 bg/2020 bg/2024 bg/2026 bg/2028 bg/2029
+                                       : bg/2034 bg/2042 bg/2044 bg/2046 bg/2048 bg/2050
+                                       : bg/2054 bg/2060 bg/2072 bg/2074 bg/2079 bg/2088
+                                       : bg/2090 bg/2098 bg/2100 bg/2101 bg/2108 bg/2112
+                                       : bg/2120 bg/2124 bg/2126 bg/2128 bg/2129 bg/2132
+                                       : bg/2140 bg/2144 bg/2150 bg/2154 bg/2156 bg/2157
+                                       : bg/2160 bg/2163 bg/2171 bg/2174 bg/2175 bg/2180
+                                       : bg/2182 bg/2184 bg/2190 bg/2191 bg/2196 bg/2197
+                                       : bg/2199 bg/2201 bg/2203 bg/2208 bg/2212 bg/2214
+                                       : bg/2216 bg/2217 bg/2221 bg/2225 bg/2229 bg/2231
+                                       : bg/2234 bg/2236 bg/2237 bg/2239 bg/2241 bg/2243
+                                       : bg/2246 bg/2249 bg/2251 bg/2253 bg/2255 bg/2257
+                                       : bg/2259 bg/2261 bg/2263 bg/2274 bg/2276 bg/2278
+                                       : bg/2280 bg/2282 bg/2284 bg/2286 bg/2288 bg/2290
+                                       : bg/2292 bg/2294 bg/2296 bg/2298 bg/2299 bg/2307
+                                       : bg/2309 bg/2312 bg/2315 bg/2317 bg/2319 bg/2321
+                                       : bg/2323 uss/1 uss/2 uss/3 uss/4 uss/5 uss/6 uss/7
+                                       : uss/8 uss/9 uss/10 uss/11 uss/12 uss/13 uss/14 uss/15
+                                       : uss/16 uss/17 uss/18 uss/19 uss/20 uss/21 uss/22
+                                       : uss/23 uss/24 uss/25 uss/26 uss/27 uss/28 uss/29
+                                       : uss/30 uss/31 uss/32 uss/33 uss/34 uss/35 uss/36
+                                       : uss/40 uss/41 uss/42 uss/56 uss/69 uss/86 uss/92
+                                       : uss/95 uss/101 uss/107 uss/113 uss/115 uss/118 uss/123
+                                       : uss/125 uss/126 uss/130 uss/132 uss/140 uss/141
+                                       : uss/155 uss/157 uss/158 uss/159 uss/163 uss/167
+                                       : uss/170 uss/174 uss/178 uss/179 uss/180 uss/181
+                                       : uss/183 uss/184 uss/185 uss/187 uss/194 uss/196
+                                       : uss/198 uss/202 uss/208 uss/211 uss/220 uss/230
+                                       : uss/235 uss/241 uss/242 uss/243 uss/245 uss/246
+                                       : uss/247 uss/248 uss/250 uss/253 uss/257 uss/258
+                                       : uss/259 uss/260 uss/261 uss/262 uss/263 uss/264
+                                       : uss/265 uss/266 uss/267 uss/268 uss/269 uss/270
+                                       : uss/271 uss/272 uss/282 uss/284 uss/290 uss/292 abt/1
+                                       : abt/2
+    # of nonzero coefficients (HS)     :       381971
+    Fill of coefficient matrix         :        0.007
+    # of NZE in factor                 :       386176
+    Total storage required             :      2707966
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:00:28
+    CPU-time for inverting (per rnd)   :      0:01:28
+    MFLOPs during factorization        :        66.79
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  14:16:12             usf_ptz.vce                              page 7
+ 
+ 
+    ********************************************************************************
+    *                 E S T I M A T E S   I N F O R M A T I O N                    *
+    ********************************************************************************
+ 
+    Tue Oct 16 14:16:12 2007                              CPU time used:     0:01:28
+ 
+    AG Log likelihood :   38964.8559  status :  2   at iteration:      34 /    34
+ 
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        6  1  1 A  animal                          36408 T T
+              0.6863E+01  0.5260E+01
+                          0.4066E+04
+ 
+        9  2  1 R  wu                              9 T
+              0.3398E+04
+ 
+        10  3  1 E  residual                        845 T T
+              0.1475E+00  0.3677E+01
+                          0.3175E+04
+ 
+    --------------------------- Matrices: Phenotypic  ------------------------------
+              0.7010E+01  0.8937E+01
+                          0.1064E+05
+ 
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        6  1  1 A  animal                        
+              0.9790E+00  0.3149E-01
+                          0.3822E+00
+ 
+        9  2  1 R  wu                            
+              0.3194E+00
+ 
+        10  3  1 E  residual                      
+              0.2104E-01  0.1699E+00
+                          0.2984E+00
+ 
+    Optimization did not finish with status 1
+    Results may not be meaningful with a status greater than 1.
+    As a result standard errors are not meaningful
+    and are therefore not computed.
+    Look at the documentation for discussion of status!

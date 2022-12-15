@@ -1,0 +1,65 @@
+Like Eildert says 
+
+we want you to give an overview about applications for the whole process of breeding value estimation from the loading of historic data up to puplishing of breeding values via web based on APIIS. 
+
+the steps ar
+
+- loading of historic data  (like Zhivko has shown)
+- variance components estimation
+- breeding value estimation
+- publishing
+
+All what I do is on the fly and I hope I don't forget anythink. 
+
+And second notice, in Köllitsch is broken out a influenza infection and Ralf and me are not free from them and so I hope you can understand us.
+
+- Stimme - voice
+
+At first I will give you a short introduction about the general idea. 
+
+==> Text
+
+--------------------------------------------------------------------------
+!! Zwisss-Folie vorziehen
+
+The next step is the estimation for genetic parameters
+
+like you see we have a lot of traits
+
+
+VCEmanage 1
+
+- scientific notation
+
+- at first I define a valid parameter file for pest and vce
+- 
+
+mlsmr.config
+
+- it is important, that the sequence of traits and traits within the model are the same
+
+
+
+calc_tbv
+
+- Tabellen zeigen
+- It doesn't matter where the data come from
+
+- berücksichtigen - consider
+
+
+ZwISSS
+
+
+- spannend - exciting
+- bedienen - serve
+
+
+
+
+
+
+
+
+
+

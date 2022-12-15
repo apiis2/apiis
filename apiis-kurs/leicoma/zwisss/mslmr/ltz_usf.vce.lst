@@ -1,0 +1,393 @@
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  13:36:01             ltz_usf.vce                              page 1
+ 
+ 
+ 
+    ********************************************************************************
+    *                    T R A I T S   A N D   E F F E C T S                       *
+    ********************************************************************************
+ 
+    Code Trait name  List of effects
+    ________________________________________________________________________________
+      1 ltz         sex       bjq       bg        wu        animal
+      2 usf         sex       bjq       bg                  animal    lmf       uss
+ 
+    ********************************************************************************
+    *               E F F E C T S   A N D   C O V A R I A N C E S                  *
+    ********************************************************************************
+ 
+    Code   Effect name Type Length Level Start COVARIANCE  Type Length Level Start Pattern
+    ______________________________________________________________________________________
+       1   sex        :  F     2      2      1
+       2   bjq        :  F     2      5      5
+       3   bg         :  F     2   1072     15
+       4   wu         :  R     1      8   2159  wu         :  R     1      1      1 T
+       5   animal     :  A     2  36408   2167  animal     :  A     2      1      2 T T
+       6   lmf        :  F     1      1  74983
+       7   uss        :  F     1    188  74984
+                                                residual   :  E     2      1      3 T T
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *                    G E N E R A L  I N F O R M A T I O N                      *
+    ********************************************************************************
+ 
+    VCE was started on :  at Tue Oct 16 13:36:01 2007 by: b08mueul
+ 
+    Comments:
+    ________________________________________________________________________________
+    |                 ************************************************             |
+    |                 *                     VCE-5                    *             |
+    |                 *                 version 5.1.2                *             |
+    |                 *            17-Dez-2003   14:42:53            *             |
+    |                 *         Linux 2.6.0-test11-bk11 i686         *             |
+    |                 *                  written by                  *             |
+    |                 *       Milena Kovac, Eildert Groeneveld       *             |
+    |                 *           and Alberto Garcia-Cortez          *             |
+    |                 ************************************************             |
+    | test mastitis                                                                |
+    ________________________________________________________________________________
+ 
+    Files involved
+    ________________________________________________________________________________
+    Current directory                  : /home/b08mueul/apiis/apiis-kurs/leicoma/zwisss/mslmr
+    Parameter file                     : ltz_usf.vce
+    Data input file                    : blupdata.txt.vce
+    Pedigree input file                : blupped.txt.vce
+    Log list file                      : ltz_usf.vce.lst
+    Covariances for dumped into        : ltz_usf.vce.cov-bin
+    Covariance matrices written in     : ltz_usf.vce.cov-fmt
+ 
+    ********************************************************************************
+    *                       D A T A  I N F O R M A T I O N                         *
+    ********************************************************************************
+ 
+    General statistics
+    ___________________________________________________________________
+ 
+    Variables   # rec.      min.        max.        avg.        std.
+    ___________________________________________________________________
+    ltz         32696   401.00000   884.00000   608.02113    67.52627
+    usf         32688     4.70000    49.70000    14.19030     2.96071
+    lmf         32698     0.00000   160.00000   110.12596    14.15059
+    ___________________________________________________________________
+ 
+    Pattern of traits
+    ________________________________
+     Count           ltz       usf
+    ________________________________
+      32686        x         x
+         10        x         -
+          2        -         x
+          2        -         x
+    ________________________________
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  13:36:01             ltz_usf.vce                              page 2
+ 
+ 
+    ********************************************************************************
+    *                  P E D I G R E E   I N F O R M A T I O N                     *
+    ********************************************************************************
+ 
+    Inbreeding             # of animals
+    ________________________________________________________________________________
+        0                   36408
+    ________________________________________________________________________________
+    Number of inbred animals           :            0
+    Average inbreeding (inbred animals):         0.00
+    Maximum inbreeding                 :         0.00
+ 
+    ********************************************************************************
+    *         C O V A R I A N C E   M A T R I X   I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    The following (co)variance matrices will be estimated (starting values):
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        4  1  1 R  wu                              8 T
+              0.1520E+04
+ 
+        5  2  1 A  animal                          36408 T T
+              0.1520E+04  0.3848E+01
+                          0.2932E+01
+ 
+        8  3  1 E  residual                        32686 T T
+              0.1520E+04  0.3848E+01
+                          0.2932E+01
+ 
+    ________________________________________________________________________________
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        4  1  1 R  wu                            
+              0.3333E+00
+ 
+        5  2  1 A  animal                        
+              0.3333E+00  0.5764E-01
+                          0.5000E+00
+ 
+        8  3  1 E  residual                      
+              0.3333E+00  0.5764E-01
+                          0.5000E+00
+ 
+    ________________________________________________________________________________
+    Thus, optimization is in 7 dimensions.
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        ltz       usf
+    ________________________________________________________________________________
+    sex                   F      2               1         1
+    bjq                   F      5               1         1
+    bg                    F   1072               1         1
+    wu                    R      8               1         -
+    animal                A  36408               1         1
+    lmf                   F      1               -         1
+    uss                   F    188               -         1
+    ________________________________________________________________________________
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     1164
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     3572
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:     6070
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:     8603
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    11160
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    13726
+    Non zero coefficients stored       :     400000, filled:   1.3% hit rate:    1.0 at line:    16303
+    Non zero coefficients stored       :     450000, filled:   1.4% hit rate:    1.0 at line:    18892
+    Non zero coefficients stored       :     500000, filled:   1.6% hit rate:    1.0 at line:    21487
+    Non zero coefficients stored       :     550000, filled:   1.7% hit rate:    1.0 at line:    24084
+    Non zero coefficients stored       :     600000, filled:   1.9% hit rate:    1.0 at line:    26688
+    Non zero coefficients stored       :     650000, filled:   2.1% hit rate:    1.0 at line:    29302
+    Non zero coefficients stored       :     700000, filled:   2.2% hit rate:    1.0 at line:    31908
+    Non zero coefficients stored       :     750000, filled:   2.4% hit rate:    1.0 at line:    36194
+    Non zero coefficients stored       :     800000, filled:   2.5% hit rate:    1.0 at line:    46400
+    All non zeros are loaded           :       845042
+    Number of equations                :        75171
+    Filling rate of LHS storage space  :       2.6774
+    Hit rate by setting up LHS         :       1.0035
+    IS - allocated for ordering with   :     80000000
+    Dimension of equation system       :        75171
+    Rank of equation system            :        75161
+    Time for solving MME (h:min:sec)   :      0:01:03
+    Time for inversion (h:min:sec)     :      0:01:03
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  13:37:06             ltz_usf.vce                              page 3
+ 
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75171
+    Rank of the system                 :        75161
+    Equations set to zero              :  sex/1 sex/2 bjq/5 bjq/6 bg/590 bg/1616 bg/2132 uss/1
+                                       : uss/46 uss/157
+    # of nonzero coefficients (HS)     :       845042
+    Fill of coefficient matrix         :        0.015
+    # of NZE in factor                 :       814027
+    Total storage required             :      5007402
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:01:03
+    CPU-time for inverting (per rnd)   :      0:01:03
+    MFLOPs during factorization        :        75.88
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75171
+    Rank of the system                 :        75161
+    Equations set to zero              :  sex/1 sex/2 bjq/5 bjq/6 bg/590 bg/1616 bg/2132 uss/1
+                                       : uss/46 uss/157
+    # of nonzero coefficients (HS)     :       845042
+    Fill of coefficient matrix         :        0.015
+    # of NZE in factor                 :       814027
+    Total storage required             :      5007402
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:01:03
+    CPU-time for inverting (per rnd)   :      0:01:03
+    MFLOPs during factorization        :        75.88
+    Non zero coefficients stored       :      50000, filled:   0.2% hit rate:    1.0 at line:    50000
+ 
+    ********************************************************************************
+    *                       S E T T I N G    U P    M M E                          *
+    ********************************************************************************
+ 
+    Non zero coefficients stored       :     100000, filled:   0.3% hit rate:    1.0 at line:     1592
+    Non zero coefficients stored       :     150000, filled:   0.5% hit rate:    1.0 at line:     4887
+    Non zero coefficients stored       :     200000, filled:   0.6% hit rate:    1.0 at line:     8262
+    Non zero coefficients stored       :     250000, filled:   0.8% hit rate:    1.0 at line:    11663
+    Non zero coefficients stored       :     300000, filled:   1.0% hit rate:    1.0 at line:    15079
+    Non zero coefficients stored       :     350000, filled:   1.1% hit rate:    1.0 at line:    18517
+    Non zero coefficients stored       :     400000, filled:   1.3% hit rate:    1.0 at line:    21951
+    Non zero coefficients stored       :     450000, filled:   1.4% hit rate:    1.0 at line:    25421
+    Non zero coefficients stored       :     500000, filled:   1.6% hit rate:    1.0 at line:    28873
+    Non zero coefficients stored       :     550000, filled:   1.7% hit rate:    1.0 at line:    32322
+    Non zero coefficients stored       :     600000, filled:   1.9% hit rate:    1.0 at line:    38626
+    Non zero coefficients stored       :     650000, filled:   2.1% hit rate:    1.0 at line:    47450
+    All non zeros are loaded           :       685296
+    Number of equations                :        75171
+    Filling rate of LHS storage space  :       2.1712
+    Hit rate by setting up LHS         :       1.0035
+    Zero diagonal coefficients stored  :           10
+    AG  66.1     1  58758.76     500   0   0   0   0   0   0   0   0 --  333 333  57 500 333  57 500
+    AG   2.8     2  837766.1     892 500   0   0   0   0   0   0   0 --    0 604 706 440 395 949 559
+    AG   2.8     3  744927.7       0 892 500   0   0   0   0   0   0 --    0 604 706 440 395 949 559
+    AG   2.9     4  623680.8       1   0 892 500   0   0   0   0   0 --    0 604 704 441 395 948 558
+    AG   3.0     5  495262.0       4   1   0 892 500   0   0   0   0 --    0 603 700 442 396 946 557
+    AG   2.9     6  346884.5      14   4   1   0 892 500   0   0   0 --    1 598 686 449 399 937 550
+    AG   2.8     7  181873.1      67  14   4   1   0 892 500   0   0 --   17 574 618 476 407 888 523
+    AG   2.8     8  72991.01     321  67  14   4   1   0 892 500   0 --  152 459 361 534 387 567 465
+    AG   2.9     9  58346.97     361 321  67  14   4   1   0 892 500 --  280 368 148 519 350 206 480
+    AG   3.0    10  57778.72      48 361 321  67  14   4   1   0 892 --  300 368 173 534 330 254 465
+    AG   2.8    11  57640.65      68  48 361 321  67  14   4   1   0 --  311 380 194 560 307 323 439
+    AG   3.8    12  57571.20      37  68  48 361 321  67  14   4   1 --  308 397 191 584 293 360 415
+    AG   2.8    13  57368.98     249  37  68  48 361 321  67  14   4 --  289 523 128 727 187 610 272
+    AG   3.0    14  57263.58      52 249  37  68  48 361 321  67  14 --  294 503 129 716 201 557 283
+    AG   2.9    15  57196.89      68  52 249  37  68  48 361 321  67 --  293 535 105 756 170 626 243
+    AG   3.2    16  57156.53     133  68  52 249  37  68  48 361 321 --  291 584  79 809 124 760 190
+    AG   2.8    17  57140.99       6 133  68  52 249  37  68  48 361 --  294 581  85 810 124 759 189
+    AG   2.8    18  57127.87      46   6 133  68  52 249  37  68  48 --  292 594  92 822 113 805 177
+    AG   3.0    19  57112.08     115  46   6 133  68  52 249  37  68 --  287 629 111 843  83 920 156
+    AG   2.9    20  57107.21      10 115  46   6 133  68  52 249  37 --  287 627 121 844  84 920 155
+    AG   2.8    21  57104.87      24  10 115  46   6 133  68  52 249 --  286 636 126 849  77 945 150
+    AG   3.2    22  57102.87      29  24  10 115  46   6 133  68  52 --  284 648 131 857  66 975 142
+    AG   3.2    23  57102.20       4  29  24  10 115  46   6 133  68 --  284 650 133 860  64 979 139
+    AG   2.8    24  57101.83       7   4  29  24  10 115  46   6 133 --  284 654 137 863  61 987 136
+    AG   2.8    25  57101.43       5   7   4  29  24  10 115  46   6 --  283 657 141 867  59 993 132
+    AG   3.5    26  57100.82       6   5   7   4  29  24  10 115  46 --  282 659 146 874  58 998 125
+    AG   2.9    27  57100.00       9   6   5   7   4  29  24  10 115 --  280 661 150 884  58 999 115
+    AG   2.8    28  57099.40       9   9   6   5   7   4  29  24  10 --  278 659 151 893  61 999 106
+    AG   2.8    29  57099.26       5   9   9   6   5   7   4  29  24 --  277 658 151 898  63 999 101
+    AG   3.2    30  57099.19       1   5   9   9   6   5   7   4  29 --  277 656 150 897  65 997 102
+    AG   2.8    31  57099.13       1   1   5   9   9   6   5   7   4 --  278 655 148 895  66 997 104
+    AG   3.0    32  57098.95       5   1   1   5   9   9   6   5   7 --  278 651 143 890  69 996 109
+    AG   2.9    33  57098.82       3   5   1   1   5   9   9   6   5 --  278 649 139 887  71 998 112
+    AG   3.0    34  57098.71       3   3   5   1   1   5   9   9   6 --  278 647 136 886  73 999 113
+    AG   2.9    35  57098.69       1   3   3   5   1   1   5   9   9 --  277 648 136 888  74 999 111
+    AG   3.1    36  57098.69       0   1   3   3   5   1   1   5   9 --  277 648 137 888  73 999 111
+    AG   2.9    37  57098.67       1   0   1   3   3   5   1   1   5 --  276 650 138 890  73 999 109
+    AG   2.9    38  57098.64       3   1   0   1   3   3   5   1   1 --  273 653 140 891  72 999 108
+    AG   2.8    39  57098.53       9   3   1   0   1   3   3   5   1 --  264 662 142 894  72 999 105
+    AG   3.6    40  57098.28      23   9   3   1   0   1   3   3   5 --  241 685 146 898  73 999 101
+    AG   3.0    41  57097.76      55  23   9   3   1   0   1   3   3 --  185 738 152 904  75 999  95
+    AG   2.9    42  57097.34      49  55  23   9   3   1   0   1   3 --  136 783 152 905  80 999  94
+    AG   2.9    43  57276.36       7  49  55  23   9   3   1   0   1 --  131 784 146 898  84 999 101
+    AG   2.8    44  57097.27       6   7  49  55  23   9   3   1   0 --  135 783 152 905  80 999  94
+    AG   2.9    45  57096.60      22   6   7  49  55  23   9   3   1 --  134 775 133 882  89 999 117
+    AG   2.9    46  57096.49       7  22   6   7  49  55  23   9   3 --  128 783 138 889  88 999 110
+    AG   3.1    47  57096.48       3   7  22   6   7  49  55  23   9 --  132 779 137 888  88 999 111
+    AG   2.8    48  1392656.       1   3   7  22   6   7  49  55  23 --  130 780 137 888  88 999 111
+    AG   3.0    49  57096.48       1   1   3   7  22   6   7  49  55 --  131 779 137 888  88 999 111
+    AG   2.9    50  57096.48       0   1   1   3   7  22   6   7  49 --  132 779 137 888  88 999 111
+    AG   2.9    51  57096.47       0   0   1   1   3   7  22   6   7 --  131 780 137 888  88 999 111
+    AG   2.9    52  57275.76       0   0   0   1   1   3   7  22   6 --  131 780 137 888  88 999 111
+    AG   2.9    53  57096.48       0   0   0   0   1   1   3   7  22 --  131 780 137 888  88 999 111
+    AG   2.9    54  57096.48       0   0   0   0   0   1   1   3   7 --  131 780 137 888  88 999 111
+    AG   2.8    55  57096.48       0   0   0   0   0   0   1   1   3 --  131 780 137 888  88 999 111
+    AG   3.3    56  57096.47       0   0   0   0   0   0   0   1   1 --  131 780 137 888  88 999 111
+    AG   2.8    57  57096.48       0   0   0   0   0   0   0   0   1 --  131 780 137 888  88 999 111
+
+     --------------------------------- VCE 5.1.2  -----------------------------------
+     16.10.2007  13:40:17             ltz_usf.vce                              page 4
+ 
+ 
+    ********************************************************************************
+    *                      M O D E L  I N F O R M A T I O N                        *
+    ********************************************************************************
+ 
+    Factor     within     T Levels Skip        ltz       usf
+    ________________________________________________________________________________
+    sex                   F      2 .             1         1
+    bjq                   F      5 .             1         1
+    bg                    F   1072 .             1         1
+    wu                    R      8               1         -
+    animal                A  36408               1         1
+    lmf                   F      1               -         1
+    uss                   F    188 .             -         1
+    ________________________________________________________________________________
+ 
+    ********************************************************************************
+    *         C O E F F I C I E N T  M A T R I X  I N F O R M A T I O N            *
+    ********************************************************************************
+ 
+    Setting up mixed model equations
+    ________________________________________________________________________________
+    Machine precision (tolerance)      : 0.222045E-15
+    Warning theshold on inv. (A-1A)-I  : 0.100000E-06
+    Traits transformed. See option     :  all  all
+    Covariates transformed. See options:  avg
+    Number of equations                :        75171
+    Rank of the system                 :        75171
+    Equations set to zero              :  sex/1 sex/2 bjq/5 bjq/6 bg/590 bg/1616 bg/2132 uss/1
+                                       : uss/46 uss/157
+    # of nonzero coefficients (HS)     :       685296
+    Fill of coefficient matrix         :        0.012
+    # of NZE in factor                 :       814027
+    Total storage required             :      5007402
+    Total storage defined (total)      :     80000000
+    CPU-time for solving (per rnd)     :      0:01:03
+    CPU-time for inverting (per rnd)   :      0:03:53
+    MFLOPs during factorization        :        70.75
+ 
+    ********************************************************************************
+    *                 E S T I M A T E S   I N F O R M A T I O N                    *
+    ********************************************************************************
+ 
+    Tue Oct 16 13:40:17 2007                              CPU time used:     0:03:54
+ 
+    AG Log likelihood :   57096.4724  status :  3   at iteration:      51 /    57
+ 
+ 
+    ----------------------------- Matrices: NATURAL  -------------------------------
+        4  1  1 R  wu                              8 T
+              0.5561E+03
+ 
+        5  2  1 A  animal                          36408 T T
+              0.3310E+04  0.1972E+02
+                          0.6234E+01
+ 
+        8  3  1 E  residual                        32686 T T
+              0.3750E+03  0.1715E+02
+                          0.7845E+00
+ 
+    --------------------------- Matrices: Phenotypic  ------------------------------
+              0.4241E+04  0.3687E+02
+                          0.7018E+01
+ 
+    ----------------------------- Matrices: RATIOS  --------------------------------
+        4  1  1 R  wu                            
+              0.1311E+00
+ 
+        5  2  1 A  animal                        
+              0.7804E+00  0.1373E+00
+                          0.8882E+00
+ 
+        8  3  1 E  residual                      
+              0.8842E-01  0.1000E+01
+                          0.1118E+00
+ 
+    Optimization did not finish with status 1
+    Results may not be meaningful with a status greater than 1.
+    As a result standard errors are not meaningful
+    and are therefore not computed.
+    Look at the documentation for discussion of status!

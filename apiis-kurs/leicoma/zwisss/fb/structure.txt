@@ -1,0 +1,14 @@
+C traits / effects
+   animal 999999 1 15
+    lgf1       0      16      15 
+    lgf2       0      31      15 
+  lgf2_e       0      46      15 
+     efa     130      61      15 
+  animal    3210      76      15 
+      wn      16      91      15 
+     bjq     191     106      15 
+      pu    3210     121      15 
+      rk       3     136      15 
+      bg       5     151      15 
+     bds      10     166      15 
+    zwzk      14     181      15 

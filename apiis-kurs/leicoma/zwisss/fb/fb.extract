@@ -1,0 +1,170 @@
+#################### EDIT START ###############################################
+ $undef_animal = '0000000000'; # undefined animals in relationship section from pest
+# $unknown = 'unk';        # undefined values in data (unknown possible to long)
+# $treated_as_missing = '123456'; # for traits if you want instead of empty fields
+ $dist = 15; # distance between the formatted columns in datafile; see structure.txt
+#            (remember PEST can handle only 16 characters in each trait/effect)
+###############################################################################
+# ex. only breed 56 (pi)
+# $global_where = ' x.db_breed = 56';
+# x used for table animal one tablea.db_animal in select are required
+## $global_where = ' x.birth_dt < \'01.01.2004\''; # filter out for course
+# for each trait / effect use one sql which return db_animal and
+# one or more items (if there more than one item prg concatenate this values)
+ $traits = 3;
+# number of traits needed for select effects only for animals with traits
+# if there muliple (repeated) records for each animal use $mult
+# the number means the number of effects to make the record uniq
+# only one *or* multiple records possible in one run!
+ $mult   = 2;  # here db_animal and delivery_dt
+# $new_number = 1; # if you want to get an new numbered (sequenced) pedigree
+#                  # then non genetic group possible, until now... :-(
+# $ancestors = 1; # get also the ancestors of animals with traits for BLUP
+  @recode = ( 'bjq' );
+ my @breed=(" and f.db_rk in (select db_code from codes where (ext_code='800' or ext_code='801') and class='RZKZ')");
+ my @society=(
+   " and b.db_society in (select db_unit from unit where (ext_id='22' or ext_id='24' or ext_id='30' or ext_id='31' or ext_id='32' or ext_id='33' or ext_id='34') and ext_unit='society')"
+ );
+
+ my $breed=$breed[0];
+ my $society=$society[0];
+###############################################################################
+%query = (
+   lgf1    => "select a.db_animal as db_animal, a.delivery_dt, a.born_alive_no as lgf1
+               from litter a inner join animal b on a.db_animal=b.db_animal
+	  		     inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	       where a.born_alive_no notnull and a.parity=1 $breed $society",
+   lgf2    => "select a.db_animal as db_animal, a.delivery_dt, a.born_alive_no as lgf1
+               from litter a inner join animal b on a.db_animal=b.db_animal
+	  		     inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	       where a.born_alive_no notnull and a.parity=2 $breed $society", 
+   lgf2_e  => "select a.db_animal as db_animal, a.delivery_dt, a.born_alive_no as lgf1
+               from litter a inner join animal b on a.db_animal=b.db_animal
+	  		     inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	       where a.born_alive_no  notnull and a.parity>1 $breed $society", 
+   
+   efa  => "select b.db_animal, a.delivery_dt, a.delivery_dt - b.birth_dt
+              from litter a inner join animal b
+              on a.db_animal=b.db_animal
+	      where a.parity=1 and (a.delivery_dt-b.birth_dt) > 249
+                               and (a.delivery_dt-b.birth_dt)<501",
+
+#    efak  => "select b.db_animal, a.delivery_dt,  
+#                case when (a.delivery_dt-b.birth_dt)<=275 then 275 else 
+#                  case when (a.delivery_dt-b.birth_dt)<=300 then 300 else 
+#                    case when (a.delivery_dt-b.birth_dt)<=325 then 325 else 
+#                      case when (a.delivery_dt-b.birth_dt)<=350 then 350 else 
+#                        case when (a.delivery_dt-b.birth_dt)<=375 then 375 else 
+#                          case when (a.delivery_dt-b.birth_dt)<=400 then 400 else 
+#                            case when (a.delivery_dt-b.birth_dt)<=425 then 425 else 
+#                              case when a.delivery_dt-b.birth_dt<=450  then 450 else 
+#                                case when a.delivery_dt-b.birth_dt<=475  then 475 else 
+#                                  case when a.delivery_dt-b.birth_dt<=501  then 500  
+# 	       end end end end end end end end end end 
+#               from litter a inner join animal b 
+#               on a.db_animal=b.db_animal 
+# 	      where a.parity=1 and (a.delivery_dt-b.birth_dt)>249 and (a.delivery_dt-b.birth_dt)<501",
+   
+   animal    => "select a.db_animal, a.delivery_dt, a.db_animal from litter a",
+   wn        => "select a.db_animal, a.delivery_dt,
+                 case when a.parity >15 then 16 else a.parity end from litter a",
+   bjq => "select a.db_animal as db_animal, a.delivery_dt, c.ext_id,
+                  date_part('year', a.delivery_dt::date),
+	          case when date_part('month', a.delivery_dt::date) between 1 and 3 then '1'
+                       when date_part('month', a.delivery_dt::date) between 4 and 6 then '2'
+	               when date_part('month', a.delivery_dt::date) between 7 and 9 then '3'
+	               when date_part('month', a.delivery_dt::date) between 10 and 12 then '4'
+	          else null end
+	   from litter a inner join animal b on a.db_animal=b.db_animal inner join unit c
+	   on b.db_owner=c.db_unit",
+   pu => "select a.db_animal, a.delivery_dt, a.db_animal from litter a",
+   rk        => "select a.db_animal, d.delivery_dt, b.ext_code 
+                 from codes b inner join checkallel c on b.db_code=c.db_rk
+		             inner join animal a on a.db_breed=c.db_id_animal
+			     inner join litter d on a.db_animal=d.db_animal",
+   bg  => "select a.db_animal,d.delivery_dt,  b.ext_code 
+                   from codes b inner join checkallel c on b.db_code=c.db_group
+		             inner join animal a on a.db_breed=c.db_id_animal
+			     inner join litter d on a.db_animal=d.db_animal",
+   bds  => "select a.db_animal,a.delivery_dt,  b.ext_code 
+                   from codes b inner join litter a on a.db_breed_sire=b.db_code",
+   zwzk  => "select b.db_animal, b.delivery_dt,  
+               case when (b.delivery_dt-a.delivery_dt)<=120 then 120 else 
+                 case when (b.delivery_dt-a.delivery_dt)<=130 then 130 else 
+                   case when (b.delivery_dt-a.delivery_dt)<=140 then 140 else 
+                     case when (b.delivery_dt-a.delivery_dt)<=150 then 150 else 
+                       case when (b.delivery_dt-a.delivery_dt)<=160 then 160 else 
+                         case when (b.delivery_dt-a.delivery_dt)<=170 then 170 else 
+                           case when (b.delivery_dt-a.delivery_dt)<=180 then 180 else 
+                             case when b.delivery_dt-a.delivery_dt<=200  then 200 else 
+                               case when b.delivery_dt-a.delivery_dt<=220  then 220 else 
+                                 case when b.delivery_dt-a.delivery_dt<=240  then 240 else 
+                                   case when b.delivery_dt-a.delivery_dt<=260  then 260 else 
+                                     case when b.delivery_dt-a.delivery_dt<=280  then 280 else 
+                                       case when b.delivery_dt-a.delivery_dt<=300  then 300  
+	       end end end end end end end end end end end end end
+	       from litter a inner join litter b 
+               on a.db_animal=b.db_animal and a.parity+1=b.parity 
+	       where b.parity<>1 and (b.delivery_dt-a.delivery_dt)>99 and (b.delivery_dt-a.delivery_dt)<301",
+);
+
+%inputs = (
+      pedi    => {
+          sql          => "select a.db_animal, a.db_sire, a.db_dam,
+	                   case when a.birth_dt isnull then '01-01-1900' else  a.birth_dt end, 
+	                   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=a.db_society), 
+			   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=b.db_society), 
+			   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=c.db_society),
+			   (select a1.ext_id || '-' || b2.ext_animal from unit a1 inner join transfer b2 on
+			    a1.db_unit=b2.db_unit where b2.db_animal=a.db_animal order by a1.ext_unit desc limit 1)
+                              from animal a left outer join animal b on b.db_animal=a.db_sire
+			                    left outer join animal c on c.db_animal=a.db_dam",
+          in           => '',
+          out          => '',
+          outf         => 'blupped.txt'
+                 }
+          );
+
+## if you need genetic groups add there the further information
+$gengr = 0;       # use genetic groups ( 0 = no )
+$sire_eq_dam = 1; # same group used for sire and dam ( 0 = no )
+# tie %{$gen_group{society}{group}}, 'Tie::IxHash';   #?? no effect
+#             db_column  sql/group  code      operator   val
+%gen_group = (
+	      'year'    => {
+			  'sql' => "select db_animal,
+                                       date_part('year', birth_dt::date)
+                                    from animal",
+			  'group' => {
+				    '0' => [ 'between', 1980, 1990 ],
+				    '1' => [ 'between', 1990, 1992 ],
+				    '2' => [ 'between', 1993, 1994 ],
+				    '3' => [ 'between', 1995, 1996 ],
+				    '4' => [ 'between', 1997, 1998 ],
+				    '5' => [ 'between', 1999, 2000 ],
+				    '6' => [ '>', 2000 ],    # else unknown
+				   },
+			 },
+             'society' => {
+	 		 'sql' => "select animal, society from (
+                                   select a.db_animal as animal, b.ext_id as society
+                                     from animal as a, unit as b
+                                      where a.db_society = b.db_unit ) as x",
+			 'group' => {
+				   'IN' =>  [ '=', 31 ], # if hirarchical
+				   'OUT' => [ 'else' ],      # must alphabetic
+				  },                         # because sort keys
+
+		        },
+#              'breed' => {
+# 	 		 'sql' => "select animal, breed from (
+#                                    select a.db_animal as animal, b.ext_code as breed
+#                                      from animal as a, codes as b
+#                                       where a.db_breed = b.db_codes ) as x",
+# 			 'group' => {
+
+# 				   'as' => [ 'as it is', ] # leave it
+#                                                          # as it is
+# 		        },
+	     );
+################## EDIT END #####################################################

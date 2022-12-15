@@ -1,0 +1,62 @@
+\documentclass[10pt,a4paper,DIV14]{scrartcl}
+\usepackage{german}
+\usepackage{umlaut}
+\usepackage{longtable}
+\usepackage{fancyvrb}
+
+\pagestyle{myheadings}
+\markright{\today}
+\begin{document}
+
+\centerline{\Large \bf Roundtable 2. Day}
+\vspace{5mm}
+
+\section{Present the own Material}
+
+Main informations could be:
+\begin{itemize}
+\item global informations (species, traits)
+\item number of data sources and short description
+\item number of raw files and structure (like pipe seperated or not,
+  multiple header\ldots)
+\item number of dataelements in the raw files
+\item if there different namespaces (numbering systems) in the data
+\item have one animal more than one identification
+\end{itemize}
+
+\section{Model}
+
+\begin{itemize}
+\item describe the added tables and their relations
+\item present the normalised structure as xfig
+\item show business rules % run show_rules, show_tab.pl
+\end{itemize}
+
+
+\centerline{\Large \bf Roundtable 3. Day}
+\vspace{5mm}
+
+\section{Codes / Unit}
+
+\begin{itemize}
+\item which codes / units are present on the material
+\item change the modelfile (use db\_ and set ForeignKey)
+\end{itemize}
+
+
+\section{Animal Identification}
+
+\begin{itemize}
+\item number of different namespaces
+\item which elements have to be concatenated to be unique
+\item display identified unknown or invalid IDs
+\item display duplicated animal IDs
+\end{itemize}
+
+
+\end{document}
+
+
+
+
+

@@ -1,0 +1,242 @@
+#################### EDIT START ###############################################
+ $undef_animal = '0000000000'; # undefined animals in relationship section from pest
+# $unknown = 'unk';        # undefined values in data (unknown possible to long)
+# $treated_as_missing = '123456'; # for traits if you want instead of empty fields
+ $dist = 15; # distance between the formatted columns in datafile; see structure.txt
+#            (remember PEST can handle only 16 characters in each trait/effect)
+###############################################################################
+# ex. only breed 56 (pi)
+# $global_where = ' x.db_breed = 56'; # x used for table animal
+## $global_where = '( x.birth_dt < \'01.12.2006\' or x.birth_dt isnull)';
+# for each trait / effect use one sql which return db_animal and
+# one or more items (if there more than one item prg concatenate this values)
+ $traits = 10;
+# number of traits needed for select effects only for animals with traits
+# if there muliple (repeated) records for each animal use $mult
+# the number means the number of effects to make the record uniq
+# only one *or* multiple records possible in one run!
+# my $mult   = 2;  # here db_animal and delivery_dt
+# $new_number = 1; # if you want to get an new numbered (sequenced) pedigree
+#                  # then non genetic group possible, until now... :-(
+ $ancestors = 0;   # get also the ancestors of animals with traits for BLUP
+ my @breed=(" and f.db_rk in (select db_code from codes where (ext_code='800' or ext_code='801') and class='RZKZ')");
+ my @society=(
+   " and b.db_society in (select db_unit from unit where (ext_id='22' or ext_id='24' or ext_id='30' or ext_id='31' or ext_id='32' or ext_id='33' or ext_id='34' ) and ext_unit='society')"
+ );
+ my $breed=$breed[0];
+ my $society=$society[0];
+###############################################################################
+%query = (
+   ltz => "select a.db_animal, a.ltz        
+        from weight a inner join animal b on a.db_animal=b.db_animal
+	              inner join event c on  a.event_id=c.event_id
+		      inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+    where (c.db_event_type=(select db_code from codes where ext_code='elp_field' and class='EVENT') or
+           c.db_event_type=(select db_code from codes where ext_code='elp_station' and class='EVENT')) and
+           c.event_dt notnull $breed $society",
+
+   usf => "select a.db_animal as db_animal,
+           case when a.us_fa1 notnull and a.us_fa2 notnull and a.us_fa3 notnull
+	        then round(((a.us_fa1+a.us_fa2+a.us_fa3)/3)::numeric,1) 
+		else a.us_fa1
+		end as us
+            from ultrasound a inner join animal b on a.db_animal=b.db_animal
+	                      inner join event c on a.event_id=c.event_id
+		      inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+    where (c.db_event_type=(select db_code from codes where ext_code='elp_field' and class='EVENT') or
+           c.db_event_type=(select db_code from codes where ext_code='elp_station' and class='EVENT')) and
+           c.event_dt notnull $breed $society",
+   
+   usmd => "select a.db_animal as db_animal,a.us_md
+            from ultrasound a inner join animal b on a.db_animal=b.db_animal
+	                      inner join event c on a.event_id=c.event_id
+		      inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+         where (c.db_event_type=(select db_code from codes where ext_code='elp_field' and class='EVENT') or
+           c.db_event_type=(select db_code from codes where ext_code='elp_station' and class='EVENT')) and
+           c.event_dt notnull $breed $society",
+   
+   ptz => "select a.db_animal, a.ptz        
+        from slaughter_extended a inner join animal b on a.db_animal=b.db_animal
+	                  inner join event c on  a.event_id=c.event_id
+		      inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+   
+   ph1k => "select a.db_animal, a.sc_ph1k 
+        from slaughter a inner join animal b on a.db_animal=b.db_animal
+	                 inner join event c on  a.event_id=c.event_id
+		         inner join slaughter e on e.db_animal=a.db_animal 
+		         inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where e.sc_carcass_wt_warm>=77 and e.sc_carcass_wt_warm<=120 and
+	              c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+   
+   rmfl => "select a.db_animal, a.sc_muscle_area 
+        from slaughter_extended a 
+	                  inner join animal b on a.db_animal=b.db_animal
+	                  inner join event c on  a.event_id=c.event_id
+		          inner join slaughter e on e.db_animal=a.db_animal 
+		          inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where e.sc_carcass_wt_warm>=77 and e.sc_carcass_wt_warm<=120 and
+	              c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+   
+   ffl => "select a.db_animal, a.sc_fat_area 
+        from slaughter_extended a 
+	                  inner join animal b on a.db_animal=b.db_animal
+	                  inner join event c on  a.event_id=c.event_id
+		          inner join slaughter e on e.db_animal=a.db_animal 
+		          inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where e.sc_carcass_wt_warm>=77 and e.sc_carcass_wt_warm<=120 and
+	              c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+   
+   imf => "select a.db_animal, a.sc_imf 
+        from slaughter_extended a inner join animal b on a.db_animal=b.db_animal
+	                          inner join event c on  a.event_id=c.event_id
+		                  inner join slaughter e on e.db_animal=a.db_animal 
+		                  inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where e.sc_carcass_wt_warm>=77 and e.sc_carcass_wt_warm<=120 and
+	              c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+   
+   fuvz => "select a.db_animal, a.verzehr
+        from feed a inner join animal b on a.db_animal=b.db_animal
+	                  inner join event c on  a.event_id=c.event_id
+		      inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+	where ((c.db_event_type=(select db_code from codes where ext_code='pende' and class = 'EVENT')) or
+               (c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT'))) $breed $society",
+   
+    dv => "select a.db_animal, a.sc_dv 
+         from slaughter_extended a inner join animal b on a.db_animal=b.db_animal
+ 	                          inner join event c on  a.event_id=c.event_id
+ 		                  inner join slaughter e on e.db_animal=a.db_animal 
+ 		                  inner join checkallel f on (b.db_breed=f.db_id_animal and f.class='BREED')
+ 	where e.sc_carcass_wt_warm>=77 and e.sc_carcass_wt_warm<=120 and
+ 	              c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' ) $breed $society",
+
+
+   alt => "Select a.db_animal as db_animal,b.trait as alter
+               from animal a left outer join v_compute_traits_alter_schlachtung b on a.db_animal=b.db_animal
+	        where b.trait>0",
+   
+   lmf=> "select a.db_animal, a.test_wt 
+        from weight a inner join animal b on a.db_animal=b.db_animal
+	              inner join event c on  a.event_id=c.event_id
+    where (c.db_event_type=(select db_code from codes where ext_code='elp_field' and class='EVENT') or
+          c.db_event_type=(select db_code from codes where ext_code='elp_station' and class='EVENT')) and
+           c.event_dt notnull ",
+	   
+   pelm=> "select a.db_animal, a.test_wt 
+        from weight a inner join animal b on a.db_animal=b.db_animal
+	              inner join event c on  a.event_id=c.event_id
+    where c.db_event_type=(select db_code from codes where ext_code='pende' and class='EVENT') and
+           c.event_dt notnull ",
+   skmw  => "select a.db_animal, a.sc_carcass_wt_warm
+        from slaughter a inner join animal b on a.db_animal=b.db_animal
+	                  inner join event c on  a.event_id=c.event_id
+	where c.db_event_type=(select db_code from codes where ext_code='schlachtung' and class = 'EVENT' )",
+
+   sex        => "select a.db_animal, (select ext_code from codes where db_code=a.db_sex) as ext_sex from animal a",
+   br      => "select a.db_animal, (select ext_code from codes where db_code=a.db_breed) as ext_breed  from animal a",
+   bder   => "select a.db_animal, (select ext_id from unit where db_unit=a.db_owner) as ext_breeder
+                 from  animal a",
+
+   sh => "select a.db_animal as db_animal, (select ext_id from unit where db_unit=a.db_slaughter_house) from slaughter a", 
+
+   bjq=> "select a.db_animal as db_animal, (select ext_id from unit where db_unit=a.db_location),
+               date_part('year', a.event_dt::date),
+                case when date_part('month', a.event_dt::date) between 1 and 3 then '1'
+                 when date_part('month', a.event_dt::date) between 4 and 6 then '2'
+                 when date_part('month', a.event_dt::date) between 7 and 9 then '3'
+                 when date_part('month', a.event_dt::date) between 10 and 12 then '4'
+                else null end
+             from 
+                  (select db_animal as db_animal, db_location, event_dt
+                     from weight inner join event on weight.event_id=event.event_id
+                     where db_event_type=(select db_code from codes where ext_code='elp_field')
+		     union
+                  select db_animal as db_animal, db_location, event_dt
+                     from weight inner join event on weight.event_id=event.event_id
+                     where db_event_type=(select db_code from codes where ext_code='elp_station')
+                  ) a",
+
+  wn        => "select a.db_animal, b.parity from animal a inner join litter b on a.db_dam=b.db_animal",
+  rk        => "select a.db_animal, b.ext_code 
+                from codes b inner join checkallel c on b.db_code=c.db_rk
+		             inner join animal a on a.db_breed=c.db_id_animal",
+  bg  => "select a.db_animal, b.ext_code 
+                from codes b inner join checkallel c on b.db_code=c.db_group
+		             inner join animal a on a.db_breed=c.db_id_animal",
+   wu  => "select a.db_animal, a.db_dam, b.parity from animal a inner join litter b on a.db_dam=b.db_animal",
+   uss => "select a.db_animal as db_animal,a.db_schema
+                from ultrasound a inner join animal b on a.db_animal=b.db_animal",
+   abt => "select a.db_animal, 
+                  (select ext_id from unit where db_unit=c.db_location),
+		  date_part('year', c.event_dt::date) || 
+		     case when date_part('month', c.event_dt::date) between 1 and 3 then '1' 
+		          when date_part('month', c.event_dt::date) between 4 and 6 then '2' 
+			  when date_part('month', c.event_dt::date) between 7 and 9 then '3' 
+			  when date_part('month', c.event_dt::date) between 10 and 12 then '4' else null end, 
+			  a.abteil 
+	   from slaughter_extended a inner join weight b on a.db_animal=b.db_animal 
+	                             inner join event c on b.event_id=c.event_id 
+	   where c.db_event_type=(select db_code from codes where ext_code='pbeginn');",
+);
+
+%inputs = (
+      pedi    => {
+          sql          => "select a.db_animal, a.db_sire, a.db_dam,
+	                   case when a.birth_dt isnull then '01-01-1900' else  a.birth_dt end, 
+	                   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=a.db_society), 
+			   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=b.db_society), 
+			   (select case when ext_id isnull then 'NU' else ext_id end from unit where db_unit=c.db_society),
+			   (select a1.ext_id || '-' || b2.ext_animal from unit a1 inner join transfer b2 on
+			    a1.db_unit=b2.db_unit where b2.db_animal=a.db_animal order by a1.ext_unit desc limit 1)
+                              from animal a left outer join animal b on b.db_animal=a.db_sire
+			                    left outer join animal c on c.db_animal=a.db_dam",
+          in           => '',
+          out          => '',
+          outf         => '$path_name"."ped'
+                 }
+          );
+
+## if you need genetic groups add there the further information
+$gengr = 0;       # use genetic groups ( 0 = no )
+$sire_eq_dam = 1; # same group used for sire and dam ( 0 = no )
+# tie %{$gen_group{society}{group}}, 'Tie::IxHash';   #?? no effect
+#             db_column  sql/group  code      operator   val
+%gen_group = (
+	      'year'    => {
+			  'sql' => "select db_animal,
+                                       date_part('year', birth_dt::date)
+                                    from animal",
+			  'group' => {
+				    '0' => [ 'between', 1980, 1990 ],
+				    '1' => [ 'between', 1990, 1992 ],
+				    '2' => [ 'between', 1993, 1994 ],
+				    '3' => [ 'between', 1995, 1996 ],
+				    '4' => [ 'between', 1997, 1998 ],
+				    '5' => [ 'between', 1999, 2000 ],
+				    '6' => [ '>', 2000 ],    # else unknown
+				   },
+			 },
+             'society' => {
+	 		 'sql' => "select animal, society from (
+                                   select a.db_animal as animal, b.ext_id as society
+                                     from animal as a, unit as b
+                                      where a.db_society = b.db_unit ) as x",
+			 'group' => {
+				   'IN' =>  [ '=', 31 ], # if hirarchical
+				   'OUT' => [ 'else' ],      # must alphabetic
+				  },                         # because sort keys
+
+		        },
+#              'breed' => {
+# 	 		 'sql' => "select animal, breed from (
+#                                    select a.db_animal as animal, b.ext_code as breed
+#                                      from animal as a, codes as b
+#                                       where a.db_breed = b.db_codes ) as x",
+# 			 'group' => {
+
+# 				   'as' => [ 'as it is', ] # leave it
+#                                                          # as it is
+# 		        },
+	     );
+################## EDIT END #####################################################
+

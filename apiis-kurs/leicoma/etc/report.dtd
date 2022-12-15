@@ -1,0 +1,334 @@
+<!ELEMENT Report (General,GUIHeader?, PageHeader?, GroupHeader*, Detail, GroupFooter*, PageFooter?, GUIFooter?)+
+>
+<!ELEMENT General EMPTY
+>
+<!ATTLIST General 
+           Name       ID                       #REQUIRED
+           DataSource CDATA                    #REQUIRED
+           PrintHeader (Yes|No) "Yes"
+           CharSet    CDATA     "ISO-8859-1"   
+           StyleSheet CDATA     ""   
+           UseForm    CDATA     ""   
+           CreatePDF  CDATA     ""   
+           StrictParameter (yes|no)  "yes"   
+           PageHeader (none|All_Pages|Without_GUIHeader|Without_GUIFooter|Without_GUIHeader_and_GUIFooter) "none"
+           PageFooter (none|All_Pages|Without_GUIHeader|Without_GUIFooter|Without_GUIHeader_and_GUIFooter) "none"
+           Width      CDATA     ""
+           Border     CDATA     ""
+>
+		  
+
+<!ELEMENT GUIHeader (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST GUIHeader 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+<!ELEMENT GUIFooter (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST GUIFooter 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+
+<!ELEMENT PageHeader (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST PageHeader 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+<!ELEMENT PageFooter (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST PageFooter 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+
+<!ELEMENT GroupHeader (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST GroupHeader 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		GroupFooterName CDATA #REQUIRED
+		BackgroundColor CDATA ""
+		KeepTogether    (none|No|Group|First_Record) "none"
+		Group           CDATA 	#REQUIRED
+		GroupOn		(none|Every_Value|First_Character|Year|Month|Day) "none"
+		Sort		(none|Asc|Desc) "none"
+>
+<!ELEMENT GroupFooter (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST GroupFooter 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+<!ELEMENT Detail (Hidden|Text|Data|SubGUI|Lines|PageBreak|Images)*
+>
+<!ATTLIST Detail 
+		Name 		ID    #REQUIRED
+          	Height 		CDATA ""
+		BackgroundColor CDATA ""
+>
+
+<!ELEMENT Hidden EMPTY
+>
+<!ATTLIST Hidden Name    	ID 		#REQUIRED
+		 FieldType      (Hidden)  "Hidden"
+                 Content 	CDATA  	        #REQUIRED                 
+>		
+
+<!ELEMENT Text EMPTY
+>
+<!ATTLIST Text	Name    	ID 		#REQUIRED
+		FieldType       (Text)  "Text"
+                Content 	CDATA  	        #REQUIRED                 
+		
+		Position	(none|static|absolute|relative) "none"
+		Left    	CDATA    ""
+		Top     	CDATA    ""
+		Height  	CDATA    ""
+		Width   	CDATA    ""
+		Clip            CDATA    ""
+		Column          CDATA    #REQUIRED
+		Row             CDATA    #REQUIRED
+		Visibility      (none|visible|hidden) "none"
+		
+		FontFamily 	CDATA    ""
+		FontSize 	CDATA    ""
+		FontStyle  	(none|normal|italic|oblique) "none"
+		FontWeight 	(none|normal|bold|bolder|lighter) "none"
+		FontVariant     (none|normal|small-caps) "none"
+		Font       	CDATA    ""
+
+		BackgroundColor CDATA    ""
+		Color 	        CDATA    ""
+		BackgroundImage CDATA    ""
+		BackgroundRepeat (none|repeat|repeat-x|repeat-y|no-repeat) "none"
+		BackgroundAttachment (none|scroll|fixed) "none"
+		BackgroundPosition CDATA ""
+		Background      CDATA    ""
+
+		
+		WordSpacing     CDATA    ""
+		LetterSpacing   CDATA    ""
+		TextDecoration 	(none|underline|overline|line-through|blink) "none"
+		VerticalAlign   (none|baseline|sub|super|top|text-top|text-bottom|bottom) "none"
+		TextTransform   (none|capitalize|uppercase|lowercase) "none"
+		TextAlign 	(none|left|right|center|justify) "none"
+		TextIndent      CDATA    ""
+		LineHeight      CDATA    ""
+
+		MarginTop	CDATA  	 ""
+		MarginRight     CDATA    ""
+		MarginBottom    CDATA    ""
+		MarginLeft      CDATA    ""
+		Margin          CDATA    ""
+		PaddingTop      CDATA    ""
+		PaddingRight    CDATA    ""
+		PaddingBottom   CDATA    ""
+		PaddingLeft     CDATA    ""
+		Padding         CDATA    ""
+		BorderTopWidth  CDATA    ""
+		BorderRightWidth CDATA   ""
+		BorderBottomWidth CDATA  ""
+		BorderLeftWidth CDATA    ""
+		BorderWidth     CDATA    ""
+		BorderStyle     (none|solid|double|inset|outset|groove|ridge|dooted|dashed) "none"
+		BorderColor     CDATA    ""
+		BorderTop       CDATA    ""
+		BorderRight     CDATA    ""
+		BorderBottom    CDATA    ""
+		BorderLeft      CDATA    ""
+		Border          CDATA    ""
+                BlockWidth      CDATA    ""
+		BlockHeight     CDATA    ""
+		BlockFloat      CDATA    ""
+		Clear           (none|left|right|both)  "none"
+		Display         (none|block|inline|list-item|none) "none"
+		WhiteSpace      (none|normal|pre) "none"
+		ListStyleType   (disc|circle|square|decimal|lower-roman|upper-roman|lower-alpha|upper-alpha|none) "none"
+		ListStyleImage  CDATA   ""
+		ListStylePosition (none|inside|outside) "none"
+		ListStyle       CDATA   ""
+>
+
+<!ELEMENT Data EMPTY
+>
+<!ATTLIST Data 
+                Name    	ID 	#REQUIRED
+		FieldType       (Data)  "Data"
+                Content 	CDATA   #REQUIRED                 
+	  	Format  	(Date_long|Date_short|Number|Fix_Number|Currency) #IMPLIED
+		DecimalPlaces 	(none|Automatic|1|2|3|4|5|6|7|8|9|10)   "none"               
+	  	RunningSums  	(none|No|Consecutiv_Numbering|Grouping) "none"
+
+		Position	(none|static|absolute|relative) "none"
+		Left    	CDATA    ""
+		Top     	CDATA    ""
+		Height  	CDATA    ""
+		Width   	CDATA    ""
+		Clip            CDATA    ""
+		Column          CDATA    #REQUIRED
+		Row             CDATA    #REQUIRED
+		Visibility      (none|visible|hidden) "none"
+		
+		FontFamily 	CDATA    ""
+		FontSize 	CDATA    ""
+		FontStyle  	(none|normal|italic|oblique) "none"
+		FontWeight 	(none|normal|bold|bolder|lighter) "none"
+		FontVariant     (none|normal|small-caps) "none"
+		Font       	CDATA    ""
+
+		BackgroundColor CDATA    ""
+		Color 	        CDATA    ""
+		BackgroundImage CDATA    ""
+		BackgroundRepeat (none|repeat|repeat-x|repeat-y|no-repeat) "none"
+		BackgroundAttachment (none|scroll|fixed) "none"
+		BackgroundPosition CDATA ""
+		Background      CDATA    ""
+
+		
+		WordSpacing     CDATA    ""
+		LetterSpacing   CDATA    ""
+		TextDecoration 	(none|underline|overline|line-through|blink) "none"
+		VerticalAlign   (none|baseline|sub|super|top|text-top|text-bottom|bottom) "none"
+		TextTransform   (none|capitalize|uppercase|lowercase) "none"
+		TextAlign 	(none|left|right|center|justify) "none"
+		TextIndent      CDATA    ""
+		LineHeight      CDATA    ""
+
+		MarginTop	CDATA  	 ""
+		MarginRight     CDATA    ""
+		MarginBottom    CDATA    ""
+		MarginLeft      CDATA    ""
+		Margin          CDATA    ""
+		PaddingTop      CDATA    ""
+		PaddingRight    CDATA    ""
+		PaddingBottom   CDATA    ""
+		PaddingLeft     CDATA    ""
+		Padding         CDATA    ""
+		BorderTopWidth  CDATA    ""
+		BorderRightWidth CDATA   ""
+		BorderBottomWidth CDATA  ""
+		BorderLeftWidth CDATA    ""
+		BorderWidth     CDATA    ""
+		BorderStyle     (none|solid|double|inset|outset|groove|ridge|dooted|dashed) "none"
+		BorderColor     CDATA    ""
+		BorderTop       CDATA    ""
+		BorderRight     CDATA    ""
+		BorderBottom    CDATA    ""
+		BorderLeft      CDATA    ""
+		Border          CDATA    ""
+                BlockWidth      CDATA    ""
+		BlockHeight     CDATA    ""
+		BlockFloat      CDATA    ""
+		Clear           (none|left|right|both)  "none"
+		Display         (none|block|inline|list-item|none) "none"
+		WhiteSpace      (none|normal|pre) "none"
+		ListStyleType   (disc|circle|square|decimal|lower-roman|upper-roman|lower-alpha|upper-alpha|none) "none"
+		ListStyleImage  CDATA   ""
+		ListStylePosition (none|inside|outside) "none"
+		ListStyle       CDATA   ""
+		
+>
+		       
+<!ELEMENT Lines EMPTY
+>
+<!ATTLIST Lines 
+                Name    	ID 	#REQUIRED
+		FieldType       (Lines)  "Lines"
+		Left    	CDATA    ""
+		Top     	CDATA    ""
+		Column          CDATA    #REQUIRED
+		Row             CDATA    #REQUIRED
+		ForegroundColor CDATA    "#000000"
+		LineType        (dotted|dashed|solid|double|groove|ridge|inset|outset) "solid"
+		LineWidth       (thin|medium|thick) "thin"
+		
+		MarginTop	CDATA  	 ""
+		MarginRight     CDATA    ""
+		MarginBottom    CDATA    ""
+		MarginLeft      CDATA    ""
+		Margin          CDATA    ""
+		PaddingTop      CDATA    ""
+		PaddingRight    CDATA    ""
+		PaddingBottom   CDATA    ""
+		PaddingLeft     CDATA    ""
+		Padding         CDATA    ""
+		BorderTopWidth  CDATA    ""
+		BorderRightWidth CDATA   ""
+		BorderBottomWidth CDATA  ""
+		BorderLeftWidth CDATA    ""
+		BorderWidth     CDATA    ""
+		BorderStyle     (none|solid|double|inset|outset|groove|ridge|dooted|dashed) "none"
+		BorderColor     CDATA    ""
+		BorderTop       CDATA    ""
+		BorderRight     CDATA    ""
+		BorderBottom    CDATA    ""
+		BorderLeft      CDATA    ""
+		Border          CDATA    ""
+>
+		       
+<!ELEMENT PageBreak EMPTY
+>
+<!ATTLIST PageBreak 
+                Name    	ID 	#REQUIRED
+		Column    	CDATA   #REQUIRED
+		Row     	CDATA   #REQUIRED
+>
+		       
+<!ELEMENT SubGUI EMPTY
+>
+<!ATTLIST SubGUI 
+                Name    	ID 	#REQUIRED
+		GUISource       CDATA   #REQUIRED
+		Visible 	(none|yes|no) "none"
+		Left    	CDATA    ""
+		Top     	CDATA    ""
+		Height  	CDATA    ""
+		Width   	CDATA    ""
+		Column          CDATA    #REQUIRED
+		Row             CDATA    #REQUIRED
+>
+
+<!ELEMENT Images EMPTY
+>
+<!ATTLIST Images 
+                Name    	ID 	#REQUIRED
+		ImageSource     CDATA   #REQUIRED
+		Visible 	(none|yes|no) "none"
+		Left    	CDATA    ""
+		Top     	CDATA    ""
+		Height  	CDATA    ""
+		Width   	CDATA    ""
+		Column          CDATA    #REQUIRED
+		Row             CDATA    #REQUIRED
+		
+		MarginTop	CDATA  	 ""
+		MarginRight     CDATA    ""
+		MarginBottom    CDATA    ""
+		MarginLeft      CDATA    ""
+		Margin          CDATA    ""
+		PaddingTop      CDATA    ""
+		PaddingRight    CDATA    ""
+		PaddingBottom   CDATA    ""
+		PaddingLeft     CDATA    ""
+		Padding         CDATA    ""
+		BorderTopWidth  CDATA    ""
+		BorderRightWidth CDATA   ""
+		BorderBottomWidth CDATA  ""
+		BorderLeftWidth CDATA    ""
+		BorderWidth     CDATA    ""
+		BorderStyle     (none|solid|double|inset|outset|groove|ridge|dooted|dashed) "none"
+		BorderColor     CDATA    ""
+		BorderTop       CDATA    ""
+		BorderRight     CDATA    ""
+		BorderBottom    CDATA    ""
+		BorderLeft      CDATA    ""
+		Border          CDATA    ""
+>

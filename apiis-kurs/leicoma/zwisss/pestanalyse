@@ -1,0 +1,32 @@
+\documentclass[10pt,a4paper,DIV16,pdftex]{scrartcl}
+%\usepackage{german}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+%\usepackage[latin1,latin2,latin3]{inputenc}
+\usepackage{multicol}
+\usepackage[pdftex]{graphicx}
+\usepackage{wasysym} % some symbols \male...
+\usepackage{longtable}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{dcolumn}
+
+\pagestyle{fancy}
+\rhead{ breeding value estimation from \today}
+\cfoot{\thepage}
+
+%\pagestyle{empty}
+\parindent0mm
+
+\begin{document}
+
+{\Large \bf Analyse of breeding value estimation from \today}
+
+\tableofcontents \newpage
+
+\section{Models / Effects}
+
+\subsection{Breeding value estimation tbv1}
+

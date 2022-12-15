@@ -1,0 +1,47 @@
+Comment
+  test mastitis
+
+DATA
+ datfile='msl.dat.vce' format='(6f12.0,17f8.0)' header=1
+ dependent   =  
+ independent = ALT LMF PELM SKMW ANIMAL SEX SOC BR BDER MB SH SJM SJQ BJM BJQ WN RK BG WU USS ABT
+c group by permu;
+c group_by dim;
+
+ pedfile= 'msl.ped.vce' link = animal  ;
+
+Model
+
+
+Covariance
+   animal ;
+
+SYSTEM
+   non_zero=  25250000; 
+   total =    80000000;
+c   inbreeding = .false.
+cc   solve = ioc;
+c  tot_mat = 900000000;
+
+OUTPUT
+  covfile  ;
+  debug = .false.;
+c  solutions;
+c  inbreeding;
+c next=1 ;
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+

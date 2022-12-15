@@ -1,0 +1,36 @@
+##############################################################################
+# $Id: apiisrc,v 1.21 2006/09/25 20:14:56 ulm Exp $
+# Configuration file for this APIIS project.
+# This file is for project specific configuration.  It has the same format
+# of $APIIS_HOME/etc/apiisrc and overwrites the defaults defined there.
+##############################################################################
+
+##############################################################################
+[LOGGING]
+# Note: In this section, APIIS_HOME and APIIS_LOCAL are substituted
+# by their values.
+# For the priorities and facilities refer to 'man syslog' or 'man syslog.conf'.
+
+# logging to a file:
+use_filelog = 1
+filelog_priority = info
+filelog_filename = $APIIS_LOCAL/var/log/leicoma.log
+
+# logging to syslog:
+use_syslog = 0
+
+# sql_logging for debugging and some kind of rudimentary database recovery:
+use_sql_logging = 0
+# if you set use_sql_logging to a true value, all sql statements, that pass
+# the internal structure will be logged into sql_logfile:
+sql_logfile     = $APIIS_LOCAL/var/log/sql.log
+# log only data manipulation statements (e.g. no SELECT):
+sql_log_dml_only = 0
+
+##############################################################################
+[SYNCHRONISATION]
+# To synchronize databases, each one must have a (unique) node name:
+node_name = b08mueul 
+node_ip = 127.0.0.1
+sequence_interval=1:1000000000
+

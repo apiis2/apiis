@@ -1,0 +1,54 @@
+RELATIONSHIP
+  Rel_For animal
+  INFILE='blupped.txt'
+  undefined='     0000000000'
+  MAX_CHAR=15
+  INPUT
+    animal 1    15
+    m_p    16   15
+    f_p    31   15
+  
+DATA
+  INFILE = 'blupdata.txt'
+  MAX_CHAR=15
+  INPUT
+   animal 999999 1 15
+    lgf1       0      16      15 
+    lgf2       0      31      15 
+  lgf2_e       0      46      15 
+     efa       0      61      15 
+      wn     158      91      15 
+     bjq   15320     106      15 
+      pu  177028     121      15 
+      rk       5     136      15 
+      bg     157     151      15 
+     bds     152     166      15 
+    zwzk     154     181      15 
+
+MODEL
+  lgf1   = efa                  bg bjq      bds             animal
+  lgf2_e =     zwzk wn          bg bjq      bds        pu   animal
+
+VG
+  vg_for animal
+  .7011108 .6286976
+  .6286976 .8685284 
+
+  vg_for pu
+  0.001 0
+  0     0.4822159
+
+VE
+  6.0119723 0
+  0 5.7444255
+
+PRINTOUT
+  outfile = 'fb.lst'
+  page = 500000 
+
+SOLVER
+  smp
+      
+SYSTEM_SIZE
+  NON_ZERO=9176999
+  TOTAL   =91819369
