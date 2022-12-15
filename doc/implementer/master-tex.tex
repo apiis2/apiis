@@ -1,0 +1,73 @@
+\documentclass[10pt,a4paper]{book}
+%% \documentclass[10pt,a4paper,landscape]{book}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{fancyvrb}
+\usepackage{multicol}
+\usepackage{longtable}
+\usepackage{makeidx,rotating,graphicx,array}
+\usepackage{verbatim,makeidx}
+\setcounter{secnumdepth}{4}
+
+\makeindex
+%%\author{Lots of folks }
+%%\title{APIIS Developer Documentation}
+\begin{document}
+\begin{center}
+\includegraphics[scale=.7,]{../implementer/apiis6.ps}
+
+\vspace{2cm}
+\begin{Huge}\textbf{APIIS Implementer Documentation}\end{Huge}
+\vspace{1cm}
+
+\begin{Large}\textbf{written by}
+\vspace{1cm}
+
+\textbf{Eildert Groeneveld\\
+           Zhivko Duchev\\
+           Marek Imialek\\
+           Helmut Lichtenberg\\
+           Detlef Schulze\\
+           Ulf Müller \\
+	        Ralf Fischer\\}\end{Large}
+            \vspace{2cm}
+\begin{large}\textbf{Mariensee,
+                     September 2005}\end{large}
+           \end{center}
+                                                 %%\maketitle
+
+      \newenvironment{lyxlist}[1]
+        {\begin{list}{}
+             {\settowidth{\labelwidth}{#1}
+             \setlength{\leftmargin}{\labelwidth}
+\addtolength{\leftmargin}{\labelsep}
+\renewcommand{\makelabel}[1]{##1\hfil}}}
+  {\end{list}}
+
+\newcommand{\lyxrightaddress}[1]{
+\par
+{\raggedleft
+\begin{tabular}{l}\ignorespaces
+                                                                                                                                                                                                #1
+                                                                                                                                                                                                   \end{tabular}
+                                                                                                                                                                                                \vspace{1.4em}
+                                                                                                                                                                                                       \par}
+                                                                                                                                                                                                }
+
+
+
+\tableofcontents
+\input{./introduction/introduction.tex}
+\input{./fixed-structure/fixed-structure.tex}
+\input{./business-rules/business-rules.tex}
+\input{./writing-LO/writing-LO.tex}
+\input{./historical-data/./historical-data.tex}
+\input{./inspool-system/inspool-system.tex}
+\input{./access-control/access-control.tex}
+\input{./synchronization/./synchronization.tex}
+\input{./XML-model/XML-model.tex}
+\input{./report-gen/report-gen.tex}
+\printindex
+\end{document}

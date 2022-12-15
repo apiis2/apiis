@@ -1,0 +1,1165 @@
+\chapter{Report Generator}
+This is Ulf's magnificent report generator. Her only needs to add the
+documentation here. 
+
+\section{Einleitung}
+Reports haben zum Ziel, Daten in einer strukturierten Form zu
+visualisieren und dabei verschieden Ausgabenmedien zu
+unterstützen. Mit dem vorliegenden Reportmodul können Daten aus
+verschiedenen Quellen verarbeitet und für verschiedene Ausgabemedien
+aufbereitet werden.
+
+\section{Allgemeiner Aufbau eines Berichtes}
+
+Ein Bericht besteht aus obligatorischen und nicht obligatorischen
+Bereich. Jeder Bereich enthält eine wahlweise Anzahl von Elementen,
+welche die darzustellenden Informationen enthalten. Bereiche und
+Elemente werden durch Eigenschaften näher beschrieben: 
+
+\begin{itemize}
+\item Bereich1 (Eigenschaften)
+\begin{itemize}
+\item Element (Eigenschaften
+\item Element (Eigenschaften)
+\end{itemize}
+\item Bereich2 (Eigenschaften)
+\begin{itemize}
+\item Element ...
+\end{itemize}
+\end{itemize}
+
+Aufbau, Inhalt und Struktur eines Berichtes sind in einem XML - File
+definiert. Die Extension jedes Berichts-Konfigurations-Files lautet
+"*.rpt " Ein Bericht kann mit einem beliebigen "XML-Editor" erstellt
+werden. Die Formatvorlage dazu ist in der Datei "report.dtd"
+gespeichert.
+
+\subsection{Bereiche}
+
+Ein Bericht kann in verschiedene Bereiche unterteilt werden. Jeder
+Bereich erfüllt dabei eine bestimmte Funktion. Die Bereiche General
+und Detail sind obligatorisch. GroupHeader und GroupFooter können
+mehrmals definiert werden, alle anderen nur ein- oder
+keinmal. Innerhalb der Bereiche können beliebig viele Elemente
+platziert werden.
+
+\begin{itemize}
+\item General (obligatorisch)
+  \begin{itemize}
+\item GUIHeader
+\item PageHeader
+\item GroupHeader (mehrfach definierbar)
+\item Detail (obligatorisch)
+\item GroupFooter
+\item PageFooter
+\item GUIFooter
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{General}
+
+In diesem Bereich werden allgemeine, den Bericht betreffende
+Eigenschaften definiert. Er enthält keine Elemente.  Folgende
+Eigenschaften sind gültig. (nähere Erläuterungen s. Abschnitt
+Eigenschaften):
+
+
+\begin{itemize}
+\item Name (obligatorisch)
+\item DataSource (obligatorisch)
+\item Width
+\item CharSet
+\item PageHeader
+\item PageFooter
+\item Border
+\end{itemize}
+
+
+\subsubsection{GUIHeader / GUIFooter}
+
+Die Bereiche GUIHeader und GUIFooter werden grundsätzlich als erster
+und letzter Bereich eines Berichtes gedruckt. Gültige Eigenschaften
+sind (Erläuterungen s. Abschnitt Eigenschaften):
+
+\begin{itemize}
+\item Name (obligatorisch)
+  \begin{itemize}
+  \item Height
+  \item BackgroundColor
+  \end{itemize}
+\end{itemize}
+
+
+\subsubsection{PageHeader / PageFooter}
+
+Die Bereiche PageHeader und PageFooter werden grundsätzlich als erster
+und letzter Bereich einer Seite gedruckt. Gültige Eigenschaften sind
+(Erläuterungen s. Abschnitt Eigenschaften):
+
+\begin{itemize}
+\item Name (obligatorisch)
+\begin{itemize}
+\item Height
+\item BackgroundColor
+\end{itemize}
+\end{itemize}
+
+
+\subsubsection{GroupHeader / GroupFooter}
+
+Es besteht innerhalb eines Berichtes die Möglichkeit, Daten zu
+gruppieren. Die zu gruppierende Spalte muß im Datenstrom enthalten
+sein. Die Bereiche GroupHeader / GroupFooter sind die einzigen
+Bereiche, die mehrmals definiert werden können, damit die Daten nach
+mehreren Informationen gruppiert werden können. Gültige Eigenschaften
+sind (Erläuterungen s. Abschnitt Eigenschaften):
+
+\underline{GroupHeader}
+\begin{itemize}
+\item Name (obligatorisch)
+\begin{itemize}
+\item Height
+\item GroupFooterName (obligatorisch)
+\item Background Color
+\item KeepTogether
+\item Group 	(obligatorisch)
+\item GroupOn
+\item Sort
+\end{itemize}
+\end{itemize}
+
+\underline{GroupFooter}
+\begin{itemize}
+\item Name 	(obligatorisch)
+\begin{itemize}
+\item Height
+\item BackgroundColor
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Detail}
+
+Der Bereich "Detail" ist die kleinste Einheit eines Berichtes. Hier
+werden die einzelnen Datensätze angezeigt. Gültige Eigenschaften sind
+(Erläuterungen s. Abschnitt Eigenschaften): 
+
+\begin{itemize}
+\item Name 	(obligatorisch)
+  \begin{itemize}
+  \item Height
+  \item BackgroundColor
+  \end{itemize}
+\end{itemize}
+
+\section{Elemente}
+Innerhalb der Bereiche können Elemente platziert werden, die wiederum
+Eigenschaften besitzen.  Die kursiv gedruckten Eigenschaften sind noch
+nicht implementiert. 
+
+\subsection{Text}
+
+Text-Elemente sind fix und zeigen nur die vorher definierten Werte
+an. Typische Anwendungen sind Überschriften, Labels u.s.w. Gültige
+Eigenschaften sind (Erläuterungen s. Abschnitt Eigenschaften): 
+ 
+\begin{multicols}{2}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item Content 	(obligatorisch)
+\end{itemize}
+
+\underline{Position}
+
+\item Position
+\item Left
+\item Top
+\item Height
+\item Width
+\item Clip
+\item Column	(obligatorisch)
+\item Row	(obligatorisch)
+
+\underline{ Font}
+
+\item FontFamily
+\item FontSize
+\item FontStyle
+\item FontWeight
+\item FontVariant
+\item Font
+
+\underline{Color}
+
+\item BackgroundColor
+\item Color
+\item BackgroundImage
+\item BackgroundRepeat
+\item BackgroundAttachment
+\item BackgroundPosition
+\item Visibility
+
+\underline{Letter}
+
+\item WordSpacing
+\item LetterSpacing
+\item TextDecoration
+\item VerticalAlign
+\item TextTransform
+\item TextAlign
+\item TextIndent
+\item LineHeight
+
+\underline{Box}
+
+\item MarginTop
+\item MarginRight
+\item MarginBottom
+\item MarginLeft
+\item Margin
+\item PaddingTop
+\item PaddingRight
+\item PaddingBottom
+\item Paddingleft
+\item Padding
+
+\underline{Border}
+
+\item BorderTopWidth
+\item BorderRightWidth
+\item BorderLeftWidth
+\item BorderBottomWidth
+\item BorderWidth
+\item BorderStyle
+\item BorderColor
+\item BorderTop
+\item BorderRight
+\item BorderLeft
+\item BorderBottom
+\item Border
+\item BlockWidth
+\item BlockHeight
+\item BlockFloat
+\item Clear
+\item Display
+\item WhiteSpace
+\item ListStyleType
+\item ListStyleImage
+\item ListStylePosition
+\item ListStyle
+\end{itemize}
+
+\end{multicols}
+
+\subsubsection{Hidden}
+Dieses
+Element dient dazu, Werte zwischenzuspeichern. Diese Daten werden
+nicht angezeigt. Gültige Eigenschaften sind (Erläuterungen
+s. Abschnitt Eigenschaften):
+
+\begin{itemize}
+\item Name  	(obligatorisch)
+  \begin{itemize}
+  \item Content 	(obligatorisch)
+  \end{itemize}
+\end{itemize}
+  
+
+\subsubsection{Data}
+Data-Elemente
+stellen Inhalte dar, die erst nach dem Start eines Reports verfügbar
+sind. Außerdem ist es mit diesen Feldern möglich, Inhalte
+anderer Elemente anzuzeigen. Gültige Eigenschaften sind
+(Erläuterungen s. Abschnitt Eigenschaften):
+
+\begin{multicols}{2}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item Content 	(obligatorisch)
+\item DecimalPlaces
+\item Format
+\item RunningSums
+\end{itemize}
+
+\underline{Position}
+
+\item Position
+\item Left
+\item Top
+\item Height
+\item Width
+\item Clip
+\item Column	(obligatorisch)
+\item Row	(obligatorisch)
+
+\underline{Font}
+
+\item FontFamily
+\item FontSize
+\item FontStyle
+\item FontWeight
+\item FontVariant
+\item Font
+
+\underline{Color}
+
+\item BackgroundColor
+\item Color
+\item BackgroundImage
+\item BackgroundRepeat
+\item BackgroundAttachment
+\item BackgroundPosition
+\item Visibility
+
+\underline{Letter}
+
+\item WordSpacing
+\item LetterSpacing
+\item TextDecoration
+\item VerticalAlign
+\item TextTransform
+\item TextAlign
+\item TextIndent
+\item LineHeight
+
+\underline{Box}
+
+\item MarginTop
+\item MarginRight
+\item MarginBottom
+\item MarginLeft
+\item Margin
+\item PaddingTop
+\item PaddingRight
+\item PaddingBottom
+\item Paddingleft
+\item Padding
+
+\underline{Border}
+
+\item BorderTopWidth
+\item BorderRightWidth
+\item BorderLeftWidth
+\item BorderBottomWidth
+\item BorderWidth
+\item BorderStyle
+\item BorderColor
+\item BorderTop
+\item BorderRight
+\item BorderLeft
+\item BorderBottom
+\item Border
+\item BlockWidth
+\item BlockHeight
+\item BlockFloat
+\item Clear
+\item Display
+\item WhiteSpace
+\item ListStyleType
+\item ListStyleImage
+\item ListStylePosition
+\item ListStyle
+\end{itemize}
+
+\end{multicols}
+
+\subsubsection{Lines}
+Lines-Elemente stellen verschiedene Arten Linien dar. Gültige
+Eigenschaften sind (Erläuterungen s. Abschnitt Eigenschaften): 
+
+\begin{multicols}{2}
+\underline{Allgemein}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item Content 	(obligatorisch)
+\item ForegroundColor
+\item LineType
+\item LineWidth
+\end{itemize}
+
+\underline{Position}
+
+\item Left
+\item Top
+\item Column	(obligatorisch)
+\item Row	(obligatorisch)
+
+\underline{Box}
+
+\item MarginTop
+\item MarginRight
+\item MarginBottom
+\item MarginLeft
+\item Margin
+\item PaddingTop
+\item PaddingRight
+\item PaddingBottom
+\item Paddingleft
+\item Padding
+
+\underline{Border}
+
+\item BorderTopWidth
+\item BorderRightWidth
+\item BorderLeftWidth
+\item BorderBottomWidth
+\item BorderWidth
+\item BorderStyle
+\item BorderColor
+\item BorderTop
+\item BorderRight
+\item BorderLeft
+\item BorderBottom
+\item Border
+\end{itemize}
+\end{multicols}
+
+\subsubsection{PageBreak}
+PageBreak-Elemente stellen verschiedene Arten Linien dar. Gültige
+Eigenschaften sind (Erläuterungen s. Abschnitt
+Eigenschaften). PageBreak-Elemente sind noch nicht implementiert: 
+
+\underline{Allgemein}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item Left
+\item Top
+\end{itemize}
+\end{itemize}
+
+\subsubsection{SubGUI}
+Mit diesem Element können Unterberichte eingebettet
+werden. Unterberichte haben die Endung "*.srpt" und sind separat zu
+definieren. Gültige Eigenschaften sind (Erläuterungen s. Abschnitt
+Eigenschaften): 
+
+\begin{multicols}{2}
+\underline{Allgemein}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item GUISource 	(obligatorisch)
+\item Visible
+
+\underline{Position}
+
+\item Left
+\item Top
+\item Height
+\item Width
+\item Column	(obligatorisch)
+\item Row	(obligatorisch)
+\end{itemize}
+\end{itemize}
+\end{multicols}
+
+
+\subsubsection{Images}
+Images-Elemente stellen Bilder dar. Gültige Eigenschaften sind
+(Erläuterungen s. Abschnitt Eigenschaften): 
+
+\begin{multicols}{2}
+\underline{Allgemein}
+\begin{itemize}
+\item Name  	(obligatorisch)
+\begin{itemize}
+\item ImageSourde	(obligatorisch)
+\item Visible
+
+\underline{Position}
+
+\item Left
+\item Top
+\item Height
+\item Width
+\item Column	(obligatorisch)
+\item Row	(obligatorisch) 
+
+\underline{Box}
+
+\item MarginTop
+\item MarginRight
+\item MarginBottom
+\item MarginLeft
+\item Margin
+\item PaddingTop
+\item PaddingRight
+\item PaddingBottom
+\item Paddingleft
+\item Padding
+
+\underline{Border}
+
+\item BorderTopWidth
+\item BorderRightWidth
+\item BorderLeftWidth
+\item BorderBottomWidth
+\item BorderWidth
+\item BorderStyle
+\item BorderColor
+\item BorderTop
+\item BorderRight
+\item BorderLeft
+\item BorderBottom
+\item Border
+\end{itemize}
+\end{itemize}
+\end{multicols}
+
+\subsection{Eigenschaften}
+
+\subsubsection{Positionsangaben}
+\newcommand{\tab}{\hspace{5mm}}
+
+\begin{longtable}{|p{0.639in}|p{2.893in}|p{0.968in}|}
+\hline
+% ROW 1
+{\centering \textbf{Einstellung}} & 
+{\centering \textbf{Beschreibung}} & 
+{\centering \textbf{Beispiel}}\\
+\hline
+% ROW 2
+{\raggedright position} & 
+{\raggedright Hier\"{u}ber wird ein Element positioniert. Die Einstellung \textit{static} ist 
+die Defaulteinstellung, die nicht explizit angegeben werden muss. 
+Das Element, das statisch positioniert worden ist, kann nicht 
+in der Position bewegt werden. \"{U}ber \textit{absolute} ist das Element 
+unabh\"{a}ngig von anderen Elementen positioniert. re\textit{lative} setzt 
+das Element relativ zu einem anderen Element.} & 
+{\raggedright position:relative}\\
+\hline
+% ROW 3
+{\raggedright left} & 
+{\raggedright Diese Angabe legt die Position in der x-Achse fest.} & 
+{\raggedright left:100px;}\\
+\hline
+% ROW 4
+{\raggedright top} & 
+{\raggedright Diese Angabe legt die Position in der y-Achse fest.} & 
+{\raggedright top:100px;}\\
+\hline
+% ROW 5
+{\raggedright width} & 
+{\raggedright Diese Angabe gibt die Breite des Elements an.} & 
+{\raggedright width:50px;}\\
+\hline
+% ROW 6
+{\raggedright height} & 
+{\raggedright Diese Angabe gibt die Breite des Elements an.} & 
+{\raggedright height:50px;}\\
+\hline
+% ROW 7
+{\raggedright clip} & 
+{\raggedright Hier\"{u}ber k\"{o}nnen Sie von einem Element einen kleinen Bereich 
+darstellen. Dazu wird ein Rechteck eingestellt, das an eine bestimmte 
+Position innerhalb des Taginhalts gesetzt wird. Allgemein:  \linebreak
+clip: rect (\texttt{<}top\texttt{>} \texttt{<}right\texttt{>} \texttt{<}bottom\texttt{>} 
+\texttt{<}left\texttt{>}) \linebreak
+\textit{rect} legt ein Rechteck innerhalb des Elements an, das an 
+die Positionen \texttt{<}top\texttt{>} \texttt{<}right\texttt{>} \texttt{<}bottom\texttt{>} 
+\texttt{<}left\texttt{>} (Angabe in Pixel!) gesetzt wird.} & 
+{\raggedright clip:rect (10px 50px 20px 0px) ;}\\
+\hline
+% ROW 8
+{\raggedright visibility} & 
+{\raggedright Hier\"{u}ber stellen Sie die Sichtbarkeit ein. \textit{Visibility:visible} ist 
+die Standarteinstellung, die das Element sichtbar macht. Mit 
+\textit{visibility:hidden} wird das Element versteckt.} & 
+{\raggedright visibility:hidden}\\
+\hline
+\end{longtable}
+
+{\underline {Font-Angaben}}
+
+\begin{longtable}{|p{0.639in}|p{2.893in}|p{0.968in}|}
+\hline
+% ROW 1
+{\centering \textbf{Einstellung}} & 
+{\centering \textbf{Beschreibung}} & 
+{\centering \textbf{Beispiel}}\\
+\hline
+% ROW 2
+{\raggedright font-family} & 
+{\raggedright Dies gibt eine Liste von Schriftfamilien an, die verwendet werden 
+k\"{o}nnen. Ist die erste nicht vorhanden, wird die zweite angegebene 
+Fontfamilie verwendet. Die einzelnen Angaben sind durch ein Komma 
+zu trennen.} & 
+{\raggedright font-family: gill, helvetica, sans-serif;}\\
+\hline
+% ROW 3
+{\raggedright font-style} & 
+{\raggedright Diese angaben kann drei Werte \textit{normal, italic, oblique} annehmen. 
+Der Wert \textit{normal} gibt den normalen, ausgew\"{a}hlten Font an. 
+\textit{italic} setzt den Font kursiv und \textit{oblique} wird verwendet 
+wenn der Schrifttyp nicht als kursiver Typ (also als \textit{italic}- 
+Wert) verf\"{u}gbar ist.} & 
+{\raggedright font-style: italic;}\\
+\hline
+% ROW 4
+{\raggedright font-variant} & 
+{\raggedright Diese Angabe legt fest, ob der Font \textit{normal} oder \textit{small-caps} 
+dargestellt wird. In der Einstellung \textit{small-caps} werden alle 
+kleinen Buchstaben in der gleichen Gr\"{o}{ß}e wie Gro{ß}buchstaben 
+dargestellt.} & 
+{\raggedright font-variant: small-caps;}\\
+\hline
+% ROW 5
+{\raggedright font-weight} & 
+{\raggedright Diese Angabe legt fest wie, wie fett ein Font dargestellt werden 
+soll. Die m\"{o}glichen Werte sind: \textit{normal, bold, bolder, lighter, 
+100, 200,300, 400, 500, 600, 700, 800, 900}.Die Einstellung \textit{font-weight}: 
+normal ist identisch mit \textit{font-weight: 400. font-weight: 700} 
+ist identisch mit \textit{font-weight:bold}.} & 
+{\raggedright font-weight: 800}\\
+\hline
+% ROW 6
+{\raggedright font-size} & 
+{\raggedright Gibt die Gr\"{o}{ß}e des Fonts in der Punktgr\"{o}{ß}e (pt) an.} & 
+{\raggedright font-size: 12pt;}\\
+\hline
+% ROW 7
+{\raggedright font} & 
+{\raggedright Dies ist eine Abk\"{u}rzung und umfasst mehrere Angaben zusammen: 
+\textit{font-style, font-variant, font-weight, font-size, line-height 
+und font-family}} & 
+{\raggedright font: 13pt sans-serif small-caps;}\\
+\hline
+\end{longtable}
+
+{\underline {COLOR- und BACKGROUND-Angaben}}
+
+\begin{longtable}{|p{0.722in}|p{2.979in}|p{0.798in}|}
+\hline
+% ROW 1
+{\centering \textbf{Einstellung}} & 
+{\centering \textbf{Beschreibung}} & 
+{\centering \textbf{Beispiel}}\\
+\hline
+% ROW 2
+{\raggedright color} & 
+{\raggedright Dies bestimmt die Vordergrundfarbe. Sie k\"{o}nnen entweder die 
+vordefinierten Farbnamenverwenden, den hexadezimalen Code einer 
+jeden Farbe oder die RGB- Werte.} & 
+{\raggedright color:red}\\
+\hline
+% ROW 3
+{\raggedright background-color} & 
+{\raggedright Dies bestimmt die Hintergrundfarbe. Sie k\"{o}nnen entweder die 
+vordefinierten Farbnamen verwenden, den hexadezimalen Code einer 
+jeden Farbe oder die RGB- Werte.} & 
+{\raggedright backgroundcolor: black}\\
+\hline
+% ROW 4
+{\raggedright background-image} & 
+{\raggedright Hier\"{u}ber k\"{o}nnen Sie ein Hintergrundbild f\"{u}r das Element 
+laden.} & 
+{\raggedright backgroundimage: url (blume.jpg);}\\
+\hline
+% ROW 5
+{\raggedright background-repeat} & 
+{\raggedright Hier\"{u}ber legen Sie fest, wie das geladene Hintergrundbild 
+zu behandeln ist. \textit{repeat} ist die Default-Einstellung, die 
+das Bild horizontal und vertikal kachelt. Mit \textit{repeat-x} wird 
+das Bild horizontal gekachelt. \textit{repeat-y} kachelt das Bild 
+vertikal \textit{und no-repeat} kachelt das Hintergrundbild nicht.} & 
+{\raggedright background-repeat: repeat-y;}\\
+\hline
+% ROW 6
+{\raggedright background-attachment} & 
+{\raggedright Diese Einstellung legt fest, ob der Hintergrund gescrollt (\textit{scroll}) 
+wird, wenn der Internet-Surfer die Bildlaufleisten bet\"{a}tigt, 
+oder ob der Hintergrund fest stehen bleiben soll (\textit{fixed}).} & 
+{\raggedright background-attachment: fixed;}\\
+\hline
+% ROW 7
+{\raggedright background-position} & 
+{\raggedright Hier\"{u}ber k\"{o}nnen Sie die Position des Hintergrunds innerhalb 
+des Elements festlegen. Die Standartangaben erfolgen in Prozent, 
+aber auch feste Werte sind m\"{o}glich.} & 
+{\raggedright background-position:50\% \linebreak
+50\%}\\
+\hline
+% ROW 8
+{\raggedright background} & 
+{\raggedright Dies ist analog zu \textit{font} eine Zusammenfassung von mehreren 
+Eigenschaften: \textit{background-color, background-image, background-repeat, 
+bachground-attachment} und \textit{background-position}} & 
+{\raggedright background: url (pfeile.jpg) aqua repeat-x fixed;}\\
+\hline
+\end{longtable}
+
+{\underline {Textangaben}}
+
+\begin{longtable}{|p{0.702in}|p{2.912in}|p{0.886in}|}
+\hline
+% ROW 1
+{\centering \textbf{Einstellung}} & 
+{\centering \textbf{Beschreibung}} & 
+{\centering \textbf{Beispiel}}\\
+\hline
+% ROW 2
+{\raggedright word-spacing} & 
+{\raggedright Diese Eigenschaften legen den Raum zwischen den W\"{o}rtern fest.} & 
+{\raggedright word-spacing: 0.4cm;}\\
+\hline
+% ROW 3
+{\raggedright letter-spacing} & 
+{\raggedright Diese Eigenschaft legt den Raum zwischen zwei Zeichen fest.} & 
+{\raggedright Letter-spacing:0.lem;}\\
+\hline
+% ROW 4
+{\raggedright text-decoration} & 
+{\raggedright Diese Eigenschaft gibt an, ob der Text dekoriert, d.h. unterstrichen 
+(\textit{underline}), durchgestrichen (\textit{line-through}) oder blinkend 
+(\textit{blink}) dargestellt werden soll.} & 
+{\raggedright Text-decoration: underline;}\\
+\hline
+% ROW 5
+{\raggedright vertical-align} & 
+{\raggedright Dies legt die vertikale Ausrichtung fest. Die m\"{o}glichen Einstellungen 
+sind \textit{baseline, middle, sub, super, text-top, text-bottom, 
+top, bottom}.} & 
+{\raggedright Vertical-align: sub;}\\
+\hline
+% ROW 6
+{\raggedright text-transform} & 
+{\raggedright Diese Eigenschaft gibt an, wie die Buchstaben ausgegeben werden 
+sollen. Die m\"{o}glichen Einstellungen sind: \textit{capitalize} (der 
+erste Buchstabe eines jeden Wortes wird gro{ß} geschrieben), 
+\textit{uppercase} (alle Buchstaben werden gro{ß} geschrieben), \textit{lowcrase} (alle 
+Buchstaben werden klein geschrieben) und \textit{none} (keine Bestimmung 
+\"{u}ber die Gro{ß}- und Kleinschreibung der Buchstaben).} & 
+{\raggedright text-transform: uppercase;}\\
+\hline
+% ROW 7
+{\raggedright text-align} & 
+{\raggedright Diese Eigenschaft gibt die horizontale Ausrichtung eines Textes 
+an. Die m\"{o}glichen Werte sind: \textit{left, right, center, justify.}} & 
+{\raggedright text-align: center;}\\
+\hline
+% ROW 8
+{\raggedright text indent} & 
+{\raggedright Diese Eigenschaft gibt den Einzug eines Textes an.} & 
+{\raggedright text-indent: 0.5cm;}\\
+\hline
+% ROW 9
+{\raggedright line-height} & 
+{\raggedright Hier wird der vertikale Abstand zwischen zwei Grundlinien als 
+Zeilenh\"{o}he gesetzt.} & 
+{\raggedright Line-height.1.2; font-size:10pt}\\
+\hline
+\end{longtable}
+
+{\underline {Blockdaten}}
+
+\begin{longtable}{|p{0.809in}|p{2.787in}|p{0.904in}|}
+\hline
+% ROW 1
+{\centering \textbf{Einstellung}} & 
+{\centering \textbf{Beschreibung}} & 
+{\centering \textbf{Beispiel}}\\
+\hline
+% ROW 2
+{\raggedright margin-top} & 
+{\raggedright Setzt den Abstand zwischen einen oberen Rahmen eines Blocks 
+und dem n\"{a}chsten Element.} & 
+{\raggedright margin-top:lem}\\
+\hline
+% ROW 3
+{\raggedright margin-right} & 
+{\raggedright Setzt den Abstand zwischen einem rechten Rahmen eines Blocks 
+und dem n\"{a}chsten Element.} & 
+{\raggedright margin-right:lem}\\
+\hline
+% ROW 4
+{\raggedright margin- bottom} & 
+{\raggedright Setzt den Abstand zwischen einem unteren Rahmen eines Blocks 
+und dem n\"{a}chsten Element.} & 
+{\raggedright margin-bottom:lem}\\
+\hline
+% ROW 5
+{\raggedright margin-left} & 
+{\raggedright Setzt den Abstand zwischen einem linken Rahmen eines Blocks 
+und dem n\"{a}chsten Element.} & 
+{\raggedright margin-left:10em}\\
+\hline
+% ROW 6
+{\raggedright margin} & 
+{\raggedright Dies ist eine Zusammenfassung der vier Eigenschaften \textit{margin-top, 
+margin-right, margin-bottom, margin-left.} Die Parameter werden 
+in dieser Reihenfolge nacheinander angegeben} & 
+{\raggedright margin:1em 1em 1em 1em }\\
+\hline
+% ROW 7
+{\raggedright padding-top} & 
+{\raggedright Setzt den Abstand zwischen dem oberen Rand eines Rahmens eines 
+Blocks und dessen Inhalt.} & 
+{\raggedright padding-top:10px}\\
+\hline
+% ROW 8
+{\raggedright padding-right} & 
+{\raggedright Setzt den Abstand zwischen dem rechten Rand eines Rahmens eines 
+Blocks und dessen Inhalt.} & 
+{\raggedright padding-right:10px}\\
+\hline
+% ROW 9
+{\raggedright padding-bottom} & 
+{\raggedright Setzt den Abstand zwischen dem unteren Rand eines Rahmens eines 
+Blocks und dessen Inhalt.} & 
+{\raggedright padding-bottom:10px}\\
+\hline
+% ROW 10
+{\raggedright padding-left} & 
+{\raggedright Setzt den linken Abstand zwischen dem linken Rand eines Rahmens 
+eines Blocks und dessen Inhalt.} & 
+{\raggedright padding-left:10px}\\
+\hline
+% ROW 11
+{\raggedright padding } & 
+{\raggedright Dies ist eine Zusammenfassung der vier Eigenschaften \textit{padding-top, 
+padding-right, padding-bottom, padding-left,} Die Parameter werden 
+in dieser Reihenfolge nacheinander eingegeben.} & 
+{\raggedright padding:10px 10px 10px 10px}\\
+\hline
+% ROW 12
+{\raggedright border-top-width} & 
+{\raggedright Setzt die Breite der oberen Rahmenlinie.} & 
+{\raggedright border-top-width:2pt}\\
+\hline
+% ROW 13
+{\raggedright border-right-widht} & 
+{\raggedright Setzt die Breite der rechten Rahmenlinie.} & 
+{\raggedright border-right-width:2pt}\\
+\hline
+% ROW 14
+{\raggedright border-bottom-width} & 
+{\raggedright Setzt die Breite der unteren Rahmenlinie.} & 
+{\raggedright Bordr.bottom-width:2pt}\\
+\hline
+% ROW 15
+{\raggedright border-left-width} & 
+{\raggedright Setzt die Breite der linken Rahmenlinie.} & 
+{\raggedright border-left-width:2pt}\\
+\hline
+% ROW 16
+{\raggedright border-width} & 
+{\raggedright Dies ist eine Zusammenfassung der vier Eigenschaften \textit{border-top-width, 
+border-right-width, border-bottom-width, border-left-width}. Die 
+Parameter werden in dieser Reihenfolge nacheinander angegeben.} & 
+{\raggedright border-width:2pt 2pt 2pt 2pt }\\
+\hline
+% ROW 17
+{\raggedright border-style} & 
+{\raggedright Setzt den Stil des Rahmens. Die m\"{o}glichen Einstellungen sind 
+\textit{none, solid, double, inset, outset, groove, ridge, dooted, 
+dashed}.} & 
+{\raggedright border-style:solid}\\
+\hline
+% ROW 18
+{\raggedright border-color} & 
+{\raggedright Setzt die Farbe des Rahmens} & 
+{\raggedright border-color:blue}\\
+\hline
+% ROW 19
+{\raggedright border-top} & 
+{\raggedright Das ist die Zusammenfassung der Eigenschaften \textit{border-top-width, 
+border-style} und \textit{border-color}. Die Parameter werden in dieser 
+Reihenfolge nacheinander angegeben.} & 
+{\raggedright border-top:2pt solid blue}\\
+\hline
+% ROW 20
+{\raggedright border-right} & 
+{\raggedright Dies ist eine Zusammenfassung der Eigenschaften \textit{border-right-width, 
+border-style} und \textit{border-color.} Die Parameter werden in dieser 
+Reihenfolge nacheinander dargestellt.} & 
+{\raggedright border-right:2pt solid blue}\\
+\hline
+% ROW 21
+{\raggedright border-bottom} & 
+{\raggedright Dies ist eine Zusammenfassung der Eigenschaften border-bottom-width, 
+border-style und \textit{border-color}. Die Parameter werden in dieser 
+Reihenfolge nacheinander angegeben.} & 
+{\raggedright border-bottom:2pt solid blue}\\
+\hline
+% ROW 22
+{\raggedright border left} & 
+{\raggedright Dies ist eine Zusammenfassung der Eigenschaften \textit{border-left-width, 
+border-style} und \textit{border-color}. Die Parameter werden in dieser 
+Reihenfolge nacheinander angegeben.} & 
+{\raggedright border-left.pt solid blue}\\
+\hline
+% ROW 23
+{\raggedright border} & 
+{\raggedright Dies ist eine Zusammenfassung der Eigenschaften \textit{border-width, 
+border-style} und \textit{border-color}.} & 
+{\raggedright border:2pt solid blue}\\
+\hline
+% ROW 24
+{\raggedright width } & 
+{\raggedright Legt die breite des Blocks fest.} & 
+{\raggedright width: 50px}\\
+\hline
+% ROW 25
+{\raggedright height} & 
+{\raggedright Legt die H\"{o}he eines Blocks fest.} & 
+{\raggedright height: 50px}\\
+\hline
+% ROW 26
+{\raggedright float} & 
+{\raggedright Legt die Ausrichtung des Blocks durch \textit{none, left} oder \textit{right} 
+fest.} & 
+{\raggedright foat: right}\\
+\hline
+% ROW 27
+{\raggedright clear} & 
+{\raggedright Legt fest bei welcher Seite kein Text umflie{ß}en darf. Die 
+m\"{o}glichen Einstellungen sind\textit{: none, left, right} oder \textit{both.}} & 
+{\raggedright Clear:both}\\
+\hline
+% ROW 28
+{\raggedright display} & 
+{\raggedright  Diese Eigenschaft legt fest, wie das Element gezeichnet werden 
+soll. Die m\"{o}glichen Werte sind: \textit{block, inline, list-item, 
+none. block} \"{o}ffnet eine neue Zeichenfl\"{a}che, relativ zum vorhergehenden 
+Element. \textit{inline} \"{o}ffnet das Element innerhalb der aktuellen 
+Zeile. \textit{list-item} arbeitet wie \textit{block}, wobei das Element 
+aber als Element innerhalb eines Blocks angesehen wird. \textit{none} unterdr\"{u}ckt 
+das Zeichen des Elements.} & 
+{\raggedright display: block}\\
+\hline
+% ROW 29
+{\raggedright white-space} & 
+{\raggedright Diese Eigenschaft legt fest, wie die so genannten White-Space-Zeichen 
+(d.h. Leerzeichen und Tabs) behandelt werden sollen. Die Einstellung 
+\textit{normal} behandelt die Zeichen, wie sie sind w\"{a}hrend die 
+Einstellung \textit{pre} die Zeichen wie das HTML-Tag \texttt{<}PRE\texttt{>} behandelt} & 
+{\raggedright white-space:normal}\\
+\hline
+% ROW 30
+{\raggedright list-style-type} & 
+{\raggedright Das legt das Aussehen der Aufz\"{a}hlungszeichen fest. Die m\"{o}glichen 
+Einstellungen sind: \textit{disc, circle, square, decimal, lower-roman, 
+upper-roman. lower-alpha, upper-alpha} oder \textit{none.}} & 
+{\raggedright list-style-type: disc}\\
+\hline
+% ROW 31
+{\raggedright list-style-image} & 
+{\raggedright Dies legt eine graphik als Aufz\"{a}hlungszeichen fest.} & 
+{\raggedright list-style-image: url (blume.jpg)}\\
+\hline
+% ROW 32
+{\raggedright list-style-position} & 
+{\raggedright Gibt an, ob das Aufz\"{a}hlungselement einger\"{u}ckt (\textit{inside}) 
+oder ausger\"{u}ckt (\textit{outside}) werden soll.} & 
+{\raggedright {\underline {?}}}\\
+\hline
+% ROW 33
+{\raggedright List-style} & 
+{\raggedright Dies fasst die Eigenschaften \textit{list-style-type} und \textit{list-style-position} 
+zusammen.} & 
+{\raggedright list-style: disc outside}\\
+\hline
+\end{longtable}
+
+\section{ Beispiel}
+
+Auf einer Leistungspr\"{u}fung wurden die Gewichte verschiedener 
+Rassen ermittelt. Die Gewichte sollen drei Gruppen zugeordnet 
+werden. Darzustellen sind die Nummern der Tiere, sowie deren 
+Gewichte innerhalb der Rasse und der Gewichtsgruppe. Weiterhin 
+ist f\"{u}r jede Gruppe und f\"{u}r jede Rasse die Anzahl der Tiere 
+sowie das Gruppenmittel anzugeben. Am Ende des Berichtes soll 
+das Gruppenmittel der beiden Rassen dargestellt werden.
+
+\subsection{ Erstellen einer Abfrage oder einer Funktion}
+
+Bevor ein Bericht als Layout erstellt wird, m\"{u}ssen die Daten 
+zusammengestellt werden. Das kann \"{u}ber ein SQL-Statement erfolgen 
+oder \"{u}ber eine Funktion, falls das Daten zusammenstellen umfangreicher 
+ist. Es ist wichtig, dass die Funktion bzw. das SQL-Statement 
+getestet sind und die erwarteten Daten liefern.
+
+\subsection{Entwurf eines Layouts.}
+
+Bevor mit dem Entwurf eines Reports begonnen wird, ist die Struktur 
+und das Aussehen zu konzipieren. Dazu wird aufgezeichnet, welche 
+Informationen auf dem Bericht dargestellt werden sollen und wie 
+diese formatiert sind.
+
+\includegraphics[width=160mm]{./report-gen/pic3.eps}
+
+\subsection{Gliederung des Reports in Bereiche}
+
+
+Im n\"{a}chsten Schritt wird der Bericht in einzelne Bereiche gegliedert. 
+
+\includegraphics[width=160mm]{./report-gen/pic2}
+\includegraphics[width=160mm]{./report-gen/pic4}
+\includegraphics[width=160mm]{./report-gen/pic1}
+
+Im n\"{a}chsten Schritt wird jedes einzelne Element des Berichtes 
+als Objekt gekennzeichnet. Dabei werden f\"{u}r jedes Objekt folgende 
+Attribute gesetzt:
+
+\begin{itemize}
+\item Art des Objektes (ElementType)
+\item Bezeichnung (Name)
+\item Inhalt (Content)
+\end{itemize}
+
+Im Beispiel werden die Elementypen ,,Linien``, ,,Text ,, und ,,Data`` 
+vergeben. W\"{a}hrend Textobjekte nur Zeichen darstellen k\"{o}nnen, 
+werden ,,Data`` -- Objekte verwendet, wenn die Datenquelle andere 
+Objekte sind, statistische Funktionen angewendet werden sollenoder 
+die Daten aus einem SQL -- Statement oder einer Funktion kommen. 
+
+\tab Die Bezeichnung der Objekte mu{ß} eindeutig sein.
+
+In Data- Objekten m\"{u}ssen Verweise in der allgemeinen Form 
+
+
+\begin{center}
+Funktion ([Verweisziel])
+
+
+\end{center}
+angegeben werden.
+
+Im n\"{a}chsten Schritt werden Spaltenhilfslinien \"{u}ber den Bericht 
+gelegt. Damit wird gekennzeichnet, welche Informationen in einer 
+Spalte stehen sollen. Es ist dabei grunds\"{a}tzlich m\"{o}glich, 
+dass Objekte \"{u}ber mehr als eine Spalte gehen.
+
+F\"{u}r alle Objekte mu{ß} in der Eigenschaft ,,Column`` die Spalte 
+eingetragen werden. F\"{u}r Objekte, die mehr als eine Spalte einnehmen, 
+ist der bereich anzugeben: 2-4
+
+Weiterhin ist die Eigenschaft ``Row`` zu setzen. Die Nummerierung 
+erfolgt innerhalb eines Bereiches.
+
+Als letztes wird das Layout der Objekte definiert - die Textgr\"{o}{ß}e, 
+Schrift, Schriftgrad, u.s.w.
+
+Sind diese Vorbereitungen abgeschlossen ist das Konfigurationsfile 
+zu erstellen. Es ist ein XML -- File, dass einen beliebigen Namen, 
+aber die fixe Endung ,,.rpt `` besitzen darf
+
+Die vollst\"{a}ndige Listung stellt Abb. dar.
+
+Zum Erstellen und Editieren des Kofigurationsfiles kann ein beliebiger 
+XML -- Editor verwendet werden. Die g\"{u}ltigen Elemente und Attribute 
+eines Berichtes sind in der ,,report.ata`` -- Document -- Typ -- 
+Definition beschrieben.
+
+\tab MS java -- jar Xerlin\dots 
+
+\tab \tab \"{O}ffnen der Document -- Typ -- Definition
+
+\tab  \tab Erstellen des Konfigurationsfile durch Hinzuf\"{u}gen der entsprechenden 
+
+Elemente
+
+\section{Aufruf eines Berichtes}
+
+\subsection{Kommandozeile als ASCII}
+
+\tab Report -- o\tab ascii\tab parameter
+
+Bsp.\tab Report -- o\tab ascii\tab vclass = `41'
+
+Der Bericht wird auf der Console angegeben.
+
+{\underline {{\Large DataSource}}}
+
+Ausgangspunkt f\"{u}r die Darstellung eines Berichtes ist ein Datenstrom, 
+der alle notwendigen Basisinformationen enth\"{a}lt. Dabei werden 
+Daten aus drei verschiedenen Quellen entgegengenommen
+
+\begin{enumerate}
+\item SQL -- Statement
+\item Perl -- Funktionen
+\item ASCII -- File
+\item Dateneingabe in einem Form
+\end{enumerate}
+
+Bsp.: 
+
+\tab DataSource = (Select * from tabelle)
+
+\tab DataSource = \$ form name. object
+
+\tab DataSource = @\{function()\}
+
+\tab Datasource = filename
+
+Zur Abgrenzung der drei Varianten m\"{u}ssen SQL -- Statements in 
+einer runden Klammer eingeschlossen sein.
+
+Zur \"{U}bergabe von Parametern k\"{o}nnen in einem SQL -- Statement 
+geschweifte Klammern verwendet werden. Innerhalb der Klammern 
+ist ein Verweis auf ein Objekt eines g\"{u}ltigen Forms notwendig
+
+\tab \tab z.B.: (Select * from codes where class ='\{\$formname.objekt\}')
+
+Bei der Bereitstellung der Daten \"{u}ber eine Funktion ist der 
+Funktionsname anzugeben, gefolgt von einer \"{o}ffnenden und einem 
+schlie{ß}enden runden Klammer. Innerhalb der Klammern k\"{o}nnen 
+mit Komma getrennt Parameter \"{u}bergeben werden
+
+\tab = funktion ( \$formname.objekt, ,irgendwas' )
+
+Liegen die darzustellenden Daten in einem ASCII -- File , so ist 
+der vollst\"{a}ndige Pfadname anzugeben.
+
+Steht ein Dollarzeichen am Anfang, wird angenommen, dass der 
+einzuf\"{u}gende Text in einem Formular eingegeben wurde.
+
+In diesem Fall mu{ß} die Eingabe nach der Aufl\"{o}sung ein SQL 
+-- Statement (mit Klammer am Anfange und Ende), eine Funktion 
+(Klammern am Ende) oder ein Filenamen ergeben.
+
+{\underline {Funktionen}}
+
+Auf alle Daten in Data -- Objekten (und nur dort) k\"{o}nnen Funktionen 
+angewendet werden. Mit Funktionen k\"{o}nnen Daten aggregiert oder 
+ver\"{a}ndert werden.
+
+Funktionen k\"{o}nnen sich nur auf Daten innerhalb des Reports 
+beziehen. Es wird zwischen Funktionen mit und ohne Parameter 
+unterschieden.
+
+Funktionen ohne Parameter 
+
+\begin{itemize}
+\item date ( ) - gibt das aktuelle Datum wieder
+\item user ( ) - gibt den aktuellen user zur\"{u}ck
+\item vnd ( ) - gibt eine Zufallszahl zur\"{u}ck
+\end{itemize}
+
+Funktionen mit Parameter:
+
+Ein Parameter kann eine Zahl sein oder ein Verweis auf den Inhalt 
+eines anderen Data -- Objects.
+
+\tab allg. Form:\tab \tab funktion\tab ([verweis])
+
+\tab Funktionen:
+
+\begin{itemize}
+\item avg ( ) -  Mittelwert
+\item std ( ) - Standartabweichung
+\item  min ( ) - Minimum
+\item max ( ) - Maximum
+\item first ( ) - erster Wert
+\item last ( ) - letzter Wert
+\end{itemize}
+
+
+
+
+
+
+

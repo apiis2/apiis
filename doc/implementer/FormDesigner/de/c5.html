@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+ <TITLE>FormDesigner: Funktionen</TITLE>
+</HEAD>
+<body alink="#ee0000" bgcolor="#e4e4e4" link="blue" text="#42426f" vlink="darkBlue">
+<table width="100%" border="0">
+  <tr bgcolor="white">
+  <td width="10%"><img src="../images/FDicon.png" alt="FormDesigner Icon" align="right" width="64" height="64" border="0" vspace="10" hspace="10">
+</td>
+<td><img src="../images/formdesigner.png" width="321" height="89" border="0" hspace="100"></td>
+  </tr>
+</table>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c3.html">4. Maskenobjekte</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c6.html">6. Perl-Code in Maskenparametern</a></font></td>
+  </tr>
+</table>
+
+
+<H1>5. Funktionen für den Action-Parameter</H1>
+
+Funktionen können zu verschiedenen Zwecken eingesetzt werden. So
+können z.B. Maskenwerte in Abhängigkeit von anderen Werten umgeformt, berechnet,
+oder aus der Datenbank geholt werden, oder sie können auch
+Datenbanksequenzen erhöhen und andere Datenmanipulationen durchführen.
+Eine Funktion wird bei dem Maskenobjekt - Parameter <i>Action</i> - spezifiziert,
+in dem der Wert nach der Ausführung der Funktion erscheinen soll. In der <i>Action</i>
+Spezifikation wird ein <b>F</b> oder <b>f</b> zur Identifikation eines
+Funktionsaufrufes einer Funktion vorangestellt. Das große <b>F</b> besagt, dass die
+Funktion bei jedem Drücken der <b>Tab</b>- oder <b>Enter</b>-Taste (Nummernblock) ausgeführt wird,
+während mit klein-<b>f</b> angegebene Funktionen bei Klick auf den Knopf <b>Insert</b> oder
+Strg+i ausgeführt werden - also nach Eingabe eines kompletten Datensatzes.
+<br><br>
+Es gibt eine Reihe von Funktionen, die im Folgenden beschrieben werden:<br><br>
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>fromDB</b></th></tr></table>
+Diese Funktion holt aus der Datenbank <u>einen</u> Wert und zeigt ihn im
+zugehörigen Feld an. Abhängig vom Rückgabewert kann ein Perl-Script ausgeführt werden.<br><br>
+Syntax:<br>
+<pre>
+    F|f fromDB table column1 [column2 section]
+       SELECT column1 FROM table WHERE column2=(Wert_von_Objekt_section)</pre><br>
+oder
+<pre>
+    F|f fromDB table column1 column2 section [where-clause_1] [where_clause_2] ...
+       SELECT column1 FROM table
+       WHERE column2=(Wert_von_Objekt_section)
+       AND where-clause_1 AND where_clause_2</pre><br>
+<br>
+Beispiele:
+<pre>
+    F fromDB codes long_name db_code sec110
+    F fromDB weight sum(weight)
+    F fromDB codes long_name codes.db_code sec130 codes.class='country'
+
+
+
+</pre>
+
+<a name="existDBID"></a>
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>existDBID</b></th></tr></table>
+In Abhängigkeit von den Maskenwerten wird <u>ein</u> Wert aus der Datenbank geholt und
+im zugehörigen Feld angezeigt.<br><br>
+Syntax:<br>
+<pre>
+    F|f existDBID table column [section1 column1 [section2 column2] ... [section<sub>n</sub> column<sub>n</sub>]]
+      SELECT column FROM table
+      WHERE column1=(Wert_von_Objekt_section1)
+      AND column2=(Wert_von_Objekt_section2)
+      ...
+      AND column<sub>n</sub>=(Wert_von_Objekt_section<sub>n</sub>)
+</pre><br><br>
+Beispiele:
+<pre>
+    F existDBID codes db_code sec001 short_name col002 class
+    F existDBID entry db_animal sec130 ext_animal sec013 db_unit
+
+
+
+</pre>
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>getDBID</b></th></tr></table>
+Dieselbe Funktionalität wie <a href="c5.html#existDBID">existDBID</a>, jedoch zusätzlich kann in Abhängigkeit vom Rückgabewert ein Perl-Script
+ausgeführt werden.<pre>
+
+
+
+</pre>
+
+<a name="Next_seq_DBID"></a>
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>Next_seq_DBID</b></th></tr></table>
+Diese Funktion liefert in Abhängigkeit von anderen Maskenwerten eine neue, nichtbenutzte
+Datenbank-Id zurück. Existiert zu der spezifizierten Bedingung ein Datensatz,
+wird die Datenbank-Id zurückgegeben.<br>
+In der Datenbank muss entweder eine Sequenz mit dem Namen <i>seq_table_db_id</i> (mit <i>table</i>=Tabellenname)
+existieren, oder in der Modeldatei muss für die entsprechende Tabelle unter
+%<i>table</i>{TABLE}{CONTRAINTS}{SEQUENCE} ein Name definiert sein.<br><br>
+Diese Funktion nutzt die <i>nextval()</i>-Funktion von PostgreSQL.<br><br>
+Syntax:
+<pre>
+    f Next_seq_DBID table column section1 column1 [section2 column2 ... [section<sub>n</sub> column<sub>n</sub>]]
+
+</pre>
+Beispiel:
+<pre>
+    f Next_seq_DBID address db_address sec001 ext_address</pre>
+In das Feld mit der Bezeichnug sec001 wird eine Adresse eingegeben. Existiert die in
+<i>address.ext_address</i> wird der Wert aus <i>address.db_address</i> zurückgegeben. Anderenfalls
+wird die Sequenz %address{TABLE}{CONSTRAINTS}{SEQUENCE}[0], oder falls die nicht existiert, die
+Sequenz <i>seq_address_db_id</i> inkrementiert.<pre>
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>getNextDBID</b></th></tr></table>
+Diese Funktion hat die gleiche Funkionalität wie <a href="c5.html#Next_seq_DBID">Next_seq_DBID</a>
+benutzt für die Sequenz aber eine extra Tabelle. Erforderlich ist eine Tabelle <i>db_id</i> mit
+einer Spalte <i>max_db_id</i> (CREATE TABLE db_id (max_db_id int) ).<br><br>
+Syntax:
+<pre>
+    f getNextDBID table column [section1 column1 [section2 column2] ... [section<sub>n</sub> column<sub>n</sub>]]
+
+</pre>
+Beispiel:
+<pre>
+    f Next_seq_DBID  db_address sec001 ext_address
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>sum</b></th></tr></table>
+Berechnet die Summe zweier Felder.<br><br>
+Syntax:
+<pre>
+    F|f sum section1 section2 [FIX=Anzahl_Nachkommastellen]
+
+</pre>
+Beispiel:
+<pre>
+    F sum sec200 sec210 FIX=2
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>sub</b></th></tr></table>
+Subtraktion zweier Felder.<br><br>
+Syntax:
+<pre>
+    F|f sub section1 section2 [FIX=Anzahl_Nachkommastellen]
+
+</pre>
+Beispiel:
+<pre>
+    F sub sec20 sec21 
+
+
+
+</pre>
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>multi</b></th></tr></table>
+Multiplikation zweier Felder.<br><br>
+Syntax:
+<pre>
+    F|f multi section1 section2 [FIX=Anzahl_Nachkommastellen]
+
+</pre>
+Beispiel:
+<pre>
+    F multi sec020 sec030
+
+</pre>
+Siehe auch die Demo-Maske <a href="../../../test/demo/EuroCalc.form" type="text/html">
+        $APIIS_HOME/test/demo/EuroCalc.form</a><pre>
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>div</b></th></tr></table>
+Division zweier Felder.<br><br>
+Syntax:
+<pre>
+    F|f div section1 section2 [FIX=Anzahl_Nachkommastellen]
+
+</pre>
+Beispiel:
+<pre>
+    F div col020 col030 FIX=10
+
+</pre>
+Siehe auch die Demo-Maske <a href="../../../test/demo/EuroCalc.form" type="text/html">
+        $APIIS_HOME/test/demo/EuroCalc.form</a><pre>
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>concat</b></th></tr></table>
+Verbindet den Inhalt mehrerer Felder zu einer einzigen Zeichenkette und liefert diese zurück.
+Optional kann ein Trennzeichen oder Zeichenkette angegeben werden.<br><br>
+Syntax:
+<pre>
+    F|f concat section1 section2 ... [delim=char|string]
+
+</pre>
+Beispiel:
+<pre>
+    F concat sec200 sec210 sec220 delim=|
+
+</pre>
+Siehe auch die Demo-Maske <a href="../../../test/demo/concat.form" type="text/html">
+        $APIIS_HOME/test/demo/concat.form</a><pre>
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>split</b></th></tr></table>
+Unterteilt eine Zeichenkette am Trennzeichen in mehrere Teile. Die Teilzeichenketten werden in
+verschiedenen Feldern angezeigt. Das Trennzeichen kann auch aus mehreren Zeichen bestehen.
+Gibt es mehr Teilzeichenketten als spezifizierte Felder, werden nur soviel Teilketten
+gebildet, wie Felder für die Anzeige vorhanden sind.<br><br>
+Syntax:
+<pre>
+    F|f split destination_section1 [destination_section2 ...] delim=char|string
+
+</pre>
+Beispiel:
+<pre>
+    F split sec120 sec130 sec140 delim=|
+
+</pre>
+Siehe auch die Demo-Maske <a href="../../../test/demo/split.form" type="text/html">
+        $APIIS_HOME/test/demo/split.form</a><pre>
+
+
+
+</pre>
+
+<!--
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>fromField</b></th></tr></table>
+<br><br>-->
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>fetchlist</b></th></tr></table>
+Holt ein oder mehrere Datensätze aus der Datenbank und packt diese in ein mehrzeiliges Listenfeld
+(Typ M), oder in einzeilige Felder vom Type  E,D,B oder N. Einzeilige Felder zeigen maximal einen
+Datensatz. Ein Aufruf mit klein-<b>f</b> ist auch möglich aber wohl nicht sinnvoll, da diese
+Funktion allein dem <u>Anzeigen</u> von Daten dient.<br><br>
+Syntax:
+<pre>
+    F|f fetchlist table column1[|column2 ...|column<sub>n</sub>] section columnW [delimiter] [order=columnS]
+       SELECT  column1,column2,column<sub>n</sub> FROM table
+       WHERE columnW=(Wert_von_Objekt_section)
+       ORDER BY columnS
+
+       delimiter: Trennzeichen oder -zeichenkette der angezeigten Datenbankspalten
+                  dabei bedeutet ein <i>b</i> eine Leerstelle. Beispiel: b|b = <i>Leerstelle</i>|<i>Leerstelle</i>
+
+</pre>
+<b>Hinweis: Die Parameter dürfen auf keinen Fall mit Komma getrennt werden! Stattdessen ist das Zeichen
+'|'  zu verwenden.</b><br><br>
+Beispiel:
+<pre>
+    F fetchlist animal name|short_name|origin|birth_dt|ai_code sec007 db_animal b:b
+
+
+
+
+</pre>
+
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>SQL</b></th></tr></table>
+Ausführen von SQL-Statements <u>ohne Überprüfen der <i>Check</i>-Regeln</u>.<br><br>
+Syntax:
+<pre>
+    F|f SQL sql-statement
+
+    Feldwerte können in <i>sql-statement</i> als Sektionsname - eingeschlossen in <i>$</i> - benutzt werden.
+
+</pre>
+Beispiele:
+<pre>
+    f SQL insert into entry (ext_animal|db_animal|db_unit|last_change_dt|last_change_user)
+           values ($col012$| $col007$| $col005$| '$now'| '$col012c$')
+
+    f SQL delete from transfer where db_id=$sec123$;delete from entry where db_id=$sec123$
+
+
+</pre>
+
+Für Listenfelder (TYPE=M):<br>
+Selektierte Werte werden in das Listenfeld eingetragen. Eventuell vorhandene Werte werden vorher
+gelöscht.<br><br>
+Beispiel:
+<pre>
+    f SQL SELECT username FROM users;
+
+
+</pre>
+
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><b>exeCommand</b></th></tr></table>
+Ausführen von Kommandos definiert in einer Section oder in GENERAL.<br><br>
+Syntax:
+<pre>
+    F|f exeCommand section label
+
+</pre>
+Beispiele:
+<pre>
+    [secxxx]
+    ACTION=f exeCommand sec4711 LABEL_1
+
+    [sec4711]
+    LABEL_1=print "sec4711:  $$form{sec4711}{DATA} \n"
+
+
+    [secyyy]
+    # Defaultparameter für Anrede setzen
+    ACTION=F exeCommand sec0815 DEFAULT
+
+    [sec0815]
+    DEFAULT=$$form{sec0815}{DATA}='Herr'
+
+</pre>
+
+<p></p>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c3.html">4. Maskenobjekte</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c6.html">6.Perl-Code in Maskenparametern </a></font></td>
+  </tr>
+</table>
+<table width="100%" border=0 bgcolor="white">
+  <tr><td><font size="-2">$Id: c5.html,v 1.6 2004/02/10 07:38:21 heli Exp $</font></td>
+</tr>
+</table>
+</BODY>
+</HTML>

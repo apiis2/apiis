@@ -1,0 +1,723 @@
+\subsubsection{DateDiff\label{DateDiff}\index{DateDiff}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{DateDiff_SYNOPSIS}\index{DateDiff!SYNOPSIS}}
+
+
+Syntax in model file:
+
+\begin{verbatim}
+   DateDiff min_diff max_diff compare_date [reference_column]
+\end{verbatim}
+
+
+Examples:
+   CHECK =$>$ ['DateDiff 0 365 2001-03-22'],
+   CHECK =$>$ ['DateDiff 1 100 buy\_dt'],
+   CHECK =$>$ ['DateDiff 1 50  animal=$>$birth\_dt db\_animal'],
+
+\paragraph*{DESCRIPTION\label{DateDiff_DESCRIPTION}\index{DateDiff!DESCRIPTION}}
+
+
+DateDiff takes the current value (\$data) of the passed column and computes the difference to the
+date, given in the third parameter (compare\_date). If the difference (in
+days) between \$data and compare\_date is in the range given by min\_diff and
+max\_diff, DateDiff will return 0 for success, otherwise 1. In other words:
+
+\begin{verbatim}
+   min_diff <= ($data - compare_date) <= max_diff    # success
+\end{verbatim}
+
+
+compare\_date can either be a fixed format date like '2001-03-22' (must be
+in ISO 8601 format) or a date in a column of this record or a date in the
+column of another table.  In the latter case, the format is
+'tablename=$>$columname' and you additionally have to give the referencing
+column of both tables. This referencing column connects both tables
+(usually a foreign key).
+
+
+
+Examples:
+
+\begin{verbatim}
+   # fixed format:
+   DateDiff 1 365 2000-01-15
+\end{verbatim}
+\begin{verbatim}
+   # compare to another column in the current record:
+   DateDiff 30 50 buy_dt
+\end{verbatim}
+\begin{verbatim}
+   # compare to another table.column:
+   DateDiff 80 120 animal=>birthdate db_animal
+\end{verbatim}
+\paragraph*{AUTHORS\label{DateDiff_AUTHORS}\index{DateDiff!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{ForeignKey\label{ForeignKey}\index{ForeignKey}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{ForeignKey_SYNOPSIS}\index{ForeignKey!SYNOPSIS}}
+
+
+Syntax in model file:
+
+\begin{verbatim}
+   ForeignKey fk_table fk_column [column=value]
+\end{verbatim}
+\paragraph*{DESCRIPTION\label{ForeignKey_DESCRIPTION}\index{ForeignKey!DESCRIPTION}}
+
+
+The internal data of the current table and column must have an according
+entry in fk\_table.fk\_column.
+
+
+
+Undefined data (NULL) does not violate the rule. It must be checked with
+NotNull.
+
+
+
+ForeignKey() returns 0 in case of success, otherwise it creates a
+descriptive record error object and returns 1;
+
+
+
+For internal en-/decoding, the ForeignKey rule is somehow violated with
+additional parameters, which are not needed for the pure
+FK-checking. If we have a FK-definition:
+
+\begin{verbatim}
+   ForeignKey codes db_code class=BREED
+\end{verbatim}
+
+
+the FK-checking only looks in table codes, column db\_code. The additional
+'class=BREED' entry is used for the coding stuff.
+
+\subparagraph*{check\_ForeignKey()\label{ForeignKey_check_ForeignKey_}\index{ForeignKey!check\ ForeignKey()}}
+
+
+\textbf{check\_ForeignKey()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+\paragraph*{AUTHORS\label{ForeignKey_AUTHORS}\index{ForeignKey!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{IsAFloat\label{IsAFloat}\index{IsAFloat}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{IsAFloat_SYNOPSIS}\index{IsAFloat!SYNOPSIS}}
+
+
+The passed data must be a floating point number
+
+\paragraph*{DESCRIPTION\label{IsAFloat_DESCRIPTION}\index{IsAFloat!DESCRIPTION}}
+\subparagraph*{IsAFloat()\label{IsAFloat_IsAFloat_}\index{IsAFloat!IsAFloat()}}
+
+
+The value of the current column has to be a floating point number.  Empty
+values are allowed.
+
+
+
+Returnvalues:
+   nothing in case of success
+   local status with true value, errors are stored in \$record-$>$errors
+
+\subparagraph*{check\_IsAFloat()\label{IsAFloat_check_IsAFloat_}\index{IsAFloat!check\ IsAFloat()}}
+
+
+\textbf{check\_IsAFloat()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+
+
+Checks are:
+   Existence of additional parameters
+
+\paragraph*{AUTHORS\label{IsAFloat_AUTHORS}\index{IsAFloat!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subparagraph*{IsAFloat\label{IsAFloat_IsAFloat}\index{IsAFloat!IsAFloat}}
+
+
+The passed value \$data is checked to be a float. The , is not substituted to
+decimal point as this subroutine only return 0 or 1, not the (substituted)
+value. This is a job for the Modify rule CommaToDot.
+
+
+
+Returnvalues: 0 if \$data is a legal float, 1 if \$data contains illegal chars
+
+\subsubsection{IsANumber\label{IsANumber}\index{IsANumber}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{IsANumber_SYNOPSIS}\index{IsANumber!SYNOPSIS}}
+
+
+Checks, if the provided data is a number.
+
+\paragraph*{DESCRIPTION\label{IsANumber_DESCRIPTION}\index{IsANumber!DESCRIPTION}}
+\subparagraph*{IsANumber()\label{IsANumber_IsANumber_}\index{IsANumber!IsANumber()}}
+
+
+The value of the current column has to be a number.  Empty values are
+allowed. The test is done by comparing firstly \$value with \$value+0 and, if
+this fails, with a more complex regex.
+
+
+
+Returnvalues:
+   nothing in case of success
+   local status with true value, errors are stored in \$record-$>$errors
+
+\subparagraph*{check\_IsANumber()\label{IsANumber_check_IsANumber_}\index{IsANumber!check\ IsANumber()}}
+
+
+\textbf{check\_IsANumber()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+
+
+Checks are:
+   Existence of additional parameters
+
+\subparagraph*{\_is\_a\_number() (internal)\label{IsANumber__is_a_number_internal_}\index{IsANumber!\ is\ a\ number() (internal)}}
+
+
+\textbf{\_is\_a\_number()} is an internal routine which is not bind to the record
+object. Some rules want to check the passed parameter (e.g. Range), if they
+are numbers. \textbf{\_is\_a\_number()} gets as input the value, which it has to
+check. \textbf{IsANumber} uses \textbf{\_is\_a\_number()}, too.
+
+
+
+In case of errors it returns a non-true returnvalue.
+
+\paragraph*{AUTHORS\label{IsANumber_AUTHORS}\index{IsANumber!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{IsEqual\label{IsEqual}\index{IsEqual}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{IsEqual_SYNOPSIS}\index{IsEqual!SYNOPSIS}}
+
+
+Syntax: IsEqual \$table \$id\_column \$column compare\_constant [nullok]
+
+\paragraph*{DESCRIPTION\label{IsEqual_DESCRIPTION}\index{IsEqual!DESCRIPTION}}
+
+
+\textbf{IsEqual()} is usually used as a CHECK-rule in the model file.
+
+
+
+It checks, if a record, identified by \$table.\$id\_column has the value
+'compare\_constant' in column \$column.
+
+
+
+Example: IsEqual animal db\_animal db\_sex male
+
+
+
+This CHECK-rule can be attached to a column like db\_sire in
+service and tests if the animal ID, given in the passed column, points indeed
+to a male animal. The record from table animal, where db\_animal is equal to
+the data of the current column, must have an entry 'male' in column db\_sex.
+The the 'compare\_constant' part is a fixed value and specified as external code
+(codes.ext\_code).
+
+
+
+Returnvalues:
+
+\begin{enumerate}
+
+\item 
+
+0 if the retrieved record from \$table.\$id\_column has an entry of
+'compare\_constant' in column \$column.
+
+
+
+If the optional parameter 'nullok' is given, an undefined value for this
+column (or no retrieved record) will also be accepted.
+
+
+\item 
+
+All other cases indicate error and an error message exists.
+
+\end{enumerate}
+\subparagraph*{check\_IsEqual()\label{IsEqual_check_IsEqual_}\index{IsEqual!check\ IsEqual()}}
+
+
+\textbf{check\_IsEqual()} checks the correctness of the input parameters.
+
+
+
+In case of errors it puts an error into \$self-$>$errors and additionally
+returns a non-true returnvalue.
+
+
+
+Checks are:
+
+\begin{verbatim}
+   Missing parameters
+   Last parameter must be 'nullok' if it exists
+\end{verbatim}
+\paragraph*{AUTHORS\label{IsEqual_AUTHORS}\index{IsEqual!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\paragraph*{VERSION\label{IsEqual_VERSION}\index{IsEqual!VERSION}}
+\begin{verbatim}
+   $Revision: 1.15 $
+\end{verbatim}
+\paragraph*{LastAction\label{LastAction}\index{LastAction}}
+
+
+Syntax:
+
+
+
+LastAction table=$>$chain\_col LA\_chain min\_diff max\_diff
+
+
+
+LastAction is a conditional DateDiff depending on the value of LA\_chain,
+which is stored in table=$>$chain\_col. The dates to compare are
+table=$>$chain\_col\_dt (\_dt extension is hardcoded!) and the passed current
+value \$data.
+
+
+
+If the date difference between chain\_col\_dt and \$data for this LastAction
+in table=$>$chain\_col is \textbf{not} within the defined range, the (error)status
+\$self-$>$status is set to 1 and an appropriate error object is created. If
+this rule is not violated, the (error)status is 0.
+
+
+
+Example for an entry in the model file:
+
+\begin{verbatim}
+   CHECK => ['LastAction animal=>la_rep
+                  SERVICE 18 62
+                  FARROW  40 80'],
+\end{verbatim}
+
+
+\textbf{Note!} As LastAction is a very specific check rule there are some details
+hardcoded. The connecting column between tables (foreign key) is db\_animal
+in both tables. The column, that contains the date for the last action is
+assumed to have the last-action-column name with '\_dt' appended.
+
+
+
+If LastAction turns out to be a useful check rule for other purposes where
+the hardcoding is an obstacle, it can be rewritten in a generic manner,
+likely with the drawback of some changes in parameter passing.
+
+\paragraph*{skip\_LastAction()\label{skip_LastAction_}\index{skip\ LastAction()}}
+
+
+\textbf{skip\_LastAction()} returns the actions, when checking of this rule should be
+skipped. For LastAction, checks during an update operation are useless.
+
+
+
+Input: none
+Output: arrayref
+
+\paragraph*{check\_LastAction()\label{check_LastAction_}\index{check\ LastAction()}}
+
+
+\textbf{check\_LastAction()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+\subsubsection{AUTHORS\label{AUTHORS}\index{AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{List\label{List}\index{List}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{List_SYNOPSIS}\index{List!SYNOPSIS}}
+
+
+\textbf{List()} is the poor man's foreign key. The data is checked against a
+small list which is provided in the model file.
+
+\paragraph*{DESCRIPTION\label{List_DESCRIPTION}\index{List!DESCRIPTION}}
+
+
+The model file can provide a small list where the data is checked against.
+Example, column db\_sex:
+
+\begin{verbatim}
+   CHECK => ['List Male Female'],
+\end{verbatim}
+
+
+The external data is allowed to have the values 'Male' or 'Female'. The
+number of List entries is not limited:
+
+\begin{verbatim}
+   CHECK => ['List val1 val2 ... valN'],
+\end{verbatim}
+
+
+To circumvent upper/lower case problems you can combine MODIFY and CHECK
+rules:
+
+\begin{verbatim}
+   MODIFY => ['UpperCase'],
+   CHECK  => ['List MALE FEMALE'],
+\end{verbatim}
+
+
+The data is first modified and then checked.
+
+
+
+Undefined or NULL data is accepted as it can get controlled with NotNull.
+
+
+
+Returnvalues:
+   0 if \$data is one of the list values (success),
+   1 otherwise (error)
+
+\subparagraph*{check\_List()\label{List_check_List_}\index{List!check\ List()}}
+
+
+\textbf{check\_List()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+\paragraph*{AUTHORS\label{List_AUTHORS}\index{List!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{NoCheck\label{NoCheck}\index{NoCheck}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{NoCheck_SYNOPSIS}\index{NoCheck!SYNOPSIS}}
+
+
+The Rule \textbf{NoCheck} is checks nothing. It is intended to be a noop rule to
+overwrite existing ones on a lower CHECK-level.
+
+\paragraph*{DESCRIPTION\label{NoCheck_DESCRIPTION}\index{NoCheck!DESCRIPTION}}
+\subparagraph*{NoCheck()\label{NoCheck_NoCheck_}\index{NoCheck!NoCheck()}}
+
+
+Syntax: NoCheck
+
+
+
+Returnvalues:
+   0 if data is within this range, 1 otherwise
+   errors are stored in \$record-$>$errors
+
+
+
+A non-true return value can only happen if the rule \textbf{NoCheck} is defined
+incorrectly in the model file, i.e. an additional parameter is provided.
+
+\subparagraph*{check\_NoCheck()\label{NoCheck_check_NoCheck_}\index{NoCheck!check\ NoCheck()}}
+
+
+\textbf{check\_NoCheck()} checks the correctness of the input parameters.
+
+
+
+In case of errors it returns a non-true returnvalue.
+
+
+
+Checks are:
+   existence of additional parameters
+
+\paragraph*{AUTHORS\label{NoCheck_AUTHORS}\index{NoCheck!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{NoNumber\label{NoNumber}\index{NoNumber}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{NoNumber_SYNOPSIS}\index{NoNumber!SYNOPSIS}}
+\paragraph*{DESCRIPTION\label{NoNumber_DESCRIPTION}\index{NoNumber!DESCRIPTION}}
+
+
+Checks, if the provided data is not a number.
+
+\subparagraph*{NoNumber()\label{NoNumber_NoNumber_}\index{NoNumber!NoNumber()}}
+
+
+The value of the current column must not be a number.  Empty values are
+allowed.
+
+
+
+Returnvalues:
+   * nothing in case of success
+   * local status with true value in case of failure, errors are stored in
+     \$record-$>$errors
+
+\subparagraph*{check\_NoNumber()\label{NoNumber_check_NoNumber_}\index{NoNumber!check\ NoNumber()}}
+
+
+\textbf{check\_NoNumber()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+
+
+Checks are:
+   Existence of additional parameters
+
+\paragraph*{AUTHORS\label{NoNumber_AUTHORS}\index{NoNumber!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{NotNull\label{NotNull}\index{NotNull}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{NotNull_SYNOPSIS}\index{NotNull!SYNOPSIS}}
+
+
+\textbf{NotNull()} checks, if the data has a defined value
+
+\paragraph*{DESCRIPTION\label{NotNull_DESCRIPTION}\index{NotNull!DESCRIPTION}}
+
+
+The passed value \$data is not allowed to be undefined or empty. It may have
+the numeric value 0.
+
+
+
+\textbf{NotNull()} is usually used as a CHECK-rule in the model file.
+
+\paragraph*{AUTHORS\label{NotNull_AUTHORS}\index{NotNull!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{Range\label{Range}\index{Range}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Range_SYNOPSIS}\index{Range!SYNOPSIS}}
+\paragraph*{DESCRIPTION\label{Range_DESCRIPTION}\index{Range!DESCRIPTION}}
+
+
+The Rule \textbf{Range} is given a range of values in the model file. It then
+checks, if the provided data is within this range.
+
+\subparagraph*{Range()\label{Range_Range_}\index{Range!Range()}}
+
+
+Syntax: Range min\_value max\_value
+
+
+
+Is the data within a range? min\_value and max\_value are predefined in the
+model file.
+
+
+
+Returnvalues:
+   0 if data is within this range, 1 otherwise
+   errors are stored in \$record-$>$errors
+
+\subparagraph*{check\_Range()\label{Range_check_Range_}\index{Range!check\ Range()}}
+
+
+\textbf{check\_Range()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+
+
+Checks are:
+   if min\_value and max\_value are defined
+   if min\_value and max\_value are numbers
+
+\paragraph*{BUGS\label{Range_BUGS}\index{Range!BUGS}}
+
+
+\textbf{Range} is intended to work only for numerical values.
+
+\paragraph*{AUTHORS\label{Range_AUTHORS}\index{Range!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{ReservedStrings\label{ReservedStrings}\index{ReservedStrings}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{ReservedStrings_SYNOPSIS}\index{ReservedStrings!SYNOPSIS}}
+
+
+\textbf{ReservedStrings} checks, if the data contains strings, that are not
+allowed as they are used e.g. as concatenation symbol.
+
+\paragraph*{DESCRIPTION\label{ReservedStrings_DESCRIPTION}\index{ReservedStrings!DESCRIPTION}}
+
+
+\textbf{ReservedStrings} checks if the passed data contains one of the reserved
+strings which are defined in apiisrc. NULL data (undefined or empty) will
+pass successfully.
+
+
+
+\textbf{ReservedStrings} is usually used as a CHECK-rule in the model file.
+
+\subparagraph*{check\_ReservedStrings\label{ReservedStrings_check_ReservedStrings}\index{ReservedStrings!check\ ReservedStrings}}
+
+
+\textbf{check\_ReservedStrings} checks the correctness of the input parameters.
+In case of errors it puts an error into \$record-$>$errors and returns a
+non-true returnvalue.
+
+
+
+Checks are:
+   Existence of parameters
+
+\paragraph*{AUTHORS\label{ReservedStrings_AUTHORS}\index{ReservedStrings!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{Unique\label{Unique}\index{Unique}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Unique_SYNOPSIS}\index{Unique!SYNOPSIS}}
+\paragraph*{DESCRIPTION\label{Unique_DESCRIPTION}\index{Unique!DESCRIPTION}}
+\subparagraph*{Unique()\label{Unique_Unique_}\index{Unique!Unique()}}
+\subparagraph*{check\_Unique()\label{Unique_check_Unique_}\index{Unique!check\ Unique()}}
+
+
+\textbf{check\_Unique()} checks the correctness of the input parameters.
+
+
+
+In case of errors it sets \$self-$>$status and additionally returns a non-true
+returnvalue.
+
+\paragraph*{AUTHORS\label{Unique_AUTHORS}\index{Unique!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subparagraph*{Unique\label{Unique_Unique}\index{Unique!Unique}}
+
+
+Syntax:
+
+
+
+Unique \$table \$data\_column [\$column=\$value]
+
+
+
+Unique looks in database if the passed data is unique within this combination
+of column(s).
+\$table is the concerning database table.
+\$data\_column is the column of the passed data. It therefore must *not* have
+the =value.
+To create composite keys you can specify additional columns
+with the expected value. Note: char values have to be surrounded by "'".
+
+
+
+Example:
+
+
+
+Unique( employee name department='sale' salary=3000 \$data);
+
+
+
+Returnvalues:
+
+\begin{enumerate}
+
+\item 
+
+if \$data does exist more than once in this Unique combination in the table,
+
+
+\item 
+
+otherwise, also accepting NULL values.
+
+\end{enumerate}

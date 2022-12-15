@@ -1,0 +1,139 @@
+test
+Along with a general cleanup we have also reconfigured the APIIS
+documentation. As regards overall documentation of an APIIS implementation
+we distinguish three blocks of documentation. These are:
+1. documentation for developers
+2. documentation for implementers
+3. documentation for system end users
+
+1. documentation for developers
+this group contains all those low level routines that are required for
+routine that implementers use to set up an information system in the APIIS
+framework.
+
+2. documentation for implementors
+Implementors are those people who setup a specific information system. They
+operate on model files, create business rules, write load objects and
+create GUI Programs. Therefore, they need to know how these components
+work, but they do not need to know how - as an example - meta_db does its
+job. This is documented in the first block of documentation i.e. the
+developers documentation.
+
+3. documentation for end users
+End users are those people who in the end operate an APIIS implementation.
+These people need to know what thei data streams look like, how the GUI
+programs are operated what you can and cannot do.
+
+
+All the software applicable to any APIIS project or implementation is
+located in the directory apiis/ pointed to by the environment variable
+$APIIS_HOME. This can for instance be somewhere in /usr/local/apiis that is
+read only system wide.
+An actual APIIS project should be kept in a separate directory pointed to
+by APIIS_LOCAL.
+
+Both types of directories share a common structure.
+apiis looks something like:
+/home2/eg/database/apiis
+`-----bin
+`-----doc
+|       `-----developer
+|       |       `-----access-control
+|       |       `-----introduction
+|       |       `-----pod
+|       |       `-----synchronization
+|       |       `-----undocumented
+|       `-----FormDesigner
+|       |       `-----de
+|       |       `-----images
+|       `-----implementer
+|       |       `-----access-control
+|       |       `-----business-rules
+|       |       `-----fixed-structure
+|       |       `-----historical-data
+|       |       `-----inspool-system
+|       |       `-----introduction
+|       |       `-----synchronization
+|       |       `-----writing-LO
+|       |       `-----XML-model
+|       `-----meetings
+`-----lib
+|       `-----Apiis
+|       |       `-----Auth
+|       |       `-----DataBase
+|       |       `-----Form
+|       `-----images
+|       `-----Tk
+`-----test
+|       `-----animal
+|       |       `-----data
+|       |       `-----doc
+|       |       `-----model
+|       |       |       `-----forms
+|       |       |       `-----reports
+|       `-----demo
+
+As can be seen, the doc directory has the subdirectories developer and
+implementer to reflect to two groups mentioned above.
+Each of them contains a file master-tex.tex and a Makefile.
+
+We are creating one book for the implementer and another for the developer.
+Because we want to use CVS properly, we moved away from LyX because
+changing a line in LyX sometimes changes the internal formatting of the
+ASCII LyX code, thereby generating thousends of line differences. Thus, we
+are using now plain LaTeX. 
+The main driving file for each book resides in $APIIS_HOME/doc/implementer
+and $APIIS_HOME/doc/developer and has the name "master-tex.tex".
+This is basically the type environment declaration and a series of include,
+one for each chapter. It looks like:
+
+\tableofcontents
+\input{./introduction/introduction.tex}
+\input{./fixed-structure/fixed-structure.tex}
+\input{./business-rules/business-rules.tex}
+\input{./writing-LO/writing-LO.tex}
+\input{./historical-data/./historical-data.tex}
+\input{./inspool-system/inspool-system.tex}
+\input{./access-control/access-control.tex}
+\input{./synchronization/./synchronization.tex}
+\input{./XML-model/XML-model.tex}
+\printindex
+\end{document}
+
+As can be seen, for each chapter we create a new directory that will
+contain all the material for that chapter. This will be the actual
+documentation in LaTeX code plus images as eps or whatever.
+
+Therefore, adding a chapter to a book amounts to:
+1. create an directory under implementer
+2. write the docu for that chapter in a LaTeX file in that directory
+3. add a line in the master-tex.tex that includes the new documentation.
+
+The next time the overall documentation is in generated, the new chapter is
+automatically included.
+
+One other thing: It will be useful, to create the structure of the book
+before starting to actually write it. This should be done by creating the
+corresponding subdirectories and the LaTeX files with its own structure in
+terms of chapter/section/subsection. Then this - although it only contains
+section headings - will show up in the table of contents and one can see if
+the outline makes sense.
+
+In the developer directory, the situation is analog to the implementer
+situation described above. Also here we have master-tex.tex that holds the
+include entries for the whole book. 
+However, there is one speciality: the low lever routines and indeed any
+other piece of software is described (or must be) using the Perl pod
+system. For this we have the directory developer/pod .
+Because we want to have some grouping, the file pod-chapter.tex
+contains a series of include that find its correspondence in the
+Makefile_POD which creates them on the fly from the source code, converts
+them to LaTeX and puts them in the corresponding directories in
+developers/pod .
+
+Unfortunately, not all subroutines available in the system have been
+documented. These routines are generated by a Perl script written by
+Hartmut, which puts them in the directory developer/undocumented/ .
+As these routines get documented by pod, they get automatically moved from
+the the undocumented directory to the pod directory the next time the
+complete book is generated.

@@ -1,0 +1,41 @@
+##############################################################################
+$Id: README.ftplugin,v 1.1 2006/11/13 13:55:08 heli Exp $
+##############################################################################
+
+If you want to load your own filetype plugin *after* the global one has been
+loaded, place it under ~/.vim/after/ftplugin/<filetype>.vim, e.g.
+~/.vim/after/ftplugin/perl.vim
+
+Also see ':help filetype' inside vim.
+
+(10.11.2006 - heli)
+
+If you hate vim's online help, here are some lines from it (^:
+
+"If a global filetype plugin does not do exactly what you want, there are three
+ways to change this:
+
+1. Add a few settings.
+   You must create a new filetype plugin in a directory early in
+   'runtimepath'.  For Unix, for example you could use this file: >
+        vim ~/.vim/ftplugin/fortran.vim
+   You can set those settings and mappings that you would like to add.  Note
+   that the global plugin will be loaded after this, it may overrule the
+   settings that you do here.  If this is the case, you need to use one of the
+   following two methods.
+
+2. Make a copy of the plugin and change it.
+   You must put the copy in a directory early in 'runtimepath'.  For Unix, for
+   example, you could do this: >
+        cp $VIMRUNTIME/ftplugin/fortran.vim ~/.vim/ftplugin/fortran.vim
+   Then you can edit the copied file to your liking.  Since the b:did_ftplugin
+   variable will be set, the global plugin will not be loaded.
+   A disadvantage of this method is that when the distributed plugin gets
+   improved, you will have to copy and modify it again.
+
+3. Overrule the settings after loading the global plugin.
+   You must create a new filetype plugin in a directory from the end of
+   'runtimepath'.  For Unix, for example, you could use this file: >
+        vim ~/.vim/after/ftplugin/fortran.vim
+   In this file you can change just those settings that you want to change."
+

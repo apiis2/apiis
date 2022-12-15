@@ -1,0 +1,1173 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 2.16
+\textclass article
+\language default
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Reports with the Template Toolkit
+\begin_float footnote 
+\layout Standard
+
+$Id: template.lyx,v 1.3 2004/02/10 07:50:34 heli Exp $
+\end_float 
+\layout Standard
+
+This document provides a short indroduction to the Template Toolkit and
+ describes briefly an example from the Vorwerk Information System and one
+ example from the APIIS report.
+\layout Standard
+
+For a complete reference and guide to the template directives, features
+ and options, consult the Template documentation.
+ e.g.
+\newline 
+
+\layout Standard
+
+perldoc Template
+\newline 
+
+\layout Standard
+\noindent 
+There is also a Template Tutorial available:
+\newline 
+
+\layout Standard
+
+perldoc Template::Tutorial
+\newline 
+
+\layout Subsection*
+
+INTRODUCTION
+\layout Standard
+
+The Template Toolkit is a set of Perl modules which collectively implement
+ a template processing system.
+ In this context, a template is a text document containing special markup
+ tags called 'directives'.
+ A directive is an instruction for the template processor to perform some
+ action and substitute the result into the document in place of the original
+ directive.
+ Directives include those to define or insert a variable value, iterate
+ through a list of values (FOREACH), declare a conditional block (IF/UNLESS/ELSE
+), include and process another template file (INCLUDE) and so on.
+\begin_float footnote 
+\layout Standard
+
+Template::Tutorial
+\end_float 
+ 
+\layout Standard
+
+In all other respects, the document is a plain text file and may contain
+ any other content (e.g.
+ HTML, XML, RTF, LaTeX, etc).
+ Directives are inserted in the document within the special markup tags
+ which are '[%' and '%]' by default.
+\begin_float footnote 
+\layout Standard
+
+Template::Tutorial
+\end_float 
+\layout Standard
+
+The easiest procedure is: write a template-file, process the template-file
+ with 
+\emph on 
+tpage
+\emph default 
+ to generate real output.
+ 
+\layout Standard
+\pagebreak_bottom 
+The 
+\emph on 
+tpage
+\emph default 
+-script is provided as part of the Template Toolkit.
+\layout Subsection*
+
+Example 1: Address information about breeders
+\layout Standard
+
+The template-file 
+\emph on 
+breeder2.tpl
+\emph default 
+ is an example of an LaTeX document with additional Template directives.
+\newline 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% ################################################################
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ # breeders2.tpl
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ #
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ #\SpecialChar ~
+ database: vorwerk
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ #
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ #\SpecialChar ~
+ /home1/lina/devel/apiis/vorwerk/model/results/breeders2.report
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ #
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ # $Id: template.lyx,v 1.3 2004/02/10 07:50:34 heli Exp $
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ ################################################################
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+%]
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+As you can see one directive can split across several lines.
+ The '#' character is used to indicate comments within a directive.
+\newline 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size tiny 
+[% INSERT Latex_header %]
+\newline 
+
+\layout Standard
+\noindent \align left 
+The INSERT directive is used to insert the contents of an external file.
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size tiny 
+\SpecialChar ~
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+makeatletter
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+providecommand{
+\backslash 
+LyX}{L
+\backslash 
+kern-.1667em
+\backslash 
+lower.25em
+\backslash 
+hbox{Y}
+\backslash 
+kern-.125emX
+\backslash 
+@}
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+makeatother
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+begin{document}
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+title{Breeders}
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+maketitle
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+This is LaTeX code and will be transfered to the output as it is.
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% USE DBI('DBI:Pg:dbname=vorwerk;host=rauma',) %]
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+The USE directive can be used to load and initialise 'plugin' extension
+ modules.
+ In this example the perl module 'Template::Plugin::DBI' is loaded and initialis
+ed with the PostgreSQL driver 'Pg' and the database 'vorwerk' at host 'rauma'.
+\newline 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+{
+\backslash 
+centering 
+\backslash 
+begin{tabular}{ |rrr| }
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ Breeder &
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+ First name &
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+ Last name 
+\backslash 
+
+\backslash 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline
+\newline 
+
+\layout Standard
+\noindent \align left 
+Another LaTeX code.
+ A three column table should be created with column names 'Breeder', 'First
+ name' and 'Last name'.
+\newline 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH breeder = DBI.query('SELECT unit,name1,name2 from address order
+ by unit') %]
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+[% breeder.unit %]&
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+[% breeder.name1 %]&
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+[% breeder.name2 %] 
+\backslash 
+
+\backslash 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+The FOREACH directive will iterate through the items in the list 'breeder'
+ processing the enclosed block for each one.
+ The block ends with the directive END.
+ The DBI.query method submits an SQL query to the database and creates an
+ object 'breeder' to return the results.
+ For each fetched row in 'breeder' the value of 'unit', 'name1' and 'name2'
+ are printed out delimited by an '&' character.
+\newline 
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+end{tabular}
+\backslash 
+par}
+\backslash 
+vspace{0.3cm}
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+This LaTeX code finished the table.
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH no = DBI.query('SELECT count(*) from address') %]
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% no.count %] addresses in vorwerk database
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+To retrieve the number of records in the database an easy select statement
+ is submited via DBI.query.
+ The result is printed out with the no.count variable directive.
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Standard
+\align left \pextra_type 1 \pextra_width 5mm
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+end{document}
+\size tiny 
+
+\newline 
+
+\layout Standard
+\noindent \align left 
+This LaTeX code ends it all.
+\layout Standard
+
+Now the template-file can processed with 
+\emph on 
+tpage to create the Latex-file:
+\layout Standard
+\align left \pextra_type 1 \pextra_widthp 15
+
+tpage breeder2.tpl > breeders2.tex
+\layout Standard
+
+A Latex run produces the following table.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset Figure size 208 177
+file report_a1.eps
+width 4 70.00
+flags 9
+
+\end_inset 
+
+
+\layout Subsection*
+
+Example 2: Age structure of sires and dams in years at birth of their progeny
+\layout Standard
+
+This template is more complicated and uses the possibility to pass variables
+ from a perl program to the template-file.
+ The program 
+\emph on 
+hashtable
+\emph default 
+ can do this.
+ For a list of options type: 
+\layout Standard
+
+
+\emph on 
+hashtable --help
+\newline 
+
+\emph default 
+The program 
+\emph on 
+hashtable
+\emph default 
+ reads the data from the database, stores it in a hash-variable 'table',
+ creates a new template object and processes the object.
+\layout Standard
+
+Assume 
+\emph on 
+hashtable
+\emph default 
+ creates a hash from the retrieved data from the following sql-statement:
+\layout Verse
+
+
+\family typewriter 
+\size footnotesize 
+SELECT breed, year, parent, age, count(id_nr) FROM tmp1_ages_born 
+\newline 
+GROUP BY breed, year, age, parent;
+\layout Standard
+
+The table layout should look like this:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset Figure size 297 163
+file report.2.eps
+width 4 100.00
+flags 9
+
+\end_inset 
+
+
+\layout Standard
+
+Now let's have a look at the template-file 'report.2.tpl' from the first APIIS
+ report ($APIIS_HOME/apiis/reports/1/report.2.tpl).
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[%#
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ report.2.tpl
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ Template file of table 1.2
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ Usage:\SpecialChar ~
+ hashtable -i report.2.tpl
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ $Id: template.lyx,v 1.3 2004/02/10 07:50:34 heli Exp $
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+%]
+\layout Standard
+
+This lines are only comment 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% IF HEADER %][% INSERT $HEADER %][% END %]
+\layout Standard
+
+If a header is specified (-H) and the file exist, it will be inserted here.
+ This directive is usefull to insert a Latex header where the document class,
+ pagestyle etc.
+ is defined.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+%%%% here you can insert a table description %%%%
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% USE DBI('DBI:Pg:dbname=pig_slo;host=rauma',) %]
+\layout Standard
+
+The USE DBI directive connects to the database.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH c0 = table.keys.sort %][%#\SpecialChar ~
+\SpecialChar ~
+ breed %]
+\layout Standard
+
+This loop will iterate through all keys of breeds.
+ 'c0' is a template variable and is set to each key of breed one by one.
+ 
+\newline 
+The Latex table definition is inside this loop - therefore a table for each
+ breed will be processed to the output-file.
+ 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% SI = 0
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+ DA = 0 %]
+\layout Standard
+
+'SI' and 'DA' are template variables initialized to zero.
+ 'SI' counts the number of age-classes for sires and 'DA' counts the number
+ of age-classes for dams.
+ For different breeds there maybe different numbers of age-classes.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+begin{table}[h]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+centering{
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+caption{[% title %] ([% c0 %])}
+\layout Standard
+
+Pure Latex statements.
+ If a title is given to 
+\emph on 
+hashtable
+\emph default 
+ (option -t), the title and breed (variable c0) will be entered into the
+ List-of-tables.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+begin{tabular}{ |c|
+\layout Standard
+
+Now the Latex tabular statement will determine the number of columns.
+ The first column is for the years.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH no = DBI.query("select distinct age from tmp1_ages_born where
+ parent='sire' and breed='$c0' order by age") %][% tabalign %] | [% SI =
+ SI + 1 %][% END %] |
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH no = DBI.query("select distinct age from tmp1_ages_born where
+ parent='dam'and breed='$c0' order by age") %][% tabalign %] | [% DA = DA
+ + 1 %][% END %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+}
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline 
+\layout Standard
+
+For each age class for sires and each age class for dams a column is specified.
+ If an alignment is given to 
+\emph on 
+hashtable
+\emph default 
+ (option -A), the template variable 'tabalign' is substituted by this value
+ - otherwise by the default value 'r' (right).
+ The values of SI and DA will be incremented.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+Year& 
+\backslash 
+multicolumn{[% SI + DA %]}{|c|}{{Age in years at birth of progeny}
+\backslash 
+
+\backslash 
+ 
+\backslash 
+hline
+\layout Standard
+
+Here is the first table row specified.
+ The text 'Age in years ...' spans SI+DA columns.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+& 
+\backslash 
+multicolumn{[% SI %]}{|c||}{sires} & 
+\backslash 
+multicolumn{[% DA %]}{|c|}{dams} 
+\backslash 
+
+\backslash 
+ 
+\backslash 
+hline
+\layout Standard
+
+Definition of the second row.
+ The 'sires' spans SI columns and the 'dams' DA.
+ 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH A = DBI.query("select distinct age from tmp1_ages_born where parent='s
+ire' and breed='$c0' order by age") %]&[% A.age == 0 ? '<1' : A.age %][% END
+ %] 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH A = DBI.query("select distinct age from tmp1_ages_born where parent='d
+am' and breed='$c0' order by age") %]&[% A.age == 0 ? '<1' : A.age %][% END
+ %] 
+\backslash 
+
+\backslash 
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline
+\layout Standard
+
+Third row: each age class for sire and dams.
+ Age class with value '0' will be substituted by '<1'
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH c1 = table.$c0.keys.sort %][%#\SpecialChar ~
+\SpecialChar ~
+ Year %]
+\layout Standard
+
+Now it's time for the data: For each year a row is printed out.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% c1 %] 
+\layout Standard
+
+Print out the year to the first column.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH A = DBI.query("select distinct age from tmp1_ages_born where parent='s
+ire' and breed='$c0' order by age") %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+& [% c2 = 'sire\SpecialChar ~
+\SpecialChar ~
+ ' %]
+\layout Standard
+
+Next column (&).
+ Iterative through all ages classes.
+\newline 
+Set the parent key to 'sire'.
+ It is not possible to loop over all parents, because: 
+\layout Itemize
+
+It is required that the sire is printed out first and then the dams.
+ 
+\layout Itemize
+
+The order of the keys of a hash is either undefined or lexically sorted.
+ Both do not fulfil the required placing order.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% IF table.$c0.$c1.$c2.${A.age} %][% table.$c0.$c1.$c2.${A.age} %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+[% ELSE %]--[% END %] 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\layout Standard
+
+If a value for this keys (breed.year.sire.age) is defined, this is printed
+ out otherwise a '--'
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% FOREACH B = DBI.query("select distinct age from tmp1_ages_born where parent='d
+am' and breed='$c0' order by age") %] [%# age %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+& [% c2 = 'dam\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ ' %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% IF table.$c0.$c1.$c2.${B.age} %][% table.$c0.$c1.$c2.${B.age} %]
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+[% ELSE %]--[% END %] 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\layout Standard
+
+The same procedure for the dams.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+
+\backslash 
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\layout Standard
+
+Next row (
+\backslash 
+
+\backslash 
+ = newline).
+ 
+\newline 
+The loop over all year-keys ends here with the END-directive.
+ Now a new loop will be performed with the next year.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+hline 
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+end{tabular}
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+}
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+
+\backslash 
+end{table}
+\layout Standard
+
+If all loops are done, the table will end with a horizontal line.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% END %]
+\layout Standard
+
+The end of the loop over all breeds.
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+\SpecialChar ~
+
+\layout Quotation
+
+
+\family typewriter 
+\size scriptsize 
+[% IF FOOTER %][% INSERT $FOOTER %][% END %]
+\layout Standard
+
+If a footer is specified (-F) and the file exist, it will be inserted here.
+ The footer contains at least the Latex '
+\backslash 
+end{document}' directive.
+\newline 
+
+\newline 
+This template 
+\emph on 
+report.2.tpl
+\emph default 
+ can be processed with the command:
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+hashtable -i report.2.tpl -S 'SELECT breed, year ,parent, age, count(id_nr)
+ from tmp1_ages_born group by breed, year, age, parent' -d pigs_slo -h rauma
+ -t 'Number of sires and dams in reproduction by age s tructure' -o report.2.tex
+ -A 'c'
+\the_end

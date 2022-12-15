@@ -1,0 +1,86 @@
+\chapter{Synchronization of Database Content}
+\section{Database structure}
+
+Here are described all elements of the database structure that are
+related or dedicated to the synchronization process.
+
+
+\subsection{Additional fields}
+
+In each table there are three meta-fields that are related to the
+synchronization: \textbf{{}``guid}'', \textbf{{}``owner''} and
+\textbf{{}``version''}. These fields are set automatically by the
+system and contain respectively the unique record number, the record
+owner (i.e. in EFABIS this is the node name) and the record version
+number. 
+
+There is also an {}``ordinary'' boolean field in each table called
+{}``\textbf{synch}'', that is set by user and that determines if
+the record is targeted for synchronization. This field is required,
+because there is no generic way to distinguish between records from
+one and the same table, that have to be synchronized and that do not.
+
+
+\subsection{Additional tables}
+
+There are three {}``system'' tables used explicitly for synchronization
+purposes: {}``\textbf{nodes}'', {}``\textbf{sources}'' and {}``\textbf{targets}''.
+These tables describe all nodes in the system and the data flow from
+one node to another.
+
+\begin{itemize}
+\item nodes - contains all node names and IP addresses
+\begin{verbatim}
+CREATE TABLE nodes (
+   guid              int4,       -- global identifier
+   nodename          text,       -- node name
+   address           text,       -- node ip address
+   last_change_dt    timestamp,  -- Date of last change, automatic timestamp
+   last_change_user  text,       -- User who did the last change
+   dirty             bool,       -- report errors from check_integrity
+   chk_lvl           int2,       -- check level
+   owner             text,       -- record class
+   version           int4,       -- version
+   synch             bool        -- is record targeted for synchronization
+);
+CREATE UNIQUE INDEX uidx_nodes_1 ON nodes ( guid );
+\end{verbatim} 
+\item sources - contains information about the data elements this node
+expects from the others
+\begin{verbatim}
+CREATE TABLE sources (
+   guid              int4,       -- global identifier
+   source            text,       -- source node
+   tablename         text,       -- table name
+   class             text,       -- owner node
+   columnnames       text,       -- columns
+   last_change_dt    timestamp,  -- Date of last change, automatic timestamp
+   last_change_user  text,       -- User who did the last change
+   dirty             bool,       -- report errors from check_integrity
+   chk_lvl           int2,       -- check level
+   owner             text,       -- record class
+   version           int4,       -- version
+   synch             bool        -- is record targeted for synchronization
+);
+CREATE UNIQUE INDEX uidx_sources_1 ON sources ( guid );
+\end{verbatim} 
+\item targets - contains information about the data elements this node distributes
+to others
+\begin{verbatim}
+CREATE TABLE targets (
+   guid              int4,       -- global identifier
+   target            text,       -- target node
+   tablename         text,       -- table name
+   class             text,       -- owner node
+   columnnames       text,       -- columns
+   last_change_dt    timestamp,  -- Date of last change, automatic timestamp
+   last_change_user  text,       -- User who did the last change
+   dirty             bool,       -- report errors from check_integrity
+   chk_lvl           int2,       -- check level
+   owner             text,       -- record class
+   version           int4,       -- version
+   synch             bool        -- is record targeted for synchronization
+);
+CREATE UNIQUE INDEX uidx_targets_1 ON targets ( guid );
+\end{verbatim} 
+\end{itemize}

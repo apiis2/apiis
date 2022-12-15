@@ -1,0 +1,181 @@
+\chapter{Access Rights}
+\section{Access control for the launching software}
+If user wants to log-in to the APIIS system (via APIIS shell, WWW or just run some program) he has to use the login name and the password which are specified for his account. If his login and the password are proper then the user object is created. This object contains all user data which are stored in the database and is kept until the user session will be closed. After this the authentication object (Auth) has to be build (the programmers have to introduce this method to their applications by self). This can done by the join\_auth method (Init.pm) where the user login is put as a parameter. In the next step the proper method of this object is called:
+\begin{verbatim}
+$apiis->Auth->os_actions('apiish') - for the APIIS schell
+$apiis->Auth->os_actions('www') - for the www interface
+\end{verbatim}
+The method returns list of the all actions which are allowed for the user in defined category ('apiish' or 'www'). Received actions are incorporated into the graphical structure. If the user access rights are not defined for the category then the error message will be returned. 
+
+Presented method can be also run without any parameter:
+\begin{verbatim}
+$apiis->Auth->os_actions
+\end{verbatim}
+and then we get the list of all actions allowed for the user.\\
+Other methods implemented for the Auth object:
+\begin{verbatim}
+$apiis->Auth->print_os_actions 
+ - prints list of the tasks to which user has access rights
+$apiis->Auth->types_of_actions 
+ - returns all categories allowed for the user
+$apiis->Auth->check_os_action('access_control.pl','program') 
+ - checks user access rights for the single action
+\end{verbatim}
+
+The example of usage this kind of access right is presented in the access\_control.p script 
+
+\section{Access control for the database and the content of the database}
+
+The authorisation process for the insert, update and delete statements is called as a method of the record object.
+\begin{verbatim}
+$record_object->auth
+\end{verbatim}
+When the record object begets the proper SQL action then the presented method is executed as a first. The authentication method receives user access rights form the database and then checks the SQL statement against them. If the access right are true then the meta\_user takes control over the SQL query and send it into the database. The algorithm of checking access rights for the proper SQL statement is pictured in the Developer Documentation (see Access Control - 'Method for the insert, update and delete statements').\\
+
+The process of verifying access rights for the select statements is accomplished via user views. There is a special method of database object 'user\_sql' which take as a parameter select statement. The method connect into the database with the user login and enforces the query on the user views. The data which are allowed for the user are returned back. You can read more about views in the Developer Documentation (see Access Control - 'Method for the public select statements').
+
+\section{Defining and managing users and roles}
+
+There are following possibilities to manage users and roles in the system:
+\begin{itemize}
+\item through the script executed from the command line (access\_control.pl)
+\item through the web interface (Access Rights Manager)
+\end{itemize} 
+
+Managing of the access rights through the command line script is a little tricky and it requires more manual work. This way give you a possibility to:
+\begin{itemize}
+\item add and delete users
+\item add and delete roles 
+\item grant, revoke roles to and from the user
+\item print information about users and roles
+\item create system of view under user schema
+\item change the user password
+\end{itemize} 
+The implementation of creating new roles is based on the ASCII text file (Roles.conf) from which the information about new roles is taken. The manual work here is the mostly related into this ASCII file where the administrator has to define roles and policies individually (all pieces of their definition), and then he has to verify this definitions (f.e. checking against duplicates).\\
+\\
+The second way, through the web interface, is simpler and more intuitive. Most of definition can be done automatically on the basis of the existing information (f.e. drop down list with the existing values) and the process of the data validation is mechanical. The one objection is, that this solution requires interference in the operating system configuration (setting Apache web server and separate virtual host).
+
+\subsection{Command line script - access\_control.pl}
+The access\_control.pl script is designed for the administrator and it is secured by the software access rights. If somebody wants to execute any action with it then his rights against the action are checked. Access rights for this necessity are inserted in the 'runall' process. There is also possibility to grant rights to this script for another person when the database is established.\\
+The access\_control.pl is not so flexible as the interface but it give a chance to manage access rights too. It collaborates with the configuration file (Roles.conf) but only to bring through the operations of defining new role. All other actions like checking of the access rights, adding/deleting new user, printing information about users, roles are independent from this file. In these cases the information is taken directly from the database. \\
+The Roles.conf file is placed in the /etc directory of the local project. The structure of this file consists of the following sections:
+\begin{itemize}
+\item database roles section (database tasks) 
+\item system roles section (system tasks)
+\item system policies section
+\item database policies section
+\subitem- action on the database tables
+\subitem- policy definitions
+\end{itemize}
+
+\textbf{} \\
+\underline{\textbf{Database roles section:}}
+This section contains definitions of roles used to control database access rights. Each role definition consist of the following elements:
+\begin{itemize}
+\item role name - this name identify the role in the system (it must be unique)
+\item short name - short name of the role
+\item long name - long name of the role
+\item description - additional role description
+\item role type -  the type of the role, which have to be defined as DBT (Database Task) or ST (System Task). In this section all roles should be defined as a DBT (if you want to keep clear order in the Roles.conf file)
+\item policies - this element keeps the information about policies ascribed to the role. The definition is dependant on the type of the role. If the role is defined as ST then the policies have to be taken from the system policies section, otherwise the policies are collected from the database policies section (like is in this case).
+\end{itemize}
+Example of the role definition:
+
+\begin{verbatim}
+[DB_ADMINISTRATOR]
+SHORT_NAME  = db admin role 
+LONG_NAME   = database administrator role
+DESCRIPTION = you can do whatever you want with the database content
+ROLE_TYPE   = DBT
+POLICIES    = 1,2,3,4,5,6
+\end{verbatim} 
+
+\textbf{} \\
+\underline{\textbf{System roles section:}}
+The structure for this section is almost the same as for the database role section and the difference is in the role type only. The role types are determined by the ST variable and this means that the policies come from the database policies section.\\
+\linebreak 
+Example of the role definition:
+
+\begin{verbatim}
+[SYS_ADMINISTRATOR]
+SHORT_NAME  = sys admin role 
+LONG_NAME   = system administrator role
+DESCRIPTION = you can run each action in the system
+ROLE_TYPE   = ST
+POLICIES    = 1,2,3,4
+\end{verbatim} 
+
+\textbf{} \\
+\underline{\textbf{System policies section:}}
+ Every system policy definition consists of the task name and the category name of this task. The category names are reserved, this means hardcoded. There are 5 following categories defined: program, form, report, subroutine, www, action. 
+This list can be expended by edition of the AccessControl.pm module (lib/Apiis/Auth/ - line 484).\\
+
+Example of the system policy definitions:
+
+\begin{verbatim}
+[ST_POLICIES]
+1=runall_ar.pl|program
+2=access_control.pl|program
+3=ginfo|www
+4=forms|www
+5=reports|www
+6=info|www
+7=tools|www
+8=logout|www
+9=show info about users or roles|action
+10=create public views|action
+11=add new user|action
+12=add new role|action
+13=grant role to the user|action
+14=delete role|action
+15=delete user|action
+16=revoke role from the user|action
+\end{verbatim} 
+
+\textbf{} \\
+\underline{\textbf{Database policies section:}}
+This is the section where the database policies are fixed. Database policy holds SQL action, table name, table columns and the class divided on the main class and the subclass. All tables from the modelfile and the actions on them should be specified first. This can be done in the 'actions on the database tables' subsection. After this the sets of the classes must be determined and then the 'actions on database tables' have to be assigned to the classes. This job is done in the 'policy definitions' subsection. \\
+
+Actions on the database tables:
+\begin{verbatim}
+Syntax: the next number = |action|table|column1,column2,column3 ,...
+
+1=insert|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch
+2=update|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch
+3=select|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch
+4=delete|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch
+5=insert|breed|oid,breed_id,country_id,tax_id
+\end{verbatim} 
+
+Policy definitions:
+\begin{verbatim}
+Syntax: the next number = |class|subclass|actions on the database tables
+
+1=Europe|PL|1,2,3,4,5
+2=Europe|DE|3,4,5
+3=Europe|Europe|1,5
+4=Germany|Mariensee|1,2,3,4,5
+\end{verbatim} 
+If the class name and the subclass name then the access rights are granted to the all subclasses which belong to the class.\\
+The numbers defined in the role (element POLICIES) are taken from the 'policy definitions' subsection.\\
+
+The Roles.conf file keeps the initial definitions of all roles which we want to add to the system. The role must be defined in this file first and then it can by added via access\_control.pl script.\
+The Roles.conf setup is used also to defining initial access rights in the 'runall process'.
+The difference is, that in the 'runall process' special subroutine is ran - not the access\_control.pl script. The subroutine is called with the following parameters:
+\begin{itemize}
+\item user creator name - the user name which start runall process (his name is used in the metafields)
+\item role name - the role names (as array) specified in the Roles.conf (the name form the square brackets)
+\item user login - the administrator login (usually this name is convergent with the user creator name because only the administrator can run the 'runall process')
+\item first and second name
+\item language 
+\item password  
+\item subclass (user\_node) - this subclass will be used as a identifier of user in the checking of access rights process
+\end{itemize} 
+This method should be used only to create initial access right for the administrator. The password of administrator should be removed form the runall.pl script when the process is finished.
+
+If you want to see all possibilities which give you the access\_control.pl script then you have to run it with the '-h' parameter.
+
+\subsection{Web interface - Access Rights Manager}
+
+
+

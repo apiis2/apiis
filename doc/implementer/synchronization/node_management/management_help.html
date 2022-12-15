@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+
+<HTML>
+<HEAD>
+<TITLE>Node management system</TITLE>
+<META NAME="description" CONTENT="Node management system">
+<META NAME="keywords" CONTENT="management_help">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="management_help.css">
+
+</HEAD>
+
+<BODY bgcolor=#BDC8FF>
+<A NAME="first"></A>
+
+
+
+<H1 ALIGN="CENTER"><I>Node Management System</I></H1>
+
+<OL>
+<LI><A href="#introduction">Introduction</A></LI>
+<LI><A href="#how_to_start">How to start the synchronization</A></LI>
+<LI><A href="#managing_nodes">Managing node information</A></LI>
+<LI><A href="#managing_sources">Managing sources information</A></LI>
+<LI><A href="#managing_targets">Managing targets information</A></LI>
+<LI><A href="#managing_server">Managing the server</A></LI>
+<LI><A href="#getting_help">Getting help</A></LI>
+</OL>
+
+
+
+<H1><A NAME="introduction">
+1 Introduction</A>
+</H1>
+
+<P>
+The node management system is written as a frontend of the synchronization
+process in APIIS-based network. This network consist of APIIS servers
+called nodes. Each node has unique name and IP address. This information is stored 
+in the database of each node in table "nodes". How to manage this table you will find 
+<A href="#managing_nodes">here</A>. The next step is to determine the data elements - 
+what information you receive and what information you supply to the other nodes. This is done 
+by managing  tables <A href="#managing_sources">sources</A> and <A href="#managing_targets">targets</A>.
+Usually this these setting are done in the beginning when a node is established and only occasional 
+changes may oocure at a later stage.
+</P>
+<P>
+The synchronization process is client-server type. On the source node server daemon is listening for
+incoming connections. The initiator of such a connection is the target mode where the client is started.
+So if you want to give the others the opportunity to get your data you have to start the server daemon on 
+your node. How to start/stop the server you can find <A href="#managing_server">here</A>.<br>
+If you want to get data from other nodes then you have to start the client or simply 
+<A href="#how_to_start">start the synchronization</A>(and hope that the other side is running the server)
+
+</P>
+
+<H1><A NAME="how_to_start">
+2 How to start the synchronization</A>
+</H1>
+
+
+The synchronization process is maintained via the main window:
+
+
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="synch.jpg"
+ ALT="Image synch.jpg">
+</DIV>
+
+
+First you have to choose the server node from the drop-down list <B>Synchronize
+with node.</B> Then from the menu bar choose: <B>Synchronization&gt;Start.</B>
+Then you can monitor the process via the progress bar and the <B>System
+information</B> field.
+
+
+
+<H1><A NAME="managing_nodes">
+3 Managing nodes information</A>
+</H1>
+
+
+To open the nodes namagement window choose from the menu bar <B>Settings&gt;Nodes.</B>
+The window should look like this:
+
+
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="nodes.jpg"
+ ALT="Image nodes.jpg">
+</DIV>
+
+
+The list on the left side containes the names and IP addresses of
+all nodes in the network.
+
+
+
+<H2><A NAME="adding_node">
+3.1 Adding new node</A>
+</H2>
+
+
+To add new node click the <B>New</B> button and enter node name and node
+IP address in the responding fields. To save the information to the
+database click the <B>Save</B>  button.
+
+
+
+<H2><A NAME="editing_node">
+3.2 Editing node </A>
+</H2>
+
+
+To edit the information about certain node first select the node from
+the list. Then you will see the node name and the IP address also
+in the text fields where you can edit the information. To save the
+changes click <B>Save</B>.
+
+
+
+<H2><A NAME="deleting_node">
+3.3 Deleting node</A>
+</H2>
+
+
+To delete a node simply select it from the list and click the <B>Delete</B> button.
+
+
+
+<H1><A NAME="managing_sources">
+4 Managing sources information</A>
+</H1>
+
+To describe what information you want to receive from the others you have to start 
+<B>Settings&gt;Sources</B>. 
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="sources.jpg"
+ ALT="Image sources.jpg">
+</DIV>
+Then choose the source, the table name and the class of 
+the records you want from the responding drop-down lists.
+The classification of the records in EFABIS is made on the base of their ownership by respective country. Therefore the class list is 
+very similar to the node list, so be careful.
+<P>When the source, table and class are choosed you 
+have to decide which columns from this table you want. You can select one or more column from 
+the list on the right. To select multiply consecutive columns select the first one, then press and 
+hold the <I>Shift</I> key and select the last one from the sequense you want. To select multiply 
+non-consecutive columns - select the first, press and hold the <I>Control</I> key and select one 
+by one the other columns. To deselect a column press and hold the <I>Control</I> key and click on
+this column.
+</P>
+ <P>To store the changes click the <B>Update</B> button.</P>
+<P>On the example above we want to receive from node EAAP from table breeds_horns the data from 
+columns breed_id, creation_dt, creation_user, end_user, female, but only from those records that
+are owned by Bulgaria.</P>
+
+<H1><A NAME="managing_targets">
+5 Managing targets information</A>
+</H1>
+The management of the information we supply to the other is similar to the one with the sources.
+You have to start  <B>Settings&gt;Targets</B> and choose target node, table name, class and columns.
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="targets.jpg"
+ ALT="Image targets.jpg">
+</DIV>
+
+On this example we will sent to EAAP the German data from the columns breed_id, creation_dt, creation_user, 
+end_user, female in table breeds_horns. 
+
+<H1><A NAME="managing_server">
+6 Managing the server</A>
+</H1>
+Here you can start/stop the server daemon and verify the server status
+<H2><A NAME="starting">
+6.1 Starting</A>
+</H2>
+To start server daemon on the current node click <B>Server&gt;Start.</B>
+<H2><A NAME="stopping">
+6.2 Stopping</A>
+</H2>
+To stop click <B>Server&gt;Stop.</B>
+<H2><A NAME="Status">
+6.3 Status</A>
+</H2>
+To check the status of the server on the certain node you have to select the node from the drop-down list <B>Synchronize with node</B> and choose from the menu  <B>Server&gt;Ping.</B>
+The status message will appear in <B>Server status</B> field. There are three possibilities:
+<ul>
+  <li> <B>FREE</B> - server is up and ready for synchronization </li>
+  <li> <B>BUSY</B> - server is up, but is currently in synchronization with other client </li>
+  <li> <B>Not responding</B> - client cannot establish connection with the server </li>
+</ul>
+
+<H1><A NAME="getting_help">
+7 Getting help</A>
+</H1>
+For more help you can email me: <A href="mailto:duchev@tzv.fal.de">duchev@tzv.fal.de</A>  
+
+<div align="center"><P><A href=#first><h4>Up</h4></A></div></P>
+<P></P>
+<BR></BR>
+
+<ADDRESS>
+Zhivko Ivanov Duchev
+02-09-2004
+</ADDRESS>
+<BR><A href="management_help_bg.html">Българска версия</A></BR>
+</BODY>
+</HTML>

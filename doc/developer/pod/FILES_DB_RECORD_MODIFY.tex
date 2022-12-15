@@ -1,0 +1,126 @@
+\subsubsection{CommaToDot\label{CommaToDot}\index{CommaToDot}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{CommaToDot_SYNOPSIS}\index{CommaToDot!SYNOPSIS}}
+
+
+CommaToDot substitutes commas with dots.
+
+\paragraph*{DESCRIPTION\label{CommaToDot_DESCRIPTION}\index{CommaToDot!DESCRIPTION}}
+
+
+In some countries, e.g. Germany, often the comma is used as the decimal
+separator of a number. The method CommaToDot simply changes the comma to
+dot to satisfy the database.
+CommaToDot() is usually used as a MODIFY-rule in the model file.
+
+\subsubsection{ConvertBool\label{ConvertBool}\index{ConvertBool}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{ConvertBool_SYNOPSIS}\index{ConvertBool!SYNOPSIS}}
+
+
+\textbf{ConvertBool} converts YyJjNn to the boolean values 1 or 0.
+
+\paragraph*{DESCRIPTION\label{ConvertBool_DESCRIPTION}\index{ConvertBool!DESCRIPTION}}
+
+
+\textbf{ConvertBool} is usually used as a MODIFY-rule in the model file.
+
+\subsubsection{DotToColon\label{DotToColon}\index{DotToColon}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{DotToColon_SYNOPSIS}\index{DotToColon!SYNOPSIS}}
+
+
+DotToColon substitutes dots with colons.
+
+\paragraph*{DESCRIPTION\label{DotToColon_DESCRIPTION}\index{DotToColon!DESCRIPTION}}
+
+
+\textbf{DotToColon} is useful for fast typing of date/time values on numerical keyboards.
+
+
+
+Example:
+   16.34.00 -$>$  16:34:00
+
+
+
+DotToColon() is usually used as a MODIFY-rule in the model file.
+
+\subsubsection{LowerCase\label{LowerCase}\index{LowerCase}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{LowerCase_SYNOPSIS}\index{LowerCase!SYNOPSIS}}
+
+
+\textbf{LowerCase()} converts the data to lower case
+
+\paragraph*{DESCRIPTION
+It is usually used as a MODIFY-rule in the model file.\label{LowerCase_DESCRIPTION_It_is_usually_used_as_a_MODIFY-rule_in_the_model_file_}\index{LowerCase!DESCRIPTION
+It is usually used as a MODIFY-rule in the model file.}}
+\paragraph*{AUTHORS\label{LowerCase_AUTHORS}\index{LowerCase!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{SetNow\label{SetNow}\index{SetNow}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{SetNow_SYNOPSIS}\index{SetNow!SYNOPSIS}}
+
+
+SetNow() returns the current date and time.
+
+\paragraph*{DESCRIPTION\label{SetNow_DESCRIPTION}\index{SetNow!DESCRIPTION}}
+
+
+SetNow() returns the current date and time. It is usually used as a
+MODIFY-rule in the model file. If you need the current time outside the
+model file, better use \$apiis-$>$now().
+
+\subsubsection{SetUser\label{SetUser}\index{SetUser}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{SetUser_SYNOPSIS}\index{SetUser!SYNOPSIS}}
+
+
+SetUser() returns the current user name.
+
+\paragraph*{DESCRIPTION\label{SetUser_DESCRIPTION}\index{SetUser!DESCRIPTION}}
+
+
+SetUser() sets the passed column extdata to the current user name. It is
+usually used as a MODIFY-rule in the model file.
+
+\subsubsection{UpperCase\label{UpperCase}\index{UpperCase}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{UpperCase_SYNOPSIS}\index{UpperCase!SYNOPSIS}}
+
+
+\textbf{UpperCase()} converts the data to upper case
+
+\paragraph*{DESCRIPTION
+It is usually used as a MODIFY-rule in the model file.\label{UpperCase_DESCRIPTION_It_is_usually_used_as_a_MODIFY-rule_in_the_model_file_}\index{UpperCase!DESCRIPTION
+It is usually used as a MODIFY-rule in the model file.}}
+\paragraph*{AUTHORS\label{UpperCase_AUTHORS}\index{UpperCase!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+

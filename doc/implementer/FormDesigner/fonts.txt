@@ -1,0 +1,83 @@
+Additional font specification in a form file
+
+MS Windows does not know about X fonts, therefore it is necessary to
+specify fonts for other operating systems. There are two types of
+font specifications:
+
+1. Operating System Font: 
+    All available fonts on the system are useable as long as you
+    run the form in this Operating System. The disadvantage of this
+    kind of specification is, the form file is not independent from
+    the operating system.
+    
+    In the Unix X Window System you can get a list of Unix fonts
+    by running the command:
+            
+                     xlsfonts
+    
+    Example to specify a X Window font:
+       NORMALFONT=-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*
+    
+       
+    In MS Windows you can see the installed fonts: Click on the Start menu
+    and select Settings -> Control Panel. Once the Control Panel appears,
+    double-click Fonts.
+    
+    Example to specify a MS Windows font:
+       NORMALFONT=Arial 12 normal
+       LABELFONT={Times New Roman} 10 normal
+       TITLEFONT={Arial Black} 24 bold
+     (Note: for my installed Windows Tk version, it is necessary to specify
+      the font name around with curly braces, if the name consist more
+      then one word)
+
+
+2. Operating System independent font specification:
+
+    Syntax: xFONT=family,size,weight,slant,underline,overstrike
+
+           x = TITLE | NORMAL | LABEL | BUTTON
+    
+    family: The family name can be courier, times, or helvetica.
+            If you specify one of these, the closest match on your system
+	    will be used.
+
+      size: The amount specified for the font size indicates how big you
+            want the font to be.
+	    Positive values: font is sized in points.
+	    Negative values: font is sized in pixel.
+
+	    If a specified font size is not available on the system, the
+	    system substitutes another font size, or even a different font
+	    altogether.
+
+    weight: normal | bold
+            Determines the thickness of the font.
+
+     slant: roman | italic
+            roman means the font is upright.
+	    italic will tilt the font to the right slightly.
+
+
+ underline: 0 | 1
+            If you want the characters to be underlined, specify 1.
+
+overstrike: 0 | 1
+            A line is drawn through the text when the value is 1.
+    
+    Examples:
+       TITLEFONT=courier,18,bold,roman,0,0
+       NORMALFONT=helvetica,8,normal,italic,0,0
+       LABELFONT=times,12,bold,roman,1,0
+
+    
+
+In GENERAL section the parameters TITLEFONT, NORMALFONT, LABELFONT
+and BUTTONFONT are now optional. It is not necessary to specify the fonts.
+The default fonts are:
+
+    TITLEFONT=helvetica,16,bold,roman,0,0
+    NORMALFONT=helvetica,10,normal,roman,0,0
+    LABELFONT=helvetica,10,bold,roman,0,0
+    BUTTONFONT=helvetica,8,normal,roman,0,0
+

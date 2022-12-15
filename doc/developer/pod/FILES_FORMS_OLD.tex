@@ -1,0 +1,24 @@
+\subsubsection*{popup\label{popup}\index{popup}}
+
+
+\textbf{popup} opens a popup window with some informational or error message
+and waits for a notification by the user.
+
+
+
+\textbf{popup} is a slightly changed derivat from Hartmut's yaform version.
+
+
+
+Usage:
+
+\begin{verbatim}
+   popup(
+       {   toplevel => $top,
+           title    => $title,
+           bitmap   => $bitmap,
+           text     => $text,
+           buttons  => $buttons_ref,
+       }
+   );
+\end{verbatim}

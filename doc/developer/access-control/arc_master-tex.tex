@@ -1,0 +1,63 @@
+\documentclass[10pt,a4paper]{report}
+%% \documentclass[10pt,a4paper,landscape]{book}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx,rotating,graphicx,array}
+\usepackage{verbatim,makeidx}
+\usepackage{wasysym}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\newcommand{\apiis}{\mbox{\textsc{Apiis} }}
+\tolerance=5000
+%%% HEAD %%%
+\usepackage{fancyhdr}
+\headheight     0.0in
+\topmargin      0.0in
+\oddsidemargin 0.0in
+\textheight=9.2in
+\textwidth=6.3in
+\headsep 0.4in
+\pagestyle{fancy}
+%\renewcommand{\subsectionmark}[1]{\markright{\thesubsection.\ #1}}
+%\newcommand{\newhead}[1]{
+%                         \fancyhead[RO,LE]{{#1}\hfill \today}
+	                  %\fancyfoot[LE,RO]{\thepage}
+%	                 }
+\fancyhf{} %Clears all header and footer fields, in preparation.
+\fancyhead[LE,RO]{\textbf{\scshape{APIIS - Access Control System}\hfill \thepage}} %Displays the page number in bold in the header,
+%%% END HEAD %%%
+
+\makeindex
+%%% TITLE PAGE %%%
+\begin{document}
+\thispagestyle{empty} 
+\begin{center}
+\includegraphics[scale=.7,]{padlock.ps}
+
+\vspace{2cm}
+\begin{Huge}\textbf{APIIS}\end{Huge}
+\vspace{0.3cm}
+
+\vspace{0.3cm}
+\begin{Huge}\textbf{ Access Control System}\end{Huge}
+\vspace{1cm}
+
+\begin{Large}
+\textbf{ developed by}
+\vspace{0.2cm}
+
+\textbf{Marek Imialek, 
+        Eildert Groeneveld\\}
+\end{Large}
+\vspace{10cm}
+\begin{large}\textbf{Mariensee, 07.09.2005}\end{large}
+\end{center}
+%%% END TITLE PAGE %%%
+
+\tableofcontents
+\input{./access-control.tex}
+%\printindex
+\end{document}

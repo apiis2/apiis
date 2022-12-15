@@ -1,0 +1,89 @@
+\subsubsection{SYNOPSIS\label{SYNOPSIS}\index{SYNOPSIS}}
+\begin{verbatim}
+    $node = Apiis::DataBase::Sync::Node->new(
+                                             nodename=>'Mariensee',
+                                             class_column=>'owner'
+                                             );
+\end{verbatim}
+
+
+This is the module for creating an object that handles the node information . 
+=head1 DESCRIPTION
+
+
+
+Provides methods to create new server or client of the synchronization process, reading DataElementDescriptions, reading data state, comparing states etc.
+
+
+
+Public and internal methods are:
+
+\subsubsection{PUBLIC METHODS\label{PUBLIC_METHODS}\index{PUBLIC METHODS}}
+\paragraph*{new\label{new}\index{new}}
+
+
+- creates new node object
+
+\paragraph*{\_init (internal)\label{_init_internal_}\index{\ init (internal)}}
+
+
+-creates dynamic methods and fill the information about all registered nodes
+
+\paragraph*{create\_client\label{create_client}\index{create\ client}}
+
+
+- creates new Net::EasyTCP client
+Usage: \$node-$>$create\_client(\$server\_host,\$port)
+
+\paragraph*{create\_server\label{create_server}\index{create\ server}}
+
+
+- creates new Net::EasyTCP server
+Usage: \$node-$>$create\_server(\$port)
+
+\paragraph*{read\_DED\label{read_DED}\index{read\ DED}}
+
+
+- reads DataElementDescriptions (table,class,column names) for node \$node\_name and role source or target from the database.
+Usage: \$node-$>$read\_DED(\$node\_name,'source') or  \$node-$>$read\_DED(\$node\_name,'target')
+
+\paragraph*{ip2name\label{ip2name}\index{ip2name}}
+
+
+- converts IP address into name accordingly to the information in 'nodes' table
+Usage : \$node-$>$ip2name(\$nodeip)
+
+\paragraph*{name2ip\label{name2ip}\index{name2ip}}
+
+
+- converts name into IP address accordingly to the information in 'nodes' table
+Usage : \$node-$>$name2ip(\$nodename)
+
+\paragraph*{\_loadnodes (internal)\label{_loadnodes_internal_}\index{\ loadnodes (internal)}}
+
+
+- reads from the database information about all registered nodes
+
+\paragraph*{DED\_state\label{DED_state}\index{DED\ state}}
+
+
+- sets or reads the state of ONE DataElement
+Usage : \$node-$>$DED\_state($\backslash$\%data\_element\_state) or \$node-$>$DED\_state
+
+\paragraph*{compare\_states\label{compare_states}\index{compare\ states}}
+
+
+- compares the internal state in DED\_state with the one passed as a parameter and replaces the version information in the passed hash with merge action info. In case of success returns also reference to the modified hash
+Usage : \$node-$>$compare\_states($\backslash$\%data\_element\_state)
+
+\paragraph*{load\_merge\_element\label{load_merge_element}\index{load\ merge\ element}}
+
+
+- Create SQL statement from the DED and merge element and executes it 
+Usage : \$node-$>$load\_merge\_element(\$DED,\$merge\_element)
+
+\subsubsection{AUTHORS\label{AUTHORS}\index{AUTHORS}}
+
+
+Zhivko Duchev $<$duchev@tzv.fal.de$>$
+

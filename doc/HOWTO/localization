@@ -1,0 +1,120 @@
+##############################################################################
+# $Id: localization,v 1.2 2005/04/01 08:20:41 heli Exp $
+# localization-HOWTO
+##############################################################################
+
+* localization is a long word, starting with an l, ending with an n, and 10
+  characters between those two. :^)
+
+* Use __() to localize your code in Apiis.
+  Example:
+
+     my $msg = __("Fine piece of code");
+
+* Use one language in your code for messages to localize.
+  In Apiis this is English.
+
+* Don't include formatting elements like tabs, newlines, etc. in your
+  l10n-messages. Usually they translate not very well.
+  Example:
+
+     print "\n", __("Another fine piece of code"), "\n";
+
+  If you really want to add some very important formatting elements you also
+  can write it this way:
+
+     my $msg = __("Error");
+     print "!!! >>> $msg <<< !!! %&@*§^¬°\n";
+
+* Don't include variables directly in your string but use the placeholders:
+  Example:
+
+     print __("Error: [_1]", $error_message), "\n";
+
+  The placeholders [_1], [_2], ... get replaced by the variables after the
+  comma. This could also be fixed strings when you want to recycle
+  translated messages several times:
+  Example:
+
+     print __("You violated checkrule [_1]", 'NotNull');
+
+  Although you could easily compose translated strings and variables like
+
+     my $msg = __("files were deleted");
+     print "$i $msg\n";
+
+  it's often better to include the variables into the text with the help of
+  the placeholders. This gives more flexibility for the translators to
+  reorder the message and create typical phrases according to the grammar
+  of each language:
+
+     my $msg = __("[_1] files were deleted", $i);
+
+  A common german translation would then be:
+
+     "Es wurden [_1] Dateien gelöscht"
+
+  The placeholders allow placing the variables according the the need of
+  the language instead of forming messages depending on the english grammatic.
+
+* If you have very long messages for l10n, like in usage infos, just write
+  an expressive, short and unique key into your code and add the real
+  message to the en.mo file in $APIIS_HOME/lib/Apiis/I18N/L10N.
+  This makes it easier to translate.
+  Example:
+
+     # in your code (e.g. mksql):
+     die __("mksql_USAGE_MESSAGE") if $opt_h;    # help
+     
+     # insert into en.mo:
+     #: bin/mksql
+     msgid "mksql_USAGE_MESSAGE"
+     msgstr ""
+     "usage: mksql -f <modelfile> [-tdns]\n"
+     "mksql -h                Help\n"
+     "      -m                show man page\n"
+     "      -v                Version\n"
+     "      -f <modelfile>    Name of model file (required)\n"
+     "      -t <table>        only for table <table>\n"
+     "      -d                delete: DROP-statements are not commented out!\n"
+     "      -n                create no views\n"
+     "      -s                write to STDOUT\n"
+
+   Don't forget to update your usage message in en.mo if you
+   add/remove/change your command line flags.
+
+* The l10n-message must be quoted like every string. If you want additional
+  quotes as part of your message try to avoid maskerading the quotes with
+  backslashes. Better use double and single quotes:
+  Example:
+     
+     print __("No such table '[_1]'", $opt_t);
+
+* The l10n module works nicely with multiline messages but *not* with
+  Perl's string concatenation.
+  Example:
+
+     print __("This multiline
+        message will
+        work fine"), "\n";
+
+     ### wrong:
+     print __("This multiline "
+       . "message will not "
+       . "work"), "!!!\n";
+
+     ### also wrong:
+     print __("This multiline " . "message will not " . "work, too"), "!!!\n";
+
+* Try to create messages, you (or somebody else) can re-use again later.
+
+* Try to use already existing messages. Look at the existing .mo files in
+  $APIIS_HOME/lib/Apiis/I18N/L10N. When did you remember lastly your old
+  friend Grep?
+
+* The Apiis l10n part is based on the Perl module
+  Locale::Maketext::Lexicon, written by Autrijus Tang <autrijus@autrijus.org>.
+  Please have a look at the man pages and the introduction
+  'Web Localization in Perl' at http://www.autrijus.org/webl10n/.
+  Autrijus is also a co-author of the nice RT request tracking tool you
+  might have been in contact with.

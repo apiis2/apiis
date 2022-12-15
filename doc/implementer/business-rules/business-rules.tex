@@ -1,0 +1,277 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ \newenvironment{lyxcode}
+    {\begin{list}{}{
+                           \setlength{\rightmargin}{\leftmargin}
+                                \setlength{\listparindent}{0pt}% needed for
+                                   AMS classes
+                                        \raggedright
+                                             \setlength{\itemsep}{0pt}
+                                     \setlength{\parsep}{0pt}
+                                          \normalfont\ttfamily}%
+                                                 \item[]}
+                                                    {\end{list}}
+
+\chapter{The business and modify rules}
+
+
+\section{The business rules}
+
+The currently implemented business rules are shown in table \ref{tab:business rules}
+on page \pageref{tab:business rules}.
+
+\begin{table}[htbp]
+
+\caption{Implemented Business Rules\label{tab:business rules}\index{business rules!Range}\index{business rules!List}\index{business rules!IsANumber}\index{business rules!NoNumber}\index{business rules!IsAFloat}\index{business rules!Unique}\index{business rules!ForeignKey}\index{business rules!DateDiff}\index{business rules!LastAction}\index{business rules!IsEqual}\index{business rules!ReservedStrings}}
+
+\begin{center}{\small \vspace*{4mm}}\begin{sideways}
+\begin{tabular}{|l|p{100mm}|p{50mm}|}
+\hline 
+\textbf{\small Method}&
+\textbf{\small Description}&
+\textbf{\small Example}\tabularnewline
+\hline
+\hline 
+{\small Range}&
+{\small value has to be within given range}&
+{\small {}``Range 10 33''}\tabularnewline
+\hline
+{\small List}&
+{\small only values from this list are allowed}&
+{\small {}``List LR LW PI DU''}\tabularnewline
+\hline
+{\small NotNull}&
+{\small has to have a value}&
+{\small {}``NotNull''}\tabularnewline
+\hline
+{\small IsANumber}&
+{\small only a number is accepted (5, -.37, +5.3e-3)}&
+{}``IsANumber''\tabularnewline
+\hline
+{\small NoNumber}&
+value must not contain any number &
+{}``NoNumber''\tabularnewline
+\hline
+{\small IsAFloat}&
+{\small value must be a floating point number (+4.3, .27, -0.5)}&
+{}``IsAFloat''\tabularnewline
+\hline
+{\small Unique}&
+{\small the value is a unique key in the current table}&
+{\small {}``Unique''}\tabularnewline
+\hline
+{\small ForeignKey}&
+{\small value has to have an entry in the specified table and column,
+possibly with some additional conditions}&
+{\small \mbox{{}``ForeignKey animal db\_animal'',}}{\small \par}
+
+{\small ''ForeignKey v\_animal db\_animal ext\_sex=1 ext\_breed=DL''}\tabularnewline
+\hline
+{\small DateDiff}&
+{\small the difference between the content of farrowing date and current
+columns of the current record must be with the given range}{\small \par}
+
+{\small DateDiff takes the current value of the record and computes
+the difference to date given in the first parameter (compare\_date).
+If the difference (in days) between the cure and compare\_date is
+in the range given by min\_diff and max\_diff the rule is passed successfully. }{\small \par}
+
+{\small compare\_date can either be a fixed format date like Mar-22-2001,
+a column of the current record or a date in a database table/column
+with the (hardcoded) db\_animal value of the current record. The syntax
+for this format is 'tablename=>columname'. If no compare date comes
+from the database the check is also successfully. }&
+{\small \mbox{{}``DateDiff farrow\_dt 20 56'',}}{\small \par}
+
+{\small \mbox{{}``DateDiff Mar-22-2001 50 90'',}}{\small \par}
+
+{\small \mbox{{}``DateDiff animal=>birth\_dt 1 65''}}\tabularnewline
+\hline
+{\small LastAction}&
+{\small LastAction is a conditional DateDiff depending on the value
+of the last action. For each element of this last action list an allowed
+range (in days) has to be specified.}{\small \par}
+
+{\small If last action was SEL{[}ECTION{]} the range is 20 100, if
+it was AI the range is 18 30}&
+{\small {}``LastAction SEL 30 100 AI 18 30 LITTER 10 34''}\tabularnewline
+\hline
+IsEqual&
+This example is placed in the CHECK attached to column db\_sire e.g.
+in service and tests if the animal ID given is indeed a male. Thus,
+the second parameter (i.e. \$data\_column) takes its value from the
+current column Notice that the constant is specified as external code.&
+IsEqual ( animal db\_animal db\_sex 'M'); \tabularnewline
+\hline
+ReservedStrings&
+{\small ReservedStrings checks if the passed \$date contains one of
+the reserved strings which are defined in pdblrc.}&
+{\small {}``ReservedStrings''}\tabularnewline
+\hline
+\end{tabular}
+\end{sideways}\end{center}
+\end{table}
+
+
+
+\section{The Modify Rules}
+
+Sometimes it is necessary to modify the incoming value before it is
+fed to the business rules. These modify methods are: \textbackslash{}par\textbackslash{}vspace\{4mm\}
+
+\begin{center}\label{encode}\begin{tabular}{|l|p{80mm}|l|}
+\hline 
+\textbf{Method}&
+\textbf{Description}&
+\textbf{Example}\tabularnewline
+\hline
+\hline 
+UpperCase&
+converts all passed date into uppercase letters&
+{}``UpperCase''\tabularnewline
+\hline 
+LowerCase&
+converts all passed date into lowercase letters&
+{}``LowerCase''\tabularnewline
+\hline 
+ConvertBool&
+accepts YyJjNn and converts it to the appropriate boolean expression
+(true/false)&
+{}``ConvertBool''\tabularnewline
+\hline 
+CommaToDot&
+translates all commas , into dots . (mainly used for numerical date)&
+{}``CommaToDot''\tabularnewline
+\hline 
+DotToColon&
+translates all dots . into colons : (useful for fast typing of date/time
+values (16.34.00 => 16:34:00&
+{}``DotToColon''\tabularnewline
+\hline 
+SetNow&
+sets the value to the current time&
+{}``SetNow''\tabularnewline
+\hline
+SetUser&
+sets the value to the user who is running this job&
+{}``SetUser''\tabularnewline
+\hline
+\end{tabular}\end{center}
+
+
+\section{Layering\index{Layering} of Business Rules}
+
+As described above, all business rules are specified as properties
+of the the columns nd are thus part of their definition. This results
+in one set of rules applied to any database modifications. However,
+there may be circumstances that one set of rules is not sufficient
+to describe all data coming into the database. For instance, the database
+may contain data from the nucleus level of a breeding program and
+also data from the production level. Clearly, business rules may be
+different for the two types of data. To accommodate this situation
+APIIS has implemented sets or layers of business rules. The philosophy
+behind this is, that data streams can be subdivided into distinct
+classes of data which have their own set of rules. Examples are (as
+mentioned above) nucleus versus production level. Others could be
+fat breeds versus less fat (like Meishan vs Landrace).
+
+Operationally, business rules layers are defined as additional CHECK
+in the model file. They are written as CHECK1\index{CHECK1} for a
+layer 1, CHECK2\index{CHECK2} for a layer 2 etc. An example is given
+in table \ref{cap:check levels}. The column db\_sex requires is a
+foreign key in CODES and must not be NULL in the base (default) level
+as indicated by the the key CHECK. If no check\_level (chk\_lvl\index{chk\_lvl})
+is specified those given by CHECK apply. Its explicit chk\_lvl is
+0. On the other hand the chk\_lvl=1 has only the foreign key requirement.
+Thus, at this level NULL values for sex will be allowed. 
+
+The procedure for specifying and using layered business rules is as
+follows:
+
+\begin{enumerate}
+\item determine the number of layers of business rules required in your
+set of data streams. This means that you should group together classes
+of records that have similar requirements regarding the business rules.
+Examples are: nucleus population, multiplier level, production level.
+Or small breeds version large breeds. Also, combinations are possible.
+These levels should get entries for documentation purposes in CODES\index{CODES}
+under class CK\_LVL.
+\item write the basic set of rules in the model file using the key CHECK.
+The set of rules specified here will be the basic level that is used.
+Thus, it will be used if either CHK\_LVL is set to 0 or not set at
+all. Then specify for each check level a corresponding CHECKn rule.
+Thus, if you decided to have three check levels you will have CHECK,
+CHECK1 and CHECK2 in your model file. While CHECK should be specified
+as the base set of rules, the other CHECKs are specified only if the
+base CHECK is not applicable. Thus, whenever a CHECK key exists for
+a given column corresponding the chk\_lvl specified it will replace
+the base CHECK. Then this set of business rules will be executed.
+As can be seen in table \ref{cap:check levels} only for column db\_sex
+are the business rules modified in level 1. In db\_breed only the
+base is specified, thus for all other chk\_lvl that may be specified
+only the base set of checks are performed.
+\item as has been said above, prior to enforcing the business rules the
+programmer needs to specify which level she/he wants to fire. This
+is typically done in the load object by calling the routine: \$pdbl->Model->set\_checklevel\index{set\_checklevel}
+(1); In this example it would be set to 1. If you specify a check
+level that does not exists in the model file at least once the calling
+program should stop.
+\item With a number of possible check levels, the current level that was
+used when the database content was modified (insert or update) needs
+to be stored with the record in each table. This is done in the column
+CHK\_LVL. This is read and used in the program check\_integrity\index{check\_integrity}
+to fire the correct set of business rules.
+\end{enumerate}
+%
+\begin{table}[htbp]
+
+\caption{\label{cap:check levels}Specifying layers of business rules}
+
+\begin{lyxcode}
+{\scriptsize col002~=>~\{~DATA~=>~'',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DB\_COLUMN~~~=>~'db\_sex',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DATATYPE~~~~=>~'BIGINT',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~LENGTH~~~~~~=>~'1',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DESCRIPTION~=>~'sex',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DEFAULT~~~~~=>~'',~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~CHECK~~~~~~~=>~{[}'ForeignKey~codes~db\_code',~'NotNull'{]},~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~CHECK1~~~~~~=>~{[}'ForeignKey~codes~db\_code'{]},~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~MODIFY~~~~~~=>~{[}{]},~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~ERROR~~~~~~~=>~{[}{]},~}{\scriptsize \par}
+
+{\scriptsize \},~}{\scriptsize \par}
+
+{\scriptsize col003~=>~\{~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DATA~~~~~~~~=>~'',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DB\_COLUMN~~~=>~'db\_breed',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DATATYPE~~~~=>~'BIGINT',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~LENGTH~~~~~~=>~'2',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DESCRIPTION~=>~'breed',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~DEFAULT~~~~~=>~'',~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~CHECK~~~~~~~=>~{[}'NotNull',~'ForeignKey~codes~db\_code'{]},~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~MODIFY~~~~~~=>~{[}{]},~~~~~~~~~~}{\scriptsize \par}
+
+~{\scriptsize ~~~~~~~~~~~ERROR~~~~~~~=>~{[}{]},~~~}{\scriptsize \par}
+
+{\scriptsize \},~}\end{lyxcode}
+
+\end{table}
+
+
+

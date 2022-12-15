@@ -1,0 +1,22 @@
+##############################################################################
+# $Id: perltidyrc,v 1.1 2006/11/13 13:55:08 heli Exp $
+##############################################################################
+# /etc/perltidyrc:
+# option                            default, if different
+##############################################################################
+--indent-columns=4                  #    4
+--nocuddled-else                    # -nce
+--noblanks-before-comments          # -bbc
+--nooutdent-labels                  # -ola
+--standard-error-output             # -nse
+--standard-output                   # -nst
+--maximum-line-length=80            #   80
+--continuation-indentation=4        #    2
+--vertical-tightness=2              #    0
+--block-brace-tightness=1           #    0
+--nospace-for-semicolon             # -sfs
+--nooutdent-long-lines              # -olq
+
+# break before all operators (default: see man perltidy)
+--want-break-before="% + - * / x != == >= <= =~ !~ < >  | & >= <= **= += *= &= <<= &&= -= /= |= >>= ||= .= %= ^= x="
+

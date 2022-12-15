@@ -1,0 +1,331 @@
+\subsubsection{Apiis::DataBase::Record -- package for DataBase Record objects\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects}\index{Apiis::DataBase::Record -- package for DataBase Record objects}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_SYNOPSIS}\index{Apiis::DataBase::Record -- package for DataBase Record objects!SYNOPSIS}}
+
+
+This base package provides the functionality and methods needed for
+database record object types.
+
+\paragraph*{DESCRIPTION\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_DESCRIPTION}\index{Apiis::DataBase::Record -- package for DataBase Record objects!DESCRIPTION}}
+
+
+The public and internal methods of this base class are described below.
+
+\paragraph*{METHODS\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_METHODS}\index{Apiis::DataBase::Record -- package for DataBase Record objects!METHODS}}
+\subparagraph*{new (public)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_new_public_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!new (public)}}
+
+
+\textbf{new()} returns an object reference for a new record object.
+
+\subparagraph*{name (public, readonly)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_name_public_readonly_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!name (public, readonly)}}
+
+
+Returns the name of this record (usually identical with the tablename of
+the database record):
+
+\subparagraph*{columns (public, readonly)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_columns_public_readonly_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!columns (public, readonly)}}
+
+
+Returns an array of all column names of this record in the order of the
+model file structure.
+
+\subparagraph*{column (public, readonly)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_column_public_readonly_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!column (public, readonly)}}
+
+
+Returns a column object by column name. Example:
+
+\begin{verbatim}
+   my $col_obj = $record_obj->column($thiscolumn);
+\end{verbatim}
+\subparagraph*{addcolumn (public)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_addcolumn_public_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!addcolumn (public)}}
+
+
+Adds a column object to the record. Maybe only for internal use.
+
+\subparagraph*{delcolumn (public)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_delcolumn_public_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!delcolumn (public)}}
+
+
+Deletes a column object from the record. Maybe only for internal use.
+
+\subparagraph*{rows $|$ value $|$ fk\_table $|$ values (public, read/write)\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_rows_value_fk_table_values_public_read_write_}\index{Apiis::DataBase::Record -- package for DataBase Record objects!rows $|$ value $|$ fk\ table $|$ values (public, read/write)}}
+
+
+Methods for return status parameters, e.g. for SQL query results.
+
+\subparagraph*{print\label{Apiis::DataBase::Record_--_package_for_DataBase_Record_objects_print}\index{Apiis::DataBase::Record -- package for DataBase Record objects!print}}
+
+
+\textbf{print} prints out the defined column values of the Record object, both
+internal and external values and the associated ext\_fields.
+
+
+
+Example:
+
+\begin{verbatim}
+   $record_obj->print;
+\end{verbatim}
+
+
+There are some switches to control the behaviour of \textbf{print}:
+
+\begin{verbatim}
+   quiet => 1         # if set to 1, informational output is reduced
+   columns => \@cols  # prints out only the defined columns
+   m_int   => 1       # displays also mirrored internal data
+   m_ext   => 1       # displays also mirrored external data
+   id_set  => 1       # displays also the id_set definition of the column
+   all     => 1       # includes m_int, m_ext, id_set
+   sprintf => 1       # doesn't print to STDOUT but returns an arrayref to the
+                      output lines
+\end{verbatim}
+
+
+Example:
+
+\begin{verbatim}
+   $record_obj->print(
+       {   quiet   => 1,
+           columns => [qw/ db_animal guid /],
+           m_int   => 1,
+           id_set  => 1,
+       }
+   );
+\end{verbatim}
+\begin{verbatim}
+   $record_obj->print(
+       {   quiet   => 1,
+           columns => [qw/ db_animal guid /],
+           all     => 1,
+       }
+   );
+\end{verbatim}
+\begin{verbatim}
+   my $output_ref = $record_obj->print( { sprintf => 1 } );
+   print join("\n", @$output_ref);
+\end{verbatim}
+
+
+The parameters have to be passed as a hash reference, the columns as an array
+reference.
+
+\subsubsection{Apiis::DataBase::Record::Column -- package for DataBase Record columns\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_SYNOPSIS}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!SYNOPSIS}}
+
+
+\textbf{Apiis::DataBase::Column} creates database columns that build an
+Apiis::DataBase::Record and provides methods to access them.
+
+\paragraph*{DESCRIPTION\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_DESCRIPTION}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!DESCRIPTION}}
+
+
+The public and internal methods of this class are described below.
+
+\paragraph*{METHODS\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_METHODS}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!METHODS}}
+\subparagraph*{use\_entry\_view (public)\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_use_entry_view_public_}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!use\ entry\ view (public)}}
+
+
+\textbf{use\_entry\_view} is a column method to allow encoding distinguish between
+values from a table $<$Table$>$ or from the view entry\_$<$Table$>$. In case of
+transfer this flag decides, if encoding takes the db\_animal from
+entry\_transfer (an active animal) or from transfer directly, which may be any
+db\_animal with these external data.
+
+\subparagraph*{id\_set (public)\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_id_set_public_}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!id\ set (public)}}
+
+
+The read/write method \textbf{id\_set} stores and offers the ID set information to
+retrieve the right record from table transfer when decoding db\_animal.
+
+
+
+Input:
+
+\begin{verbatim}
+   $rec_obj->column('db_animal')->id_set('HB');             # single value
+   $rec_obj->column('db_animal')->id_set( 'HB', 'Piglet' ); # list
+   my @id_sets = (qw/ HB Piglet Lifetime /);
+   $rec_obj->column('db_animal')->id_set(@id_sets);         # array
+   $rec_obj->column('db_animal')->id_set( \@id_sets );      # arrayref
+\end{verbatim}
+
+
+Output:
+
+\begin{verbatim}
+   my $id_set_ref = $rec_obj->column('db_animal')->id_set   # arrayref
+   my @id_sets    = $rec_obj->column('db_animal')->id_set   # array
+\end{verbatim}
+\subparagraph*{best\_id\_set (public)\label{Apiis::DataBase::Record::Column_--_package_for_DataBase_Record_columns_best_id_set_public_}\index{Apiis::DataBase::Record::Column -- package for DataBase Record columns!best\ id\ set (public)}}
+
+
+The read/write method \textbf{best\_id\_set} stores that ID set information, that has
+been the best/first while trying to decode through the array of ID sets in
+id\_set().
+
+\subsubsection{Fetch\label{Fetch}\index{Fetch}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Fetch_SYNOPSIS}\index{Fetch!SYNOPSIS}}
+\begin{verbatim}
+    # fill record with query data, then:
+    $record_obj->fetch(
+        expect_rows    => 'one',                   # ['one'|'many']
+        expect_columns => qw/ db_sex db_breed/,    # all columns if absent
+        order_by       => [                        # optional sorting
+            { column => 'db_sex',   order => 'desc' },
+            { column => 'db_breed', order => 'asc' },
+        ],
+        user => 'system',                          # optional for internal use
+    );
+\end{verbatim}
+
+
+Apiis::DataBase::Record::Fetch fetches the specified record(s), creates a
+record object for each of them and returns an array of these objects.
+
+\paragraph*{DESCRIPTION\label{Fetch_DESCRIPTION}\index{Fetch!DESCRIPTION}}
+
+
+The query is created according to the already filled-in data in this record
+object.
+
+
+
+All columns of this record object, which contain data, build
+'column=value'-pairs. The operator is currently only '=' and all data fields
+are ANDed.
+
+
+
+Special allowed values are 'null' and 'not null', which are reflected in the
+resulting where clause. Both strings are case insensitive.
+
+
+
+Example:
+
+\begin{verbatim}
+    $rec_obj->column('exit_dt')->extdata('not null');
+\end{verbatim}
+
+
+or
+
+\begin{verbatim}
+    $rec_obj->column('db_breeder')->intdata('null');
+    $rec_obj->column('db_breeder')->encoded(1);
+\end{verbatim}
+
+
+The qualifiers \textit{expect\_rows()} and \textit{expect\_colums()} can either be
+provided as methods to the record object or as hash parameters to fetch.
+
+
+
+\textit{expect\_rows()} can have the values 'one' and 'many'(default).
+
+
+
+If \textit{expect\_columns()} is omitted, all columns of the record are retrieved.
+Every records also retrieves the rowid/oid.
+
+
+
+Example:
+
+\begin{verbatim}
+    my $rec_obj = Apiis::DataBase::Record->new( tablename => 'codes' );
+    $rec_obj->column('class')->extdata('BREED');
+    my @query_objects = $rec_obj->fetch(
+        expect_rows    => 'many',
+        expect_columns => [qw/ db_code ext_code /],
+        sort_by        => [ { column => 'ext_code', order => 'asc' } ],
+    );
+\end{verbatim}
+
+
+This query returns columns db\_code and ext\_code of all the records from codes,
+where the BREED is coded. They are sorted by ext\_code in ascending order.
+The resulting rows are packed into separate record objects each and passed
+back in an array of record objects.
+
+
+
+\$rec\_obj-$>$expect\_rows('many') is default and can be omitted.
+
+
+
+Another example:
+
+\begin{verbatim}
+    my $rec_obj = Apiis::DataBase::Record->new( tablename => 'animal' );
+\end{verbatim}
+\begin{verbatim}
+    # if you know the internal code:
+    $rec_obj->column('db_animal')->intdata(8608);
+    # you must set the encoded(1) flag for internal data:
+    $rec_obj->column('db_animal')->encoded(1);
+\end{verbatim}
+\begin{verbatim}
+    # or, if you have the external data:
+    $rec_obj->column('db_animal')->extdata( 'society|sex', '32|1', '63' );
+\end{verbatim}
+\begin{verbatim}
+    # now specify the query:
+    $rec_obj->expect_columns(qw/ db_sex db_breed /);
+    $rec_obj->expect_rows('one');
+    $rec_obj->fetch;
+\end{verbatim}
+
+
+If you provide the external data, it is encoded before the query is created:
+
+\begin{verbatim}
+   SELECT db_sex,db_breed from animal where db_animal = 8608;
+\end{verbatim}
+
+
+If this results in more than one record (which should not happen), an error is
+risen.
+
+
+
+Note: If you don't want the record to get encoded (perhaps you provide
+internal data anyway) you have to set \$record-$>$encoded(1), which will skip
+encoding. In case of providing internal data without external one, leaving out
+\$record-$>$encoded(1) will yield an error. During encoding, the internal
+value will simply get deleted.
+
+
+
+Ordering the query result can be done with:
+
+\begin{verbatim}
+    $record_obj->fetch(
+        order_by => [
+            { column => 'birth_dt', order => 'desc' },
+            { column => 'parity',   order => 'asc' },
+        ],
+    );
+\end{verbatim}
+
+
+\textbf{order\_by} expects an array reference of hash references. According to the
+SQL standard, this query is sorted by column birth\_dt in descending order and,
+for equal values in birth\_dt, by column parity in ascending order.
+
+
+
+This makes mainly sense for columns without encoded values as the sorting
+happens on the internal database values.
+

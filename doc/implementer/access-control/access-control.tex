@@ -1,0 +1,130 @@
+\chapter{Access Rights}
+\section{Implementation for the programs }
+\subsection{Log-in to the APIIS system as a normal user}
+When user wants to log-in to the APIIS system (via apiis sheell or WWW) he has to use login name and password which are specified for his PostgreSQL account. If his login and password are proper then user object is created. This object is kept to close user session  and contains all user data which are stored in the database (table users). After this when user object is successfully created then system user object is created. This object keeps meta\_user password which is needed for the meta\_user connection (we have to remember that all actions on the database are executed by the meta\_user). Method which returns this password is internal and can not be call by the normal user. This password is taken to the object from the special passwd file where all passwords are kept as a coded string. There is a special method  which encode this password for the object.  
+
+\subsection{Log-in to the APIIS system as a root}
+
+\section{Implementation for the database and the content of the database}
+
+\subsection{Defining users}
+
+\subsubsection{Adding new users}
+
+All information about users is stored in the database. The process of adding new user consists of the following steps:
+\begin{itemize}
+\item creating new user in the APIIS system,
+\item creating new user in the PostgreSQL database,
+\item creating schema for the new user.
+\end{itemize} 
+There is a special Perl script which is used for adding new users - \textit{access\_control.pl} and it go through all these  steps. This script has to be run with \textit{-u }parameter and user name.
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -u [login name]}
+\end{center}
+All access rights are revoked from the user. User has only access rights to views which are created in his schema (paragraph \ref{User views}). Even if user logs-in directly via \textit{psql} command, he can't create new tables or make any modifications on existing tables. User is able to make some modifications only if the administrator give him special roles (paragraph \ref{Roles and policies}). 
+
+\subsubsection{Removing users}
+	Removing users from the system is also handled by \textit{access\_control.pl} script but with another paramater.
+\begin{center}
+\textit{access\_contol.pl -p [project\_name] -d user -u [user name]}
+\end{center}
+
+\subsubsection{Presenting information about users}
+With \textit{access\_control.pl}  script you can also see information about all users which are currently defined in the system. You have run this scripts with \textit{-s} parameter.
+\begin{center}
+\textit{
+access\_control.pl -p [project\_name] -s users}
+\end{center}
+
+\subsubsection{Log-in to the database}
+Direct connection to the database from shell via psql command is possible and has to be executed in the following way:
+\begin{center}
+\textit{psql [database name] -U [user name]}
+\end{center}
+You can only see there your system of views.
+
+
+\subsection{Defining roles and policies\label{Roles and policies}}
+
+\subsubsection{Defining new roles}
+Information about roles and policies is stored in the database. Initially roles and policies are defined in the Roles.conf file and then are loaded into the database from this file. Following example show structure of this file and how roles should be defined:
+\begin{verbatim}
+[TEST]
+SHORT_NAME = test role 
+LONG_NAME=  test role
+DESCRIPTION = you can make insert and update on table transfer
+ROLE_TYPE=DB (can be only DB or OS)
+POLICIES=1,2
+
+[OS_POLICIES]
+1=runall.pl|program
+2=enter data|www
+3=new breeds in year 2004|report
+
+[DB_POLICIES]
+1=insert|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch|PL
+2=update|transfer|oid,db_animal,ext_animal,db_unit,db_farm,synch|PL
+\end{verbatim} 
+Roles.conf consists of role sections (we can have more than one diferent definition of role in this file) and two policy sections. The policy sections are used through the roles. If role is OS (Operating System) type then the OS\_POLICIES section is used else if role is DB (Database) type then the DB\_POLICIES section is used.\\
+ OS policy definition consists of some action name and the category. This action can be a program name, report name, from name, subroutine name or some interface action. There are 5 categories defined now: program, form, report, subroutine, www, action. Categories are hardcoded now. If you want to add the new category, you have to add it to the AccessControl.pm module (lib/Apiis/Auth/ - line 484).\\
+DB policy is a definition of the one action on the one table in the one class (\textbf{we can not have two definitions of the policies for the same action and the same table, and the same class, but with different column definitions}). Each policy has to has unique number and following format:
+\begin{verbatim}
+|action|table|column1,column2,column3 ,...|class 
+\end{verbatim} 
+The process of adding new role is the same for the OS roles and DB roles. It consists of the following steps:
+\begin{itemize}
+\item defining role and policies in the Roles.conf file,
+\item adding new role into the database,
+\item adding policies into the database,
+\item assigning policies to role.
+\end{itemize} 
+First of these steps has to be done manually (as it was described above) and next are made automatically.
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -r [role name]}
+\end{center} 
+The role name has to be the same as the one in the square brackets, in Roles.conf file. In our example we have to execute the following command:   
+\begin{center}
+\textit{access\_control.pl -p [efabis] -r test}
+\end{center} 
+
+\subsubsection{Removing roles}
+Removing roles from the system is made by the following command:
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -d role -r [role name] }
+\end{center} 
+This command also removes all references to the role. If some user has ascribed role which is removed than this role is also revoked from him.
+
+\subsubsection{Granting roles to the users\label{Granting roles to the users}}
+Each role can be grant to the user.
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -r [role name] -u [user name]}
+\end{center}
+If we execute this command with role name or user name which is currently not existing in the system then the script creates this role or user automatically.
+ 
+\subsubsection{Revoking roles from the users}
+Each role can be also revoked from the user.
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -d revoke -r [role name] -u [user name]}
+\end{center}
+
+\subsubsection{Presenting information about roles}
+With access\_control.pl script you can also see information about all roles which are currently defined in the system. You have to run this scripts with -s parameter.
+\begin{center}
+\textit{
+access\_control.pl -p [project\_name] -s roles\\}
+\end{center}
+
+
+\subsection{User views\label{User views}} 
+All user views are created in his private schema on basis his access rights.
+Process creating user views consists of the following steps:
+\begin{itemize}
+\item defining roles and policies (for select) in the Roles.conf file,
+\item granting roles to the user (paragraph \ref{Granting roles to the users}), 
+\item creating views in the user schema.
+\end{itemize}
+All views are also created via access\_control.pl script. This script reads access rights from the user access view and creates views for tables on which user can execute select statements. 
+
+\begin{center}
+\textit{access\_control.pl -p [project\_name] -v [login name]}
+\end{center}

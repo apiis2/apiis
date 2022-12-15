@@ -1,0 +1,36 @@
+* If you want to ask somebody to help you with your code, be polite and make
+  shure you have these two lines at the beginning of your script, module, code
+  snippet:
+
+     use strict;
+     use warnings;
+
+  If you don't use strict and warnings, don't ask anybody.
+
+* Don't use Tabs. Make your editor replace them with blanks.
+
+* Use 4 blanks for indentation per level.
+
+* Use perltidy to format your code.
+  Copy the perltidyrc from this directory to /etc/perltidyrc or ~/.perltidyrc.
+  The configuration is based on the excellent book:
+     Damian Conway -- Perl Best Practices
+     O'Reilly (available in english and german)
+
+* Use perlcritic to check your code.
+  perlcritic is a Perl module from CPAN. For Debian run:
+
+     apt-get install libperl-critic-perl \
+                     libset-scalar-perl \
+                     libppi-perl \
+                     libtest-object-perl
+
+  You might want to include this line into your /etc/apt/sources.list:
+
+     deb http://forssa.tzv.fal.de/debian-apiis-perl/ ./
+
+  Then run 'perlcritic <perlfiles>'. It tells you where you can enhance your
+  code.
+
+* If you don't like these guidelines or want to add more, let's discuss them on
+  the mailing list apiis@tzv.fal.de

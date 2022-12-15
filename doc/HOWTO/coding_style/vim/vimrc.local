@@ -1,0 +1,47 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" $Id: vimrc.local,v 1.1 2006/11/13 13:55:08 heli Exp $
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" Local system wide configuration file for vim /etc/vim/vimrc.local
+""" or add this to your ~/.vimrc
+
+""" Some nice standards (just uncomment them):
+" set showcmd nonu ruler
+" set exrc autowrite nobackup
+" set autoindent
+" set formatoptions+=ron
+" set textwidth=78 backspace=indent,eol,start
+" set shiftwidth=4 tabstop=4 expandtab shiftround
+
+" set ignorecase smartcase
+" set incsearch scrolloff=2
+" set wildmode=longest,list
+
+" set showmatch matchtime=3
+" set matchpairs+=<:>
+
+""" toggle between paste and nopaste with Ctrl-P:
+" set pastetoggle=<C-P>
+
+""" Don't use Ex mode, use Q for formatting
+" map Q gq
+
+syntax on
+
+if has("autocmd")
+ " Enabled file type detection and indent
+ filetype plugin indent on
+endif " has ("autocmd")
+
+" Filetype Perl:
+aug tzperl
+    au!
+    " display all columns beyond col 80 with red background:
+    au Filetype perl hi longlinewarn guibg=LightRed guifg=White ctermbg=LightRed ctermfg=White
+    au Filetype perl match longlinewarn /\%>81v/
+    " this reads in an apiis-specific vimrc:
+    autocmd BufRead,BufNewFile $APIIS_HOME/* so $APIIS_HOME/etc/vimrc
+
+    " this will fold only Perl POD:
+    au FileType perl let&fdl=&fdn|exe 'silent!g/^=cut/norm!zc' | 1
+aug END
+

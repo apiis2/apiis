@@ -1,0 +1,29 @@
+##############################################################################
+# $Id: initialization,v 1.1 2005/03/22 12:59:23 heli Exp $
+# initialization-HOWTO
+##############################################################################
+
+
+# Nearly every executable program in Apiis should begin with these lines:
+#!/usr/bin/env perl
+##############################################################################
+# $Id: initialization,v 1.1 2005/03/22 12:59:23 heli Exp $    
+# some lines about this program
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.1 $' );
+
+# usually, you want to connect to a certain project:
+$apiis->join_model('my_project');
+
+# during development, you can look for errors on the terminal:
+$apiis->check_status;

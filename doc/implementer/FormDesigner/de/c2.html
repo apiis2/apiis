@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+ <TITLE>FormDesigner: Generelle Konfiguration</TITLE>
+</HEAD>
+<body alink="#ee0000" bgcolor="#e4e4e4" link="blue" text="#42426f" vlink="darkBlue">
+<table width="100%" border="0">
+  <tr bgcolor="white">
+  <td width="10%"><img src="../images/FDicon.png" alt="FormDesigner Icon" align="right" width="64" height="64" border="0" vspace="10" hspace="10">
+</td>
+<td><img src="../images/formdesigner.png" width="321" height="89" border="0" hspace="100"></td>
+  </tr>
+</table>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c1.html">2. Das Hauptfenster</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c3.html">4. Maskenobjekte</a></font></td>
+  </tr>
+</table>
+
+<H1>3. Generelle Konfiguration</H1>
+
+Die generellen Konfigurationsparameter, wie z.B. die Größe, Farben und Schriftarten der Maske,
+werden in dem in Abbildung 3 gezeigten Fenster vorgenommen. <u>Bis auf Höhe (Height) und Breite
+(Width) der Maske sind die anderen Parameter optional</u>.
+<br><br><br>
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/general.gif" alt="Generelle Konfiguration" width="382" height="681" align="top" border="0">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 3</td></tr></table><br><br>
+
+Hier nun eine Beschreibung der einzelnen Parameter:<br>
+<h4>Title</h4>
+Der hier eingetragenen Text erscheint auf der Maske als zentrierte Überschrift in
+einem separaten Rahmen. Bleibt das Feld leer, erscheint auch kein Rahmen für den Titel.
+Statt einer Überschrift kann auch ein GIF-Bild auf der Maske plaziert werden, oder
+ein Text-Label (Typ A).<br><br>
+
+<h4>Model File</h4>
+Die Angabe des Modelfiles ist optional. Wird kein Modelfile, oder eine nicht
+existierende Datei angegeben, wird beim Erstellen der Maske ein kurzer Hinweis gegeben. Mit Hilfe
+des links neben dem Feld angeordneten Knopfes kann eine Datei-Dialog-Box geöffnet werden.<br><br>
+
+<h4>Geometry</h4>
+<u>Die Werte für die Höhe und Breite der Maske müssen angegeben werden</u>. Die Einheit ist Pixel.<br><br>
+
+<a name="color"></a>
+<h4>Color</h4>
+Die Überschrift und die Label der Eingabefelder werden in der Vordergrundfarbe (<i>Foreground</i>)
+dargestellt. <i>Background</i> ist die Farbe des Maskenhintergrunds.
+Werden keine Farbwerte eingetragen, sind die Farben systemabhängig.<br>
+Die Farbe für <i>Error flash</i>, eine Fehleranzeige, wird standartmäßig auf rot gesetzt.<br>
+Mit Hilfe der kleinen Knöpfe neben den Feldern kann ein Dialog zur Farbwahl aufgerufen
+werden.<br><br>
+
+<a name="fonts"></a>
+<h4>Fonts</h4>
+Die voreingestellten Schriftarten sind alle Helvetica.
+Die mit <i>Normal</i> bezeichnete Schriftart bezieht sich u.a. auf die Eingabefelder,
+während die Schriftart für die Feldbeschriftung von <i>Label</i> bestimmt wird.<br>
+<i>Button</i>-Schriftart bestimmt die Schrift für die untere Knopfleiste der Maske.<br>
+Mit Hilfe der kleinen Knöpfe kann ein Dialogfenster für die Schriftartauswahl aufgerufen werden.
+Da dieses nur für X11-Schriftarten möglich ist, geht das nur auf Unix-Systemen.<br>
+Es wird empfohlen, die zusätzliche Beschreibung über <a href="../fonts.txt" type="text/css">Fonts</a> zu lesen.
+<br><br>
+
+<h4>Query Options</h4>
+Logische Verbindung der einzelnen WHERE-clauses beim Suchen, welche aus den Felddaten gebildet
+werden.<br>
+Die Suchergebnisse können nach bestimmten Spalten sortiert ausgegeben werden. Im Feld
+<i>Order by</i> können durch Komma getrennt die Spaltennamen spezifiziert werden.<br><br>
+
+
+<h4>Balloons</h4>
+<a name="balloon"></a>
+Ballons bieten die Möglichkeit kurze Hilfetext oder Hinweise zu den Maskenobjekten in einem
+kleinen Fenster oder in einer Statuszeile auszugeben. Befindet sich der Mauszeiger über einem
+Objekt, für das ein Hilfetext angegeben ist, erscheint dieser Text und bleibt sichtbar bis der
+Mauszeiger sich nicht mehr über dem Objekt befindet.<br><br>
+
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td><i>Balloon none:</i></td><td> Keine Anzeige der Balloonmeldungen, auch wenn für die Objekte Meldungen
+                                    spezifiziert sind.</td>
+  </tr>
+  <tr align="left " valign="top">
+    <td><i>Balloon balloon:</i></td><td> Die Texte erscheinen nur in einem kleinen
+                                       Balloon-Fenster.</td>
+  </tr>
+  <tr align="left " valign="top">
+    <td><i>Balloon status:</i></td><td>Die Text werden in einer Textzeile ausgegeben.
+                                         Das Feld muss auf die gleich Weise wie andere Felder
+                                         erstellt werden. Damit das Feld als Balloon-Status-Feld
+                                     identifiziert werden kann, muss der Objektname (Sektionname)
+                                     <b>BalloonStatusField</b> sein. Dazu muss im Konfigurationsdialog
+                                     das Objekt umbenannt werden. Durch Klick auf die
+                                         obere rechte graue Box (sec...) öffnet sich ein Fenster
+                                     zum Umbenennen.
+                                         </td>
+  </tr>
+  <tr align="left " valign="top">
+    <td><i>Balloon both:</i></td><td> Der Balloon-Text wird in einem Balloon-Fenster <u>und</u>
+                                        in einer Statuszeile angezeigt.</td>
+  </tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr>
+    <td align="left" valign="top"><i>Balloon wait:</i></td><td>  Spezifiziert die Wartezeit, bevor ein Balloon erscheint.
+                                     Die Wartezeit gilt für <i>Balloon balloon</i> und <i>Balloon status</i>.
+                                     Wert in Millisekunden. Die voreingestellte Zeitverzögerung
+                                     beträgt 350 Millisekunden.
+                                     </td>
+  </tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <td align="left" valign="top"><i>Balloon Background Color:</i></td>
+                <td>Spezifiziert die Hintergrundfarbe eines Balloon-Fensters. Die voreingestellte
+                      Farbe ist Gelb. Der Knopf öffnet ein Dialogfenster zur Farbwahl.</td>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="left" valign="top"><i>Balloon Message:</i></td>
+                <td>Text der erscheint, wenn sich der Mauszeiger im Titelrahmen befindet.<br>
+                    Der kleine Knopf [...] öffnet einen einfachen Editor zum Erstellen längerer
+                    Texte.</td>
+
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<h4>Startup Command</h4>
+<a name="startup"></a>
+Führt die spezifizierten Perl-Befehle vor dem Starten der Maske aus. Mit der <i>system</i>-Funktion
+können auch Systemkommandos ausgeführt werden.<br><br>
+Hier einige Beispiele:<br>
+<table align="center" cellspacing="10">
+  <tr align="left " valign="top">
+    <td>$$form{GENERAL}{BUTTONBAR}->destroy;</td>
+    <td>  Entfernt die untere Knopfleiste</td>
+  </tr>
+  <tr>
+    <td>query($form)</td>
+    <td>Dieselbe Funktion wie klick auf Suchen.</td>
+  </tr>
+  <tr>
+    <td>$$form{GENERAL}{TOPLEVEL}->Dialog(-text=>"Hallo")->Show;</td>
+    <td>Öffnet ein Dialog-Fenster mit Text Hallo und einem OK-Knopf.</td>
+  </tr>
+  <tr>
+    <td>system("myShellScript");</td>
+    <td>Führt das Shell-Script 'myShellScript' aus</td>
+  </tr>
+</table><br><br>
+Siehe auch <a href="c6.html">Perl-Code in Maskenparametern</a><br><br>
+
+<h4>Knöpfe</h4>
+<b>Create Form</b> &nbsp;Erstellt oder aktualisiert die Maske. Geht auch mit Tastenkombination Strg+u.<br><br>
+<b>Close</b> &nbsp;Schließt das Konfigurationsfenster. Kann jederzeit wieder mit <b>Edit->GENERAL</b>
+geöffnet werden.<br><br>
+<b>Clear</b> &nbsp;Löscht alle Felder des Konfigurationsfensters.<br>
+<br><br>
+
+<p></p>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c1.html">2. Das Hauptfenster</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c3.html">4. Maskenobjekte</a></font></td>
+  </tr>
+</table>
+<table width="100%" border=0 bgcolor="white">
+  <tr><td><font size="-2">$Id: c2.html,v 1.1 2002/03/06 15:34:50 haboe Exp $</font></td>
+</tr>
+</table>
+</BODY>
+</HTML>

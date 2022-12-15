@@ -1,0 +1,108 @@
+% \section{Basic Initialization}
+
+Each program in the \apiis{} suite has to start with the 
+preinitialization:
+
+\begin{verbatim}
+#!/usr/bin/env perl
+##############################################################################
+# $Id: basic.tex,v 1.3 2005/03/08 11:02:34 heli Exp $
+# Short description about this program
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.3 $' );
+\end{verbatim}
+
+The \verb+BEGIN+ block checks at compile time, if the environment variable
+\verb+$APIIS_HOME+ is set.
+\verb+$APIIS_HOME+ is the main starting point for the complete code base of
+\apiis. \verb+$APIIS_HOME/lib+ is included into the library search path of
+Perl.
+
+\verb+use Apiis.pm;+ loads the \apiis-system into your main namespace and
+provides the method initialize().
+Usually you should pass the version of your program to \verb+initialize+.
+When you commit this program to CVS, the cvs-tag \verb+$Revision: 1.3 $+ will
+be replaced by the current version and it will look like
+\verb+$Revision: 1.3 $+. You can recall the version later with
+\verb+$apiis->version+\index{\verb+$apiis+!\verb+->version+}.
+If you don't use cvs then just hardcode the version:
+\verb+Apiis->initialize( VERSION => '0.71' );+
+
+Every program which exceeds the intention of being a quick and dirty script for
+a small daily job should contain the following two lines before you start coding:
+
+\begin{verbatim}
+   use strict;
+   use warnings;
+\end{verbatim}
+
+You should not ask somebody else to help you track down some bugs in your code unless
+you used \verb+strict+ and \verb+warnings+!
+
+\subsection{initialize}\index{initialize}
+
+Besides performing some basic checks the main task of
+\verb+initialize+ is the creation of the global
+\verb+$apiis+-structure, represented by the object reference \verb+$apiis+.
+
+\subsection{Apiis::Init}
+The successfull creation of the \verb+$apiis+ object implies some basic
+initializing before and adds various items:
+\begin{itemize}
+   \item the base configuration from \verb+$APIIS_HOME/apiisrc+
+   \item the I18N/L10N part
+   \item methods to extend the \verb+$apiis+ structure modularly
+   \item methods for logging to files or the system syslog
+   \item the public interfaces to set an error status, check this status and
+   document errors in detail
+   \item handy methods to access the current day and time 
+\end{itemize}
+
+The main setup for error handling is done in the package \verb+Apiis::Errors+.
+
+On the main level, the \verb+$apiis+ object provides these public
+methods\index{\verb+$apiis+!public methods}:
+
+\smallskip
+\begin{tabular}{rl|l}
+\verb+$apiis->+& \verb+APIIS_HOME+       & path to \verb+$APIIS_HOME+  \\
+               & \verb+APIIS_LOCAL+      & path to \verb+$APIIS_LOCAL+ \\
+               & \verb+browser+          & your favourite browser \\
+               & \verb+check_status+     & checks the error status \\
+               & \verb+code_table+       & usually table 'codes' \\
+               & \verb+date_format+      & the date format (US or EU) \\
+               & \verb+entry_views+      & hashref of entry-views \\
+               & \verb+errors+           & array(reference) of error objects \\
+               & \verb+exists_database+  & is the database joined to \verb+$apiis+ \\
+               & \verb+exists_form+      & is a form joined to \verb+$apiis+\\
+               & \verb+exists_model+     & is the model file joined to \verb+$apiis+ \\
+               & \verb+fileselector+     & choose a Tk fileselector \\
+               & \verb+HOME+             & path to \verb+$HOME+ \\
+               & \verb+join_database+    & join the DataBase object into \verb+$apiis+ \\
+               & \verb+join_form+        & join a named Form object into \verb+$apiis+ \\
+               & \verb+join_model+       & join the Model object into \verb+$apiis+ \\
+               & \verb+language+         & choose user language \\
+               & \verb+localtime+        & unformatted timestamp \\
+               & \verb+now+              & formatted timestamp \\
+               & \verb+programname+      & name of the invoking program \\
+               & \verb+reserved_strings+ & reserved strings for data \\
+               & \verb+status+           & error status \\
+               & \verb+today+            & formatted date \\
+               & \verb+user+             & current user \\
+               & \verb+version+          & version of the invoking program \\
+\end{tabular}
+
+\smallskip
+See the POD-documentation for a detailed reference of these methods.
+
+% vim: expandtab:tw=100

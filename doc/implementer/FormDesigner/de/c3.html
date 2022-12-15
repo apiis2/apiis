@@ -1,0 +1,1665 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+ <TITLE>FormDesigner: Maskenobjekte</TITLE>
+</HEAD>
+<body alink="#ee0000" bgcolor="#e4e4e4" link="blue" text="#42426f" vlink="darkBlue">
+<table width="100%" border="0">
+  <tr bgcolor="white">
+  <td width="10%"><img src="../images/FDicon.png" alt="FormDesigner Icon" align="right" width="64" height="64" border="0" vspace="10" hspace="10">
+</td>
+<td><img src="../images/formdesigner.png" width="321" height="89" border="0" hspace="100"></td>
+  </tr>
+</table>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c2.html">3. Generelle Konfiguration</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c5.html">5. Funktionen für den <i>Action-</i>Parameter</a></font></td>
+  </tr>
+</table>
+
+<H1>4. Maskenobjekte</H1>
+Maskenobjekte sind Elemente, die auf der Maske zwischen Titel und Knopfleiste, sowie zwischen
+linkem- und rechtem Rand plaziert werden
+können. Innerhalb dieser Grenzen lassen sich die Objekte nachträglich mit der Maus an beliebige Stellen verschieben.
+Es gibt zur Zeit 13 verschiedene Typen von Maskenobjekten für die Eingabe und Anzeige von
+Daten bzw. zur Dekoration einer Maske. Ein Typ (hidden field) stellt allerdings einen Sonderfall
+dar: weil unsichtbar, lässt sich der Typ weder an einer bestimmten Stelle plazieren, noch kann
+dieser Typ verschoben werden.<br><br>
+
+Folgende Typen sind verfügbar:<br><br>
+<table align="center" border="1" cellpadding="5">
+  <th colspan=1 align="left" valign="center">Type</th>
+  <th colspan=1 align="left" valign="center">Kurzbeschreibung</th>
+  <th colspan=1 align="left" valign="center">Beispiel</th>
+
+  <tr><td align="center" valign="center"><a href="#TYPEA">A</a></td><td>nur Textlabel</td>
+        <td align="center" valign="center"><img src="../images/type_a.gif" width=185 height=52 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEB">B</a></td><td>einzeiliges Eingabefeld mit Zugriff auf die
+                                          Datenbank.<br>Suchfunktion in Abhängigkeit vom Inhalt.</td>
+        <td align="center" valign="center"><img src="../images/type_b.gif" width=145 height=46 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEC">C</a></td><td>Datumseingabefeld mit aufklappbarem Kalender</td>
+        <td align="center" valign="center"><img src="../images/type_c.gif" width=111 height=47 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPED">D</a></td><td>einzeiliges Feld zur Datenanzeige; nicht editierbar</td>
+        <td align="center" valign="center"><img src="../images/type_d.gif" width=120 height=46 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEE">E</a></td><td>einzeiliges, editierbares Eingabefeld</td>
+        <td align="center" valign="center"><img src="../images/type_e.gif" width=123 height=45 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEI">I</a></td><td>GIF-Bild oder leerer Rahmen</td>
+        <td align="center" valign="center"><img src="../images/type_i.gif" width=202 height=51 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEL">L</a></td><td>Auswahlfeld</td>
+        <td align="center" valign="center"><img src="../images/type_l.gif" width=139 height=43 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEM">M</a></td><td>mehrzeiliges Listenfeld</td>
+        <td align="center" valign="center">
+                <img src="../images/type_m1.gif" width="77" height="64" border="0">
+              <img src="../images/space.gif" width=30" height="1" border="0">
+              <img src="../images/type_m2.gif" width="72" height="84" border="0">
+                </td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEB">N</a></td><td>wie TYP B jedoch <u>ohne</u> inhaltsabhängiger Suchfunktion</td>
+        <td align="center" valign="center"><img src="../images/type_n.gif" width=142 height=43 border=0></td></tr>
+ 
+  <tr><td align="center" valign="center"><a href="#TYPEO">O</a></td><td>Mehrspalten-Listenfeld</td>
+        <td align="center" valign="center"><img src="../images/type_o.gif" width=139 height=73 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEP">P</a></td><td>Druckknopf zum Ausführen von Aktionen</td>
+        <td align="center" valign="center"><img src="../images/type_p.gif" width=166 height=34 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPER">R</a></td><td>Radiobutton</td>
+        <td align="center" valign="center"><img src="../images/type_r.gif" width=53 height=79 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPET">T</a></td><td>mehrzeiliges Texteingabefeld;<br>
+                                          enthält einen kleinen Texteditor.</td>
+        <td align="center" valign="center"><img src="../images/type_t.gif" width=148 height=90 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEU">U</a></td><td>Analog- und/oder Digitaluhr</td>
+        <td align="center" valign="center"><img src="../images/type_u.gif" width=212 height=72 border=0></td></tr>
+
+  <tr><td align="center" valign="center"><a href="#TYPEhidden">--</a></td><td>unsichtbares Feld; für Daten, die auf der Maske<br>
+                                         nicht sichtbar sein sollen.</td><td> </td></tr>
+</table><br><br><br>
+
+<a name="DIALOGWIN"></a>
+<h1>Dialogfenster für die Konfiguration der Maskenobjekte</h1>
+In den Maskenobjekt-Dialogfenstern werden die Objekte konfiguriert. Jeder Typ hat ein spezielles
+Konfigurationfenster, das nur für den jeweiligen Typ Einstellungen der zulässigen Parameter
+enthält.<br>
+
+Bei allen Konfigurationsfenstern ist gleich, dass sie zwei Knöpfe oben und vier Knöpfe im unteren
+Teil haben. Der obere linke Knopf ist funktionslos und dient nur zum Anzeigen des Typs. Der
+rechte Knopf zeigt den Sektionsnamen an.<br>
+Jedes Objekt muss einen eindeutigen Namen zur
+Identifizierung haben. Das erste plazierte Objekt erhält den Namen 'sec100' das nächste 'sec110' usw.
+Die Reihenfolge der Sektionen bestimmt wie der Eingabecursor (Fokus) bei Druck auf die Taste 'Tab'
+wandert. Für nachträgliche Umsortierungen kann der Sektionsname geändert werden. Dazu wird bei
+einem Klick auf den Sektionsnamen-Knopf ein kleines Fenster geöffnet in dem ein anderer Name
+eingegeben werden kann. Im Menü Edit werden alle plazierten Objekte aufgeführt, und zwar in
+der Reihenfolge, in der auch der Fokus wandert. Zu beachten ist, dass nicht alle Objekte
+einen Eingabe-Fokus bekommen - diese Objekte werden bei der Wanderung des Fokus einfach
+übersprungen.<br><br>
+
+Je nach dem, ob ein Objekt auf der Maske plaziert ist oder nicht, haben die unteren Knöpfe
+teilweise eine andere Bedeutung. Abbildung 4 zeigt die Knöpfe vor der Plazierung des
+Objekts, während Abbildung 5 die Knöpfe im Zustand nach der Plazierung zeigt.<br><br>
+
+Gemeinsam für beide Zustände ist der linke obere Knopf <b>Clear</b>. Ein Klick löscht alle
+Einträge in den Feldern.<br><br>
+
+Der rechte untere Knopf <b>Delete</b> ist im nicht plazierten Zustand inaktiv und bekommt nach
+plazieren des Objekts die Bedeutung, dass das Objekt durch Klick auf <b>Delete</b> aus der Liste
+der plazierten Objekte gelöscht wird. Es wird ebenfalls aus dem Edit-Menü gelöscht.<br><br>
+
+Der rechte obere Knopf, vor dem Plazieren mit <b>Quit</b> bezeichnet, löscht das
+Konfigurationsfenster sowie alle Einträge, die eventuell gemacht wurden. Der Einstellvorgang
+wird durch Klick auf <b>Quit</b> an dieser Stelle abgebrochen.<br>
+Nach dem Plazieren kann durch Klick auf <b>Close</b> das Konfigurationsfenster geschlossen werden.
+Das Objekt bleibt auf der Maske plaziert. Mit Hilfe des Edit-Menüs kann das Konfigurationsfenster
+wieder geöffnet oder in den Vordergrund gebracht werden.<br><br>
+
+Durch Klick auf den linken unteren Knopf <b>Place</b> wird das Objekt auf der Maske plaziert und
+in die Objektliste im Edit-Menü aufgenommen.<br>
+Ist das Objekt plaziert, bewirkt ein Klick auf den linken unteren Knopf <b>Update</b>, dass
+die Maske aktualisiert wird. Das ist immer dann notwendig, wenn Parameteränderungen auf der
+Maske wirksam werden sollen.<br><br>
+
+<br><br>
+<table align="center">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_button.gif" width="164" height="66" border="0" align="top"></td>
+<td align="left" valign="bottom">
+<img src="../images/conf_button1.gif" width="163" height="64" border="0" align="top"></td>
+</tr>
+<tr align="center " valign="center">
+<td align="center" valign="top" colspan="1">Abbildung 4</td>
+<td align="center" valign="top" colspan="1">Abbildung 5</td>
+</tr>
+</table><br><br><br><br><br><br>
+
+
+<p></p><a name="TYPEA"></a>
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ A Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Mit dem Typ A kann zusätzlicher Text auf der Maske plaziert werden. Abbildung 6 zeigt das
+Konfigurationsfenster.
+</td></tr>
+
+<tr><td valign="top"><br><br>
+Beschreibung der einzelnen Parameter:<br>
+<h4>Field Label</h4>
+Hier wird der Text der angezeigt werden soll spezifiziert.<br><br>
+
+<h4>Label Font ...</h4>
+Jedes Typ A-Objekt kann in Schriftart und -größe unterschiedlich gestalltet werden.<br>
+
+Für die Schriftartspezifikation kann die zusätzliche Beschreibung über
+<a href="../fonts.txt" type="text/css">Fonts</a> hilfreich sein.<br><br>
+Auf Unix-Systemen steht ein Schriftart-Selektions-Programm zur Verfügung.
+Durch Mausklick auf den Button <b>Label Font ...</b> öffnet sich ein Dialogfenster, in dem
+alle zur Verfügung stehenden Schriftarten aufgelistet und in einer Vorschau betrachtet werden
+können.<br><br>
+
+<h4>Geometry</h4>
+X- und Y-Koordinate des Objekts. Die Einheit ist Pixel. Der Koordinatenursprung ist
+auf der Maske oben links.<br>
+Siehe auch <a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes. Der Hintergrund wird in der Hintergrundfarbe
+der Maske dargestellt.<br><br>
+
+<h4>Other Options</h4>
+Balloon Message: Text in einem <a href="c2.html#balloon">Balloon</a><br><br><br><br></td>
+
+<td align="right" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_a.gif" width="172" height="421" border="0" align="top">
+</td></tr>
+<tr align="center" valign="center">
+<td align="center" valign="top">Abbildung 6</td></tr></table>
+</td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEB"></a>
+<table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ B&nbsp;/&nbsp;N Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Eingabefeld mit der Möglichkeit Daten aus der Datenbank zu holen und in einer Liste
+aufzuführen. Durch Klick auf den Pfeil öffnet sich die Liste und ein Element der Liste
+kann durch Anklicken übernommen werden. Abbildung 7 zeigt das Konfigurationsfenster für den B-Typ
+und Abbildung 8 zeigt den N-Typ.
+</td></tr>
+
+<tr><td valign=top">
+Die Konfigurationsmöglichkeiten von Typ B und N sind identisch. Allein der Parameter <b>Browse
+Parameter</b> erfordert ein <b>B</b> bzw. ein <b>N</b> als ersten Wert.<br>
+Type B bietet die Möglichkeit eine Teilzeichenkette einzugeben, sodass in der Liste nur Einträge sind,
+die diese Zeichenkette enthalten.<br><br>
+
+
+Beschreibung der einzelnen Parameter:<br>
+
+<a name="FLABEL"></a>
+<h4>Field Label</h4>
+Beschriftung des Eingabefelds.<br><br>
+
+<a name="LABELFONT"></a>
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels.<br>
+
+Für die Schriftartspezifikation kann die zusätzliche Beschreibung über
+<a href="../fonts.txt" type="text/css">Fonts</a> hilfreich sein.<br><br>
+Auf Unix-Systemen steht ein Schriftart-Selektions-Programm zur Verfügung.
+Durch Mausklick auf den Button <b>Label Font ...</b> öffnet sich ein Dialogfenster, in dem
+alle zur Verfügung stehenden Schriftarten aufgelistet und in einer Vorschau betrachtet werden
+können.<br><br>
+
+
+<h4>Browse Parameter</h4>
+Spezifiziert die Daten die aus der Datenbank geholt und in der Liste angezeigt werden sollen.
+Dieser Typ eignet sich gut für <i>Foreign keys</i>.<br><br>
+
+<table align="center" cellspacing="1" cellpadding="10" border="0">
+  <th align="left" valign="top" colspan="2">SYNTAX</th>
+  <tr>
+    <td colspan="2" align="left" valign="top"><font size="+1">
+        B column table [column=value ...] [$column=section$]</font></td>
+  </tr>
+  <tr><td></td><td>oder</td></tr>
+  <tr>
+    <td colspan="2" align="left" valign="top"><font size="+1">
+        N column table [column=value ...] [$column=section$]</font></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column:</td><td align="left" valign="top">Datenbankspalte der
+         Tabelle <i>table</i></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">table:</td><td align="left" valign="top">Datenbanktabelle</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column=value:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert <i>value</i> haben.</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">$column=section$:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert des Feldes mit dem Namen <i>section</i> haben.</td>
+  </tr>
+</table><br><br>
+Beispiele:<br>
+
+<ol type="1">
+    <li>&nbsp;N street address<br>&nbsp;&nbsp;(SELECT street FROM address)<br><br></li>
+   <li>&nbsp;&nbsp;B short_name codes class='COUNTRY'<br>
+       &nbsp;&nbsp;(SELECT short_name FROM codes WHERE class='COUNTRY')<br><br></li>
+   <li>&nbsp;&nbsp;N last_name partner $job.db_job=sec130$ partner.db_partner=job.db_partner<br>
+       &nbsp;&nbsp;(SELECT last_name FROM partner<br>&nbsp;&nbsp; WHERE<br>
+       &nbsp;&nbsp; job.db_job={Inhalt von Feld sec130}<br>&nbsp;&nbsp; AND <br>
+       &nbsp;&nbsp;partner.db_partner=job.db_partner)</li>
+</ol><br><br>
+
+<a name="GEOMETRY"></a>
+<h4>Geometry</h4>
+X- und Y-Koordinate des Objekts. Die Einheit ist Pixel. Der Koordinatenursprung ist
+auf der Maske oben links. Die Feldlänge (Field Lenght) gibt an wieviel Zeichen im
+Eingabefeld sichbar sind.<br><br>
+
+<a name="verschieben"></a><table bgcolor="#d4d4df"><tr><td><b>Verschieben von Objekten:</b>
+Ist ein Objekt plaziert kann durch Eingabe anderer X- und Y-Werte das Objekt in die gewünschte
+Position gebracht werden. Ein schnellerer Weg das Objekt in die richtige Position zu bringen
+erfolgt einfach durch Ziehen des Objekts mit der Maus.<br>
+<font color="red" size="+1">So wird es gemacht:</font> <u><i>Strg</i></u>+<i><u>Umschalt</u></i>-Taste
+gleichzeitig drücken und mit dem Mauszeiger auf der Maske auf das gewünschte Objekt zeigen und
+<u>linke Maustaste</u> drücken und halten. Jetzt das Objekt in die gewünschte Position schieben und
+alle drei Tasten wieder loslassen. Die X- und Y-Werte werden automatisch in das
+Konfigurationsfenster übernommen. Falls notwendig, kann der Vorgang wiederholt werden.
+Bei kombinierten Objekten (Label und Feld) läßt sich gleichzeitig nur entweder das Feld oder
+das Label verschieben. Durch ein Klick auf <i>Update</i> wird aber der andere Teil an der neuen
+Position plaziert.
+<td></tr></table>
+<br><br>
+
+<a name="COLORS"></a>
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe im Eingabefeld. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<a name="DATABASE"></a>
+<h4>Database</h4>
+Zum Anzeigen eines Datensatzes ist es notwendig, die Beziehung Datenfeld -> Datenbank zu
+spezifizieren.
+
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Table:</td><td>Datenbank-Tabelle. Für mehrfach Zugriffe auf dieselbe Spalte,
+               kann hier auch ein Alias-Name spezifiziert werden: Beispiel:
+                codes as codes1; dann ist allerdings der Parameter <i>Relation</i> notwendig.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Column:</td><td>Eine Spalte der Tabelle <i>Table</i></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Relation:</td><td>Ist unter <i>Table</i> der Tabellenname als Alias angegeben, muss
+             hier eine Beziehung zwischen den Tabellen und Spalten definiert werden.<br>
+             Beispiel für ein Feld, dass das Geschlecht als langen Text ausgibt:<br>
+             <i>Table</i>= codes as codes1<br><i>Column</i>= long_name<br>
+            <i>Relation</i>=(animal.db_sex=codes1.db_code and codes1.class='SEX')<br>
+             ein anderes Feld zum Anzeigen der Rasse könnte dann so aussehen:<br>
+             <i>Table</i>= codes as codes2<br><i>Column</i>= long_name<br>
+            <i>Relation</i>=(animal.db_breed=codes2.db_code and codes2.class='BREED')<br>
+             </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+  <td align="right" valign="top">Action...&nbsp;:</td><td>Beschreibt, woher der Wert des Feldes
+              kommt, oder wohin er gehen soll. Dazu werden
+              Aktionen oder Funktionen benutzt, die beim Drücken
+              der <b>Tab</b>-Taste oder beim Klicken auf Insert ausgeführt werden. Mehrere
+              Aktionen/Funktionen können mit Komma, aber <u>ohne Leerzeichen</u> dazwischen,
+              abgetrennt werden.<br><br>
+              Die generelle Definition einer Aktion ist:<br>
+              <i>Aktions-Typ Tabelle Spalte</i><br>
+              mit den Aktions Typen: <b>I</b> = Insert; <b>U</b> = Update und <b>C</b> = Kondition für
+              Update (WHERE-clause).<br><br>
+              Eine <b>I</b>nsert-Aktion wird automatisch gesetzt, wenn vor dem Aufruf des
+              Konfigurationsdialogs im
+              Hauptfenster eine Tabelle (<i>Table</i>) und eine Spalte (<i>Column</i>) gewählt
+              wurde.<br><br>
+              Generelle Definition von Funktionsaufrufen:<br>
+              <i>F Funktions_name Funktions_parameter</i><br>
+              &nbsp;&nbsp;oder<br>
+              <i>f Funktions_name Funktions_parameter</i><br>
+              Ein großes <b>F</b> gibt an, dass die Funktion bei jedem Drücken der <b>Tab</b>-Taste
+              aufgerufen wird, während ein kleines <b>f</b> besagt, dass die Funktion nur einmal beim
+              abschließenden Klick auf <b>Insert</b> aufgerufen wird.<br>
+              Die verfügbaren Funktionen sind in einem eigenen Kapitel beschrieben:
+                <a href="c6.html">Funktionen für den <i>Action-</i>Parameter</a>
+              </td>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+  <td align="right" valign="top">Update:</td><td>Mögliche Werte <b>Y</b> = yes oder
+             <b>N</b> = no<br>
+             Nach einem <b>Suchen</b> und selektieren eines Datensatzes ist es möglich, dass
+             Daten geändert und in die Datenbank zurückgeschrieben werden. Dieser Parameter legt
+             fest, ob dieses Feld <i>updaten</i> darf oder nicht.<br>
+             <font size="+1">Zum Verständnis: Dieser Parameter hat nichts mit dem Aktionstype <b>U</b> zu tun.
+             Es geht hier ausschliesslich um ein Updaten eines selektierten Datensatzes.</font>
+              </td>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+  <td align="right" valign="top">Operator:</td><td>Legt fest, mit welchem Operator beim
+            <b>Suchen</b> (Query) die Bedingung für dieses Feld verknüpft sein soll.<br>
+            Beispiele:<br>
+            <table align="center" border="1" cellpadding="2"><th align="center">Operator</th><th align="left">Feldinhalt</th>
+             <th align="left">findet:</th>
+             <tr><td>=</td><td><b>ABC</b></td><td><b>ABC</b></td></tr>
+             <tr><td>LIKE</td><td><b>ABC</b></td><td><b>ABC</b>, <b>ABC</b>D</td></tr>
+            <tr><td>LIKE</td><td><b>%ABC</b></td><td><b>ABC</b>, <b>ABC</b>D, xyz<b>ABC</b>D</td></tr>
+            <tr><td>=</td><td><b>123</b></td><td><b>123</b></td></tr>
+            <tr><td>=></td><td><b>123</b></td><td><b>123</b>, 124, 4711</td></tr>
+            </table></td>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+
+</table><br><br>
+
+<a name="OTHEROPTIONS"></a>
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><a name="OOCLEAR"></a><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top"><td>Clear:</td><td>Mögliche Werte: <b>Y</b>es, <b>N</b>o und
+         <b>never</b><br>
+         <b>Y</b>es: Feld soll gelöscht werden, wenn der Datensatz in die Datenbank geschrieben
+         wurde (klick auf <b>Insert</b>).<br>
+         <b>N</b>o: Feld soll nicht gelöscht werden, wenn der Datensatz in die Datenbank
+         geschrieben wurde (klick auf <b>Insert</b>). Kann mit Klick auf <b>Löschen</b> (Clear)
+          jederzeit gelöscht werden.<br>
+         <b>never</b>: Feld kann vom Maskenbenutzer nicht gelöscht werden. Löschen ist nur mit
+         Hilfe von Funktionen oder Kommandos (angegeben in <b>Enter</b>, <b>Leave</b> oder
+         Typ-P Kommandos) möglich.
+         </td>
+  </tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top"><td>Balloon Message ...:</td><td>
+             Text in einem <a href="c2.html#balloon">Balloon</a></td>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<a name="BINDCOM"></a>
+<h4>Bind Command</h4>
+Perl Befehle können ausgeführt werden, wenn das Feld den Fokus bekommt oder verliert.
+<table align="center" cellspacing="10">
+  <tr align="left " valign="top"><td>Enter:</td><td>Ausführen von Befehlen , wenn
+    duch Klicken in das Feld, oder mit der <b>Tab</b>-Taste das Feld
+    den Fokus bekommt.
+        </td>
+  <tr align="left " valign="top"><td>Leave:</td><td>Ausführen von Befehlen , wenn
+    duch Klicken in ein anderes Feld, oder mit der <b>Tab</b>-Taste das Feld
+    den Fokus verliert.
+    </td>
+</table><br><br>
+(siehe auch <a href="c2.html#startup">Startup Command</a> der generellen Konfiguration).<br><br>
+
+<a name="STARTVAL"></a>
+<h4>Startup Value</h4>
+Eine Zeichenkette oder Wert, der beim Starten der Maske in das Feld geschrieben wird.
+Wird der Inhalt überschrieben oder gelöscht, steht er nicht mehr zur Verfügung. <i>Default</i>
+-Werte müssen in der Modeldatei angegeben werden.<br><br><br><br>
+</td>
+<td align="right" valign="top" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_b.gif" width="172" height="943" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 7</td></tr></table><br><br>
+<img src="../images/space.gif" width="10" height="200" border="0"><br><br>
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_n.gif" width="172" height="943" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 8</td></tr></table>
+
+</td></tr>
+</table>
+<br><br>
+
+<a name="TYPEC"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ C Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Eingabefeld für verschiedene Datumsformate. Ein Kalender kann durch Klick auf den linken Knopf
+geöffnet werden. Das Konfigurationsfenster für den Typ C zeigt Abbildung 9.
+</td></tr>
+<tr><td valign="top"><br>
+Die möglichen Konfigurationsparameter sind:<br>
+<h4>Field Label</h4>
+Beschriftung des Eingabefelds.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Geometry</h4>
+Koordinaten des Feldes und Feldlänge.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe im Eingabefeld. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br><br>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td>
+
+<td align="right" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_c.gif" width="172" height="891" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 9</td></tr></table>
+</td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPED"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ D Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Dieses Feld dient zum Anzeigen von Daten, z.B. interne Datenbank ID, welche vom Benutzer nicht
+geändert werden können. Das Konfigurationsfenster zeigt Abbildung 10.
+
+<tr><td valign="top"><br>
+Die möglichen Konfigurationsparameter sind:<br>
+<h4>Field Label</h4>
+Beschriftung des Eingabefelds.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Geometry</h4>
+Koordinaten des Feldes und Feldlänge.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe im Eingabefeld. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td>
+<td align="right" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_d.gif" width="172" height="761" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 10</td></tr></table>
+</td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEE"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ E Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Ist wohl das am häufigsten benutzte Feld zur Eingabe von Daten. Durch den zusätzlichen Parameter
+<i>Password Char</i> kann dieses Feld auch zur Passworteingabe verwendet werden. Die eingegebenen
+Zeichen werden durch ein zu spezifizierendes Zeichen dargestellt.<br>
+Abbildung 11 zeigt das Konfigurationsfenster dieses Typs.
+</td></tr>
+<tr><td valign="top"><br>
+Die möglichen Konfigurationsparameter sind:<br>
+<h4>Field Label</h4>
+Beschriftung des Eingabefelds.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Geometry</h4>
+Koordinaten des Feldes und Feldlänge.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe im Eingabefeld. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br>
+zusätzlich:
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Password Char:</td><td><b>*</b>&nbsp;&nbsp; oder anderes Zeichen zur
+              unsichtbaren Eingabe eines Passwortes. Kann auch mehr als ein Zeichen lang sein.
+                Wird kein Zeichen spezifiziert, werden die Zeichen so dargestellt, wie sie sind.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td>
+<td valign="right" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_e.gif" width="172" height="917" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 11</td></tr></table><br><br>
+</td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEI"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ I Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Type I definiert eine rechteckige Box, in die ein Bild geladen, oder
+mit einer Farbe gefüllt werden kann.<br>
+Die Box kann mit verschiedenen Rahmen in unterschiedlichen Breiten versehen werden.
+Auch ein Label kann die Box haben, und so lassen sich Gruppen von Eingabefeldern thematisch ordnen.<br><br>
+Sollen in der Box andere Objekte plaziert werden, ist zu beachten, dass
+der Sektionsname vor den Namen der anderen Objekte einsortiert ist. Durch
+Umbennen der Sektionen kann aber jederzeit die Reihenfolge geändert werden.<br>
+Siehe dazu auch <a href="c3.html#DIALOGWIN">Dialogfenster für die Konfiguration der Maskenobjekte</a><br><br>
+Das Konfigurationsfenster des I-Typs zeigt Abbildung 12.<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+<h4>Field Label</h4>
+Optionale Beschriftung der Box oder des Bildes.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Geometry</h4>
+Größe und Koordinaten des Feldes.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) der Box oder des Bildes.
+Ein Bild wird beschnitten, wenn <i>Width</i> und/oder <i>Height</i> kleiner sind als das Bild.
+Eventuell muss mit einem Grafikprogramm (xv, kview etc.) die Größe des Bildes bestimmt werden.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Labels und Hintergrundfarbe der Box. Die Farbe des
+Labelhintergrunds entspricht der Farbe des Maskenhintergrundes, und  wird in der
+<a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Die Dicke des Rahmens in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         der Box oder des Bildes. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche<br>
+         <i>raised</i>: erhabene Box oder Bild<br>
+         <i>ridge</i>: erhabener Rahmen<br>
+         <i>sunken</i>: abgesenkter Rahmen oder Bild
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr><br><br>
+</table><br><br>
+
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B für den optionalen Parameter
+<i>Balloon Message</i><br><br>
+
+<h4>GIF Image File</h4>
+Pfad und Dateiname für ein Gif-Bild. <i>Browse</i> öffnet eine Dateidialogbox.
+<br><br><br><br>
+</td>
+
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_i.gif" width="172" height="563" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 12</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEL"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ L Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Eingabefeld mit der Möglichkeit Daten aus einer Liste auszuwählen.<br>
+Anders als beim Typ B/N werden hier die Listeneinträge in der Modeldatei definiert.<br> Die Checkregel
+<i>List</i> läßt nur die definierten Parameter als Daten zu. Werte, die in der <i>List</i>-Regel
+nicht aufgeführt sind erzeugen einen Fehler.<br>
+Wenn <i>Table</i> und <i>Column</i> im Bereich <b>Database</b> angegeben sind, werden die
+Listeinträge für dieses Feldobjekt der entsprechenden <i>List</i>-Regel aus der Modeldatei
+übernommen.<br><br>
+Abbildung 13 zeigt das Konfigurationsfenster für diesen Typ.<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+<h4>Field Label</h4>
+Beschriftung des Listenfelds.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Geometry</h4>
+Koordinaten des Feldes und Feldlänge.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe im Eingabefeld. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+<i>Table</i> und <i>Column</i> müssen angegeben werden, und in der Modeldatei für die
+angegebene Tabelle und Spalte eine Check-Regel <i>List</i> spezifiziert sein, anderfalls
+bleibt die Liste leer.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td><br><br>
+</td>
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_l.gif" width="172" height="891" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 13</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEM"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ M Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Listbox zur Auswahl ein oder mehrerer Elemente aus einer Liste. Das Konfigurationsfenster ist
+in Abbildung 14 dargestellt.<br><br>
+Ein Beispiel mit mehreren Typ-M Feldern ist in
+<a href="../../../test/demo/listbox.form" type="text/css">$APIIS_HOME/test/demo/listbox.form</a>
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+<h4>Field Label</h4>
+Beschriftung der Listbox.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels. Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Browse Parameter</h4>
+Spezifiziert die Daten die aus der Datenbank geholt und in der Liste angezeigt werden sollen.
+<br><br>
+
+<table align="center" cellspacing="1" cellpadding="10" border="0">
+  <th align="left" valign="top" colspan="2">SYNTAX</th>
+  <tr>
+    <td colspan="2" align="left" valign="top"><font size="+1">
+        M column table [column=value ...] [$column=section$]</font></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column:</td><td align="left" valign="top">Datenbankspalte der
+         Tabelle <i>table</i></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">table:</td><td align="left" valign="top">Datenbanktabelle</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column=value:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert <i>value</i> haben.</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">$column=section$:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert des Feldes mit dem Namen <i>section</i> haben.</td>
+  </tr>
+</table><br><br>
+Beispiele:<br>
+<ol type="1">
+    <li>&nbsp;M street address<br>&nbsp;&nbsp;(SELECT street FROM address)<br><br></li>
+   <li>&nbsp;&nbsp;M short_name codes class='COUNTRY'<br>
+       &nbsp;&nbsp;(SELECT short_name FROM codes WHERE class='COUNTRY')<br><br></li>
+   <li>&nbsp;&nbsp;M last_name partner $job.db_job=sec130$ partner.db_partner=job.db_partner<br>
+       &nbsp;&nbsp;(SELECT last_name FROM partner<br>&nbsp;&nbsp; WHERE<br>
+       &nbsp;&nbsp; job.db_job={Inhalt von Feld sec130}<br>&nbsp;&nbsp; AND <br>
+       &nbsp;&nbsp;partner.db_partner=job.db_partner)</li>
+</ol><br><br>
+
+
+<h4>Geometry</h4>
+
+Größe und Koordinaten der Listbox.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) der Box.
+<i>Width</i> in Anzahl Zeichen und <i>Height</i> in Anzahl Zeilen.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe der Listbox. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Clear:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a><i>-Clear beim Type B</i></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Dicke der 3D-Umrandung in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         der Listbox. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche<br>
+         <i>raised</i>: erhabene Box oder Bild<br>
+         <i>ridge</i>: erhabener Rahmen<br>
+         <i>sunken</i>: abgesenkter Rahmen oder Bild
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Scrollbar:</td><td>Optionale Scrollbars für vertikale und
+        horizontale scrolls.<br></td></tr>
+        <tr><td></td><td><table border="0" cellpadding="5">
+          <tr><td>e</td><td>Scrollbar rechts (<i>e</i>ast)</td></tr>
+          <tr><td>w</td><td>Scrollbar links (<i>w</i>est)</td></tr>
+          <tr><td>n</td><td>Scrollbar oben (<i>n</i>orth)</td></tr>
+          <tr><td>s</td><td>Scrollbar unten (<i>s</i>outh)</td></tr>
+          <tr><td>se</td><td>Scrollbars unten und rechts</td></tr>
+          <tr><td>o?</td><td>Scrollbar nur wenn erforderlich</td></tr>
+        </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Select Mode:</td>
+        <td>Spezifiziert unterschiedliche Arten der Auswahl:<br></td></tr>
+       <tr><td></td><td><table border="0" cellpadding="5">
+       <tr><td align="right" valign="top"><i>single</i>:</td><td>ein Element der Liste kann ausgewählt
+                 werden.</td></tr>
+       <tr><td align="right" valign="top"><i>browse</i>:</td><td>wie <i>single</i>, jedoch kann mit Mausbutton 1 die
+                Selektion zum nächsten Element gezogen werden.</td></tr>
+       <tr><td align="right" valign="top"><i>multiple</i>:</td><td>Auswahl mehrerer Elemente möglich.
+                  Ein Klick mit Mausbutton 1 schaltet zwischen selektiert/deselektiert hin und her.</td></tr>
+       <tr><td align="right" valign="top"><i>extended</i>:</td><td>Auswahl mehrerer Elemente möglich.
+                  Ein Klick mit Mausbutton 1 selektiert das Element und deselktiert alle anderen.
+                  Ein Ziehen mit der Maus fügt die Elemente unter dem Mauszeiger hinzu. Es ist auch
+                  möglich mit gedrückter Umschalt- bzw. Steuerungstaste Elemente
+                  der Selektion hinzu zufügen.</td></tr>
+       </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Balloon Message:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td><br><br>
+</td>
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_m.gif" width="172" height="1024" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 14</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+<a name="TYPEO"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ O Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Multi-Spalten Listenfeld zum Anzeigen von Daten (<u><strong>O</strong></u>utput).
+Eingebaute Fähigkeiten zum sortieren, Spaltenbreiten Veränderung und Umordnen der Spalten.
+Das Konfigurationsfenster ist in Abbildung 15 dargestellt.<br><br>
+Ein Beispiel mit einem Typ-O Feld zeigt
+<a href="../../../test/demo/mlistbox.form" type="text/css">$APIIS_HOME/test/demo/mlistbox.form</a>
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+<h4>Field Label</h4>
+Beschriftung der Listbox.<br><br>
+
+<h4>Label / Header Font ...</h4>
+Bestimmt Schriftart und -größe des Labels und der Spaltenüberschriften.
+ Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+<h4>Browse Parameter</h4>
+Spezifiziert die Daten die aus der Datenbank geholt und in der Liste angezeigt werden sollen.<br>
+(Siehe auch <i>ACTION</i> für weitere Möglichkeiten die Tabelle mit Daten zu füllen.)
+<br><br>
+
+<table align="center" cellspacing="1" cellpadding="10" border="0">
+  <th align="left" valign="top" colspan="2">SYNTAX</th>
+  <tr>
+    <td colspan="2" align="left" valign="top"><font size="+1">
+        O [ column1[|column2 ...] table1[|table2 ...]  [column=value ...] [$column=section$] ]</font></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column:</td><td align="left" valign="top">Datenbankspalte der
+         Tabelle <i>table</i></td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">table:</td><td align="left" valign="top">Datenbanktabelle</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">column=value:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert <i>value</i> haben.</td>
+  </tr>
+  <tr valign="top">
+    <td align="right" valign="top">$column=section$:</td><td align="left" valign="top">Bedingung:
+         Datenbankspalte <i>column</i> muss den Wert des Feldes mit dem Namen <i>section</i> haben.</td>
+  </tr>
+  <tr valign="top">
+  <td colspan="2" align="center" valign="top"><font color="#C90000">
+         Mehrere Spalten und Tabellen werden durch '|' und nicht durch Komma getrennt!</font></td>
+  </tr>
+</table>
+
+<br><br>
+Beispiele:<br>
+<ol type="1">
+    <li>&nbsp;O first_name|second_name|street|city address<br>
+         &nbsp;&nbsp;(SELECT first_name,second_name,street,city FROM address)<br><br></li>
+   <li>&nbsp;&nbsp;O short_name|long_name codes class='COUNTRY'<br>
+        &nbsp;&nbsp;(SELECT short_name,long_name FROM codes WHERE class='COUNTRY')<br><br></li>
+   <li>&nbsp;&nbsp;O last_name|first_name partner $job.db_job=sec130$ partner.db_partner=job.db_partner<br>
+       &nbsp;&nbsp;(SELECT last_name,first_name FROM partner<br>&nbsp;&nbsp; WHERE<br>
+       &nbsp;&nbsp; job.db_job={Inhalt von Feld sec130}<br>&nbsp;&nbsp; AND <br>
+       &nbsp;&nbsp;partner.db_partner=job.db_partner)</li>
+</ol><br><br>
+
+<h4>Header Label</h4>
+Anzahl der Spalten und Beschriftung der einzelnen Spaltenüberschriften.
+<table cellpadding="5" cellspacing="0" border="0" align="left">
+  <th colspan="0" align="left" valign="top">SYNTAX: </th>
+  <th colspan="0" align="left" valign="top">
+  Header1[|Header2 ...]</th>
+   </table><br clear="all">
+ Beispiel:  Name|Straße|Ort
+ <table border="3">
+ <th bgcolor="#555555"><font color="white">Name</font></th>
+ <th bgcolor="555555"><font color="white">Straße</font></th>
+ <th bgcolor="555555"><font color="white">Ort</font></th>
+ </table>
+ <br><br>
+
+<h4>Geometry</h4>
+
+Größe und Koordinaten der Listbox, sowie Breite der einzelnen Spalten.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) der Box.
+<i>Width</i> in Pixeleinheiten und <i>Height</i> in Anzahl Zeilen.<br>
+Spaltenbreiten (<i>Field Lenght</i>) der einzelnen Spalten in Anzahl Zeichen.<br><br>
+Beispiel:<br>
+&nbsp;&nbsp;&nbsp;Header Label: Name|Straße|Ort|Telefon<br>
+&nbsp;&nbsp;&nbsp;Field Lenght:   25|35|24|16<br>
+&nbsp;&nbsp;&nbsp;Height: 2
+ <table cellpadding="0" cellspacing="0" border="3">
+ <th width="25%" bgcolor="#555555"><font color="white">Name</font></th>
+ <th width="35%" bgcolor="555555"><font color="white">Straße</font></th>
+ <th width="24%" bgcolor="555555"><font color="white">Ort</font></th>
+ <th width="16%" bgcolor="555555"><font color="white">Telefon</font></th>
+ <tr bgcolor="#cccccc"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+ <tr bgcolor="#cccccc"> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+ </table><br clear="all">
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+
+<h4>Colors</h4>
+Die Farbe des Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Background:</td>
+        <td>Hintergrundfarbe der Listbox (siehe auch <i>Listbox BG</i> und <i>Header BG</i>)</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Foreground:</td><td>Schriftfarbe in der Listbox (siehe auch <i>Listbox FG</i> und <i>Header FG</i>)</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Frame:</td><td>Farbe des äußeren Rahmens</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Header FG:</td><td>Farben  der einzelnen Spaltenbeschriftungen.<br>
+                                                Beispiel: red|blue|#aa55ff<br>
+                                                 <table border="3">
+                                                 <th bgcolor="white"><font color="red">Name</font></th>
+                                                 <th bgcolor="white"><font color="blue">Straße</font></th>
+                                                 <th bgcolor="white"><font color="#aa55ff">Ort</font></th>
+                                                 </table></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Header BG:</td><td>Hintergrundfarben der einzelnen Spaltenbeschriftungen.<br>
+                                                Beispiel: #aaaa00|#505090|#a9a9a9<br>
+                                                 <table border="3">
+                                                 <th bgcolor="#aaaa00"><font color="red">Name</font></th> 
+                                                 <th bgcolor="#505090"><font color="blue">Straße</font></th>
+                                                 <th bgcolor="#a9a9a9"><font color="#aa55ff">Ort</font></th>
+                                                 </table></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Listbox FG:</td><td>Schriftfarben der einzelnen Spalten.<br>
+                                                Beispiel: #aaaa00|#505090|#a9a9a9<br>
+                                                 <table border="3">
+                                                 <th bgcolor="#aaaa00"><font color="red">Name</font></th> 
+                                                 <th bgcolor="#505090"><font color="blue">Straße</font></th>
+                                                 <th bgcolor="#a9a9a9"><font color="#aa55ff">Ort</font></th></tr>
+                                                 <td bgcolor="white"><font color="#aaaa00">Kohl</font></td>
+                                                 <td bgcolor="white"><font color="#505090">Weg 1</font></td>
+                                                 <td bgcolor="white"><font color="#a9a9a9">Bonn</font></td>
+                                                 </table></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Listbox BG:</td><td>Hintergrundfarben der einzelnen Spalten.<br>
+                                                Beispiel: black|white|blue<br>
+                                                 <table border="3">
+                                                 <th bgcolor="#aaaa00"><font color="red">Name</font></th> 
+                                                 <th bgcolor="#505090"><font color="blue">Straße</font></th>
+                                                 <th bgcolor="#a9a9a9"><font color="#aa55ff">Ort</font></th></tr>
+                                                 <td bgcolor="black"><font color="#aaaa00">Kohl</font></td>
+                                                 <td bgcolor="white"><font color="#505090">Weg 1</font></td>
+                                                 <td bgcolor="blue"><font color="#a9a9a9">Bonn</font></td>
+                                                 </table></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Select FG:</td><td>Schriftfarben der selektierten Zeilen.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Select BG:</td><td>Hintergrundfarben der selektierten Zeilen.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Separator:</td><td>Farbe der Spaltentrenner.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+Mit den Funktionen 'SQL' und 'fetchlist' kann die Listbox, in Abhängigkeit von anderen Feldinhalten, gefüllt werden.<br><br>
+Beispiele:
+<ul>
+	<li>ACTION=F SQL SELECT db_id|d_weight|weight FROM weight WHERE db_id=$sec1$</li>
+	<li>ACTION=F SQL SELECT T1.c1|T1.c2|T2.c1 from T1|T2 where T1.c1=$sec1$ AND T1.c3=$sec12$</li>
+	<li>ACTION=F fetchlist weight db_id|d_weight|weight|weight sec1 db_id</li>
+</ul><br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Clear:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a><i>-Clear beim Type B</i></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Dicke der 3D-Umrandung in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         der Listbox. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche<br>
+         <i>raised</i>: erhabene Box oder Bild<br>
+         <i>ridge</i>: erhabener Rahmen<br>
+         <i>sunken</i>: abgesenkter Rahmen oder Bild
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Scrollbar:</td><td>Optionale Scrollbars für vertikale und
+        horizontale scrolls.<br></td></tr>
+        <tr><td></td><td><table border="0" cellpadding="5">
+          <tr><td>e</td><td>Scrollbar rechts (<i>e</i>ast)</td></tr>
+          <tr><td>w</td><td>Scrollbar links (<i>w</i>est)</td></tr>
+          <tr><td>n</td><td>Scrollbar oben (<i>n</i>orth)</td></tr>
+          <tr><td>s</td><td>Scrollbar unten (<i>s</i>outh)</td></tr>
+          <tr><td>se</td><td>Scrollbars unten und rechts</td></tr>
+          <tr><td>o?</td><td>Scrollbar nur wenn erforderlich</td></tr>
+        </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Select Mode:</td>
+        <td>Spezifiziert unterschiedliche Arten der Auswahl:<br></td></tr>
+       <tr><td></td><td><table border="0" cellpadding="5">
+       <tr><td align="right" valign="top"><i>single</i>:</td><td>ein Element der Liste kann ausgewählt
+                 werden.</td></tr>
+       <tr><td align="right" valign="top"><i>browse</i>:</td><td>wie <i>single</i>, jedoch kann mit Mausbutton 1 die
+                Selektion zum nächsten Element gezogen werden.</td></tr>
+       <tr><td align="right" valign="top"><i>multiple</i>:</td><td>Auswahl mehrerer Elemente möglich.
+                  Ein Klick mit Mausbutton 1 schaltet zwischen selektiert/deselektiert hin und her.</td></tr>
+       <tr><td align="right" valign="top"><i>extended</i>:</td><td>Auswahl mehrerer Elemente möglich.
+                  Ein Klick mit Mausbutton 1 selektiert das Element und deselktiert alle anderen.
+                  Ein Ziehen mit der Maus fügt die Elemente unter dem Mauszeiger hinzu. Es ist auch
+                  möglich mit gedrückter Umschalt- bzw. Steuerungstaste Elemente
+                  der Selektion hinzu zufügen.</td></tr>
+       </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Sortable:</td>
+        <td>Sortierung der Spalten erlauben oder unterbinden.<br>
+               Sortable = 1 sortieren erlaubt<br>
+               Sortable = 0 sortieren nicht möglich.<br><br>
+               Beispiel: 1|0|1|1<br>Nach Spalten 1,3,4 kann sortiert werden, Spalte 2 ist nicht sortierbar.</td></tr>
+   <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+      <tr align="left " valign="top">
+    <td align="right" valign="top">Sortmode:</td>
+        <td>n=numerisch (1,2,3,10,100)<br>a=alphabetisch (1,10,100,2,a,b)<br>
+        Beispiel: n|a|a</td></tr>
+   <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+     <tr align="left " valign="top">
+    <td align="right" valign="top">Resizeable:</td>
+        <td>Gibt an, ob Spaltenbreite geändert werden darf. <br>
+        Beispiel: 1|0|1</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+      <tr align="left " valign="top">
+    <td align="right" valign="top">Moveable:</td>
+        <td>Gibt an, ob Spalten verschoben werden dürfen. <br>
+        1 = verschieben der Spalten möglich<br>
+        0 = verschieben nicht möglich</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+     <tr align="left " valign="top">
+    <td align="right" valign="top">Separatorwidth:</td>
+        <td>Dicke des Spaltentrennstrichs in Pixeleinheiten.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+     <tr align="left " valign="top">
+    <td align="right" valign="top">Listbox Font:</td>
+        <td>Schriftart des Datenbereichs der Listbox.<br>
+               Die Schriftart der Spaltenüberschrift wird in <i>Label / Header Font</i> eingestellt.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Balloon Message:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td><br><br>
+</td>
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_o.gif" width="173" height="1311" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 15</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+
+
+
+
+<a name="TYPEP"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ P Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Typ P stellt für die Maske Knöpfe zur Verfügung, wodurch bestimmte Aktionen
+gestartet werden können. Die Aktionen sind frei programmierbar.<br>
+Beispiele mit mehreren Typ-P Knöpfen zeigen die Form-Dateien&nbsp;
+<a href="../../../test/demo/pushButton.form" type="text/css">$APIIS_HOME/test/demo/pushButton.form</a> und
+<a href="../../../test/demo/Demos.form" type="text/css">$APIIS_HOME/test/demo/Demos.form</a><br>
+Abbildung 16 zeigt das Konfigurationsfenster für den P-Typ.
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+Alle Parameter sind optional. Allerdings sollte zumindest eine sinnvolle Beschriftung
+des Knopfes in <i>Button Label</i> vorgenommen werden.
+
+<h4>Field Label</h4>
+Optionales Label, angeordnet wie bei den anderen Objekten.<br>
+<u>Hier wird nicht die Beschriftung des Knopfes vorgenommen</u>.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels und des Textes auf dem Knopf .<br>
+Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Typ B.<br><br>
+
+<h4>Button Label</h4>
+Beschriftung des Knopfes. Schriftart und -größe werden durch <i>Label Font</i> bestimmt.<br><br>
+
+<h4>Command</h4>
+Führt die spezifizierten Perl-Befehle nach Anklicken des Knopfes aus.<br>
+Beispiel für einen Schließen-Knopf:<br>
+<pre>
+&nbsp;$$form{GENERAL}{TOPLEVEL}->destroy<br><br>
+</pre>
+(siehe auch <a href="c6.html">6. Perl-Code in Maskenparametern</a> und<br>
+<a href="c2.html#startup">Startup Command</a> der generellen Konfiguration).<br><br>
+Der kleine Knopf [...] öffnet einen einfachen Editor zum Erstellen längerer Scripte.<br><br>
+
+
+<h4>Geometry</h4>
+Größe und Koordinaten des Knopfes.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) des Knopfes in Zeichenbreite bzw. Zeichenhöhe.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Hintergrundfarbe <i>Background</i> und Schriftfarbe <i>Foreground</i> des Knopfes.<br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Die Dicke des Rahmens in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         des Knopfes. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche um den Knopf<br>
+         <i>raised</i>: erhabener Knopf (übliches Erscheinungsbild für Knöpfe)<br>
+         <i>ridge</i>: erhabener Rahmen um den Knopf<br>
+         <i>sunken</i>: abgesenkter Knopf
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr><br><br>
+</table><br>
+
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B für den optionalen Parameter
+<i>Balloon Message</i><br><br><br><br>
+</td><br><br>
+
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_p.gif" width="172" height="615" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 16</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+
+<a name="TYPER"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ R Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Typ R ist ein Satz von untereinander abhängigen Knöpfen. Es kann gleichzeitig immer nur ein Knopf selektiert sein.
+Jeder Knopf muß durch einen Text eindeutig gekennzeichnet sein.<br><br>
+Beispiele mit mehreren Typ-R Knöpfen zeigt die Form-Datei&nbsp;
+<a href="../../../test/demo/radioButton.form" type="text/css">$APIIS_HOME/test/demo/radioButton.form</a><br>
+Abbildung 17 zeigt das Konfigurationsfenster für den R-Typ.
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+Bis auf <i>Text</i> sind alle Parameter optional. 
+
+<h4>Field Label</h4>
+Optionales Label, angeordnet wie bei den anderen Objekten.<br>
+<u>Hier werden nicht die Beschriftungen der Knöpfe vorgenommen</u>.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels und der einzelnen Texte.<br>
+Siehe auch entsprechende Beschreibung
+<a href="c3.html#LABELFONT">Label Font</a> beim Typ B.<br><br>
+
+<h4>Text</h4>
+Beschriftung der einzelnen Knöpfe. Schriftart und -größe werden durch <i>Label Font</i> bestimmt.<br><br>
+Die Texte der Knöpfe werden durch '|' getrennt hintereinander a.<br><br>
+Beispiel:<br>
+<table cellpadding="4" cellspacing="0" border="0" width="40%">
+<tr><td>Field&nbsp;Label:</td><td>Lieblingsfarbe</td></tr>
+<tr><td>Text:</td><td>rot|blau|grün|andere</td></tr>
+<tr><td colspan="2"><hr></td<</tr>
+<tr><td colspan="2">Lieblingsfarbe<ul><li>rot</li><li>blau</li><li>grün</li><li>andere</li></ul></td></tr>
+</table>
+<br><br>
+
+<h4>Command</h4>
+Führt die spezifizierten Perl-Befehle nach Anklicken eines Knopfes aus.<br><br>
+Beispiel:<br>
+<pre>
+&nbsp;COMMAND=<< EOT
+&nbsp;if($$form{sec}{SELECTED} == 0) { print "$$form{sec}{DATA} ist gewählt!\n";}
+&nbsp;if($$form{sec}{SELECTED} == 1) { print "$$form{sec}{DATA} ist gewählt!\n";}
+&nbsp;EOT
+<br><br>
+</pre>
+(siehe auch <a href="c6.html">6. Perl-Code in Maskenparametern</a> und<br>
+<a href="c2.html#startup">Startup Command</a> der generellen Konfiguration).<br><br>
+Der kleine Knopf [...] öffnet einen einfachen Editor zum Erstellen längerer Scripte.<br><br>
+
+<h4>Selected</h4>
+Gibt an, welcher Knopf von Begin an gesetzt sein soll. Der erste Knopf ist 0 und der n-te Knopf ist n-1.
+Soll kein Knopf gesetzt sein, ist 'nothing' anzugeben.<br><br>
+
+
+<h4>Geometry</h4>
+Größe und Koordinaten des Knopfes.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) des Knopfes in Zeichenbreite bzw. Zeichenhöhe.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+<h4>Colors</h4>
+Hintergrundfarbe <i>Background</i> und Schriftfarbe <i>Foreground</i> des Knopfes.<br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Die Dicke des Rahmens in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         des Knopfes. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche um den Knopf<br>
+         <i>raised</i>: erhabener Knopf (übliches Erscheinungsbild für Knöpfe)<br>
+         <i>ridge</i>: erhabener Rahmen um den Knopf<br>
+         <i>sunken</i>: abgesenkter Knopf
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr><br><br>
+</table><br>
+
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B für den optionalen Parameter
+<i>Balloon Message</i><br><br><br><br>
+</td><br><br>
+
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_r.gif" width="176" height="949" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 17</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+
+
+<a name="TYPET"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ T Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Textbox zur Anzeige und Eingabe längerer Texte.<br>
+Dieses Feld-Objekt ist ein richtiger - allerdings einfacher - Texteditor.
+Ein Klick mit der rechten Maustaste öffnet ein Menü mit einigen
+Grundfunktionen wie <i>Copy, Cut, Paste</i>, Suchfunktion u.a.<br>
+Das Konfigurationsfenster für den T-Typ ist in Abbildung 18 dargestellt.<br><br>
+Beispiele verschiedener Typ-T Felder zeigt die Form-Datei
+<a href="../../../test/demo/text.form" type="text/css">$APIIS_HOME/test/demo/text.form</a>
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+
+<h4>Field Label</h4>
+Beschriftung der Textbox.<br><br>
+
+<h4>Label Font ...</h4>
+Bestimmt Schriftart und -größe des Labels.<br>
+Die Schrift für das Textfeld wird in der <a href="c2.html#fonts">generellen Konfiguration</a>
+<i>Fonts Normal</i> eingestellt.<br> Siehe auch entsprechende Beschreibung
+ <a href="c3.html#LABELFONT">Label Font</a> beim Type B.<br><br>
+
+
+<h4>Geometry</h4>
+Größe und Koordinaten der Textbox.<br>
+X- und Y Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+Breite (<i>Width</i>)und Höhe (<i>Height</i>) der Box.
+<i>Width</i> in Anzahl Zeichen und <i>Height</i> in Anzahl Zeilen.<br>
+Siehe auch <a href="c3.html#GEOMETRY">Geometry</a> und
+<a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+
+<h4>Colors</h4>
+Vordergrundfarbe (Schriftfarbe) des Textes und Hintergrundfarbe der Textbox. Die Farbe des
+Labels wird in der <a href="c2.html#color">generellen Konfiguration</a> vorgenommen.<br><br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Clear:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a><i>-Clear beim Type B</i></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Border:</td><td>Dicke der 3D-Umrandung in Pixeleinheiten.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Relief:</td><td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         der Textbox. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Furche um Textfeld<br>
+         <i>raised</i>: erhabenes Textfeld<br>
+         <i>ridge</i>: erhabener Rahmen<br>
+         <i>sunken</i>: abgesenkter Rahmen
+         </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Scrollbar:</td><td>Optionale Scrollbars für vertikale und
+        horizontale scrolls.<br></td></tr>
+        <tr><td></td><td><table border="0" cellpadding="5">
+          <tr><td>e</td><td>Scrollbar rechts (<i>e</i>ast)</td></tr>
+          <tr><td>w</td><td>Scrollbar links (<i>w</i>est)</td></tr>
+          <tr><td>n</td><td>Scrollbar oben (<i>n</i>orth)</td></tr>
+          <tr><td>s</td><td>Scrollbar unten (<i>s</i>outh)</td></tr>
+          <tr><td>se</td><td>Scrollbars unten und rechts</td></tr>
+          <tr><td>o?</td><td>Scrollbar nur wenn erforderlich</td></tr>
+        </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">Wrap Line:</td>
+        <td>Spezifiziert unterschiedliche Arten des automatischen Zeilenumbruchs:<br></td></tr>
+       <tr><td></td><td><table border="0" cellpadding="5">
+       <tr><td align="right" valign="top"><i>char</i>:</td><td>wenn Zeilenende erreicht ist, wird das
+                nächste Zeichen in eine neue Zeile geschrieben.</td></tr>
+       <tr><td align="right" valign="top"><i>word</i>:</td><td>wenn notwendig, wird eine Zeile nur
+                zwischen den Wörtern umgebrochen.</td></tr>
+       <tr><td align="right" valign="top"><i>none</i>:</td><td>kein automatischer Zeilenumbruch.</td></tr>
+       </table>
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Balloon Message:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+
+<h4>Bind Command</h4>
+Siehe <a href="c3.html#BINDCOM">Bind Command</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td><br><br>
+</td>
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_t.gif" width="172" height="991" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 18</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+
+<a name="TYPEU"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Typ U Konfigurationsparameter</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Analog- und/oder Digital-Uhr.
+<br><br>
+
+<u>Erforderlich für diesen Typ ist das Perl-Modul <b>Tk::Clock</b>.</u><br><br>
+Es ist möglich, mehrere Uhren auf der Maske zu plazieren, es muss  dann aber der
+Scalefaktor <i>Geometry Scale</i>  für <u>alle</u> Uhren gleich sein.<br>
+Das Konfigurationsfenster für Uhren zeigt Abbildung 19.<br><br>
+<br><br>
+</td></tr>
+<tr><td valign="top"><br>
+Beschreibung der Parameter:<br><br>
+
+
+<h4>Clock type</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">U analog:</td>
+        <td>analoge Uhr</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">U digital:</td>
+        <td>digitale Uhr mit Datum</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top">U analog and digital:</td>
+        <td>analoge Uhr mit digitaler Uhr und Datum darunter</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+Das <b>U</b> in der Angabe des <i>Clock type</i>s ist unbedingt mit anzugeben, da
+das Objekt hierdurch erst als U-Typ identifiziert wird.<br><br>
+
+<h4>Geometry</h4>
+Koordinaten der Uhr. <i>X</i>- und <i>Y</i>-Werte von der oberen, linken Ecke in Pixelneinheiten.<br>
+<i>Scale</i> in Prozent bestimmt die Größe der Uhr. Voreinstellung ist 100 entspricht 72x72
+Pixel.<br>
+Siehe auch <a href="c3.html#verschieben">Verschieben von Objekten</a> beim Typ B.<br><br>
+
+
+<h4>Colors</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Background</i>:</td>
+        <td>Hintergrundfarbe für Analog- und Digitaluhr. Voreinstellung: Hintergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Foreground</i>:</td>
+        <td>Stunden- und Minutenzeiger der Analoguhr. Voreinstellung: Vordergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>tick</i>:</td>
+        <td>Striche des Zifferblatts auf der Analoguhr. Voreinstellung: Vordergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top"><i>second hand</i>:</td>
+        <td>Farbe des Sekundenzeigers der Analoguhr. Voreinstellung: Vordergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top"><i>digital Time</i>:</td>
+        <td>Vordergrundfarbe der Zeitanzeige der Digitaluhr. Voreinstellung: Vordergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top"><i>digital Date</i>:</td>
+        <td>Vordergrundfarbe der Datumsanzeige der Digitaluhr. Voreinstellung: Vordergrundfarbe der Maske.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+Mit Hilfe der kleinen Knöpfe neben den Feldern kann ein Dialog zur Farbwahl aufgerufen werden.<br><br>
+
+
+<h4>Other Options</h4>
+<table align="center" cellspacing="10">
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Border</i>:</td>
+        <td>Umrandung der Uhr. In Verbindung mit <i>Relief</i> kann eine 3-D Darstellung erreicht werden.
+             Wert in Pixeleinheiten. Voreinstellung: 0</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Relief</i>:</td>
+        <td>Darstellungsart des Rahmens und damit Erscheinungsbild
+         der Uhr. Mögliche <i>Relief</i>-Parameter:<br>
+         <i>flat</i>: flach - keine 3D Darstellung<br>
+         <i>groove</i>: Rahmen als Furche<br>
+         <i>raised</i>: erhabene Uhr<br>
+         <i>ridge</i>: erhabener Rahmen<br>
+         <i>sunken</i>: abgesenkte Uhr<br>
+         Voreinstellung: flat
+        </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Tick Frequenz</i>:</td>
+        <td>Minutenstriche alle (1), jede 5. Minute oder die vier Hauptstriche (15).
+            Voreinstellung: 1</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Time fmt</i>:</td>
+        <td>Format der Zeitanzeige bei der Digitaluhr. Die Liste enthält nur drei der gebräuchlichsten
+             Formate. Darüber hinaus kann aber auch ein anderes Format spezifiziert werden,
+             z.B. HH:MM (Stunden:Minuten) oder SS (nur Sekunden).<br>
+             Voreinstellung: HH.MM:SS</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Date fmt</i>:</td>
+        <td>Format der Datumsanzeige bei der Digitaluhr. Voreinstellung: dd-mm-yy </td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+  <tr align="left " valign="top">
+    <td align="right" valign="top"><i>Time Font ...</i>:</td>
+        <td>Schriftart und -größe der digitalen Zeitanzeige. Voreinstellung:
+        <a href="c2.html#fonts">GENERAL-Fonts-Normal</a>.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+    <td align="right" valign="top"><i>Date Font ...</i>:</td>
+        <td>Schriftart und -größe der digitalen Datumsanzeige. Voreinstellung:
+        <a href="c2.html#fonts">GENERAL-Fonts-Normal</a>.</td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+   <tr align="left " valign="top">
+    <td align="right" valign="top">Balloon Message:</td>
+        <td>Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br></td></tr>
+  <tr><td><hr noshade size="1"></td><td><hr noshade size="1"></td></tr>
+</table><br><br>
+<br><br><br><br>
+</td><br><br>
+</td>
+<td valign="top" width="172">
+<table align="right">
+ <tr align="center" valign="bottom">
+ <td align="left" valign="bottom">
+ <img src="../images/conf_u.gif" width="172" height="717" border="0" align="top">
+ </td></tr>
+ <tr align="center " valign="center"><td align="center" valign="top">Abbildung 19</td></tr></table>
+ </td></tr>
+</table>
+<br><br>
+
+
+<a name="TYPEhidden"></a><table width="100%" bgcolor="#d4d4df">
+<tr><th align="left"><font size="+2">Konfigurationsparameter für ein unsichtbares Feld</font></th></tr></table>
+<table width="100%">
+<tr><td colspan="2">
+Diese Feld kann Daten aufnehmen, welche auf der Maske nicht sichtbar sein sollen - wie z.B.
+eine interne Datenbank Id.<br>
+Das Konfigurationsfenster zeigt Abbildung 20.
+
+<tr><td valign="top"><br>
+Die möglichen Konfigurationsparameter sind:<br>
+
+<h4>Database</h4>
+Feldanbindung an die Datenbank u.a.<br>
+Siehe auch <a href="c3.html#DATABASE">Database</a> beim Type B.<br><br>
+
+<h4>Other Options</h4>
+Siehe <a href="c3.html#OTHEROPTIONS">Other Options</a> beim Type B.<br><br>
+
+<h4>Startup Value</h4>
+Siehe <a href="c3.html#STARTVAL">Startup Value</a> beim Type B.<br><br><br><br>
+</td>
+<td align="right" width="172">
+<table align="right">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/conf_hidden.gif" width="172" height="449" border="0" align="top">
+</td></tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 20</td></tr></table>
+</td></tr>
+</table>
+<br><br>
+
+
+
+<!--######################################################################################-->
+<p></p>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c2.html">3. Generelle Konfiguration</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c5.html">5. Funktionen für den <i>Action-</i>Parameter</a></font></td>
+  </tr>
+</table>
+<table width="100%" border=0 bgcolor="white">
+  <tr><td><font size="-2">$Id: c3.html,v 1.5 2004/02/10 07:38:21 heli Exp $</font></td>
+</tr>
+</table>
+</BODY>
+</HTML>

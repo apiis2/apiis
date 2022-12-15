@@ -1,0 +1,84 @@
+\documentclass[10pt,a4paper]{book}
+%% \documentclass[10pt,a4paper,landscape]{book}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx,rotating,graphicx,array}
+\usepackage{verbatim,makeidx}
+\usepackage{wasysym}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\newcommand{\apiis}{\mbox{\textsc{Apiis} }}
+\tolerance=5000
+
+\makeindex
+%%\author{Lots of folks }
+%%\title{APIIS Developer Documentation}
+\begin{document}
+\begin{center}
+\includegraphics[scale=.7,]{../implementer/apiis6.ps}
+
+\vspace{2cm}
+\begin{Huge}\textbf{APIIS Developer Documentation}\end{Huge}
+\vspace{1cm}
+
+\begin{Large}\textbf{written by}
+\vspace{1cm}
+
+\textbf{Eildert Groeneveld\\
+        Zhivko Duchev\\
+        Ralf Fischer\\
+        Marek Imialek\\
+        Helmut Lichtenberg\\
+        Detlef Schulze\\}\end{Large}
+\vspace{2cm}
+
+ \begin{large}\textbf{Institute of Farm Animal Genetics\\
+                      friedrich Loeffler Institute\\
+                      Mariensee, Germany\\
+                      October 2008}\end{large}
+\end{center}
+%%\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ \newenvironment{lyxcode}
+    {\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \listparindent}{0pt}% needed for
+                                   AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}% \item[]}
+     {\end{list}}
+
+
+ \newenvironment{lyxlist}[1]
+    {\begin{list}{}
+     {\settowidth{\labelwidth}{#1}
+     \setlength{\leftmargin}{\labelwidth}
+     \addtolength{\leftmargin}{\labelsep}
+     \renewcommand{\makelabel}[1]{##1\hfil}}}
+     {\end{list}}
+
+ \newcommand{\lyxrightaddress}[1]{
+       \par {\raggedleft \begin{tabular}{l}\ignorespaces
+          #1
+             \end{tabular}
+                \vspace{1.4em}
+                   \par}
+                    }
+
+
+\tableofcontents
+\input{./introduction/introduction.tex}
+\input{./apiis-core/main.tex}
+\input{./meta-layer/meta-layer.tex}
+\input{./access-control/access-control.tex}
+\input{./synchronization/synchronization.tex}
+\input{./internationalization/internationalization.tex}
+\input{./pod/pod-chapter.tex}
+\input{./undocumented/undocumented-chapter.tex}
+\printindex
+\end{document}

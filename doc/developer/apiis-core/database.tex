@@ -1,0 +1,55 @@
+%\section{Interfaces to the Database}
+
+When the Model object is joined into the \verb+$apiis+ structure, by
+default the database connection will be configured and initialized. Another
+object called DataBase\index{\verb+$apiis+!\verb+->DataBase+}
+is integrated into \verb+$apiis+. 
+
+For rare situations you can circumvent this immediate connection to the
+database (e.g. if you want to drop the whole database during
+initialization) with a special parameter to
+\verb+join_model()+\index{\verb+$apiis+!\verb+->join_model+}. See the
+POD-documentation of \verb+join_model()+ for details.
+
+The database connections are based on the configuration
+parts of the model file and the database specifics, found in
+\verb+$APIIS_HOME/lib/<db_driver>.conf+%
+\index{\verb+$apiis+!\verb+->DataBase+!driver configuration}.
+
+If no errors occur, a Apiis::DataBase::Init-object will be created and
+joined into the \verb+$apiis+ structure as \verb+$apiis->DataBase+.
+
+Two connections to the database will be openend, one for the system
+user\index{\verb+$apiis+!\verb+->DataBase+!system user}
+with full access to the database and the other as the currently connected
+user\index{\verb+$apiis+!\verb+->DataBase+!current user}
+with access to the suite of views that reflect his authorization
+status.\index{Authorization!views}
+These two connections build the base for the public methods
+\verb+sys_sql()+\index{\verb+$apiis+!\verb+->DataBase+!\verb+->sys_sql+}
+and \verb+user_sql()+\index{\verb+$apiis+!\verb+->DataBase+!\verb+->user_sql+}.
+
+The following public methods are defined with
+\verb+$apiis->DataBase+:\index{\verb+$apiis+!\verb+->DataBase+!public methods}
+
+\smallskip
+\begin{tabular}{rl|l}
+\multicolumn{3}{l}{\texttt{\$apiis->DataBase->}}       \\
+                      &\verb+bindtypes+        & database bindtypes \\
+                      &\verb+commit+           & commit changes to the database \\
+                      &\verb+connect+          & DB-specific connect string for DBI \\
+                      &\verb+connected+        & flag if DB is already connected \\
+                      &\verb+datatypes+        & datatypes of this DB for our metatypes \\
+                      &\verb+dateorder+        & default (?) date order of this DB \\
+                      &\verb+datesep+          & date separator \\
+                      &\verb+db_has_sequence+  & flag, if this DB has sequences \\
+                      &\verb+disconnect+       & method to disconnect from DB \\
+                      &\verb+explain+          & explain syntax (curr. not used) \\
+                      &\verb+rollback+         & rollback all changes \\
+                      &\verb+rowid+            & name of the rowid \\
+                      &\verb+seq_next_val+     & method that returns the next sequence value \\
+                      &\verb+sequence_call+    & how to call a sequence \\
+                      &\verb+sys_dbh+          & database handle for system user \\
+                      &\verb+user_dbh+         & database handle for common user \\
+\end{tabular}
+\medskip

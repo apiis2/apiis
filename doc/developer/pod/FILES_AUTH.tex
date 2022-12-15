@@ -1,0 +1,316 @@
+\subsection{DESCRIPTION\label{DESCRIPTION}\index{DESCRIPTION}}
+
+
+Auth.pm is method of record object and contains subroutines needed for the authentication process.
+
+\subsection{SUBROUTINES\label{SUBROUTINES}\index{SUBROUTINES}}
+\subsubsection*{\_auth\label{_auth}\index{\ auth}}
+\begin{verbatim}
+  This subroutine is responsible for whole authentication process.
+  1.Get access rights from the database
+  2.Dependant from sql action type
+    (a) if DELETE then only recreates list of all clases on which user can 
+        executed delete operations.This list is returned by "get_ar" and is 
+        recreated to the hash structure.
+    (b) if INSERT or UPDATE then checks access rights for the columns 
+        defined in this statement
+\end{verbatim}
+\subsubsection*{check\_ar\label{check_ar}\index{check\ ar}}
+
+
+Subroutine checks access rights for the columns.
+Algorithm copmares column names from the sql statement to column names defined 
+in the access hash and returns hash with clases in which user can executed this 
+sql statement. Class is added to this hash only if user have defined access rights 
+for all columns (from sql statement) in this class.
+
+
+
+Returned hash for expand the where clause:
+
+\begin{verbatim}
+     @ext =(
+                  (
+                   COLUMN   => "class",
+                   OPERATOR => "=",
+                   VALUE    => PL,
+                  ),
+\end{verbatim}
+\begin{verbatim}
+                  (
+                   COLUMN   => "class",
+                   OPERATOR => "=",
+                   VALUE    => DE,
+                  )
+                 )
+\end{verbatim}
+\subsubsection*{redo\_clases\label{redo_clases}\index{redo\ clases}}
+\subsection{AUTHORS\label{AUTHORS}\index{AUTHORS}}
+
+
+Marek Imialek $<$marek@tzv.fal.de$>$
+
+\subsection{Apiis::Auth::Role.pm\label{Apiis::Auth::Role_pm}\index{Apiis::Auth::Role.pm}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Auth::Role_pm_SYNOPSIS}\index{Apiis::Auth::Role pm!SYNOPSIS}}
+
+
+\$role = Apiis::Auth::Role-$>$new(
+                                role\_shortcut =$>$ \$role\_shortcut,
+                               );
+
+\subsubsection*{DESCRIPTION\label{Apiis::Auth::Role_pm_DESCRIPTION}\index{Apiis::Auth::Role pm!DESCRIPTION}}
+
+
+This is a module for creating an object for handling user roles. These object are used in the authentication process.
+All information about roles are taken from the Roles.conf file.
+
+\subsubsection*{METHODS\label{Apiis::Auth::Role_pm_METHODS}\index{Apiis::Auth::Role pm!METHODS}}
+\paragraph*{role\_shortcut
+ returns the main role name  which is defined in Roles.conf  file\label{Apiis::Auth::Role_pm_role_shortcut_returns_the_main_role_name_which_is_defined_in_Roles_conf_file}\index{Apiis::Auth::Role pm!role\ shortcut
+ returns the main role name  which is defined in Roles.conf  file}}
+\paragraph*{short\_name
+ returns short role name\label{Apiis::Auth::Role_pm_short_name_returns_short_role_name}\index{Apiis::Auth::Role pm!short\ name
+ returns short role name}}
+\paragraph*{long\_name
+ returns long role name\label{Apiis::Auth::Role_pm_long_name_returns_long_role_name}\index{Apiis::Auth::Role pm!long\ name
+ returns long role name}}
+\paragraph*{description
+ returns description of role\label{Apiis::Auth::Role_pm_description_returns_description_of_role}\index{Apiis::Auth::Role pm!description
+ returns description of role}}
+\paragraph*{policies
+ returns policy numbers; policies number are taken from the role subsectione\label{Apiis::Auth::Role_pm_policies_returns_policy_numbers_policies_number_are_taken_from_the_role_subsectione}\index{Apiis::Auth::Role pm!policies
+ returns policy numbers; policies number are taken from the role subsectione}}
+\paragraph*{role\_type
+  returns role type\label{Apiis::Auth::Role_pm_role_type_returns_role_type}\index{Apiis::Auth::Role pm!role\ type
+  returns role type}}
+\paragraph*{role\_id
+  get next sequence value\label{Apiis::Auth::Role_pm_role_id_get_next_sequence_value}\index{Apiis::Auth::Role pm!role\ id
+  get next sequence value}}
+\paragraph*{db\_policy
+ get policy for the database from db\_policy section\label{Apiis::Auth::Role_pm_db_policy_get_policy_for_the_database_from_db_policy_section}\index{Apiis::Auth::Role pm!db\ policy
+ get policy for the database from db\ policy section}}
+\paragraph*{os\_policy
+ get policy for the operating system from os\_policy section\label{Apiis::Auth::Role_pm_os_policy_get_policy_for_the_operating_system_from_os_policy_section}\index{Apiis::Auth::Role pm!os\ policy
+ get policy for the operating system from os\ policy section}}
+\subsubsection*{AUTHORS\label{Apiis::Auth::Role_pm_AUTHORS}\index{Apiis::Auth::Role pm!AUTHORS}}
+
+
+Marek Imialek $<$marek@tzv.fal.de$>$
+
+\subsection{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_SYNOPSIS}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!SYNOPSIS}}
+
+
+This object is used to check user access right for the applications which ara curentlly defined in the database.
+
+\subsubsection*{DESCRIPTION\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_DESCRIPTION}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!DESCRIPTION}}
+
+
+Object is created by the one of Apiis object method (\$apiis-$>$join\_auth('user\_login')). This creates Auth object
+for the user which is curently log-in and join it to the \$apiis structure.
+
+\subsubsection*{METHODS\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_METHODS}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!METHODS}}
+\paragraph*{new (public)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_new_public_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!new (public)}}
+\begin{verbatim}
+  returns an object reference for a new Auth object.
+\end{verbatim}
+\paragraph*{\_get\_user\_roles (internal)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications__get_user_roles_internal_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!\ get\ user\ roles (internal)}}
+\begin{verbatim}
+  retrieves all role_id from table 'roles' for current user
+\end{verbatim}
+\paragraph*{\_get\_user\_id (internal)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications__get_user_id_internal_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!\ get\ user\ id (internal)}}
+\begin{verbatim}
+  retrieves current user id
+\end{verbatim}
+\paragraph*{\_get\_policy\_ids (internal)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications__get_policy_ids_internal_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!\ get\ policy\ ids (internal)}}
+\begin{verbatim}
+  retrieves all policies for current role
+\end{verbatim}
+\paragraph*{print\_os\_actions (public)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_print_os_actions_public_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!print\ os\ actions (public)}}
+\begin{verbatim}
+  prints all applications or actions with their classes which user can execut
+\end{verbatim}
+\begin{verbatim}
+      example: $apiis->Auth->print_os_actions;
+\end{verbatim}
+\paragraph*{os\_actions\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_os_actions}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!os\ actions}}
+\begin{verbatim}
+  method return list of all actions which are allowed for the user (if you run it without any parameter).
+  If you run it with the parameter "action type" then you can get the list of allowed actions for this specified action type. 
+  You can use following action type: program, form, rapor,t subroutine, www, action. Curently the action types are hard-coded 
+  in the AccessControl.pm
+\end{verbatim}
+\begin{verbatim}
+      example: $apiis->Auth->os_actions
+               $apiis->Auth->os_actions('program')
+\end{verbatim}
+\paragraph*{types\_of\_actions (public)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_types_of_actions_public_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!types\ of\ actions (public)}}
+\begin{verbatim}
+  returns all type of actions which are curently allowed for the user.
+\end{verbatim}
+\begin{verbatim}
+      example: $apiis->Auth->types_of_actions
+\end{verbatim}
+\paragraph*{check\_os\_action (public)\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_check_os_action_public_}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!check\ os\ action (public)}}
+\begin{verbatim}
+  check that user can executs action (action name is defined as a parameter).
+\end{verbatim}
+\begin{verbatim}
+      example: $apiis->Auth->check_os_action('runall_ar.pl','program');
+\end{verbatim}
+\subsubsection*{AUTHORS\label{Apiis::Auth::AppAuth_--_object_for_provading_data_about_user_access_rights_for_the_applications_AUTHORS}\index{Apiis::Auth::AppAuth -- object for provading data about user access rights for the applications!AUTHORS}}
+
+
+Marek Imialek $<$marek@tzv.fal.de$>$
+
+\subsection{Apiis::Auth::AccessControl -- used by the runall.pl and access\_control.pl scripts to define user access rights\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights}\index{Apiis::Auth::AccessControl -- used by the runall.pl and access\ control.pl scripts to define user access rights}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_SYNOPSIS}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!SYNOPSIS}}
+
+
+Adding, deleting roles and users in the Apiis system.
+
+\subsubsection*{DESCRIPTION\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_DESCRIPTION}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!DESCRIPTION}}
+
+
+These subroutines are used to define access rights in the system. New roles and users are created on the basis of information
+which are defined in the \$APIIS\_LOCAL/etc/Roles.conf. Roles and users name are set as a parameters.
+
+\subsubsection*{SUBROUTINES\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_SUBROUTINES}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!SUBROUTINES}}
+\paragraph*{access\_rights\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_access_rights}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!access\ rights}}
+\begin{verbatim}
+ this subroutine can be used to define access rights directly in the code without access_control.pl script
+\end{verbatim}
+\paragraph*{creates\_schema\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_schema}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ schema}}
+\begin{verbatim}
+  this subroutine creates individual user schema
+\end{verbatim}
+\paragraph*{creates\_user\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_user}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ user}}
+\begin{verbatim}
+  this subroutine adds new user.
+\end{verbatim}
+\paragraph*{creates\_role\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_role}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ role}}
+\begin{verbatim}
+  this subroutine adds new role.
+\end{verbatim}
+\paragraph*{assigns\_role\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_assigns_role}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!assigns\ role}}
+\begin{verbatim}
+  this subroutine assigns role to the user.
+\end{verbatim}
+\paragraph*{creates\_db\_policies\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_db_policies}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ db\ policies}}
+\begin{verbatim}
+ This subroutine reads database policies from the Roles.conf file and adds it to the database.
+ Only these policies are added which are defined for the current role.
+\end{verbatim}
+\paragraph*{asigns\_db\_policies\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_asigns_db_policies}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!asigns\ db\ policies}}
+\begin{verbatim}
+  this subroutine asigns databse policies to the current role.
+\end{verbatim}
+\paragraph*{creates\_os\_policies\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_os_policies}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ os\ policies}}
+\begin{verbatim}
+ This subroutine reads os policies from the Roles.conf file and adds it to the database.
+ Only these policies are added which are defined for the current role
+\end{verbatim}
+\paragraph*{asigns\_os\_policies\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_asigns_os_policies}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!asigns\ os\ policies}}
+\begin{verbatim}
+  this subroutine asigns operating sytstem policies to the current role.
+\end{verbatim}
+\paragraph*{creates\_access\_view\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_access_view}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ access\ view}}
+\begin{verbatim}
+  this subroutine creates user access view.
+\end{verbatim}
+\paragraph*{check\_policies\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_check_policies}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!check\ policies}}
+\begin{verbatim}
+ This subroutine checks that policies which we want to load 
+ already are defined in the database.
+\end{verbatim}
+\paragraph*{del\_user\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_del_user}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!del\ user}}
+\begin{verbatim}
+  this subroutine deletes user from the system.
+\end{verbatim}
+\paragraph*{del\_role\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_del_role}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!del\ role}}
+\begin{verbatim}
+  this subroutine deletes role from the system.
+\end{verbatim}
+\paragraph*{del\_role\_from\_user\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_del_role_from_user}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!del\ role\ from\ user}}
+\begin{verbatim}
+  this subroutine revoke role from the user.
+\end{verbatim}
+\paragraph*{revoke\_priv\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_revoke_priv}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!revoke\ priv}}
+\begin{verbatim}
+  this subroutine revoke user privileges from the PostgreSQL.
+\end{verbatim}
+\paragraph*{select\_db\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_select_db}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!select\ db}}
+\begin{verbatim}
+  this subroutine print information about users and roles which are curently defined in the system.
+\end{verbatim}
+\paragraph*{public\_views\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_public_views}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!public\ views}}
+\begin{verbatim}
+  this subroutine creates system of the public views in the user schema.
+\end{verbatim}
+\paragraph*{col\_in\_classes\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_col_in_classes}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!col\ in\ classes}}
+\begin{verbatim}
+  This subroutine querys DB about allowed columns for current user. Query 
+  is executed with select action and current table name as a paramaters. 
+  Returned list of columns is added to the hash with class names.
+\end{verbatim}
+\paragraph*{main\_columns\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_main_columns}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!main\ columns}}
+\begin{verbatim}
+  This subroutine creates main list of column for the current table . Only these column names 
+  are taken to the list, to which user have access rights (in several  classes). If table has 
+  translation table then this list is created from two tables. This list is needed to 
+  creates structure of view via UNION (we have to have list of all columne which will be in the 
+  view).
+\end{verbatim}
+\paragraph*{class\_columns\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_class_columns}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!class\ columns}}
+\begin{verbatim}
+  Compares main column list to the column allowed for the user 
+  in several classes. Columns list is created for each class. Columns order for the each class 
+  have to be the same like in main list. Value NULL is putted to the list if some column doesn't 
+  occure on the main list and user haven't access rights to this column in this class
+  This all is needed to create finall sql where "union all" expresion is used.
+\end{verbatim}
+\paragraph*{creates\_view\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_view}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ view}}
+\begin{verbatim}
+  This subroutine creates user view for current table.
+\end{verbatim}
+\paragraph*{drop\_views\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_drop_views}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!drop\ views}}
+\begin{verbatim}
+  this subroutine drop current view from user schema.
+\end{verbatim}
+\paragraph*{query\_db\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_query_db}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!query\ db}}
+\begin{verbatim}
+  this subroutine executs system SQL statements.
+\end{verbatim}
+\paragraph*{change\_password\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_change_password}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!change\ password}}
+\begin{verbatim}
+  this subroutine is used to change user password.
+\end{verbatim}
+\paragraph*{creates\_views\_v\_\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_creates_views_v_}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!creates\ views\ v\ }}
+
+
+this code was copied from MakeSQL.pm module and partialy changed.  This
+subroutine is used to create "v\_" view under user schema.
+
+
+
+Note (2008-04-08 heli):
+As MakeSQL changed to allow self-referencing foreign keys I also had to change
+this part of it. :\^{}(
+
+\subsubsection*{AUTHOR\label{Apiis::Auth::AccessControl_--_used_by_the_runall_pl_and_access_control_pl_scripts_to_define_user_access_rights_AUTHOR}\index{Apiis::Auth::AccessControl -- used by the runall pl and access control pl scripts to define user access rights!AUTHOR}}
+
+
+Marek Imialek $<$marek@tzv.fal.de$>$
+

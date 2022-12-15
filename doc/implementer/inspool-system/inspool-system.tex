@@ -1,0 +1,610 @@
+\chapter{The INSPOOL System}
+
+This chapter describes the agreed setup of the INSPOOL system, i.e.
+that part of APIIS which handles the batch inflow of data. The system
+described will refer to the reference database where \$APIIS\_LOCAL
+must point to. This is usually (but not necessarily) located in the
+\$APIIS\_HOME/apiis directory. 
+
+The design goal of this batch interface to the database is:
+
+\begin{itemize}
+\item fully automatic operation
+\item triggered from incoming data (ftp, e-mail, etc)
+\item scaling with the amount of data coming in
+\end{itemize}
+
+\section{The File System Structure of the INSPOOL System}
+
+Batch data will arrive at the central computer by some means that
+we shall discuss elsewhere. This may be via e-mail, ftp or manual
+copying.
+
+
+\subsection{Conventions for incoming data\index{incoming data} files}
+
+All data files will be copied to one location in the file system of
+the database machine which we shall call INSPOOL\_DIR. The only requirement
+regarding file names is that no files are overwritten (preferably,
+the write flag should not be set on those files. Using the date and
+time at the arrival of the file may be a good idea. They would then
+look like:
+
+\begin{lyxcode}
+{\footnotesize -{}-INSPOOL\_DIR/}{\footnotesize \par}
+
+{\footnotesize |~~~~~~~~~~~~~ds.1999.12.24-12:32:11}{\footnotesize \par}
+
+{\footnotesize |~~~~~~~~~~~~~ds.1999.12.13-00:12:01}{\footnotesize \par}
+
+{\footnotesize |~~~~~~~~~~~~~ds.1999.11.23-09:32:02}{\footnotesize \par}
+
+{\footnotesize -{}-INSPOOL\_DIR/done/~}{\footnotesize \par}
+
+{\footnotesize |~~~~~~~~~~~~~~~~~~ds.1999.19.32\_14:11:21}{\footnotesize \par}
+
+
+\end{lyxcode}
+Data files which have been processed i.e. loaded into the database
+INSPOOL table are moved to the subdirectory done/.
+
+The current naming convention for data files is: file names should
+start with {}``DS'' followed by digits, e.g. {}``DS01'', {}``DS12''
+, {}``DS102''.
+
+One special case is data file used for loading large binary data -
+like pictures, movies, scanned documents etc. This datastream consist
+of one file containing the file names of the pictures and the real
+picture files. In this case all files should be placed in a separate
+subfolder of the INSPOOL\_DIR.
+
+
+\subsection{The INSPOOL Buffer of the database}
+
+All data coming into the database will be stored in the INSPOOL\index{INSPOOL}
+section of the database. This is the only place which will store data
+without consistency checks.Its purpose is to be the initial repository
+of all incoming data from which it will then be processed and loaded
+into the database properly under the constraints of the business rules
+in the model file. Records that pass this test and get loaded successfully
+will be flagged accordingly in the INSPOOL and skipped the next time
+it is processed.
+
+
+\section{The Database Structure of the INSPOOL System}
+
+The database structure connected to the INSPOOL system is given in
+table \ref{tab:INSPOOL-Structure}. It is manadatory and should not
+differ between systems, i.e. it should be identical across species.
+
+%
+\begin{table}[htbp]
+
+\caption{INSPOOL Structure\label{tab:INSPOOL-Structure}}
+
+\texttt{\scriptsize CREATE TABLE inspool (}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ds~~~~~~~~~~~~~~~ text,~
+-{}- datastream (dataset) name}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ record\_seq~~~~~~~ int4,~ -{}- unique
+ID of record(sequence)}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ in\_date~~~~~~~~~~ date,~ -{}-
+Time stamp for initial entry}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ext\_unit~~~~~~~~~ int4,~ -{}-
+Reporting Unit}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ proc\_dt~~~~~~~~~~ date,~ -{}-
+time stamp for processing}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ status~~~~~~~~~~~ text,~ -{}-
+Status column}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ record~~~~~~~~~~~ text,~ -{}-
+the data record}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_dt~~~ date,~ -{}- Date
+of last change, automatic timestamp}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_user~ text~~ -{}- User who
+did the last change}{\scriptsize \par}
+
+\texttt{\scriptsize );}{\scriptsize \par}
+
+\texttt{\scriptsize CREATE UNIQUE INDEX uidx\_inspool\_1 ON inspool
+( record\_seq );}{\scriptsize \par}
+
+\begin{center}\texttt{\scriptsize ~}\end{center}{\scriptsize \par}
+
+\texttt{\scriptsize CREATE SEQUENCE seq\_inspool\_\_record\_seq;}{\scriptsize \par}
+
+\texttt{\scriptsize ~}{\scriptsize \par}
+
+\texttt{\scriptsize CREATE TABLE inspool\_err (}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ record\_seq~~~~~~~ int4,~~~~~~
+-{}- unique ID of record}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ err\_type~~~~~~~~~ text,~~~~~~
+-{}- Error type ( DB OS DATA...)}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ action~~~~~~~~~~~ text,~~~~~~
+-{}- Error action}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ dbtable~~~~~~~~~~ text,~~~~~~
+-{}- Error point to table}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ dbcol~~~~~~~~~~~~ text,~~~~~~
+-{}- Error point to column (inside table)}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ err\_source~~~~~~~ text,~~~~~~
+-{}- Location where error occurred}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ short\_msg~~~~~~~~ text,~~~~~~
+-{}- Error short message}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ long\_msg~~~~~~~~~ text,~~~~~~
+-{}- Error long message}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ext\_col~~~~~~~~~~ text,~~~~~~
+-{}- which external cols are involved}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ext\_val~~~~~~~~~~ text,~~~~~~
+-{}- external (incoming) value}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ mod\_val~~~~~~~~~~ text,~~~~~~
+-{}- modified value}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ comp\_val~~~~~~~~~ text,~~~~~~
+-{}- compare values (2 in case of la)}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ target\_col~~~~~~~ text,~~~~~~
+-{}- Main/primary column of this record}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ds~~~~~~~~~~~~~~~ text,~~~~~~
+-{}- data stream}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ext\_unit~~~~~~~~~ text,~~~~~~
+-{}- external unit }{\scriptsize \par}
+
+\texttt{\scriptsize ~~ status~~~~~~~~~~~ text,~~~~~~
+-{}- Active of historic?}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ err\_dt~~~~~~~~~~~ timestamp,~
+-{}- timestamp for setting status}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_dt~~~ timestamp,~ -{}-
+Timestamp of last change}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_user~ text,~~~~~~ -{}-
+Who did the last change}{\scriptsize \par}
+
+\texttt{\scriptsize );}{\scriptsize \par}
+
+\texttt{\scriptsize CREATE~ INDEX idx\_inspool\_err\_1 ON inspool\_err
+( record\_seq );}{\scriptsize \par}
+
+~
+
+\texttt{\scriptsize CREATE TABLE load\_stat (}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ ds~~~~~~~~~~~~~~~ text,~~~~~~
+-{}- Program name}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ job\_start~~~~~~~~ timestamp,~ -{}-
+timestamp start of job}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ job\_end~~~~~~~~~~ timestamp,~
+-{}- timestamp end of job}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ status~~~~~~~~~~~ int4,~~~~~~
+-{}- completion code}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ rec\_tot\_no~~~~~~~ int4,~~~~~~
+-{}- Number of Records processed}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ rec\_err\_no~~~~~~~ int4,~~~~~~
+-{}- Number of erroneous records}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ nrec\_ok\_no~~~~~~~ int4,~~~~~~
+-{}- Number of correct records - inserted}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_dt~~~ date,~~~~~~
+-{}- Date of last change,automatic timestamp}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_user~ text~~~~~~~ -{}-
+User who did the last change}{\scriptsize \par}
+
+\texttt{\scriptsize );}{\scriptsize \par}
+
+~
+
+\texttt{\scriptsize CREATE TABLE blobs ( }{\scriptsize \par}
+
+\texttt{\scriptsize ~~ guid~~~~~~~~~~~~~ int4,~~~~~
+-{}- global identifier}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ blob\_id~~~~~~~~~~ int4,~~~~~
+-{}- number of blob}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ blob~~~~~~~~~~~~~ bytea,~~~~
+-{}- binary large objects}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ filename~~~~~~~~~ text,~~~~~
+-{}- file name}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_dt~~~ date,~~~~~ -{}-
+Date of last change,automatic timestamp}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ last\_change\_user~ text~~~~~~ -{}-
+User who did the last change}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ owner~~~~~~~~~~~~ text,~~~~~
+-{}- record class}{\scriptsize \par}
+
+\texttt{\scriptsize ~~ version~~~~~~~~~~ int4~~~~~~
+-{}- version}{\scriptsize \par}
+
+\texttt{\scriptsize ); }{\scriptsize \par}
+
+\texttt{\scriptsize CREATE UNIQUE INDEX uidx\_blobs\_rowid ON blobs
+( oid );}{\scriptsize \par}
+
+~
+
+\texttt{\scriptsize CREATE SEQUENCE seq\_blobs\_\_blob\_id;}
+\end{table}
+
+
+
+\section{Loading the files into INSPOOL}
+
+Depending on their type - binary or ASCII files are handled differently.
+
+
+\subsection{Loading ASCII files into INSPOOL}
+
+As stated above all incoming data files will arrive in the directory
+INSPOOL\_DIR. The program \texttt{\small file2inspool.pl} \index{programs!file2inspool}will
+load each data file into the table INSPOOL. It is identical for ASCII
+input datafile. This can only work if the header file structure is
+identical across the data streams. The first two records need to give
+the datastream identifier (e.g. DS02) and the reporting (external)
+unit (e.g. 4711). The records that follow need to be selfcontained,
+i.e. each record needs to contain the complete set of information
+like date of testing, herd. Thus, the format of these files need to
+be accommodated at the time when they get written. This would be for
+instance when new records get extracted from a sow management package.
+
+
+\subsection{Loading Binary files into INSPOOL}
+
+In this case there is one ASCII file containing the names of the binary
+files\index{Binary files}. The structure of this file is similar
+to the one of a normal datafile: the first two records contain datastream
+identifier (e.g. DS15) and the reporting (external) unit (e.g. farm32).
+The difference is in the third record - it has to start with the reserved
+word {}``blobs'' followed by a set of numbers - the positions which
+have to be resolved as file names for the binary files. One example
+is shown in table \ref{cap:Data-file-header}. The file2inspool.pl
+should be executed with option -f <folder\_name>, where {}``folder\_name''
+is the name of the subfolder containig the files. The program will
+read all binary files, place them in the BLOBS\index{BLOBS} table
+and replace the file names with the returned blob\_id pointers. Then
+the datafile is automatically loaded as a normal ASCII file in the
+INSPOOL table. %
+\begin{table}
+
+\caption{Data file header\label{cap:Data-file-header}}
+
+\begin{lyxcode}
+~{\tiny ~DS03}{\tiny \par}
+
+~{\tiny ~ini}{\tiny \par}
+
+~{\tiny ~blobs~~1~~3}{\tiny \par}
+
+~{\tiny ~cat|/home/zgr/duchev/pictures/IN00006A.JPG|123.56|/home/zgr/duchev/pictures/IN00009A.JPG|jpg}{\tiny \par}
+
+~{\tiny ~dog|/home/zgr/duchev/pictures/IN00004A.JPG|87.10|/home/zgr/duchev/pictures/IN00005A.JPG|jpg}\end{lyxcode}
+
+\end{table}
+
+
+
+\section{Batch Loading From INSPOOL}
+
+
+\subsection{The driver program}
+
+The reference database contains a running example of the batch programs
+for loading data streams into the database. The main driver program
+is called {}``load\_db\_from\_INSPOOL'' and resides in \$APIIS\_HOME/bin.
+
+{}``load\_db\_from\_INSPOOL'' \index{programs!load\_db\_from\_INSPOOL}is
+a program that can be run at any time. It only needs the name of the
+model file\index{model file} and the names of the data streams it
+should process. Just run {}``load\_db\_from\_INSPOOL -h'' to get
+the right syntax. 
+
+If new data are present in INSPOOL\index{table!INSPOOL} those records
+will be processed, if none exist, nothing much will happen. Thus,
+typically, this program will be started at certain time intervals
+(e.g. every 30 minutes) as a cron job.
+
+
+\subsection{The DS--routines\index{programs!DS-routines}}
+
+There is one DS subroutine for each data stream that finds its way
+into the INSPOOL table. Thus, if we have 12 data streams for which
+we get electronic data coming into the system, we need to have 12
+subroutines in \$APIIS\_LOCAL/lib (i.e. DS01.pm, DS02.pm\ldots{}DS12.pm
+(the names can be chosen differently, however it seems useful to stick
+with this scheme)). The objective for each of these programs is as
+follows:
+
+\begin{enumerate}
+\item read the NEW records from INSPOOL pertaining to the DS under consideration.
+Thus, DS02 will read the NEW records for data stream 2.
+\item split the record from INSPOOL according to its format and move them
+to variables.
+\item create a hash to be passed to the corresponding load object. Thus,
+for each DSnn there will be a LO\_nn. The latter executes the actual
+database modifications like inserts, updates, deletes.
+\item the status of the INSPOOL records will be set to OK or ERR depending
+on the return status of LO\_nn. This is done in the subroutine Process\_LO\_Batch().
+\item in case of an error a record will be inserted into INSPOOL\_ERR with
+all available information.
+\end{enumerate}
+Now let us go through the code of DS01.pm (Table \ref{tab:DS01.pm}
+on page \pageref{tab:DS01.pm}):
+
+%
+\begin{table}[htbp]
+
+\caption{DS01.pm\label{tab:DS01.pm}\index{Datastream!example}}
+
+\texttt{\scriptsize ~1 \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}{\scriptsize \par}
+
+\texttt{\scriptsize ~2 \#~ DS01.pm reads the Insemination records
+from INSPOOL;}{\scriptsize \par}
+
+\texttt{\scriptsize ~3 \#~ \$Id: actual\_docu.lyx,v 1.37 2003/12/15
+13:54:40 eg Exp \$~ }{\scriptsize \par}
+
+\texttt{\scriptsize ~4 \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}{\scriptsize \par}
+
+\texttt{\scriptsize ~5 sub DS01 \{}{\scriptsize \par}
+
+\texttt{\scriptsize ~6~~ my \$model\_file = shift;}{\scriptsize \par}
+
+\texttt{\scriptsize ~7 }{\scriptsize \par}
+
+\texttt{\scriptsize ~8~~ my \%ds\_conf;}{\scriptsize \par}
+
+\texttt{\scriptsize ~9~~ \$ds\_conf\{ds\}~~~~~~~~ = 'DS01';}{\scriptsize \par}
+
+\texttt{\scriptsize 10~~ \$ds\_conf\{all\_errors\} = {[}{]};}{\scriptsize \par}
+
+\texttt{\scriptsize 11 }{\scriptsize \par}
+
+\texttt{\scriptsize 12~~~ DS\_EXIT: \{~~~ \# exit label for
+premature leaving in case of errors:}{\scriptsize \par}
+
+\texttt{\scriptsize 13~~~~~~ DS\_PreHandling( \textbackslash{}\%ds\_conf
+);}{\scriptsize \par}
+
+\texttt{\scriptsize 14 }{\scriptsize \par}
+
+\texttt{\scriptsize 15~~~~~~ RECORD:}{\scriptsize \par}
+
+\texttt{\scriptsize 16~~~~~~ while ( my \$data\_ref = \$ds\_conf\{sth\_ds\}->fetch
+) \{}{\scriptsize \par}
+
+\texttt{\scriptsize 17~~~~~~~~~ my ( \$record\_seq, \$ext\_unit,
+\$record ) = @\$data\_ref;}{\scriptsize \par}
+
+\texttt{\scriptsize 18~~~~~~~~~ \$ds\_conf\{ext\_unit\}~~
+= \$ext\_unit;}{\scriptsize \par}
+
+\texttt{\scriptsize 19~~~~~~~~~ \$ds\_conf\{record\_seq\}
+= \$record\_seq;}{\scriptsize \par}
+
+\texttt{\scriptsize 20~~~~~~~~~ my ( \$err\_status, \$err\_ref
+);}{\scriptsize \par}
+
+\texttt{\scriptsize 21 }{\scriptsize \par}
+
+\texttt{\scriptsize 22~~~~~~~~~ \# we need to know the data
+structure of the record:}{\scriptsize \par}
+
+\texttt{\scriptsize 23~~~~~~~~~ my \$struct = \char`\"{}A20A20A20A20A20A20A20\char`\"{};}{\scriptsize \par}
+
+\texttt{\scriptsize 24~~~~~~~~~ my @data~~ = unpack \$struct,
+\$record;}{\scriptsize \par}
+
+\texttt{\scriptsize 25 }{\scriptsize \par}
+
+\texttt{\scriptsize 26~~~~~~~~~ \# this is text and data
+that shows up in the error report:}{\scriptsize \par}
+
+\texttt{\scriptsize 27~~~~~~~~~ \$ds\_conf\{target\_col\}
+= \char`\"{}sow: \$data{[}1{]} \$data{[}0{]}\char`\"{};}{\scriptsize \par}
+
+\texttt{\scriptsize 28 }{\scriptsize \par}
+
+\texttt{\scriptsize 29~~~~~~~~~ \# order of the incoming
+data, specified in LO\_DS01.pm:}{\scriptsize \par}
+
+\texttt{\scriptsize 30~~~~~~~~~ my @LO\_keys = qw( dam\_hb\_nr
+dam\_society dam\_breed}{\scriptsize \par}
+
+\texttt{\scriptsize 31~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sire\_hb\_nr sire\_society sire\_breed}{\scriptsize \par}
+
+\texttt{\scriptsize 32~~~~~~~~~~~~~~~~~~~~~~~~~~~
+service\_dt );}{\scriptsize \par}
+
+\texttt{\scriptsize 33 }{\scriptsize \par}
+
+\texttt{\scriptsize 34~~~~~~~~~ \# error checking:}{\scriptsize \par}
+
+\texttt{\scriptsize 35~~~~~~~~~ ( \$err\_status, \$err\_ref
+) = CheckDS( \textbackslash{}@data, \textbackslash{}@LO\_keys );}{\scriptsize \par}
+
+\texttt{\scriptsize 36~~~~~~~~~ push @\{ \$ds\_conf\{all\_errors\}
+\}, @\{\$err\_ref\} if \$err\_status;}{\scriptsize \par}
+
+\texttt{\scriptsize 37~~~~~~~~~ last DS\_EXIT if \$err\_status;}{\scriptsize \par}
+
+\texttt{\scriptsize 38 }{\scriptsize \par}
+
+\texttt{\scriptsize 39~~~~~~~~~ \#\#\# some data manipulation:}{\scriptsize \par}
+
+\texttt{\scriptsize 40~~~~~~~~~ \# remove whitespace:}{\scriptsize \par}
+
+\texttt{\scriptsize 41~~~~~~~~~ @data = map \{ s/\textasciicircum{}\textbackslash{}s{*}//;
+s/\textbackslash{}s{*}\$//; \$\_ \} @data;}{\scriptsize \par}
+
+\texttt{\scriptsize 42 }{\scriptsize \par}
+
+\texttt{\scriptsize 43~~~~~~~~~ \# dam\_society and sire\_society
+have the value 32 if they are not}{\scriptsize \par}
+
+\texttt{\scriptsize 44~~~~~~~~~ \# defined or '00':}{\scriptsize \par}
+
+\texttt{\scriptsize 45~~~~~~~~~ \$data{[}1{]} = '32' if (
+!\$data{[}1{]} or \$data{[}1{]} eq '00' );}{\scriptsize \par}
+
+\texttt{\scriptsize 46~~~~~~~~~ \$data{[}4{]} = '32' if (
+!\$data{[}4{]} or \$data{[}4{]} eq '00' );}{\scriptsize \par}
+
+\texttt{\scriptsize 47 }{\scriptsize \par}
+
+\texttt{\scriptsize 48~~~~~~~~~ \# reformat service date
+and use LocalToRawDate( 'EU', \$date )}{\scriptsize \par}
+
+\texttt{\scriptsize 49~~~~~~~~~ \# getdate() does this job. It
+resides in apiis\_alib.pm.}{\scriptsize \par}
+
+\texttt{\scriptsize 50~~~~~~~~~ ( \$data{[}6{]}, \$err\_status,
+\$err\_ref ) = getdate( \$data{[}6{]} )}{\scriptsize \par}
+
+\texttt{\scriptsize 51~~~~~~~~~~~ if defined \$data{[}6{]};}{\scriptsize \par}
+
+\texttt{\scriptsize 52~~~~~~~~~ if (\$err\_status) \{}{\scriptsize \par}
+
+\texttt{\scriptsize 53~~~~~~~~~~~~ push @\{ \$ds\_conf\{all\_errors\}
+\}, @\{\$err\_ref\};}{\scriptsize \par}
+
+\texttt{\scriptsize 54~~~~~~~~~~~~ next RECORD;}{\scriptsize \par}
+
+\texttt{\scriptsize 55~~~~~~~~~ \}}{\scriptsize \par}
+
+\texttt{\scriptsize 56 }{\scriptsize \par}
+
+\texttt{\scriptsize 57~~~~~~~~~ \# now data elements are
+ready to be sent to the LO}{\scriptsize \par}
+
+\texttt{\scriptsize 58~~~~~~~~~ \$ds\_conf\{data\}~~~
+= \textbackslash{}@data;}{\scriptsize \par}
+
+\texttt{\scriptsize 59~~~~~~~~~ \$ds\_conf\{LO\_keys\} =
+\textbackslash{}@LO\_keys;}{\scriptsize \par}
+
+\texttt{\scriptsize 60 }{\scriptsize \par}
+
+\texttt{\scriptsize 61~~~~~~~~~ \#\#\#\#\#\#\#\#\# this calls
+the LO and does the post processing of errors:}{\scriptsize \par}
+
+\texttt{\scriptsize 62~~~~~~~~~ Process\_LO\_Batch( \textbackslash{}\%ds\_conf
+);}{\scriptsize \par}
+
+\texttt{\scriptsize 63 }{\scriptsize \par}
+
+\texttt{\scriptsize 64~~~~~~~~~ print \char`\"{}Finishing
+data loop ...\textbackslash{}n\char`\"{} if \$debug > 5;}{\scriptsize \par}
+
+\texttt{\scriptsize 65~~~~~~~~~ last RECORD if \$debug >
+5;}{\scriptsize \par}
+
+\texttt{\scriptsize 66~~~~~~ \}~~~ \# record loop}{\scriptsize \par}
+
+\texttt{\scriptsize 67~~~ \}~~~ \# DS\_EXIT label}{\scriptsize \par}
+
+\texttt{\scriptsize 68~~~ DS\_PostHandling( \textbackslash{}\%ds\_conf
+);}{\scriptsize \par}
+
+\texttt{\scriptsize 69 \}}{\scriptsize \par}
+
+\texttt{\scriptsize 70 \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}{\scriptsize \par}
+
+\texttt{\scriptsize 71 1;}
+\end{table}
+
+
+\begin{lyxlist}{00.00.0000}
+\item [line~6:]The model file is the only parameter passed from load\_db\_from\_INSPOOL
+\item [lines~8~--~10:]A hash for storing several data is created and
+the name of this data stream is inserted.
+\item [line~12:]This is only a label to leave the processing of this data
+stream prematurely in case of severe errors.
+\item [line~13:]Some common tasks (setting up some counters, preparing
+database handles for data retrieving and statistic/error reporting)
+have been moved into this subroutine.
+\item [lines~15/16:]Every new record record of this data stream is now
+handled separately.
+\item [lines~17~--~19:]The important parts of the INSPOOL record are
+assigned to variables and the hash \texttt{\small \%ds\_conf} stores
+some more parameters.
+\item [lines~22~--~24:]You have to know the structure of the data! In
+this case it is in fixed format, often you also find delimiter separated
+columns where you have to \texttt{\scriptsize split()} on the delimiter.
+The columns are assigned to the array \texttt{\small @data}.
+\item [line~27:]Some information is added to \texttt{\scriptsize \%ds\_conf}
+to better associate errors to the responsible incoming data column,
+e.g. piglets to the litter sow data.
+\item [lines~35~--~37:]Basic checks are exported to CheckDS(), currently
+only if the number of data columns coincides with the number of LO\_keys.
+\item [lines~41~--~55:]Parts of the data are prepared for further processing,
+e.g. leading and trailing blanks are removed, some columns values
+are changed according to the values of other columns and the date
+is converted to a predefined format. Errors are caught and processed.
+\item [lines~58~--~59:]The prepared data and the LO\_keys are pushed
+onto \texttt{\small \%ds\_conf}.
+\item [line~62:]Process\_LO\_Batch get \texttt{\small \%ds\_conf} passed.
+It creates the input hash for the LoadObject, calls the LO, and does
+the post processing of the errors (INSPOOL\_ERR) . These tasks are
+hidden in a subroutine as no user interaction is needed here.
+\item [line~68:]DS\_PostHandling does also some error handling and writes
+the counters into table LOAD\_STAT.
+\end{lyxlist}
+
+\subsection{The Load Objects\index{Load Object}}
+
+For a description of the load objects see the corresponding chapter%
+\marginpar{cant seem to get the crossrefernce in.%
+}.
+
+
+\section{Reporting}
+
+In this paragraph we will deal with reporting on LOAD\_STAT and INSPOOL\_ERR
+
+
+\subsection{Load\_stat}
+
+
+\subsection{Inspool\_err}
+
+
+\section{Error Correcting}
+
+Here we describe the correction facilities of INSPOOL.
+
+
+\subsection{GUI Interface to INSPOOL}
+
+

@@ -1,0 +1,16 @@
+#-- settings: change path and project 
+export APIIS_HOME=/home/b08mueul/apiis;
+projekt=hszvno;
+user=apiis;
+pw=GA2,KvS!
+
+#-- 1. add column in etc/$project.xml via vim
+#-- 2. create a new AR_Batch.conf
+$APIIS_HOME/bin/access_rights_ar_batch.pl -p hszvno;
+
+#-- 3. add column in database
+psql $project -U apiis_admin -c "alter table feldtest add column ptz  real;"
+
+#-- alle Views anpassen (-w option)
+access_rights_update.pl -p $project -w $pw -d $user
+

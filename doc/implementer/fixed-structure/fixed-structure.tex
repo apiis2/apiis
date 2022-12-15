@@ -1,0 +1,109 @@
+\chapter{Fixed APIIS Structure}
+
+This chapter describes that part of the database structure which is
+the same in all APIIS database.
+
+
+\section{TRANSFER}
+
+
+\section{CODES}
+
+
+\section{UNIT, NAMING, ADDRESS}
+
+These three tables cosntitute one block which administers all units,
+persons and addresses in the database. As such it should be quite
+generic and should be used, largely unchanged in every database.
+
+
+\subsection{ADDRESS}
+
+This table holds the individual physical addresses, one entry for
+each. The primary key is the sequence DB\_ADDRESS
+
+
+\subsection{NAMING}
+
+Here we store all individual persons and organization which are part
+of the system. Many people can have the same address, that is why
+in a normalized way this has been split into ADDRESS and NAMING. The
+primary key is the DB\_NAME which is a sequence.
+
+
+\subsection{UNIT}
+
+EXT\_ID is the external identification used in the outside world.
+This may be the number or code {}``1'' for the veterinarians. Then
+EXT\_UNIT would be {}``VET''. If we would merge veterinarians from
+Bavaria and Saxony in one system, and the vets were numbered within
+each state beginning with {}``1'', the EXT\_UNIT would be {}``VET-SAX''
+and {}``VET-BAV''. In this way the old numbering systems can continue
+to be used (which is actually the motivation for the EXT\_UNIT/EXT\_ID
+setup. Thus, EXT\_UNIT has to be defined such that the EXT\_IDs being
+used are made unique.
+
+One other objective is the possibility to reuse external numbers.
+Assume that the head veterinarian with EXT\_ID=''1'' retires and
+is replaced by his successor. This person should again get the EXT\_ID=''1''.
+Then, the same as in TRANSFER, the old EXT\_ID gets closed (CLOSING\_DT
+is set) and a new record with the EXT\_=ID=''1'' is created.
+
+The unique index is EXT\_UNIT||EXT\_ID where CLOSING\_DT is NULL.
+This means that we are allowing one {}``open'' channel for the combination
+of external unit and external identification.
+
+
+\subsection{Navigation}
+
+Access to ADDRESS and NAMING is straight forward. Let us assume a
+new address is to be entered. The following steps are performed:
+
+\begin{enumerate}
+\item verify that the address to be entered does not already exist. This
+can be done by search the table ADDRESS on any fields with a LIKE
+expression.
+\item enter a new address. The primary key is simply the sequence DB\_ADDRESS.
+Note that EXT\_ADDRESS is just a plain column which may be used for
+locating a record in an interactive manner. Notice that COUNTRY needs
+to be defined in CODES (Foreign Key).
+\end{enumerate}
+It is the sole responsibility of the user to ensure that no duplicate
+addresses are entered. While this may sound dangerous it is actually
+the only logical way. If an address is entered twice there is really
+no harm done as this and the other may be used together as DB\_ADRESS
+will be used to link the address to people.
+
+NAMING is delt with in a similar manner. The insertion process is
+identical to ADDRESS:
+
+\begin{enumerate}
+\item verify that the person/organization to be entered does not already
+exist by searching on any of the fields interactively.
+\item insert the new person/organization. The primary key DB\_NAMING will
+automatically come from a the sequence seq\_naming\_\_db\_nam. Notice
+that LANGUAGE needs to be defined in CODES (Foreign Key).
+\end{enumerate}
+UNIT has a somewhat different position in this triplet. It defines
+the telefonnumbers, fax, e-mail belonging to a person or organization
+for a given role. To create a new external ID, let us say the second
+veterinarian, we would do the following:
+
+\begin{enumerate}
+\item type EXT\_UNIT='VET' and EXT\_ID='2' into unit
+
+\begin{enumerate}
+\item locate the address of this person in ADDRESS (remember DB\_ADDRESS)
+\item locate the person in NAMING (remember DB\_NAMING)
+\end{enumerate}
+\item insert record in UNIT with all data using DB\_ADDRESS and DB\_NAMING,
+DB\_UNIT is derived from the sequence, OPENING\_DT is set to the current
+date while CLOSING\_DT is NULL.
+\end{enumerate}
+Thus far, no statemens have been made as to the status of DB\_UNIT.
+While in ADDRESS and NAMING the corresponding DB\_ columns function
+as primary keys, this is not the case here. Thus, if the user choses
+to create another {}``input channel'' for a different EXT\_UNIT/EXT\_ID
+with the same DB\_UNIT nothing will prevent her from doing this. What
+needs to be considered is however that a select on DB\_UNIT will then
+return two records instead of one.

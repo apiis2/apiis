@@ -1,0 +1,370 @@
+\subsection{Apiis::Form::Init -- base package for Form objects of all types\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types}\index{Apiis::Form::Init -- base package for Form objects of all types}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_SYNOPSIS}\index{Apiis::Form::Init -- base package for Form objects of all types!SYNOPSIS}}
+
+
+This base package provides the main functionality and methods needed for
+all Form object types (Tk, Html, etc.).
+
+\subsubsection*{DESCRIPTION\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_DESCRIPTION}\index{Apiis::Form::Init -- base package for Form objects of all types!DESCRIPTION}}
+
+
+The generic public methods of this base class are described below. Most of
+them can be inherited by subsequent Form objects.
+
+\subsubsection*{METHODS\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_METHODS}\index{Apiis::Form::Init -- base package for Form objects of all types!METHODS}}
+\paragraph*{exists\_fieldtype (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_exists_fieldtype_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!exists\ fieldtype (public)}}
+
+
+Subroutines to check, if the passed type exists in the
+list of hardcoded fieldtypes.
+
+\paragraph*{exists\_ds\_type (internal)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_exists_ds_type_internal_}\index{Apiis::Form::Init -- base package for Form objects of all types!exists\ ds\ type (internal)}}
+
+
+Returns true if the passed parameter is in the list of hardcoded DataSource
+Types (like sql, record, function, none).
+
+\paragraph*{is\_a\_listfield (internal)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_is_a_listfield_internal_}\index{Apiis::Form::Init -- base package for Form objects of all types!is\ a\ listfield (internal)}}
+
+
+Returns true if the passed parameter is in the list of hardcoded fields, that
+have a list character (like ScrollingList, BrowseEntry, etc.).
+
+\paragraph*{is\_misc\_blockelement (internal)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_is_misc_blockelement_internal_}\index{Apiis::Form::Init -- base package for Form objects of all types!is\ misc\ blockelement (internal)}}
+
+
+Subroutines to check, if the passed element exists in the
+list of hardcoded Block elements, which are not Field, DataSource, etc..
+
+\paragraph*{new (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_new_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!new (public)}}
+
+
+\textbf{new} creates a new form object.
+Input parameter is an anonymous hash with the key 'xmlfile' and the path to this
+file as its value.
+
+
+
+The \textbf{new} method of Init.pm is not invoked directly but via inheritance through
+the widget specific modules.
+
+
+
+Example:
+
+\begin{verbatim}
+   my $form_obj = Apiis::Form::Tk->new(
+      xmlfile => '/path/to/xmlfile.frm'
+   );
+\end{verbatim}
+\paragraph*{\_init (internal)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types__init_internal_}\index{Apiis::Form::Init -- base package for Form objects of all types!\ init (internal)}}
+
+
+\textbf{\_init()} is only invoked if you want to create an object of type
+Apiis::Form directly. As this is only a base class an error is yielded.
+
+\paragraph*{xmlfile (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_xmlfile_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!xmlfile (public)}}
+
+
+\textbf{xmlfile()} returns the full path of the xml file for this form.
+
+\paragraph*{add\_formlib\_path (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_add_formlib_path_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!add\ formlib\ path (public)}}
+
+
+\textbf{add\_formlib\_path} will prepended some Form/Project specific directories to
+the library search for Form modules in up to down order. So the most specific
+will be searched first and wins over the more generic ones. Form modules for
+example for Form\_0 and GUI-type Tk are searched in:
+
+\begin{verbatim}
+   $APIIS_HOME/lib/Apiis/Form/Tk/Form_0/
+   $APIIS_HOME/lib/Apiis/Form/Tk/
+   $APIIS_HOME/lib/Apiis/Form/Form_0/
+   $APIIS_HOME/lib/Apiis/Form/Event/
+\end{verbatim}
+
+
+As Form-name and GUI-type are determined at runtime, the addition of this
+search paths also have to happen at runtime.
+
+
+
+\textbf{add\_formlib\_path} expects as input parameters:
+
+\begin{verbatim}
+   1. the GUI-type (e.g. Tk, HTML, Qt )
+   2. the form name as in $self->formname
+\end{verbatim}
+
+
+Usage:
+
+\begin{verbatim}
+   $self->add_formlib_path( 'Tk', $self->formname );
+\end{verbatim}
+\paragraph*{form\_status\_msg (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_form_status_msg_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!form\ status\ msg (public)}}
+
+
+\textbf{form\_status\_msg} is a write-only method to put form-global status messages
+somewhere. They can be displayed e.g. in a status line (textfield) in the form.
+
+
+
+Example:
+
+\begin{verbatim}
+   $self->form_status_msg('Retrieved 20 records');
+\end{verbatim}
+\paragraph*{GetValue (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_GetValue_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!GetValue (public)}}
+
+
+\textbf{GetValue} is the main method to access the configuration data and the data
+references of this form object. All the real elements (not the pseudo auxiliary
+elements) of the xml file have a unique name and are accessible trough this
+name. All elements without the identifying name are flattened into their parent
+element. Their attributes become attributes of the parent.
+
+
+
+Syntax:
+
+\begin{verbatim}
+   my $attr_value = $form_obj->GetValue($elementname, $attribut);
+\end{verbatim}
+
+
+Example:
+
+\begin{verbatim}
+   my $label = $form_obj->GetValue('Field_1', 'Label');
+\end{verbatim}
+
+
+\textbf{GetValue} returns also the values for dynamically created items like
+'\_field\_list' for each block or '\_column\_list' for each datasource.
+
+
+
+Example:
+
+\begin{verbatim}
+   foreach my $field ( @{ $form_obj->GetValue( 'Block_0', '_field_list')} ){
+      # do something
+   }
+\end{verbatim}
+
+
+The list values return an array reference so they must be dereferenced for usage
+in loops.
+
+\paragraph*{SetValue (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_SetValue_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!SetValue (public)}}
+
+
+\textbf{SetValue} is the counterpart to GetValue.
+
+
+
+Syntax:
+
+\begin{verbatim}
+   my $old_value = $form_obj->SetValue($elementname, $attribut, $new_value);
+\end{verbatim}
+
+
+\textbf{SetValue} returns the old value.
+
+\paragraph*{IncValue $|$ DecValue (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_IncValue_DecValue_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!IncValue $|$ DecValue (public)}}
+
+
+Increment and decrement values in the flattened structure.
+
+
+
+Syntax:
+
+\begin{verbatim}
+   $form_obj->IncValue($elementname, $attribut);
+   $form_obj->DecValue($elementname, $attribut);
+\end{verbatim}
+\paragraph*{GetEvent (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_GetEvent_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!GetEvent (public)}}
+
+
+\textbf{GetEvent} should make access to event definitions at certain levels easy.
+
+
+
+Syntax:
+
+\begin{verbatim}
+   my $events_ref = $form_obj->GetEvent($elementname, 'OnClick');
+\end{verbatim}
+
+
+\textbf{GetEvent} returns an arrayreference to all 'OnClick'-Eventnames
+of \$elementname or undef if none exists.
+
+\paragraph*{RunEvent (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_RunEvent_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!RunEvent (public)}}
+
+
+input: hash reference with required keys: elementname, eventtype
+
+
+
+output: array reference with the names of the processed events
+
+\paragraph*{gui\_type (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_gui_type_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!gui\ type (public)}}
+
+
+\textbf{gui\_type} returns (and sets) the type of the running Graphical User
+Interface, e.g. Tk, HTML.
+
+\paragraph*{top (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_top_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!top (public)}}
+
+
+\textbf{top} returns (and sets) a reference to toplevel window (Tk, query =$>$ HTML).
+
+\paragraph*{formname (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_formname_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!formname (public)}}
+
+
+\textbf{formname} returns the name of the Form.
+
+
+
+For the consistency of method names, there is also a method \textbf{formnames},
+which returns an arrayref of the list of formnames.
+
+
+
+Both methods might be seldom used.
+
+\paragraph*{generalname (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_generalname_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!generalname (public)}}
+
+
+\textbf{generalname} returns the name of the General section. There could only be
+one General section.
+
+
+
+For the consistency of method names, there is also a method \textbf{generalnames},
+which returns an arrayref of the list of generalnames.
+
+\paragraph*{blocknames $|$ datasourcenames $|$ fieldnames $|$columnnames (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_blocknames_datasourcenames_fieldnames_columnnames_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!blocknames $|$ datasourcenames $|$ fieldnames $|$columnnames (public)}}
+
+
+These methods all return an arrayref of the list of names.
+
+\paragraph*{misc\_blockelements (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_misc_blockelements_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!misc\ blockelements (public)}}
+
+
+\textbf{misc\_blockelements} return an array (or reference) to a list of non-Field
+elements of a block (Line, Image, Frage, etc.).
+
+\paragraph*{master\_detail (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_master_detail_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!master\ detail (public)}}
+
+
+Form level flag, if this form is a more complex one with master/detail
+relationships.
+
+
+
+Usage:
+
+\begin{verbatim}
+   $self->master_detail(1); # set flag
+   &easy_going if not $self->master_detail;
+\end{verbatim}
+\paragraph*{query\_block\_order (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_query_block_order_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!query\ block\ order (public)}}
+
+
+\textbf{query\_block\_order} return the blocks in the right order for Master/Detail
+handling. The query order depends on the master/detail relationships between
+blocks. This order is determined in Event/Query.pm, when the first query is
+started. After this it is usually used readonly.
+
+\paragraph*{encode\_list\_ref $|$ decode\_list\_ref\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_encode_list_ref_decode_list_ref}\index{Apiis::Form::Init -- base package for Form objects of all types!encode\ list\ ref $|$ decode\ list\ ref}}
+
+
+\textbf{encode\_list\_ref} and \textbf{decode\_list\_ref} exchange the primary/foreignkey
+value with the more readable one and vice versa. These methods are used, if a
+field-specific DataSource exists.
+
+
+
+Both take as input parameters:
+
+\begin{verbatim}
+   1. Fieldname
+   2. The data to en/de-code
+\end{verbatim}
+
+
+They return the en/de-coded value.
+
+\paragraph*{fieldtype (internal)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_fieldtype_internal_}\index{Apiis::Form::Init -- base package for Form objects of all types!fieldtype (internal)}}
+
+
+\textbf{fieldtype} returns the widget-set specific fieldtype for a passed metatype.
+
+
+
+Example:
+
+\begin{verbatim}
+   my $ft = $self->fieldtype('textfield');   # returns 'TextField' for Tk
+\end{verbatim}
+
+
+All metatypes are in lower case.
+
+
+
+To make error messages more helpfull, you should add a second parameter,
+the fieldname:
+
+\begin{verbatim}
+   my $ft = $self->fieldtype( $type, $fieldname );
+\end{verbatim}
+
+
+If no error occurs, the fieldname is simply ignored, otherwise it will
+give a valueable hint, where to search in the XML file.
+
+\paragraph*{insert\_block $|$ insert\_form $|$ update\_block $|$ query\_block $|$ clear\_block $|$ clear\_form (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_insert_block_insert_form_update_block_query_block_clear_block_clear_form_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!insert\ block $|$ insert\ form $|$ update\ block $|$ query\ block $|$ clear\ block $|$ clear\ form (public)}}
+
+
+These methods handle form events on block level, initiated by the user. These
+are the public interfaces, the real methods are rolled out into the
+Apiis::Form::Event namespace. See details there.
+
+
+
+The blockname is provided during the invocation of the do\_$<$commands$>$ in the
+widget-specific button handling, e.g. in Tk/Button.pm.
+
+\paragraph*{insert\_blocks $|$ insert\_form $|$ clear\_form (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_insert_blocks_insert_form_clear_form_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!insert\ blocks $|$ insert\ form $|$ clear\ form (public)}}
+
+
+These are the same methods except that they act on multiple/all blocks.
+The blocknames for \textbf{insert\_blocks} are defined in the xml file.
+
+\paragraph*{next $|$ prev $|$ first $|$ last (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_next_prev_first_last_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!next $|$ prev $|$ first $|$ last (public)}}
+
+
+These methods are for navigation through the records while querying data.
+
+\paragraph*{return\_value (public)\label{Apiis::Form::Init_--_base_package_for_Form_objects_of_all_types_return_value_public_}\index{Apiis::Form::Init -- base package for Form objects of all types!return\ value (public)}}
+
+
+\textbf{return\_value} stores and gives back a SCALAR value, which could be either a
+simple scalar, a reference to a hash, to an array or even to another object.
+It's up to the configuration, what type of return value is expected.
+
+\subsubsection*{CreateCSSProperties\label{CreateCSSProperties}\index{CreateCSSProperties}}
+
+
+This function has an object name as argument. It fetchs the object about getobject(\$name) and make a loop over the css-children-objects. After test whether the children-objects (color, format, position, miscellaneous, text) are valid each methodes of the objects were ask if it has an entry. About hash \%css the correct css-name will fetched. After loop all properties were collect and return as STYLE-element
+

@@ -1,0 +1,1647 @@
+\chapter{Initial Loading of Historic Data}
+
+Very rarely, a new information system can be set up without any previouly
+collected data. This implies the necessity to load all previously
+collected data into the new database before the routine data flow
+can start reaching the database. Historic data will typically be available
+from a number of different and often independant source or oven organization.
+As a consequence, many logical inconsistancies will be found in the
+data once they are loaded into a target structure that defines a possibly
+stringent set of business rules. As historic data may come in non
+predictable way (many files, any format), a procedure was developed
+which is as far as possible generic and thereby adaptable to any type
+of animal data recording system. It therefore allows any number of
+data files to be involved and furthermore, develops a strategy to
+deal with the potentially large number of errors that will become
+obvious once loaded into the business rule centered database.
+
+
+\section{The General Procedure}
+
+Once the structure of the database has been defined it has to be populated
+with historic data, i.e. information already available in some computer
+compatible form. As has been described above, all external codes or
+identifications are translated into internal database codes to allow
+for reuse of external codes should the meaning of them change at some
+time. 
+
+\begin{enumerate}
+\item Operate on codes and external identification
+
+\begin{enumerate}
+\item Collect all temporary external codes
+\item check external codes and determine their target code to go into the
+database
+\item determine illegal values and handle them
+\item identify and handle duplicate identifications
+\item create input channels for corrected external codes in the database.
+The external codes can thus also be viewed as foreign keys which need
+to be available in the database prior to load the data.
+\end{enumerate}
+\item Operate on data
+
+\begin{enumerate}
+\item load historic data using the channels created in the previous step
+\item verify the loaded data against the business rules and flag records
+with errors in the database
+\end{enumerate}
+\item Wrap up
+
+\begin{enumerate}
+\item rewrite the temporary external animal identification to the external
+IDs reaching the database in routine data flow
+\end{enumerate}
+\end{enumerate}
+Now we shall describe the steps in a little more detail.
+
+\begin{enumerate}
+\item Operate on codes and external identification
+
+
+In this step only external codes and external identifications are
+considered, leaving other data on animals like their measurement aside.
+It is a step which basically collects, edits and loads Foreign Key
+information into the database. From the programming perspective, this
+process can be highly generic with little programming required by
+the adaptor (once the generic code has been written).
+
+\begin{enumerate}
+\item {}``Collect all external codes'': In APIIS we have three groups
+of external codes:
+
+\begin{itemize}
+\item animal identifications; this can be any combinations of data fields
+that identify an animal uniquely in the historic data set. This is
+not necessarily the external ID that may be used in later routine
+data reporting. Its sole purpose is to identifiy individual animals
+correctyl in the historic data sets. The definition of this temporary
+external ID can be different from the external IDs used and reported
+during routine data flow.
+\item an address or partner identification
+\item classical codes like the numeric representation of a breed or a code
+for a certain abnormality
+\end{itemize}
+\item {}``check external codes'': like all data also identifications and
+codes can be erroneous or inconsistant. As an example the breed {}``Pietrain''
+may be coded in some files as {}``PI'' in others as {}``pi''.
+Not only should the data made consistant but also a procedure must
+exist to handle records that are identified as being incorrect. The
+basic principles that we have followed is to provide for each external
+code or identication the opportunity to translate it into a new target
+value or as illegal by manual intervention. Then in the following
+process (like loading of data) any occurence of the original value
+will be replaced by its translated value.
+\item {}``determine illegal values'': some identifications will be illegal.
+For example, unknown sires may be codes as {}``~~~~~~'' or
+as {}``999999''. These are not legal external identifications, and
+should thus not be used to create a data channel. Also, if these IDs
+come up later on in the loading process they should be skipped.
+\item {}``duplicates'': The same ID must not be used for different animals.
+This can happen when animal IDs are being reused after a number of
+years. For some records we know that they should appear only once
+for an animal: a field performance test may be an example. Here we
+can test for multiple occurences. If duplicates are found then human
+interaction is required to resolve the problem. 
+\item {}``create input channnels'': Once all the target codes have been
+established by manual human intervention, likewise duplicates and
+undefined IDs have been dealt with, the external IDs get loaded into
+the database. This populate the tables TRANSFER , CODES and UNIT.
+\end{enumerate}
+\item Operate on data
+
+
+After the {}``foreign keys'' have been collected, edited and loaded
+in the first block, now actual measurements have to be loaded into
+the database. The translation tables edited manually in the first
+step are also used here as filter.
+
+\begin{enumerate}
+\item {}``load historic data'': For each file containing historic data
+a parameter file has to be written. This requires knowledge of the structure
+of the data files and the database. The definition of the external
+codes are identical to those in the first step. They are then passed
+through the translation created by manual intervention. However, the
+business rule layer is bypassed as time sequence dependant checks
+cannot be made because data get processed in random order.
+\item {}``Verify the loaded data'': Thus far all database modifications
+have bypassed the business rule layer of the model file. The business
+rule set can only be used if data come in correct time sequences which
+clearly cannot be done when loading historic data. Thus, conflicts
+with the business rules can be expected. Rows violating the business
+rules will be flagged {}``dirty''. This allows a selection of correct
+data during later database operation. Furthermore, {}``dirty'' records
+can be cleaned up successively later on.
+\end{enumerate}
+\item Wrap up
+
+
+In the previous step all historic data has been loaded, verified against
+the business rules and flagged accordingly. Now the routine data flow
+can start using the data stream model. But before this can be done,
+the data channels may have to be translated from the temporary external
+animal ID to the ID that comes in via the routine data streams. The
+temporariy external IDs were created for the purpose of uniquely identifying
+data records in the historic datasets. Thus, after loading, they have
+served their purpose and may be modified. In the historic dataset,
+initially there may have been duplicate IDs refering to different
+animals. By adding the birth year they would have been made unique:
+4711 in 1990 and in 1999 would have been identified as 4711$|$90 and
+4711$|$99. The former animal will not be active any more while data
+for the latter will still come into the system. However, it will be
+identified in the data stream only as 4711. Thus, its external number
+can be changed to 4711. Accordingly, incoming data to animal 4711
+will find an open data channel and be translated to the correct internal
+database number.
+
+\end{enumerate}
+
+\section{Description of the loading process for the reference database}
+
+As indicated above the reference database contains a script that should
+carry out all steps to create the actual reference database starting
+with the initial ASCII files containing the historic data. Prerequisites
+are:
+
+\begin{itemize}
+\item set APIIS\_LOCAL to \$APIIS\_HOME/apiis \\
+(with bash: export APIIS\_LOCAL=\$APIIS\_HOME/apiis)
+\item add bin/ and lib/ to the search path \\
+(with bash: export PATH=\$PATH:\$APIIS\_HOME/bin:\$APIIS\_HOME/lib:
+...)
+\item the postmaster has to be up and running (use the -F option to speedup
+loading; possible -i to accept TCP/IP connections)
+\item the current user has to have the right to create and destroy a database
+\item run runall.pl \index{runall.pl} (the total one may take a couple
+of hours or so depending on the speed of the computer, because the
+check routines need a lot of time; 7 hours on pIII 256 Mb RAM, until
+check\_integrity nearly 3 hours)
+\item a log is written as runall.log\index{runall.log} for the succesfull
+run and as runall\_long.log\index{runall\_long.log} for statistics
+in data loading
+\end{itemize}
+In the following we shall describe the procedure which is generally
+applicable to any loading process of historic data (as we hope). However,
+we shall use the reference database for detail description. Table
+\ref{runall.pl} gives a listing of the perlscript. To load the complete
+reference database no configuration is necessary. However, this script
+can also be used as the basis for user specific loading. Then the
+following lines need adaptation:
+
+\begin{lyxlist}{00.00.0000}
+\item [line~75]for testing purposes it is useful to load only a (consistant)
+subset of all historic data. The number of records loaded is set via
+\$max\_rec. To load all data use a number larger than the number of
+records in the data file accessed in program S6\_collect\_ignore\_animal\index{collect\_ext\_id.pl}
+\item [line~78~etc]the array @job holds all the programs that need to
+run. These are the same as shown in table \ref{runall.pl}.
+\item [line~153]here define the used project. In this setup it is
+  possible to run seperate projects side by side. The projectname has
+  to be the same as defined in \$APIIS\_HOME/etc/apiisrc section PROJECTS.
+\end{lyxlist}
+%
+\begin{table}[htbp]
+
+\caption{creating the complete reference database (runall.pl)\label{runall.pl}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+"S1_add_codes()",                                      # step 1
+"S2_collect_codes(-m $max_rec)",                       # step 2
+                                                       # step 3 manual edit
+"S3_load_codes('-f codes.chg.cvs')",                   # step 4
+"S4_collect_jobs($max_rec)",                           # step 5
+                                                       # step 6 manual edit
+"S5_load_jobs('-f job.chg.cvs')",                      # step 7
+"S6_collect_ignore_animal('-i -m $max_rec')",          # step 8 find all ext
+                                                       # and leave UNDEFINED in file
+                                                       # step 9 manual edit
+"S7_collect_dup_animal('-d -n hb_not_uniq.txt -m $max_rec')", # step 10 find duplicates
+                                                       # step 11 manual edit
+"S8_load_ext_animal('-f dup_animal.chg.cvs -m $max_rec -c ignore_animal.ok')", #step 12
+"S9_transfer_to_animal()",                             # step 13
+"S10_load_data('-p herdbook.par -m $max_rec')",        # step 14 load the data herdbook
+"S10_load_data('-p station.par -m $max_rec -f codes.chg.cvs')",    # step 15 station
+"S10_load_data('-p field.par -m $max_rec -f codes.chg.cvs')",      # step 16 field
+"S10_load_data('-p litter.par -m $max_rec -f codes.chg.cvs')",     # step 17 litter
+"S10_load_data('-p address.par -m $max_rec')",                     # step 18 address
+"S11_clear_index()",                                   # step 19
+"S12_dates_to_transfer_hb('-m $max_rec')",             # step 20
+"S13_dates_to_transfer_station('-m $max_rec')",        # step 21
+"S14_fill_last_action()",                              # step 22 fill la_rep
+"S15_post_initial()",                                  # step 23 rewrite ext_animal
+                                                       # step 24 manual edit 'codes_unit.chg'
+"S16_collect_codes2('-f codes_unit.chg.cvs')",         # step 25 new codes from post_initial
+"S17_clear_transfer.pl", # step 26 if duplicate animals exist after rewriting
+"check_integrity -f ../model/breedprg.model -D -g check.erg", # step 28 (set dirty)
+\end{Verbatim}
+\end{minipage}
+
+\end{table}
+
+Now the specific steps will be described on the basis of the reference
+database.
+
+\begin{enumerate}
+\item make a list of all files that hold historic data
+\item start with identification of adult animals
+
+\begin{enumerate}
+\item determine the unique external id of the animal. In the reference dataset
+this is:
+
+\begin{enumerate}
+\item breed society (there are sires from other breed societys in station
+test records)
+\item herdbook number
+\item sex
+\end{enumerate}
+\item for each file determine the columns to create the EXT\_ID on the above
+basis
+\end{enumerate}
+\item load all ext\_ids in a vector and note unique (u) and multiple (m)
+with each ext\_id:
+
+\begin{lyxlist}{00.00.0000}
+\item [m:]multiple occurences to be expected, these are occurences as parents,
+or sows with litter records
+\item [u:]typically, in herdbook files we should have only one record for
+each ext\_id. Thus, if an ext\_id (as defined above) occurs more than
+once we know that we have a mistake.
+\end{lyxlist}
+\end{enumerate}
+When developing a new information system on the basis of APIIS normally
+historic data exists that has been collected by some other system
+or by a number of different systems. The problems and procedures to
+integrate all historic data in a new consistent APIIS based system
+is described in this chapter.
+
+Because initial loading has to deal with data accumulated over time
+no time dependent business rules can be enforced. This means that
+during this phase the business rule\index{business rules} enforcement
+system will be switched off. However, this means that after this phase
+the freshly loaded system has to be verified extensively to match
+the accuracy requirements stated in the model file.
+
+
+\section{Initial Datasets}
+
+Here it is assumed that the initial datasets are available in the
+form of flat ASCII files. These files constitute the complete historic
+data that are intended to be loaded into the central database. Furthermore,
+this implies that never more historic data is to be included. Thus,
+there will be only one initial step to load historic data. After this
+process has been carried out the newly established database will be
+the sole repository of the data. New data will afterwards be entered
+into the database via the time dependent stream entry using the model
+file.
+
+The files used in the reference database reside in the directory \\
+\$APIIS\_HOME/ref\_breedprg/initial and are:
+
+\begin{enumerate}
+\item herdbook data \dotfill herdbook.dat
+\item field test data \dotfill field.dat
+\item station test data \dotfill station.dat
+\item reproduction data \dotfill litter.dat
+\item address data \dotfill address.dat
+\end{enumerate}
+Loading historic data requires the following steps:
+
+\begin{enumerate}
+\item list all data streams and their content (DS01 -- DSnn)\label{enu:list-all-data-streams}
+\item normalize the database structure\label{enu:normalized-the-database}
+\item list all files of historic data (in the reference database we have
+the 5 files given above)\label{enu:list-all-files-hist}
+\item create all other foreign keys such as codes and addresses\label{enu:create-all-other-FK}
+\item create external identifications for all animals referd to in the historic
+data files\label{enu:create-external-identifications}
+\item load historic data\label{enu:load-historic-data}
+\item rewrite TRANSFER for currently used external
+  identifications\label{enu:rewrite-TRANSFER}
+\item check integrity against the defined business rules
+\end{enumerate}
+\begin{comment}
+create conditional index in ENTRY\label{enu:create-conditional-index-ENTRY}
+\end{comment}
+
+\section{Step 1: Adding code}
+
+The program S1\_add\_codes.pl\index{add\_codes.pl} is used to fill the
+CODES\index{codes} table with the types that are being used in the
+later loading process (see \ref{codes}). These are codes which are
+not came from data but from datastream and/or position in data, like
+type of the weight (station start test or fieldtest...) in table WEIGHT
+or role (breeder, owner) in table UNIT, where we have distinct columns
+in data. Entry and exit action are further examples. Here we can insert
+whole new classes or needed values which will come later in routine
+datachannels and are not present in historic data.
+
+\begin{figure}[htbp]
+
+\caption{\label{add_codes}Configuration section for S1\_add\_codes.pl}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+ ## class        ext_code        [ shortname longname description ]
+ 'SERVICE_TYPE' => {
+                 'insem'      => ['insem', 'insemination (fresh semen)' ],
+                 'nat'        => ['nat', 'natural (Natursprung)']
+                   },
+\end{Verbatim}
+\end{minipage}                 
+
+\end{figure}
+
+In the example (figure \ref{add_codes}) a new code class
+'SERVICE\_TYPE' would defined with the two external codes for
+insemination and natural service.
+
+
+\section{Step 2: Collecting and setting up CODES\label{codes}}
+
+The steps 2 until 7 are made before the external animal
+identifications would be collected, because also different codes from
+different files (ex. sex from different sources) could be part of the
+unique animal identification. 
+
+This block performed by the programs
+S2\_collect\_codes\index{collect\_codes1.pl} 
+and S3\_load\_codes \index{collect\_codes2.pl}which need to get
+adapted to the specific information system under consideration.
+
+The configuration block in S2\_collect\_codes is given in table \ref{config_col_codes1}.
+\begin{figure}[htbp]
+
+\caption{Configuration block for S1\_collect\_codes\label{config_col_codes1}}
+
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+##############################################################################
+# Begin configuration section:
+##############################################################################
+#                file           column           category
+my @total = (
+             [ 'herdbook.dat' , '0'  ,              'sex' ],
+             [ 'herdbook.dat' , '9'  ,            'breed' ],
+             [ 'herdbook.dat' , '20' ,              'mhs' ],
+             [ 'station.dat'  , '0'  ,              'sex' ],
+             [ 'station.dat'  , '2'  ,            'breed' ],
+             [ 'station.dat'  , '32' , 'slaugter_remarks' ],
+             [ 'station.dat'  , '16' ,          'l_cause' ],
+             [ 'field.dat'    , '0'  ,              'sex' ],
+             [ 'field.dat'    , '4'  ,            'breed' ],
+             [ 'field.dat'    , '10' ,              'sex' ],
+             [ 'litter.dat'   , '4'  ,            'breed' ],
+             [ 'litter.dat'   , '8'  ,            'breed' ],
+            );
+##############################################################################
+# End configuration section:
+##############################################################################
+\end{Verbatim}
+
+\end{figure}
+Each line configures one column with codes. The files are again those
+that we had listed before. In {}``herdbook.dat'' we have 3 columns
+with codes. They represent the sex of the animal, the breeds and the
+mhs (maligne hypthermia) status of the animal. Notice, that we
+need to specify \bf{all} occurences of codes.
+
+%
+
+
+In historic data often many different codes are used for the same
+object. For instance for male animals we may find M, m and 1. These
+would have to be translated into one interal code number. A general
+procedure for loading CODES would follow these steps:
+
+\begin{enumerate}
+\item count the number of raw tables ($n_{tables}$)
+\item for each table determine the columns that hold a code and give each
+a category name (column class in CODES)
+\item for each table:
+
+\begin{enumerate}
+\item column 1 do a select (code), count(code) group by code
+\item column 2 do a select (code), count(code) group by code
+\end{enumerate}
+\item this will result in a table like this:
+
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline 
+\multicolumn{5}{|c|}{}&
+\multicolumn{2}{c|}{Names}\tabularnewline
+\hline 
+RAW table&
+column&
+content&
+n&
+Target Code&
+short&
+long\tabularnewline
+\hline
+\hline 
+herdbook&
+sex&
+1&
+231&
+&
+&
+\tabularnewline
+\hline 
+herdbook&
+sex&
+01&
+212&
+&
+&
+\tabularnewline
+\hline 
+herdbook&
+sex&
+m&
+2121&
+&
+&
+\tabularnewline
+\hline 
+herdbook&
+sex&
+f&
+3212&
+&
+&
+\tabularnewline
+\hline 
+...&
+...&
+...&
+...&
+&
+&
+\tabularnewline
+\hline 
+litter&
+anomaly&
+01&
+2123&
+&
+&
+\tabularnewline
+\hline 
+litter&
+anomaly&
+ok&
+216&
+&
+&
+\tabularnewline
+\hline 
+...&
+...&
+...&
+...&
+&
+&
+\tabularnewline
+\hline
+litter&
+anomaly&
+99&
+3221&
+&
+&
+\tabularnewline
+\hline
+\end{tabular}
+
+\item write this table to a file
+\end{enumerate}
+The program collect\_codes1.pl produces as out the ASCII file codes.chg.
+A few lines from this file are given in figure \ref{codes.chg}. This
+file needs to get edited by the developer. 
+
+%
+\begin{figure}[htbp]
+
+\caption{\label{codes.chg}Output file codes.chg from S2\_collect\_codes}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+# seperate columns with blancs  
+# if you have more than one word in some columns you must insert these between >'< 
+# for example: breed raw_herdbook 2  02  8724 DL 'German Landrace' ' another kind of Landrace'
+# for undefined TARGET-CODE use NULL
+# CATEGORY   TABLE  COLUMN CONTENT    NUMBER  TARGET-CODE   SHORTNAME LONGNAME DESCRIPTION
+#------------------------------------------------------------------------
+BREED      field.dat    '4'    '10'          1 '10'    
+BREED      field.dat    '4'    '11'          1 '11'    
+BREED      field.dat    '4'    '2'           1 '2'     
+BREED      field.dat    '4'    'DL'     126067 'DL'    
+BREED      field.dat    '4'    'LW'         27 'LW'    
+BREED      field.dat    '4'    'PI'       1514 'PI'    
+BREED      field.dat    '4'    'SH'       2369 'SH'    
+BREED      herdbook.dat '9'    'DL'      27473 'DL'    
+BREED      herdbook.dat '9'    'HA'         55 'HA'    
+BREED      herdbook.dat '9'    'LW'        149 'LW'    
+BREED      herdbook.dat '9'    'PI'       1384 'PI'    
+BREED      herdbook.dat '9'    'Pi'          7 'Pi'    
+\end{Verbatim}
+\end{minipage}
+\end{figure}
+
+
+
+\section{Step 3: Manual edit of codes\label{edit_codes}}
+
+\begin{enumerate}
+\item manually, determine the target external code to be used in the system
+(this will be done with your favorite editor). This table holds for
+each category all the external codes allowed, e.g. category SEX may
+be M, F, C for male, female and castrate. Table CODES would translate
+SEX/F into an internal code used throughout the database. For unknown
+codes it is possible to use 'NULL' in column target code. The table
+will then look like this: 
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+RAW table&
+column&
+content&
+n&
+Target Code\tabularnewline
+\hline
+\hline 
+herdbook&
+sex&
+1&
+231&
+M\tabularnewline
+\hline 
+herdbook&
+sex&
+01&
+212&
+M\tabularnewline
+\hline 
+herdbook&
+sex&
+m&
+2121&
+M\tabularnewline
+\hline 
+herdbook&
+sex&
+f&
+3212&
+F\tabularnewline
+\hline 
+...&
+...&
+...&
+...&
+...\tabularnewline
+\hline 
+litter&
+anomaly&
+01&
+2123&
+1\tabularnewline
+\hline 
+litter&
+anomaly&
+ok&
+216&
+1\tabularnewline
+\hline 
+...&
+...&
+...&
+...&
+...\tabularnewline
+\hline 
+litter&
+anomaly&
+99&
+3221&
+9\tabularnewline
+\hline
+\end{tabular}
+
+\end{enumerate}
+Furthermore could be inserted the meaning of the additional columns
+in table CODES, like short name, long name and description. These
+meanings are filled only for one target code and could be also later
+filled from other source. The resultant file with the name codes.chg.cvs
+(which comes from cvs) is given in the figure \ref{codes.chg.cvs}.
+
+%
+\begin{figure}[htbp]
+
+
+\caption{\label{codes.chg.cvs}Edited output file codes.chg}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+# seperate columns with blancs 
+# if you have more than one word in some columns you must insert these between >'< 
+# for example: breed raw_herdbook 2  02  8724 DL 'German Landrace' 'another kind of Landrace'
+# for undefined TARGET-CODE use NULL
+# CATEGORY   TABLE  COLUMN  CONTENT NUMBER TARGET-CODE SHORTNAME LONGNAME DESCRIPTION
+#------------------------------------------------------------------------------------
+BREED      field.dat    '4'    '10'      1 NULL      
+BREED      field.dat    '4'    '11'      1 NULL      
+BREED      field.dat    '4'    '2'       1 NULL      
+BREED      field.dat    '4'    'DE'   1769 'DE' 'DE' 'German Large White' 'another kind of ...'  
+BREED      field.dat    '4'    'DL'    140 'DL' 'DL' 'German Landrace' 'another kind of Landrace'  
+BREED      field.dat    '4'    'LW'     27 'LW' 'LW' 'Large White'  
+BREED      field.dat    '4'    'PI'   2551 'PI' 'PI' 'German Pietrain'  
+BREED      herdbook.dat '9'    'DE'   1403 'DE'       
+BREED      herdbook.dat '9'    'DL'    479 'DL'        
+BREED      herdbook.dat '9'    'HA'     55 'HA' 'HA' 'Hampshire'  
+BREED      herdbook.dat '9'    'SH'      4 'SH' 'SH' 'Schwäbisch Hällische'  
+BREED      herdbook.dat '9'    'LW'    149 'LW'        
+BREED      herdbook.dat '9'    'PI'   3438 'PI'        
+BREED      herdbook.dat '9'    'Pi'      1 'PI'        
+BREED      station.dat  '2'    '1'    3271 'DL'        
+BREED      station.dat  '2'    '2'     983 'PI'        
+BREED      station.dat  '2'    '3'      15 'DS'        
+\end{Verbatim}
+\end{minipage}
+\end{figure}
+
+In this example we have first some unknown codes inside which always
+only happens once in the ascii file field.dat and let it out from the
+database by changing the target to 'NULL'. The next lines leave the
+targets as they are and add here some short and longname and a little
+description which is needed only once for each target code. At the end
+here are some
+changes of target codes from 'Pi' to 'PI' and also for the data source
+station from numbers to describing characters.
+
+\section{Step 4: Load edited codes}
+
+Run the program S3\_load\_codes \index{collect\_codes2.pl} which
+reads the above edited file and loads it into table CODES.
+
+
+\section{Step 5: Collect jobs}
+
+The general procedure is the same as in collect codes, see above.
+The differences result from the specific table structure for UNIT,
+ADDRESS and NAMING. 
+
+
+\section{Step 6: Manual edit of Jobs}
+
+Here you can specify if you want different db-sequences for the same
+person (unit) in different jobs. These are necessary when the same person
+can be either breeder or owner. Then you need two different entrys
+in UNIT but possible only one entry in ADDRESS and/or NAMING. As an
+example see file job.chg.cvs and figure \ref{job.chg}.
+
+%
+\begin{figure}[htbp]
+
+\caption{job.chg\label{job.chg}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+# seperate columns with blancs 
+# for undefined TARGET-CODE use NULL
+# when  you need distinct sequence for db_name and db_address: see example
+# below first 3 jobs get the same db_name but foster breeder get another db_address
+# BREEDER   raw_herdbook   hb_zue_nr       208         21  208 
+# OWNER     raw_herdbook   owner_nr        208         12  208 BREEDER BREEDER
+# F_BREEDER raw_herdbook   hb_auf_nr       208          2  208 BREEDER ''
+# SOCIETY   raw_herdbook   society_nr      208        102  208 
+# the foster breeder below get the same db_name and db_address as breeder 208
+# F_BREEDER raw_herdbook   hb_auf_nr       209          2  209 BREEDER(208) BREEDER(208)
+# ext UNIT     TABLE    COLUMN  CONTENT  NUMBER  TARGET-CODE SAME(db_name) SAME(db_address)
+#-----------------------------------------------------------------------------
+BREEDER     herdbook.dat 18      57        1040  57
+BREEDER     herdbook.dat 18      58         128  58
+BREEDER     herdbook.dat 18      59           1  59
+BREEDER     herdbook.dat 18      5           37  5
+BREEDER     herdbook.dat 18      60           8  60
+#-----------------------------------------------------------------------------
+FBREEDER  herdbook.dat   19      570        171  570   BREEDER(57) BREEDER(57)
+FBREEDER  herdbook.dat   19      57           1  570   BREEDER(57) BREEDER(57)
+#-----------------------------------------------------------------------------
+OWNER     herdbook.dat   11      0         1116  NULL 
+OWNER     herdbook.dat   11      10144        2  10144 BREEDER BREEDER
+OWNER     herdbook.dat   11      10570        1  10570 BREEDER BREEDER
+OWNER     herdbook.dat   11      105         73  105   BREEDER BREEDER
+#-----------------------------------------------------------------------------
+SOCIETY   herdbook.dat   2       54           2  54   
+SOCIETY   herdbook.dat   8       54           2  54   
+SOCIETY   herdbook.dat   2       56          77  56   
+SOCIETY   herdbook.dat   5       56          61  56   
+SOCIETY   herdbook.dat   8       56          54  56   
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+In the example the breeder get all unique sequences in table
+ADDRESS and NAMING which will updated with the right informations
+later. 
+
+In the part foster breeder the two members get the same target as '570' and
+then get the same db\_address and db\_naming as the breeder with the
+external identification '57' (see the brackets at the end).
+
+The next lines for the owner give then an empty (unknown) target for
+the external id '0' and then the other owners get the same sequencies
+as the identical numbered breeders. 
+
+At the end the class society get then unique db\_address and db\_unit
+for the identical target-code.
+
+\section{Step 7: Load jobs}
+
+Load all present units into the table UNIT and fill the right
+sequences to tables NAMING and ADDRESS. 
+
+\section{Step 8: Collecting all external animal identifications}
+
+The step of creating external identifications (\ref{enu:create-external-identifications})
+is performed by the program S6\_ignore\_animal\_id.pl\index{collect\_ext\_id.pl}
+which resides in \$APIIS\_LOCAL/initial. Prior to being able to load historic
+data external identifications in TRANSFER need to be created together
+with their internal database numbers.
+
+At this stage EXT\_ID is defined as a concatenation of fields which
+is used in the historic dataset to make an identification unique.
+This may be society$|$hb\_nr$|$sex in case of the reference. This same
+string will be used to load history data into the database in the
+following steps. 
+
+This step is done by the program S6\_collect\_ignore\_animal. The program
+is parameterized in a configuration block right at its beginning.
+The example from the reference database is given in figure \ref{config-block}.
+
+%
+\begin{figure}[htbp]
+
+\caption{\label{config-block}Configuration block of S6\_collect\_ignore\_animal}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+##############################################################################
+# Begin configuration section:
+##############################################################################
+#              file             new_nr        old_nr
+my @link =  ('herdbook.dat', '2 1 0'        '8 7 c2 12',
+              'station.dat', 'cstation 11', '8 9 c2 10');
+
+#              file              nr      unique / multiple
+my @total = (
+             [ 'herdbook.dat' , '2 1 0' ,      'u' ],
+             [ 'herdbook.dat' , '8 7 c2 12' ,  'u' ],
+             [ 'herdbook.dat' , '5 4 c1' ,     'm' ],
+             [ 'herdbook.dat' , '8 7 c2' ,     'm' ],
+             [ 'field.dat'    , '2 1 c2 3' ,   'u' ],
+             [ 'field.dat'    , '2 1 c2' ,     'm' ],
+             [ 'station.dat'  , 'cstation 11', 'u' ],
+             [ 'station.dat'  , '8 9 c2 10' ,  'u' ],
+             [ 'litter.dat'   , '2 1 c2' ,     'm' ],
+             [ 'litter.dat'   , '6 7 c1' ,     'm' ],
+            );
+
+my @regex = (
+              [ '\|0$', 'notch nr 0' ],
+              [ '\|999999\|', 'inside animalnr 999999' ]
+            );
+###############################################################################
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+
+Logically it breaks down into the following blocks:
+
+\begin{enumerate}
+\item create LINK: in pigs we have different numbers or IDs in the historic
+datasets that refer to the same animal. This is usually the ID of
+the piglets that is kept through testing. Only after selection this
+animal gets a new number which is used for further reporting. Thus,
+the two ext\_ids must refer to the same db\_id, which is created as
+a counter. In this step two hashes are created from each link record,
+one for each ext\_id holding the db\_id. \\
+In line 5 those two sets of columns are given that refer to the animal
+identification as young and as adult (selected) animals. The columns
+chosen are those that make the IDs unique in the complete data set.
+The first ID is made up of the columns 2, 1 and 0. This is herdbook
+society, herdbook number and sex. The second ID is made up of the
+dam herdbook society (column 8), the dam herdbook number (column 7),
+the sex of the dam (fix 2) and the running piglet number (column 12).\\
+Line 6 describe the link between mother number + notch number with
+the internal station number which will refer to the information from
+this datasource.
+\item for each historic dataset each ext\_id (created as a concatenation
+as described above) is read one by one performing the following actions:
+
+\begin{enumerate}
+\item does ext\_id exist in LINK(i)? if yes: use its DB\_ID
+\item does EXT\_ID exist in TOTAL? if yes: increment COUNT (if UNIQUE print
+error)\\
+If it does not exist insert and add DB\_ID as an incremented counter
+\end{enumerate}
+\end{enumerate}
+It is configured also in figure \ref{config-block} in lines 10 through
+19. Notice the last column consisting of either 'u' or 'm'. This stands
+for unique or multiple and means if the ID given should be unique
+in the given file or if it can occur more than once. If the field
+test, only one record is allowed for each animal, thus, if it occurs
+more than once we know that there is a problem. Thus, the animal ID
+as given in line 10 must occur only once. On the other hand, the animals
+dam as given in line 12 will show up more than once. In this situation
+nothing can really be checked.
+
+Note, that ALL datafiles that constitute the historic data set must
+be searched for external IDs and be configured in this section. This
+clearly includes parents of animals that are tested at the station
+and in the field (here, we sometimes have sires from different herdbook
+societies which are not part of the breeding program (i.e. herdbook)
+under consideration.
+
+There are two problems that need attention at this point:
+
+\begin{itemize}
+\item unknown or undefined animals need to be identified. The run with the option
+  '-i' create two files which should help you to identify such
+  external animal identifications. 
+\item then for some external IDs we know that they should occur only once. We
+have indicated this with a 'u' in the @total vector \ref{config-block}.
+If a this rule is violated we need to have means of resolving this
+problem. This will always require manual interference. In the second
+step collect\_ext\_id.pl (with option '-d') produces a file with duplicates
+with the name of 'dup\_animal.chg'.
+\end{itemize}
+
+In the third configuration part (see figure \ref{config-block} at
+@regexp) we have an aditional block which should 
+help to find unknown or probably incorrect external animal identifications.
+Here you can describe simple regular expressions that match the wanted
+identifikations. At the end of this operation two files are generated. 
+
+\begin{comment}
+The hash TOTAL with elements: EXT\_ID and DB\_ID is then used to insert
+records into transfer.
+\end{comment}
+
+\section{Step 9: Manual edit }
+
+The file 'ignore\_animal.chg' (see figure \ref{ignore_animal.chg}),
+craeted with option '-i' on 'collect\_ext\_id.pl', contain only little
+statistic which could help to identify external animals where usually
+used as unknown animals. 
+The idea behind the creating of this file was that animal
+identifications which are only used as dummy number to create a full
+pedigree or can insert in the original software only animals which
+have parents but you don't know them, than the number of occurrence
+are normaly much higher as the normal use of an animal.
+
+To really ignore further these animals you must write these
+identifications into the file 'ignore\_animals.ok' or use option '-c
+filename' for this file and leave only animals there which should
+be ignored. (see file 'ignore\_animal.ok' in directory \$APIIS\_LOCAL/initial
+for an example) If you need some more informations about the exact
+number of use the external animal identification in each input file
+you can use the option '-x' which create a file 'detailed\_use' with
+this information.%
+
+\begin{figure}[htbp]
+
+\caption{ignore\_animal.chg\label{ignore_animal.chg}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+# leave only animals which schould be ignored
+# and rename to ignored_animals.ok or use the option c
+# ext_animal count
+32|400080|1  2563
+0|9999999|0  2001
+32|400061|1  1686
+32|100048|1  1663
+32|400167|1  1655
+32|253020|1  1605
+    :
+0|0|1  591
+0|0|2  586
+0|0|2|0  577
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+In this example seems to be that the first animal are an real one and
+if we see this was an boar and could be came as sire so often. But
+then we can identify such a number wich is probably not a valid
+identification of an living animal. unfortunateley in our case we
+found other invalid IDs later on the file (0$|$0$|$1 as unknown sire...).
+
+The second file 'ignore\_animal2.chg' cover the identifications from
+the defined regular expressions and also the animal identifications
+which has uninitialised values inside the concatenation. An example
+see in figure \ref{cap:ignore_animal2.chg}. Now you have to decide
+which animals are used as unknown or if something wrong with the id.
+Also these identifikations has to be added into file
+'ignore\_animal.ok'. mostly it would be better to copy these file to
+the ignore\_animal.ok and add the other identifications found in
+ignore\_animal.chg.
+
+%
+\begin{figure}[htbp]
+
+\caption{ignore\_animal2.chg\label{cap:ignore_animal2.chg}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+# write the animals which schould be ignored
+# to file ignored_animals.ok or use the option c with collect_ext_id.pl
+# ext_animal  description of reason
+32|999999|1  inside 999999  
+25|67682|2|0  notch_nr 0  
+32|104172|2|0  notch_nr 0  
+32|101338|2|0  snotch_nr 0  
+  :
+||2|  NULL values
+||2  NULL values  
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+The example show all external identifications which match the given
+regular expressions in collect\_ext\_id.pl and additional all
+concatenated external IDs where not all elements are known. 
+
+\section{Step 10: Find duplicates}
+
+Use of 'S7\_collect\_dup\_animal' create a output file with
+the data of duplicated animals, if defined that these animals schould
+be unique in the raw datafile. (see file 'dup\_animal.chg') To define ignored
+animals and find duplicates are two steps because animals to be ignored
+also could be duplicated...
+
+\section{Step 11: Manual edit of duplicates}
+
+In this step you can change the external animal identification in
+dependence of the whole data for these animal (if you know which external
+identification is wrong). If the lines are total identically one of
+the line will be accepted because there are no other information for
+the animal.
+
+As example see file 'dup\_animal.chg.cvs'
+(few lines are in figure \ref{dupl1}), where only in the case of
+station data it is possible to change the identification. All other
+animals in this file will further be ignored in loading data, because
+nobody know if the external identification is ok. 
+
+%\begin{SaveVerbatim}[fontsize=\scriptsize, frame=single, numbers=left, commandchars=\\\{\}]{dupanimal}
+%#  change only ext_animal                          
+%#  for example 32|400723|2|15 =>  32|400723|2|16   
+%# file         ext_animal      key            line 
+%     :
+%station.dat = 32|133575|2|\bf{57} ( 8 9 c2 10 )  =>  
+%   ...|133575|57|202349|110|12.40|8.9.99 00:00:00|||30.40|...
+%station.dat = 32|133575|2|\bf{58} ( 8 9 c2 10 )  =>
+%   ...|133575|57|202355|110|10.60|8.9.99 00:00:00|30.11.99 00:00:00|A9|28.20|...
+%\end{SaveVerbatim}
+%\fbox{\BUseVerbatim{dupanimal}}
+
+%
+\begin{figure}[htbp]
+
+\caption{\label{dupl1}example for changed duplicates}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left, commandchars=\\\{\} ]
+#  change only ext_animal                          
+#  for example 32|400723|2|15 =>  32|400723|2|16   
+# file         ext_animal      key            line 
+     :
+station.dat = 32|133575|2|{\bf57} ( 8 9 c2 10 )  =>  
+   ...|133575|57|202349|110|12.40|8.9.99 00:00:00|||30.40|...
+station.dat = 32|133575|2|{\bf58} ( 8 9 c2 10 )  =>
+   ...|133575|57|202355|110|10.60|8.9.99 00:00:00|30.11.99 00:00:00|A9|28.20|...
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+The example in figure \ref{dupl1} show the changing of a notchnumber
+from 57 to 58 for the animal wich would be slaughtered (this
+information are on the end of the printed line). this means that the
+used boar have the correct notchnumber 57. both lines will be
+represented in the database.
+
+\section{Step 12: Load external identifications}
+
+This step (S8\_load\_ext\_aniomal) really load the table TRANSFER with
+all external identifications 
+and create the proper db\_animal. Not inserted are the identifications
+from the file 'ignore\_animal.ok' and the not edited animals from file
+'dup\_animal.chg.cvs'.
+
+\textbf{After this, the historic data can be loaded as all verified
+codes and units will be in the represent tables.}
+
+
+\section{Step 13: write all animals to table animal}
+
+The script S9\_transfer\_to\_animal write all animal numbers into table
+ANIMAL. The reason is to have, after loading all external animals
+into table TRANSFER, you need to have all existing internal animal
+numbers also in table ANIMAL. After this step all needed access to
+this table could only be updates and no inserts anymore. With this
+step you guarantee also that all animals reside in this table and
+go down to unknown parents. Later all known parents overwrite this
+behavior.
+
+\section{Loading Data\label{load_data_hist}}
+
+The above steps ensure that all data channels are open and that each
+external identification is connected to the correct internal database
+number. The same holds true for all codes that are to be loaded. Also
+here, we have an external representation and an internal equivalent.
+In the following steps the tables get filled with information from
+the various data files. Clearly, these programs require a lot of adaptation,
+since the structure and content of the datafiles will be very different
+form one species to the other.
+
+The order of loading the data are verry important which data have the
+better meaning if the information come in twice from different
+sources. For example use the sex from the herdbook data and only if
+there not filled here use other sources.
+
+The configuration sections for each source file are located in a
+seperated <name>.par file an will be run as {\it S10\_load\_data('-p <name>.par')}. 
+
+\subsection{Step 14: Loading Herdbook Records}
+
+As an example the parameter file for the loading program (herdbook) is
+shown in figures \ref{load_data_herdbook} until
+\ref{load_data_herdbook3}. 
+The parametrisation require three blocks, first some informations
+about the included files, second the definition of animal
+identification (also sire and dam) and the definition of traits, and
+third the sql-section where defined the actions will taken with the
+data.  All information from the source files are located by the
+position in it.
+
+In the second section the names \texttt{}ext\_animal, ext\_sire and
+ext\_dam are mandatory if exist and should have the same information
+as given in S6\_collect\_ignore\_animal. Then follow the definition of the
+traits. The function get\_value has in mind if the value is a code or
+a unit (defined in S2\_collect\_codes respective S4\_collect\_jobs)
+and/or have to be redefined. The last parameter of the function could
+be an dateformat 
+which have to splitted in the right order or an check for numeric values or upper /
+lower case any character (for details see pod from load\_data.pl). If
+is no value on this position then the return 
+value is 'NULL' (in database sense = absence), because also no values
+are allowed (ex: slaughter findings only some time appear).
+
+The last section with the nativ sql-syntax has three
+possible parts:
+
+\begin{enumerate}
+\item insert,
+\item update and
+\item any sql which should be executed only one time after all others.
+\end{enumerate}
+
+The reason for this is to make the inserts much more quickly, if the
+indices are droped and recreated later after this step. On the other
+side, for updates it is an advantage if indices exists. The use of
+the third part is in this example to drop all records from table GENES
+which have no mhs-status because mhs can also be 'NULL'. 
+% (you can also do this when adding a where clause to the insert sql) %?
+
+\begin{figure}[htbp]
+
+\caption{first section from herdbook.par\label{load_data_herdbook}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+#startconf
+##############################################################################
+# Begin configuration section:
+################################### EDIT -> ##################################
+$prg_name = 'herdbook';
+$infile = 'herdbook.dat';
+$sep = '\|';      # Delimiter/separator for input file (pipe | must be masked!)
+$chg_file = 'dup_animal.chg.cvs'; # chg_file for duplicated animals
+$file_cod = 'codes.chg.cvs';      # chg_file for codes or option -f
+$file_job = 'job.chg.cvs';        # chg_file for jobs or option -j
+#$file_id = 'keys.chg.cvs';       # chg_file for keys or option -i
+################################### EDIT <- ##################################
+#endconf
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+The first section describe the names of the inputfiles wich should be
+used and probably the used delimiter for the raw datafile.
+
+
+\begin{figure}[htbp]
+
+\caption{second section from herdbook.par\label{load_data_herdbook2}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+#startval
+################################### EDIT -> ##################################
+$ext_animal = $line[2] . '|' . $line[1] . '|' . $line[0];
+$ext_sire   = $line[5] . '|' . $line[4] . '|' . '1';
+$ext_dam    = $line[8] . '|' . $line[7] . '|' . '2';
+$sex        = get_value( 0 , \@line );
+$breed      = get_value( 9 , \@line );
+$litter     = get_value( 13, \@line );
+$teats_l_no = get_value( 16, \@line, 'n' );
+$teats_r_no = get_value( 17, \@line, 'n' );
+$mhs        = get_value( 20, \@line );
+$exterior   = get_value( 23, \@line, 'n' );
+$birth_dt   = get_value( 14, \@line, 'yyyymmdd' );
+$name       = get_value( 10, \@line );
+$breeder    = get_value( 18, \@line );
+$f_breeder  = get_value( 19, \@line );
+$society    = get_value( 2 , \@line );
+
+$soc_fix = get_db_unit( '32', 'society' ); # where isnull
+################################### EDIT <- ##################################
+#endval
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+In this section we have three blocks:
+
+\begin{itemize}
+\item animal / sire / dam identification
+\item value definition and 
+\item some further data manipulation (further example see field.par)
+\end{itemize}
+
+The animal identification have the same informations as described in
+collect\_ext\_id.pl. Birth date has in our case an content like
+'19981207' and wold be described by 'yyyymmdd'. The leading 'n' as
+option for get\_value check the content for the teats count that
+they are real numbers. Else the content of the field are ignored.
+
+The last line allow to get or manipulate some data. in this example we
+need the correct internal db\_unit for the combination external unit and
+external id. The reason are that the society would only given if this is
+not the own one.
+
+\begin{figure}[htbp]
+
+\caption{third section from herdbook.par\label{load_data_herdbook3}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+#startsql
+@sql_insert=(); 
+################################### EDIT -> ##################################
+$sql_insert[0]="INSERT INTO genes 
+      ( db_animal, db_mhs, last_change_dt, last_change_user )
+      VALUES ( $db_animal, '$mhs', '$now', '$user')";
+$sql_insert[1]="INSERT INTO exterior
+      ( db_animal, teats_l_no, teats_r_no, exterior, last_change_dt,
+      last_change_user )
+      VALUES ( $db_animal, '$teats_l_no', $teats_r_no, $exterior, '$now', '$user' )";
+##################
+ @sql_update=();
+##################
+$sql_update[0]="UPDATE animal SET db_sire = $db_sire, db_dam = $db_dam,
+     db_sex = $sex, db_breed = $breed, parity = $litter,
+     name = '$name', birth_dt = $birth_dt, db_society = $society,
+     db_breeder = $breeder, db_foster_breeder = $f_breeder
+  WHERE db_animal = $db_animal";
+$sql_update[1]="UPDATE animal SET db_sex = $id_code{ 'SEX' . '#'
+  . '1'}
+  WHERE db_animal = $db_sire AND db_sex isnull";
+$sql_update[2]="UPDATE animal SET db_sex = $id_code{ 'SEX' . '#'
+  . '2'}
+  WHERE db_animal = $db_dam AND db_sex isnull";
+##################
+@sql_only_one=();               #for use of sql statement which only one time executed
+$sql_only_one[0]="DELETE FROM genes WHERE db_mhs isnull";
+$sql_only_one[1]="UPDATE animal SET db_society = $soc_fix where db_society isnull";
+## you must "'" the values wich are strings or dates ?? but you can do this for all...
+################################### EDIT <- ##################################
+#endsql
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+The last section describe the native SQL-statements to load the data
+in the tables. Inserts are made for tables GENES and EXTERIEUR. 
+The variables $now and $user could be used to fill the
+mandatory fields last\_change\_user and last\_change\_dt. 
+
+Remember that the filling of table ANIMAL are always have to be
+updates after loading table animal via transfer\_to\_animal.pl.
+Therefore here we update that table. The next two are examples for
+conditional updates only if the sex of the given animal not known. Here
+we have also an example for using codes which are not comming from the
+data. The string \verb+$id_code{ 'SEX' . '#' . '1'}+ give back  the db\_sex
+where the coding class are 'SEX' and the value are '1'. This
+information we have from the use of the animal either as sire or dam.
+
+Last we delete all animals from table genes which not have any
+information about the mhs status and give to all animals which not
+have an society information the right one from the own society (which
+is the default)
+
+The further data loading programs have the same structure. There will
+only describe some usefull structures which there are different from herdbook.par.
+
+\subsection{Step 15: Loading Station Records}
+
+Here we give an example (figure \ref{ifloops} ) for using 'if loops' to
+execute some SQL-statements only if the values are defined. Therefore
+we have also to use the push method to fill the array with the 
+SQL-statements because we could not define the array element number as
+fix. Remember that the function get\_value return 'NULL' (database
+empty) if the value are not defined. The delete statement in
+@sql\_only\_one (compare also herdbook.par) would then not be used here.
+
+\begin{figure}[htbp]
+
+\caption{third section from herdbook.par\label{ifloops}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+if ( $test_wt ne 'NULL' and $test_dt ne 'NULL' ) {
+  push @sql_insert, "INSERT INTO weight
+    ( db_animal, test_dt, test_wt, db_weight_type, last_change_dt, last_change_user )
+   VALUES
+    ( $db_animal, $buy_dt, $buy_wt,
+     '$id_code{ 'WEIGHT_TYPE' . '#' . 'buy_s'}', '$now', '$user')";
+}
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+
+\subsection{Step 16: Loading Fieldtest Records}
+
+A new not necessary parameter block are inserted here which will be
+run once after database access is created. This could be used if
+allways inserted informations are needed for 
+the next steps. The example would be shown in figure
+\ref{perlrun}. The use of the new informations are used in runing
+one insert only if some informations not always was inserted until
+here. The problem in the reference data are, that this information
+(number of teats) could either came from the herdbook and / or from
+the field data.  
+
+\begin{figure}[htbp]
+\caption{block perlrun from parameterfile field.par\label{perlrun}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+#startperl
+################################### EDIT -> ##################################
+# block have to be run once after db access
+##############################################################################
+  :
+  my $sqltext = "SELECT db_animal, teats_l_no FROM exterior";
+  my $sql_ref = $apiis->DataBase->sys_sql($sqltext);
+  $apiis->check_status;
+  while ( my $ret = $sql_ref->handle->fetch ) {
+  :
+################################### EDIT <- ##################################
+#endperl
+\end{Verbatim}
+\end{minipage}
+\end{figure}
+
+The code in figure \ref{perlrun} have to be only valid perl so the
+cryptic example would not be explained.
+
+Further here we found an example for calculating birth date from given testing
+date and age of animal (in section values). 
+
+\subsection{Step 17: Loading Litter Records and Step 18: Loading
+  Address Records}
+
+nothing special...
+
+
+%\subsection{Step 18: Loading Address Records}
+
+
+\section{Step 19: Clear Index}
+
+This script clear such tables which couldn't create unique indices
+after loading historic data. This is required because indices are
+droped when inserting data there and recreated afterwards. The most
+possible reason are if there are the same information come from
+different sources.
+
+However there are something wrong with the data. In the reference
+we get duplicated records with the same service date for the same
+animal. For example in the output you get the message \texttt{\small 'Cannot
+create unique index. Table contains...'}, then you can specify the
+table, the unique index and the indexname like in figure \ref{clear_index.pl}.%
+\begin{figure}[htbp]
+\caption{EDIT section in S11\_clear\_index\label{clear_index.pl}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+################ E D I T ########################################
+#                   table ;     unique index     ;   indexname ; where clause
+$combination[0] = "service; db_animal, service_dt; uidx_service_2";
+# $combination[2] = "weight; db_animal; uidx_weight_9; db_weight_type = 
+#   (select db_code from codes where ext_code = 'weaning' and class = 'WEIGHT_TYPE')";
+################ E N D E  - E D I T #############################
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+ 
+The programm delete the further oids after the first one - if equal
+combinations exists. This means that you can use a hierarchical order
+which element should be saved if is one.
+
+You can also use it for cleaning with not unique indices via using the
+where clause. The example means that we want to check if there in table weight
+more than one weaning weight is included (because only one weaning
+weight (see weight\_type) are possible).
+
+
+\section{Houskeeping}
+
+So far merely data has been loaded into the correct structure. However,
+external data channels have been defined for convenience of the loading
+process but not as external ids as they will reach the database. Furthermore,
+dates in transfer will have to be set.
+
+
+\subsection{Step 20: Complete transfer with dates from
+  Herdbook\label{dates_to_transfer_hb.pl}} 
+
+Complete table TRANSFER with information from file 'herdbook.dat'.
+Create proper opening\_dt, entry\_action... for all animals in TRANSFER.
+This step is in the reference db a little difficult, because you have
+to regard a lot of dates in 'herdbook.dat' which can be filled in
+every combination or not. Concrete the following information have
+to go to TRANSFER:
+
+\begin{enumerate}
+\item breeder
+\item owner
+\item foster breeder
+\item birth date
+\item registration date
+\item leave date
+\item buy date
+\end{enumerate}
+Therefor you must describe the sequence and the dependencies for each
+possible combination manually. For example opening date: first birth
+date if exists then buy date if come from other society, then registration
+... Also this step require inserts in table TRANSFER because also
+buying, renaming (registration) and so on should be reflected here.
+:-(
+
+
+\subsection{Step 21: Complete transfer with dates from Station}
+
+Same procedure as in section \ref{dates_to_transfer_hb.pl} for informations
+comming from station.dat but rather simpler. :-)
+
+
+\subsection{Step 22: Fill last action}
+
+Fill the last reproduction actions in table ANIMAL if possible. Get
+simply the ordered actions from the involved tables (service, litter,
+animal) and fill the newest one to la\_rep.
+
+
+\subsection{Step 23: Rewriting TRANSFER}
+
+In the previous step EXT\_ID was defined to make animal ids consistent
+over the complete range of years in the historic dataset. They are
+often a concatenation of various kinds. Now that all historic data
+have been loaded we need to rewrite the EXT\_ID and UNIT to a format
+that matches the incoming routine data streams. If there is not an
+living database required you have also to rewrite the db\_unit but you
+can skip the steps for splitting the concatination.
+
+% The rewriting needs
+%to be done only for those animals for which we shall get routine information.
+%Thus, really old animals do not need to be rewritten, instead we can
+%leave the ext\_ids as they are. 
+
+The program post\_initial.pl does the job under consideration. There
+are much specific code, because its verrry different which ids are
+needed for incomming datastreams. Also the file codes\_unit.chg will
+be created for the new mandatory units to make the animal ids unique
+in each reporting unit. The program fill the related tables NAMING
+and ADDRESS with the correct sequences.
+
+In general there are three parts to edit in the script:
+\begin{enumerate}
+\item some global informations, the requirements of split (if use
+  APIIS not for further incomming data)  and the unit informations for the
+  base parents.
+\item create an sql-select which animals have to be rewritten. Here it
+  is possible to let some IDs uncahanged and if required drop the
+  unique index of table TRANSFER so far (then have a look at
+  clear\_transfer.pl).
+\item a loop where desribe the roles under which circumstances what
+  should happen with the external identification. Mainly here describe
+  the new external animal ID and the parts of unit.
+\end{enumerate}
+
+For configuration block three in figure \ref{post_ini} we have the
+concret example from post\_initial.pl.
+\begin{figure}[htbp]
+\caption{third EDIT section on post\_initial.pl\label{post_ini}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+    ########### EDIT ##################################################
+    # split here:  EDIT  this loop
+    # 32|0815|2|16 => ext_animal 0815|16 (1 3|1) ext_unit 32|2 (0 2)
+    # $line represents the concatenated animal identification
+    # specific for each case!!
+    my @lline = split ( /\|/, $line[0] ); # split the elements
+    # station numbers
+    if ( $lline[0] =~ /station/ ) { # station|56789
+      #  ea == ext_animal, ei == ext_id, eu == ext_unit
+      my $ea = $lline[1];
+      my $ei = 's57';
+      my $eu = 'station32';
+      $new_unit{ $eu . $ext_sep . $ei } ++;
+      $new_id{ $line[0] } = [$ea, $ei, $eu];
+    # herdbooknumbers
+    # three elements means with notch number
+    } elsif ( $#lline == 3 ) { # 32|0815|2|16
+      my $ea = $lline[1] . '|' . $lline[3];
+      my $ei = $lline[0] . '|' . $lline[2];
+      my $eu = 'society|sex';
+      $new_unit{ $eu . $ext_sep . $ei } ++;
+      $new_id{ $line[0] } = [$ea, $ei, $eu];
+    # here without notch number
+    } else { # 32|0815|2
+      my $ea = $lline[1];
+      my $ei = $lline[0] . '|' . $lline[2];
+      my $eu = 'society|sex';
+      $new_unit{ $eu . $ext_sep . $ei } ++;
+      $new_id{ $line[0] } = [$ea, $ei, $eu];
+    }
+  }
+  ########### END EDIT ###############################################
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+In this example we have the three different numbering systems: station
+numbers and herdbook numbers either with or without notch number. 
+
+The roles for spliting are:
+\begin{enumerate}
+\item the word 'station are inside the concatenated number
+\item else after splitting the concatenated number we have
+  \begin{enumerate}
+  \item three data elements which means a notch number is added or
+  \item all the rest. Then we have less than three elements an this
+    mean it is an real herdbooknumber together with sex and society.
+  \end{enumerate}
+\end{enumerate}
+
+The target numbers are than:
+\begin{enumerate}
+\item station numbers
+  \begin{enumerate}
+  \item incoming animal number are the station number (position 1)
+  \item unit are 's57' as ext\_id and ext\_unit is 'station32'
+  \end{enumerate}
+\item mothernumber plus notch
+  \begin{enumerate}
+  \item incoming animal are mothernumber plus ($|$) notch number
+  \item unit are society plus sex (position 0 and 2 from the splitted
+    data) and ext\_unit are 'society$|$sex'
+  \end{enumerate}
+\item  real herdbooknumber
+  \begin{enumerate}
+  \item incoming animal are herdbook number
+  \item unit are society plus sex (position 0 and 2 from the splitted
+    data) and ext\_unit are 'society$|$sex'
+  \end{enumerate}
+\end{enumerate}
+
+The differences between the last two splits are than only the number
+of elements and an existing pipe sign inside the external identification.
+This information also could be later used to return the right external id
+to the right people (real herdbooknumber if exist else mothernumber
+plus notch or station numbers if the station have an request...).
+
+\subsection{Step 24: Manual edit }
+
+These step add the meaning (shortcode, long code, description) of
+the new units to table CODES like described in section \ref{edit_codes}.
+
+\subsection{Step 25: Insert new codes from post\_initial}
+
+Fill in the new codes really.
+
+\subsection{Step 26: Close some datachannels}
+
+Close some datachannels if there are now duplicated combinations for
+ext\_animal and db\_unit. For example if the split of an on farm used number has
+deleted the birth year and would be reused than, now we have the same
+external number more than one time and this require a close of the older chanel. 
+For this purpose the script clear\_transfer.pl could be used. The
+configuration section are described in figure \ref{clear_transfer}.
+
+\begin{figure}[htbp]
+\caption{configuration section from script clear\_transfer.pl\label{clear_transfer}}
+
+\begin{minipage}{1.1\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize, frame=single, numbers=left ]
+################ E D I T ########################################
+# where is the used date_information
+#                table , date
+$used_date[0] = "animal, birth_dt";
+################ E N D E  - E D I T #############################
+\end{Verbatim}
+\end{minipage}
+
+\end{figure}
+This script close all datachannels with more than one ext\_animal
+db\_unit combination in depense of one date. Here would be used the
+birth date from table animal. 
+
+\section{Consistency checking against the business rules}
+
+So far, data has been loaded outside the business rules.
+
+\begin{comment}
+Checking TRANSFER\index{ENTRY} for Consistency\index{Consistency}
+
+A Perl program is available for consistency checks on TRANSFER. It
+is located in references/reports/check\_TRANSFER.pl. It should run
+on each database (there is no need to have a different structure for
+TRANSFER) after TRANSFER has been populated. Particular focus should
+be on the duplicates in EXT\_ID\index{ID}. In general, the user should
+ask herself if the statistics generated are acceptable. %
+\marginpar{not further needed because the strategie has changed!%
+}
+\end{comment}
+
+\subsection{Checking the database content against the business rules}
+
+During the loading process the APIIS busines rule system has not been
+in effect. Thus, data will have been loaded that does not comply with
+the business rules specified in the model file. The program check\_integrity
+\index{verify\_integrity} does this job. 
+
+To this effect each table is accessed in turn then all rows are read
+one by one and validated against the model file business rules. Errors
+are logged in an ascii file with the name of the table used as file
+name and {}``.err'' appended.
+
+One time you must run this programm to fill the mandatory column 'dirty'
+in each table. Set 'true' if one busines rule is violated. 
+
+
+\subsection{Treatment of errors}
+
+It should be the ultimate objective to have no data in the database
+that does not comply to the business rules. However, for practical
+reason, this status may be unachievable for a number of records. One
+reason will be that the original records are no longer available for
+correction. On the other hand deleting a record with only some parts
+being incorrect may also not be an option -- other information will
+be lost. Thus, if the corresponding flag has been set the status column
+{}``dirty'' will be set to error for those records not complying
+with the business rules. These records can then be skipped on later
+processing. Furthermore, at a later stage after loading of historic
+data the database can be clean sucessively. The type of error can
+be regenerated by {}``verify\_integrity'' for individual records.
+
+
+\subsection{Fixing errors}
+
+Example:
+
+\begin{itemize}
+\item check\_integrity -f model -o 'table date from' \\
+(check\_integrity -f ../model/apiis.model -o 'animal birth\_dt 1998-01-01')
+\item edit file 'animal.birth\_dt\_since\_1998-01-01.errors' (see '\textasciitilde{}.cvs'
+and add in the new column the correct values)
+\item update\_from\_error\_file.pl -f animal.birth\_dt\_since\_1998-01-01.errors
+\end{itemize}
+

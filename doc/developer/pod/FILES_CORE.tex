@@ -1,0 +1,1767 @@
+\subsection{Apiis.pm\label{Apiis_pm}\index{Apiis.pm}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis_pm_SYNOPSIS}\index{Apiis pm!SYNOPSIS}}
+\begin{verbatim}
+   use Apiis;
+   Apiis->initialize( VERSION => '$Revision: 1.4 $' );
+\end{verbatim}
+\subsubsection*{DESCRIPTION\label{Apiis_pm_DESCRIPTION}\index{Apiis pm!DESCRIPTION}}
+
+
+\textbf{initialize} is the primary method for executables to load the Apiis
+system. It does basic checking, creates, and exports the \$apiis object into
+the main namespace.
+
+
+
+To avoid numerous nasty error messages you are strongly advised to start
+your program with this BEGIN block:
+
+\begin{verbatim}
+   BEGIN {
+      use Env qw( APIIS_HOME );
+      die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+      push @INC, "$APIIS_HOME/lib";
+   }
+\end{verbatim}
+
+
+This catches errors due to an unset APIIS\_HOME environment variable and
+adds \$APIIS\_HOME/lib to your library path to find the Apiis modules.
+
+\subsubsection*{SUBROUTINES\label{Apiis_pm_SUBROUTINES}\index{Apiis pm!SUBROUTINES}}
+\paragraph*{initialize\label{Apiis_pm_initialize}\index{Apiis pm!initialize}}
+
+
+\textbf{initialize} loads Apiis::Init, creates a new Apiis::Init object and
+assigns it to the global variable \$apiis, which is exported by default.
+Also exported is the global subroutine \_\_() for nationalisation of the
+code.
+
+
+
+\textbf{initialize} currently takes one (hash) argument:
+
+\begin{verbatim}
+   Apiis->initialize( VERSION => '$Revision: 1.4 $' );
+\end{verbatim}
+
+
+It propagetes the cvs version as the program version and can be retrieved
+with \$apiis-$>$version.
+
+\subsubsection*{Author\label{Apiis_pm_Author}\index{Apiis pm!Author}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsection{Apiis::Init -- Basic initialisation object for the complete APIIS structure\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_SYNOPSIS}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!SYNOPSIS}}
+\begin{verbatim}
+   our $apiis = Apiis::Init->new(
+     version     => $version,
+         programname => $programname
+   );
+\end{verbatim}
+
+
+This is the basic module for spreading the APIIS configuration during
+runtime.  It is invoked automatically if you run the common
+initialisation block which includes \$APIIS\_HOME/lib/apiis\_init.pm. You
+can access this basic object via the global variable \$apiis.
+
+\subsubsection*{DESCRIPTION\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_DESCRIPTION}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!DESCRIPTION}}
+
+
+Apiis::Init creates an internal structure and public methods to access
+this structure.
+
+
+
+Public and internal methods are:
+
+\subsubsection*{INTERNAL METHODS\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_INTERNAL_METHODS}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!INTERNAL METHODS}}
+\paragraph*{new (mostly internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_new_mostly_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!new (mostly internal)}}
+
+
+new creates the object where we usually refer to as \$apiis.
+
+\paragraph*{\_init (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__init_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ init (internal)}}
+
+
+\_init does the main initialization and creates the internal structure for:
+
+
+
+APIIS\_HOME os\_user version programname date\_format
+entry\_views reserved\_strings language codes\_table browser fileselector
+
+
+
+This is done by querying parameter from the operating system (username) and
+the user environment (APIIS\_HOME). APIIS\_LOCAL is set after a certain
+project is selected and the model file is joined into \$apiis.
+
+
+
+The main resources for this basic structure are the configuration files
+\$APIIS\_HOME/etc/apiisrc and later \$APIIS\_LOCAL/etc/apiisrc.
+
+\paragraph*{\_get\_user\_from\_os (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__get_user_from_os_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ get\ user\ from\ os (internal)}}
+
+
+The username \$apiis-$>$os\_user is determined by the operating system. This is
+mainly needed for initial log messages, who started the program.
+
+\paragraph*{projects (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_projects_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!projects (public)}}
+
+
+Returns the names of the projects defined in \$APIIS\_HOME/etc/apiisrc.
+
+\paragraph*{project (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_project_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!project (public)}}
+
+
+Returns the \$APIIS\_LOCAL path for a specific project and is therefore mostly
+redundant with \$apiis-$>$APIIS\_LOCAL().
+
+
+
+Example:
+
+\begin{verbatim}
+   $local_path = $apiis->project('ref_breedprg');
+\end{verbatim}
+\paragraph*{formpath (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_formpath_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!formpath (public)}}
+
+
+Returns the default path for a specific project where the form definitions are
+stored, usually at \$APIIS\_LOCAL/etc/forms. This default location is set during
+join\_model.
+
+
+
+It can be set to a different value with:
+
+
+
+Example:
+
+\begin{verbatim}
+   $apiis->formpath( './forms' );
+\end{verbatim}
+\paragraph*{l10n\_init (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_l10n_init_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!l10n\ init (public)}}
+
+
+\textbf{l10n\_init} does the localisation from Apiis::I18N::L10N. The language is
+passed as input parameter.
+
+
+
+The failure handler for Locale::Maketext is set to return the untranslated
+english string (default language).
+
+
+
+Also the defined projects translations table is imported into the l10n
+schema.
+
+
+
+Input: language
+
+
+
+Output: none
+
+\paragraph*{l10n\_import (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_l10n_import_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!l10n\ import (public)}}
+
+
+\textbf{l10n\_import} imports an additional lexicon. This is usually done by
+\textbf{l10n\_init}. In case you want to load another lexicon, use \textbf{l10n\_import}.
+
+
+
+Input:
+
+\begin{verbatim}
+   1. language
+   2. file
+\end{verbatim}
+
+
+Output: none
+
+
+
+Example:
+
+\begin{verbatim}
+   $self->l10n_import( $lang, $lexicon ) if -f $lexicon;
+\end{verbatim}
+\paragraph*{\_\_()\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ \ ()}}
+
+
+After initialization of the language handle \$lh:
+
+\begin{verbatim}
+   $lh = Apiis::L10N->get_handle( $apiis->language );
+\end{verbatim}
+
+
+you could write for localising text:
+
+\begin{verbatim}
+   print $lh->maketext('Just another Perl hacker'), "\n";
+\end{verbatim}
+
+
+To make it more convenient I created a shortcut wrapper around this,
+the subroutine \_\_(). So you can write:
+
+\begin{verbatim}
+   print __('Just another Perl hacker'), "\n";
+\end{verbatim}
+
+
+Note: I must use an anonymous subroutine to have access to \$lh. See
+'Programming Perl', p. 976 for error message: 'Variable "\$lh" will not stay
+shared'.
+
+
+
+Note2: The bare underscore \_ is treated specially, as it is always forced into
+the package main ( like \$\_, @\_ ). See "Programming Perl', p. 591.
+So we don't have to export it.
+
+
+
+Note3: The single underscore \_ produced errors several times when it clashed
+with the "Perl special filehandle used to cache the information from the
+last successfull stat, lstat, or file test operator". ('Programming Perl',
+p. 657).
+This global underline subroutine is used e.g. in the CPAN or CGI modules. So
+it's better to *not* use \_() for localisation. Preferred shortcut now is
+\_\_().  (5. Aug. 2004 - heli)
+
+\paragraph*{\_add\_obj (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__add_obj_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ add\ obj (internal)}}
+
+
+\$self-$>$\_add\_obj is used to mount an additional object structure into the
+apiis core structure. An example is the addition of the model file
+information under \$apiis-$>$Model.
+
+
+
+usage:
+
+\begin{verbatim}
+   $self->_add_obj(
+      Model  => [ $mod_obj ],
+      caller => [ $package, $file, $line ]
+   );
+\end{verbatim}
+\subsubsection*{PUBLIC METHODS\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_PUBLIC_METHODS}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!PUBLIC METHODS}}
+\paragraph*{\$apiis-$>$[ os\_user $|$ APIIS\_HOME $|$ version $|$ programname $|$ date\_format $|$ entry\_views $|$ reserved\_strings $|$ codes\_table $|$ browser $|$ fileselector $|$ use\_filelog $|$ filelog\_filename $|$use\_syslog $|$ syslog\_facility $|$ use\_sql\_logging $|$ sql\_logfile $|$ sql\_log\_dml\_only $|$ node\_name $|$ node\_ip $|$ sequence\_interval $|$ multilanguage ] (all public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__apiis-_os_user_APIIS_HOME_version_programname_date_format_entry_views_reserved_strings_codes_table_browser_fileselector_use_filelog_filelog_filename_use_syslog_syslog_facility_use_sql_logging_sql_logfile_sql_log_dml_only_node_name_node_ip_sequence_interval_multilanguage_all_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\$apiis-$>$[ os\ user $|$ APIIS\ HOME $|$ version $|$ programname $|$ date\ format $|$ entry\ views $|$ reserved\ strings $|$ codes\ table $|$ browser $|$ fileselector $|$ use\ filelog $|$ filelog\ filename $|$use\ syslog $|$ syslog\ facility $|$ use\ sql\ logging $|$ sql\ logfile $|$ sql\ log\ dml\ only $|$ node\ name $|$ node\ ip $|$ sequence\ interval $|$ multilanguage ] (all public)}}
+
+
+These public methods provide an interface for the user to access the
+internal structure.
+
+
+
+They are readonly and usually return a scalar value except entry\_views and
+reserved\_strings.
+
+
+
+\$apiis-$>$entry\_views returns a hash reference with the table names as keys
+and the according entry views (which only contain active records of this
+table) as values:
+
+\begin{verbatim}
+   codes => entry_codes
+   unit => entry_unit
+   transfer => entry_transfer
+\end{verbatim}
+
+
+\$apiis-$>$reserved\_strings returns a hash reference to the names and values
+of the reserved strings for data entry:
+
+\begin{verbatim}
+   v_concat => ' >=< '
+\end{verbatim}
+
+
+(One problem here could be the intended blanks as part of the delimiter.
+ Maybe they get lost by reading the config file with Config::IniFiles.)
+
+\paragraph*{\$apiis-$>$[ language ] (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__apiis-_language_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\$apiis-$>$[ language ] (public)}}
+
+
+\textbf{language} is a public read/write method. Initially it's populated by the
+apiisrc configuration files, but it can be changed during program
+execution. When you set a new language, the old one is returned:
+
+\begin{verbatim}
+   my $oldlang = $apiis->language( <newlang> );
+\end{verbatim}
+\paragraph*{\$apiis-$>$[ date\_order $|$ time\_order $|$ extdate2iso $|$ iso2extdate $|$ exttime2iso $|$ iso2exttime $|$ date\_parts $|$ time\_parts $|$ isodate $|$ isotime $|$ date\_sep $|$ time\_sep $|$ date\_conf\_err $|$ time\_conf\_err ] (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__apiis-_date_order_time_order_extdate2iso_iso2extdate_exttime2iso_iso2exttime_date_parts_time_parts_isodate_isotime_date_sep_time_sep_date_conf_err_time_conf_err_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\$apiis-$>$[ date\ order $|$ time\ order $|$ extdate2iso $|$ iso2extdate $|$ exttime2iso $|$ iso2exttime $|$ date\ parts $|$ time\ parts $|$ isodate $|$ isotime $|$ date\ sep $|$ time\ sep $|$ date\ conf\ err $|$ time\ conf\ err ] (public)}}
+
+
+The Apiis default format for date and time accords to the widely accepted
+ISO 8601 standard. Have a look at
+
+\begin{verbatim}
+   http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+\end{verbatim}
+
+
+for a good summary or other resources for detailed descriptions. You are
+strongly encouraged, to also use ISO 8601 date formats in your software.
+
+
+
+\textbf{date\_order} returns the initially in apiisrc defined order of the date as
+a scalar string. You can set the date format during program execution (e.g.
+when you batch process several data streams) in the following syntax:
+
+\begin{verbatim}
+   my $oldformat = $apiis->date_order(
+      order => 'DD.MM.YYYY',
+      sep   => '.',
+   );
+\end{verbatim}
+
+
+The two required parameters are the order of the parts and the separator.
+The string to define the order has the following limitations:
+
+\begin{itemize}
+
+\item only the separator and the capital letters Y, M, and D are allowed.
+\item the year has to be specified in the 4 digit form YYYY to avoid
+     ambiguity.
+\item the day (DD) and month (MM) formats have 2 digits each.
+\item a valid order string with separators therefore must have the length of
+     10 characters.
+\item a valid order string without separator must have the length of 8
+     characters.
+\item for year, month, and day values only digits are allowed.\end{itemize}
+
+
+Example without separator:
+
+\begin{verbatim}
+   my $oldformat = $apiis->date_order(
+      order => 'YYYYMMDD',
+      sep   => '',
+   );
+\end{verbatim}
+
+
+If you want to set \textbf{date\_order} to new values, it returns a reference to
+the hash of the previously configured parameters order and sep. You thus
+can reset the old date format with:
+
+\begin{verbatim}
+   $apiis->date_order( %$oldformat );
+\end{verbatim}
+
+
+If the chosen date order accords to ISO 8601 (YYYY-MM-DD) the status flag
+\$apiis-$>$isodate() is set to 1, otherwise its 0. The same applies to the
+time order (hh:mm:ss) and isotime().
+
+
+
+Another flag \textbf{date\_conf\_err()} is internally used to mark a bad date
+format configuration and as a result of it skip all date tests.
+
+
+
+If you really have to parse dates on your own you can get the separators
+(besides the format string with \textbf{date\_order}) by invoking:
+
+\begin{verbatim}
+   my $d_sep = $apiis->date_sep();
+   my $t_sep = $apiis->time_sep();
+\end{verbatim}
+
+
+\textbf{date\_parts()} is a readonly public methods that returns an array (or an
+arrayref, depending on the invoking context) of the configured parts of the
+date format in the correct order (e.g. ["YYYY", "MM", "DD"]).
+
+
+
+This method is mainly usefull in internal date calculations.
+
+
+
+\textbf{extdate2iso} converts your external date format into the internal
+ISO 8601 format.  It additionally checks, if the passed date is valid.
+
+
+
+In scalar context, a formatted date string is returned. In list context,
+you get the date parts in the shown order:
+
+\begin{verbatim}
+   Example:
+   $apiis->date_order( order => 'DD.MM.YYYY', sep => '.' );
+\end{verbatim}
+\begin{verbatim}
+   # scalar context;
+   my $ext_date = '11.2.2005 13:37:00';
+   print $apiis->extdate2iso($ext_date), "\n";
+   # prints: 2005-02-11 13:37:00
+\end{verbatim}
+\begin{verbatim}
+   # list context:
+   my ( $year, $month, $day, $hour, $minute, $second )
+      = $apiis->extdate2iso($ext_date);
+\end{verbatim}
+
+
+The same return schema for scalar and list context applies to
+\textbf{exttime2iso}, \textbf{iso2extdate}, and \textbf{iso2exttime}.
+
+
+
+Note, that also the \textbf{iso2extdate} and \textbf{iso2exttime} methods keep this order in
+list context. It does not make sense to make them return in the configured
+external order as the list context is useful for programming purposes and a
+changing order would force you to parse the configuration. And this is not,
+what you want.
+
+\paragraph*{substitute\_env (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_substitute_env_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!substitute\ env (internal)}}
+
+
+Does some postprocessing for special cases (substitution of APIIS\_HOME and
+APIIS\_LOCAL with their values).
+
+
+
+The value to check for substituting is passed as a reference so that
+substituting is done in place:
+
+\begin{verbatim}
+   $self->substitute_env( \$val_to_substitute );
+\end{verbatim}
+
+
+It doesn't matter if there is a dollar sign \$ in front of APIIS\_HOME and
+APIIS\_LOCAL or not.
+
+\paragraph*{\_join\_user (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__join_user_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ join\ user (internal)}}
+
+
+\textbf{\$apiis-}\_join\_user$>$ takes a hashref with a User object (required) and
+verifies this user against the database. If it's a valid user, his data gets
+mounted into the \$apiis structure as the User object.
+
+
+
+Example:
+   \$apiis-$>$\_join\_user( \{ userobj =$>$ \$user\_obj \} );
+
+\paragraph*{exists\_user (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_exists_user_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!exists\ user (public)}}
+
+
+\$apiis-$>$exists\_user returns 1 if the User object is already mounted into the
+\$apiis structure, 0 otherwise.
+
+\paragraph*{use\_filelog/use\_syslog/use\_sql\_logging (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_use_filelog_use_syslog_use_sql_logging_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!use\ filelog/use\ syslog/use\ sql\ logging (public)}}
+
+
+These methods mainly reflect the settings in apiisrc. They are read/write to
+enable changing these values in rare cases, e.g. when running check\_integrity,
+where logging make only little sense.
+
+\paragraph*{syslog\_priority/filelog\_priority (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_syslog_priority_filelog_priority_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!syslog\ priority/filelog\ priority (public)}}
+
+
+syslog\_priority is read/write although it mostly won't be overwritten. But
+in some cases you may want to switch the logging level for a certain part
+of the code to e.g. 'debug', while other parts stay at e.g. 'warn'.
+The allowed priorities are debug, info, notice, warn, warning, error, err, crit,
+alert, emerg, panic in this order (err = error, warn = warning, emerg =
+panic).
+
+
+
+If syslog\_priority is set with
+
+\begin{verbatim}
+   my $oldvalue = $apiis->syslog_priority('debug');
+\end{verbatim}
+
+
+it returns the old value of syslog\_priority. You then can reset it with
+
+\begin{verbatim}
+   $apiis->syslog_priority( $oldvalue );
+\end{verbatim}
+
+
+Otherwise it returns the current value of syslog\_priority.
+
+
+
+The same applies to \textbf{filelog\_priority}.
+
+\paragraph*{log\_priority (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_log_priority_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!log\ priority (public)}}
+
+
+\textbf{log\_priority} is write-only and sets the values of syslog\_priority and
+filelog\_priority to the same value which is passed as the argument. This is
+mainly a development help as you don't know if the configuration is just set
+to syslog or filelog.
+
+\paragraph*{debug (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_debug_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!debug (public)}}
+
+
+\textbf{debug} returns 1 if the debug level is set, 0 otherwise.
+Any true input value sets \$self-$>$debug to 1, any false value to 0.
+
+
+
+\textbf{debug} can be used to query or set a debug flag, which can be used to
+prevent the expensive invokation of \$apiis-$>$log on debug level. This flag
+depends on the settings of filelog\_priority and syslog\_priority. If either of
+them is set to 'debug', \$self-$>$debug always returns 1, even if you pass 0
+to it. If you set \$self-$>$debug(1), filelog\_priority and syslog\_priority keep
+their values;
+
+\paragraph*{log (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_log_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!log (public)}}
+\begin{verbatim}
+   $apiis->log('warn', "Cannot open file: $!");
+\end{verbatim}
+
+
+or
+
+\begin{verbatim}
+   $apiis->log('warn', 'Cannot open file: %s', $!);
+\end{verbatim}
+
+
+log() is the interface to the syslog utility. It takes as first input
+parameter the syslog priority, at which it shall be printed into the system
+log files (debug info notice warn warning error err crit alert emerg
+panic). All levels below \$apiis-$>$syslog\_priority are suppressed, all of
+\$apiis-$>$syslog\_priority and above are sent to syslog.
+
+
+
+As an addition it can also log the sql statements into a file for basic
+database recovery. It the passed priority is of type 'sql' like in
+
+\begin{verbatim}
+   $apiis->log('sql', $sqltext);
+\end{verbatim}
+
+
+and use\_sql\_logging is set to a true value in apiisrc, the sqltext will get
+logged into the configured sql\_logfile together with a timestamp,
+dabasename, and username (in a separate line with a sql comment). After a
+defined backup state you simply have to run this file through your favorite
+frontend to the database to recover the current state. If sql\_log\_dml\_only
+is true in apiisrc, select statements are not logged.
+Messages of priority 'sql' are not passed to syslog.
+
+\paragraph*{status (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_status_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!status (public)}}
+
+
+\$apiis-$>$status returns a general status which is accessible everywhere and
+at any time during execution. A status of 0 means success, all true values
+indicate an error.
+
+
+
+If you pass a parameter this will set the status to this value.
+
+\paragraph*{running\_check\_integrity (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_running_check_integrity_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!running\ check\ integrity (public)}}
+
+
+\$apiis-$>$running\_check\_integrity is a simple switch that has to be set in
+the program check\_integrity. Some checks on record level have different
+behaviour (less checks) if they are invoked by check\_integrity.
+
+\paragraph*{check\_status (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_check_status_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!check\ status (public)}}
+
+
+Checks \$apiis-$>$status and prints errors (if any). Optionally dies above a
+certain severity level and ignores errors below a certain security level.
+
+
+
+Input parameter can be a hash with the keys:
+
+\begin{itemize}
+
+\item \textbf{die} -- you can pass a level of severity to let the program die
+        at this point and all levels above (in severity).
+\item \textbf{ignore} -- below this level of severity the error messages are ignored\end{itemize}
+
+
+\textbf{check\_status} returns the boolean value of the status stored in
+\$obj-$>$status().
+
+
+
+Example:
+
+\begin{verbatim}
+   $apiis->check_status(
+       die => 'CRIT',
+       ignore => 'INFO',
+   );
+\end{verbatim}
+\paragraph*{errors (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_errors_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!errors (public)}}
+
+
+\$apiis-$>$errors returns the stored errors as an array of objects or an array
+reference, just as requested by the caller.
+If new errors are stored, errors() returns the error id(s). If you store
+one error object, the error id of this error is returned as a scalar. If
+you store an array of error objects, an array or arrayref of the error ids
+of these error objects is returned in the order of the error objects.
+
+
+
+Examples:
+   my \$err\_id      = \$apiis-$>$errors(\$error\_object);
+   my @err\_ids     = \$apiis-$>$errors(@error\_objects);
+   my \$err\_ids\_ref = \$apiis-$>$errors(@error\_objects);
+
+\paragraph*{error (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_error_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!error (public)}}
+
+
+\$apiis-$>$error takes as parameter an error id and returns the error object
+for this id. This enables you to write code like this:
+
+\begin{verbatim}
+   $apiis->error(3)->print;
+   $apiis->error(4)->severity('CRIT');
+\end{verbatim}
+
+
+If you pass an invalid error id, an error object is created and passed back
+to the caller.
+
+\paragraph*{del\_errors (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_del_errors_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!del\ errors (public)}}
+
+
+\$apiis-$>$del\_errors deletes all error objects.
+
+\paragraph*{del\_error (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_del_error_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!del\ error (public)}}
+
+
+\$apiis-$>$del\_error takes as parameter an error id and deletes this error object
+from the \$apiis-$>$errors array. Example:
+
+\begin{verbatim}
+   $apiis->del_error(3);
+\end{verbatim}
+
+
+If you pass an invalid error id, an error object is created, added to
+\$apiis-$>$errors and additionally passed back to the caller.
+
+\paragraph*{localtime (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_localtime_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!localtime (public)}}
+
+
+\$apiis-$>$localtime provides you with an unformatted timestamp. Usually this
+is not used. The preferred methods are \$apiis-$>$today and \$apiis-$>$now as
+they convert the date/time to the localized format.
+
+
+
+\$apiis-$>$localtime returns a list of parameters. Example:
+
+\begin{verbatim}
+   my ($year, $mon, $mday, $hour, $min, $sec)
+      = $apiis->localtime;
+\end{verbatim}
+\paragraph*{today (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_today_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!today (public)}}
+
+
+\$apiis-$>$today returns a formatted string of the current day.
+
+\paragraph*{now (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_now_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!now (public)}}
+
+
+\$apiis-$>$now returns a formatted string of the current day and time.
+For internal use it accepts an input parameter
+
+\begin{verbatim}
+   $apiis->now( format => 'today' );
+\end{verbatim}
+
+
+to return only the day without time. This is the whole magic behind
+\$apiis-$>$today. :\^{})
+
+\paragraph*{join\_model (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_join_model_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!join\ model (public)}}
+
+
+\textbf{\$apiis-}join\_model("modelfile")$>$ mounts all informations of the model file
+into the core apiis structure and provides methods to access them.
+
+
+
+As required input you have to provide the key 'userobj'. The value must be a
+valid User-object.
+
+
+
+Example:
+
+\begin{verbatim}
+   $apiis->join_model('breedprg',
+      userobj => $user_obj,
+   );
+\end{verbatim}
+
+
+\textbf{join\_model} creates an Apiis::Model object and passes it to \_add\_obj.
+With the key 'Model', the model object is passed as the first and
+only element of an anon array reference.
+
+
+
+Besides the model file name there is another (hash) parameter 'database' to
+\textbf{join\_model}.
+
+
+
+With 'database =$>$ 0', the model file will be joined into \$apiis without
+connection to the database.  For later joining the database into \$apiis, use
+the public method \textbf{\$apiis-}join\_database$>$.
+
+
+
+Using \textbf{join\_model} without connecting to the database will be
+used in quite rare cases. One usefull operation will be when you want to
+drop the complete database during basic initialisation.
+In this case you have to provide some dummy User object like:
+
+\begin{verbatim}
+   require Apiis::DataBase::User;
+   my $dummy = Apiis::DataBase::User->new(
+       id       => ($apiis->os_user || 'nobody'),
+       password => 'nopassword',
+   );
+\end{verbatim}
+\begin{verbatim}
+   $apiis->join_model('breedprg',
+      userobj => $dummy,
+      database => 0,
+   );
+\end{verbatim}
+\paragraph*{exists\_model (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_exists_model_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!exists\ model (public)}}
+
+
+\$apiis-$>$exists\_model returns 1 if the model file is already mounted into the
+\$apiis structure, 0 otherwise.
+
+\paragraph*{\_join\_database (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure__join_database_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!\ join\ database (internal)}}
+
+
+\$apiis-$>$\_join\_database initializes the database access.
+
+
+
+It adds the newly created Apiis::DataBase::Init object into the existing
+\$apiis-tree with the key 'DataBase':
+
+\paragraph*{join\_database (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_join_database_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!join\ database (public)}}
+
+
+\$apiis-$>$join\_database is simply a public wrapper for \_join\_database.
+
+
+
+The public method join\_database is usually not needed as join\_model()
+automatically joins the database into \$apiis. For some rare cases (e.g.
+initial creation of database), you can join\_model() without connection to
+the database by passing the parameter 'database =$>$ 0'.
+
+
+
+So
+   \$apiis-$>$join\_model('breedprg', database =$>$ 0);
+   \$apiis-$>$join\_database;
+
+
+
+is equivalent to
+   \$apiis-$>$join\_model('breedprg');
+
+\paragraph*{exists\_database (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_exists_database_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!exists\ database (public)}}
+
+
+\$apiis-$>$exists\_database returns 1 if the database initialisation is already
+done, 0 otherwise. The existance of the database object does not
+necessarily include the database connection. If you invoke join\_model with
+the parameter 'database =$>$ 0' the database object is created without
+connecting to the database. This is needed for special cases like mksql,
+where you need the configuration data like the db-specific datatype for the
+metatypes like TIMESTAMP to create the database.
+
+\paragraph*{exists\_auth (public)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_exists_auth_public_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!exists\ auth (public)}}
+
+
+\textbf{exists\_auth} is a boolean switch to show, if the Auth object for
+authentication/authorisation is joined into the global \$apiis structure. It is
+0/undef, if no Auth object/method exists, 1 otherwise.
+
+\paragraph*{get\_db\_conf (mainly internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_get_db_conf_mainly_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!get\ db\ conf (mainly internal)}}
+
+
+Read the config file for the passed Database from
+\$APIIS\_HOME/etc/apiis/$<$Database$>$.conf and return a hash reference of this
+structure.
+
+\paragraph*{AUTOLOAD (internal)\label{Apiis::Init_--_Basic_initialisation_object_for_the_complete_APIIS_structure_AUTOLOAD_internal_}\index{Apiis::Init -- Basic initialisation object for the complete APIIS structure!AUTOLOAD (internal)}}
+
+
+\textbf{AUTOLOAD()} catches all invocations of methods, that don't exist. On this
+level it makes mainly sense for the structural elements Cache, Model,
+DataBase, User, etc. It's difficult to catch them otherwise in
+expressions like \$apiis-$>$Model-$>$tables, when join\_model has failed before
+and therefore no method Model() exists. This case usually produces Error
+objects, but every developer is free to ignore them.
+
+
+
+Currently some more or less useful error messages are generated, printed
+to STDOUT and the process dies. This is not optimal for processes that run
+in a grapical environment (Tk, Html) and don't have access to a terminal.
+But does it make sense to create an Error object if the developer tends to
+ignore them?
+
+
+
+Additionally, the produced error message is stored in the logfile/syslog,
+if configured.
+
+\subsection{Apiis::Init::Config mainly ready apiisrc config files\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files}\index{Apiis::Init::Config mainly ready apiisrc config files}}
+
+
+
+
+\subsubsection*{DESCRIPTION\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files_DESCRIPTION}\index{Apiis::Init::Config mainly ready apiisrc config files!DESCRIPTION}}
+
+
+Apiis::Init::Config contains internal methods to read the different apiisrc
+files.
+
+\subsubsection*{METHODS\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files_METHODS}\index{Apiis::Init::Config mainly ready apiisrc config files!METHODS}}
+\paragraph*{\_import\_apiisrc (internal)\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files__import_apiisrc_internal_}\index{Apiis::Init::Config mainly ready apiisrc config files!\ import\ apiisrc (internal)}}
+
+
+Imports the default apiis config file \$APIIS\_HOME/etc/apiisrc.
+
+\paragraph*{\_import\_apiisrc\_local (internal)\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files__import_apiisrc_local_internal_}\index{Apiis::Init::Config mainly ready apiisrc config files!\ import\ apiisrc\ local (internal)}}
+
+
+Overwrites the defaults from apiis apiisrc config file with the
+project specific one.
+
+\paragraph*{\_import\_user\_apiisrc (internal)\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files__import_user_apiisrc_internal_}\index{Apiis::Init::Config mainly ready apiisrc config files!\ import\ user\ apiisrc (internal)}}
+
+
+Overwrites the project definition from global apiisrc config file.
+This can be used for developers on a multiuser server to point to their
+private copy of the project tree.
+
+
+
+It reads only the [PROJECTS] section of apiisrc.
+
+\paragraph*{\_xml2model (internal)\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files__xml2model_internal_}\index{Apiis::Init::Config mainly ready apiisrc config files!\ xml2model (internal)}}
+
+
+\textbf{\_xml2model} parses the passed xmlfile and returns a reference to a
+datastructure, representing the model file.
+
+
+
+usage:
+
+\begin{verbatim}
+    eval { $href = $self->Apiis::Init::Config::_xml2model(
+                       xmlfile => $filename
+                   );
+    };
+\end{verbatim}
+
+
+This results in a structure like this:
+
+\begin{verbatim}
+    $href->{
+       general => {...},
+       table   => {
+          <tablename> => {
+             struct_type => '...',
+             trigger  => {...},
+             sequence => [...],
+             index    => [...],
+             pk       => {...},
+             column   => {
+                <columnname> => {...},
+                <columnname> => {...},
+             },
+             _column_order => [...],
+          },
+       },
+       _table_order => [...],
+    };
+\end{verbatim}
+
+
+Only for internal use.
+
+
+
+Note: This method will disappear in the near future when the model file
+structure and parsing is rewritten.
+
+\paragraph*{\_get\_db\_conf (internal)\label{Apiis::Init::Config_mainly_ready_apiisrc_config_files__get_db_conf_internal_}\index{Apiis::Init::Config mainly ready apiisrc config files!\ get\ db\ conf (internal)}}
+
+
+Read the config file for the passed Database from
+\$APIIS\_HOME/etc/apiis/$<$Database$>$.conf and return a hash reference of this
+structure.
+
+\subsubsection*{\$apiis-$>$\_check\_date\_conf (internal)\label{_apiis-_check_date_conf_internal_}\index{\$apiis-$>$\ check\ date\ conf (internal)}}
+
+
+Internal routine to run some checks on the configured date format.
+Sets the \_date\_parts array in case of success.
+
+\subsubsection*{\$apiis-$>$\_check\_time\_conf (internal)\label{_apiis-_check_time_conf_internal_}\index{\$apiis-$>$\ check\ time\ conf (internal)}}
+
+
+Internal routine to run some checks on the configured time format.
+Sets the \_time\_parts array in case of success.
+
+\subsection{SYNOPSIS\label{SYNOPSIS}\index{SYNOPSIS}}
+\begin{verbatim}
+   $xml_obj = Apiis::Init::XML->new(%args);
+   $xml_obj = Apiis::Init::XML->new(
+         dtd=>$dtd_file,
+         xml=>$xml_file,
+         gui=>$what_type_of_gui
+   );
+\end{verbatim}
+\subsection{DESCRIPTION\label{DESCRIPTION}\index{DESCRIPTION}}
+
+
+XML.pm init a file of configuration written in xml. XML.pm merge definitions
+from the configuration file and the default values from the dtd-scheme.
+
+
+
+Suppositions:
+
+
+
+Each xml-element need a unique name over all configuration and subconfiguration
+files, which will be defined in "Name". Access to each attribute take place with
+a method in combination with the name of the element:
+
+\begin{verbatim}
+   xml:
+    <PageHeader Name="PageHeader_10">
+      <Lines Name="Line_1" Column="1-4" Row="1" LineType="solid"/>
+    </PageHeader>             
+    ---------
+\end{verbatim}
+\begin{verbatim}
+   code: 
+    $c=$xml_obj->Line_1->LineType
+    $c is "solid"
+\end{verbatim}
+\begin{verbatim}
+    $c=$xml_obj->Line_1->Name
+    $c is "Line_1"
+\end{verbatim}
+
+
+Independent of the xml-definition a complete set of methods will be initiate
+depend on the definition in the dtd-scheme. The default settings come from the
+dtd-scheme and will overwritten if a the same attribute is defined in the
+xml-scheme. E.g.
+
+\begin{verbatim}
+   dtd: 
+   <!ATTLIST Text  
+           Name       ID                          #REQUIRED
+           Content    CDATA                       #REQUIRED
+           Position   (static|absolute|relative)  "relative"
+   >
+\end{verbatim}
+\begin{verbatim}
+  xml:
+  <PageHeader Name="PageHeader_10">
+     <Text Position="relative" Name="Text_1" Content="test"/>
+  </PageHeader>
+\end{verbatim}
+\begin{verbatim}
+  code: 
+   $c=$xml_obj->Text_1->Position
+   $c is "relative"
+\end{verbatim}
+
+
+Each xml-file has a hierachical structure. XML makes a flat structure.
+
+\subsection{METHODS\label{METHODS}\index{METHODS}}
+\subsubsection*{\$apiis-$>$GUI-$>$[fullname $|$ basename $|$ ext $|$ path $|$ gui\_file ] (all public, readonly)\label{_apiis-_GUI-_fullname_basename_ext_path_gui_file_all_public_readonly_}\index{\$apiis-$>$GUI-$>$[fullname $|$ basename $|$ ext $|$ path $|$ gui\ file ] (all public, readonly)}}
+
+
+fullname, basename, ext, path provide the fullname (basename.extension),
+basename (without extension), extension, and path of the gui file.
+
+\subsection{Apiis::Model -- methods to access the model file data via the \$apiis
+structure\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure}\index{Apiis::Model -- methods to access the model file data via the \$apiis
+structure}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_SYNOPSIS}\index{Apiis::Model -- methods to access the model file data via the apiis structure!SYNOPSIS}}
+\begin{verbatim}
+   $apiis->join_model('breedprg');
+\end{verbatim}
+
+
+The configuration data of the model file is mounted into the \$apiis
+structure simply by running the join\_model method with the model file name
+as the only parameter.
+
+\subsubsection*{DESCRIPTION\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_DESCRIPTION}\index{Apiis::Model -- methods to access the model file data via the apiis structure!DESCRIPTION}}
+
+
+This Model.pm module provides an object and the appropriate access methods.
+With join\_model they are passed to Apiis::Init.pm and there with \_add\_obj
+added to the global structure
+
+\subsubsection*{METHODS\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_METHODS}\index{Apiis::Model -- methods to access the model file data via the apiis structure!METHODS}}
+\paragraph*{new (mostly internal)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_new_mostly_internal_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!new (mostly internal)}}
+
+
+Apiis::Model-$>$new is mainly invoked by Apiis::Init. The user interface is
+join\_model.
+
+\paragraph*{\_init (internal)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure__init_internal_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!\ init (internal)}}
+
+
+\_init does the main initialization and creates the internal structure to
+keep the model file values.
+
+\paragraph*{\$apiis-$>$Model-$>$[fullname $|$ basename $|$ ext $|$ path $|$ db\_driver $|$ db\_name
+$|$ db\_host $|$ db\_port $|$ db\_user $|$ db\_password $|$ max\_check\_level] (all public, readonly)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure__apiis-_Model-_fullname_basename_ext_path_db_driver_db_name_db_host_db_port_db_user_db_password_max_check_level_all_public_readonly_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!\$apiis-$>$Model-$>$[fullname $|$ basename $|$ ext $|$ path $|$ db\ driver $|$ db\ name
+$|$ db\ host $|$ db\ port $|$ db\ user $|$ db\ password $|$ max\ check\ level] (all public, readonly)}}
+
+
+fullname, basename, ext, path provide the fullname (basename.extension),
+basename (without extension), extension, and path of the model file.
+
+
+
+The db\_... methods reflect the database configurations at the top of the
+model file.
+
+
+
+max\_check\_level gives you the maximal configured checklevel of this model
+file, if anybody really needs it.
+
+\paragraph*{tables (public, readonly)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_tables_public_readonly_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!tables (public, readonly)}}
+
+
+\$apiis-Model-$>$tables returns the names of the defined tables. If you want
+an array, it gives you an array of these tables. If you want a scalar, you
+also get what you want, a reference to the same array.
+
+\paragraph*{table (public, readonly)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_table_public_readonly_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!table (public, readonly)}}
+\begin{verbatim}
+   $apiis->Model->table( $tablename );
+\end{verbatim}
+
+
+returns an object of Apiis::Model::TableObj for this tablename.
+
+\paragraph*{check\_level (public, read/write)\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_check_level_public_read_write_}\index{Apiis::Model -- methods to access the model file data via the apiis structure!check\ level (public, read/write)}}
+\begin{verbatim}
+   my $current_level = $apiis->Model->check_level;
+   my $old_level = $apiis->Model->check_level(2);
+      ... do some work
+   $apiis->Model->check_level( $old_level );
+\end{verbatim}
+
+
+Without an parameter check\_level returns the current check level. You can
+change the current check level by passing the new level to check\_level,
+which then returns the old check level.
+
+
+
+check\_level also tests, if a passed new level is numeric and does not
+exceed the maximum defined level in the model file.
+
+\subsubsection*{Apiis::Model::TableObj -- internal package to provide a table object with
+methods to access a single table and its columns\label{Apiis::Model_--_methods_to_access_the_model_file_data_via_the_apiis_structure_Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns}\index{Apiis::Model -- methods to access the model file data via the apiis structure!Apiis::Model::TableObj -- internal package to provide a table object with
+methods to access a single table and its columns}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_SYNOPSIS}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!SYNOPSIS}}
+
+
+Programming interface:
+
+\begin{verbatim}
+   $table_obj = Apiis::Model::TableObj->new( $tablename, $struct_ref);
+\end{verbatim}
+
+
+Usage:
+
+\begin{verbatim}
+   $table_obj = $apiis->Model->table('animal');
+\end{verbatim}
+\paragraph*{METHODS\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_METHODS}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!METHODS}}
+\subparagraph*{new (mostly internal)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_new_mostly_internal_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!new (mostly internal)}}
+
+
+To create the table object, new() needs as input the table name and a
+reference to the datastructure of this table from the model file:
+
+\begin{verbatim}
+   $table_obj = Apiis::Model::TableObj->new( $tablename, $struct_ref);
+\end{verbatim}
+
+
+The order of the columns in the model file is preserved.
+
+\subparagraph*{column (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_column_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!column (public, readonly)}}
+
+
+\$table\_obj-$>$column( \$col\_name ) returns the column object for this column
+
+\subparagraph*{name (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_name_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!name (public, readonly)}}
+
+
+\$table\_obj-$>$name returns the name of this table.
+
+\subparagraph*{struct\_type (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_struct_type_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!struct\ type (public, readonly)}}
+
+
+\$table\_obj-$>$struct\_type returns the structural type of this table.
+Current values of struct\_type can be mandatory, recommended, and optional.
+
+\subparagraph*{columns/cols (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_columns_cols_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!columns/cols (public, readonly)}}
+
+
+\$table\_obj-$>$cols returns the columns of this table.
+\$table\_obj-$>$columns is just an alias.
+
+\subparagraph*{primarykey (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_primarykey_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!primarykey (public, readonly)}}
+
+
+primarykey() needs one argument, which is either 'ref\_col', 'view',
+'where', or 'concat'.
+
+\begin{verbatim}
+   $table_obj->primarykey('ref_col')
+\end{verbatim}
+
+
+returns the reference column to which this primary key in the table refers
+to.
+
+\begin{verbatim}
+   $table_obj->primarykey('concat')
+\end{verbatim}
+
+
+returns the external columns, that build the concatenated primary key. The
+old syntax of \$table\_obj-$>$primarykey('ext\_cols') is still supported but
+deprecated.
+
+\begin{verbatim}
+   $table_obj->primarykey('view')
+\end{verbatim}
+
+
+returns the viewname of the view, that finally provides the foreignkey
+through the where clause:
+
+\begin{verbatim}
+   $table_obj->primarykey('where')
+\end{verbatim}
+
+
+Often the where clause is 'closing\_dt is NULL'. The resulting view then
+shows only records, which are not closed.
+
+\subparagraph*{\$table\_obj-$>$[sequence $|$ sequences $|$ index $|$ indices $|$ indexes] (public,
+readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns__table_obj-_sequence_sequences_index_indices_indexes_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!\$table\ obj-$>$[sequence $|$ sequences $|$ index $|$ indices $|$ indexes] (public,
+readonly)}}
+
+
+They return the index and the sequence entries for the table,
+either as an array or as an array reference. There are only two
+methods, the others act like aliases.
+
+
+
+usage:
+
+\begin{verbatim}
+   my @indices = $table_obj->indices;
+   my $sequences_ref = $table_obj->sequences;
+\end{verbatim}
+\subparagraph*{\$table\_obj-$>$triggers( \$triggertype ) (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns__table_obj-_triggers_triggertype_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!\$table\ obj-$>$triggers( \$triggertype ) (public, readonly)}}
+
+
+The method \textbf{triggers} takes the following triggertypes as argument:
+
+\begin{verbatim}
+   $table_obj->triggers( 'preinsert' );
+   $table_obj->triggers( 'postinsert' );
+   $table_obj->triggers( 'preupdate' );
+   $table_obj->triggers( 'postupdate' );
+   $table_obj->triggers( 'predelete' );
+   $table_obj->triggers( 'postdelete' );
+\end{verbatim}
+
+
+and returns the triggers for this type. Depending on the calling context
+they will be returned as a list or as an array reference.
+
+\subparagraph*{\$table\_obj-$>$[datatype $|$ length $|$ default $|$ description $|$ check $|$ modify $|$ foreignkey $|$ label] (public, readonly)\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns__table_obj-_datatype_length_default_description_check_modify_foreignkey_label_public_readonly_}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!\$table\ obj-$>$[datatype $|$ length $|$ default $|$ description $|$ check $|$ modify $|$ foreignkey $|$ label] (public, readonly)}}
+
+
+Although these methods are column methods, they are kept here for
+compatibility reasons.
+
+
+
+The old, still valid (but deprecated) syntax
+
+\begin{verbatim}
+   my $descr = $table_obj->description( $column_name );
+\end{verbatim}
+
+
+should now be better written as:
+
+\begin{verbatim}
+   my $descr = $column_obj->description;
+\end{verbatim}
+
+
+or
+
+\begin{verbatim}
+   my $descr = $table_obj->column( $column_name )->description;
+\end{verbatim}
+\paragraph*{Apiis::Model::ColumnObj -- internal package to provide a column object with
+methods to access a single column of a table\label{Apiis::Model::TableObj_--_internal_package_to_provide_a_table_object_with_methods_to_access_a_single_table_and_its_columns_Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table}\index{Apiis::Model::TableObj -- internal package to provide a table object with methods to access a single table and its columns!Apiis::Model::ColumnObj -- internal package to provide a column object with
+methods to access a single column of a table}}
+
+
+
+
+\subparagraph*{SYNOPSIS\label{Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table_SYNOPSIS}\index{Apiis::Model::ColumnObj -- internal package to provide a column object with methods to access a single column of a table!SYNOPSIS}}
+\begin{verbatim}
+   $col_obj = $table_obj->column( $column_name );
+\end{verbatim}
+\subparagraph*{DESCRIPTION\label{Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table_DESCRIPTION}\index{Apiis::Model::ColumnObj -- internal package to provide a column object with methods to access a single column of a table!DESCRIPTION}}
+\subparagraph*{METHODS\label{Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table_METHODS}\index{Apiis::Model::ColumnObj -- internal package to provide a column object with methods to access a single column of a table!METHODS}}
+\*{\$column\_obj-$>$[datatype $|$ length $|$ default $|$ description $|$ check $|$ modify $|$ struct\_type $|$ label] (public, readonly)\label{Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table__column_obj-_datatype_length_default_description_check_modify_struct_type_label_public_readonly_}\index{Apiis::Model::ColumnObj -- internal package to provide a column object with methods to access a single column of a table!\$column\ obj-$>$[datatype $|$ length $|$ default $|$ description $|$ check $|$ modify $|$ struct\ type $|$ label] (public, readonly)}}
+
+
+Example:
+   my \$datatype = \$column\_obj-$>$datatype;
+
+
+
+The according values from the model file are returned. All these
+methods are readonly.
+
+
+
+check() returns the rules for the current check level. If a check level
+for a column is defined/exists, this one is taken.
+
+
+
+If there is no CHECKn defined for check level n the default CHECK is taken.
+This also applies if e.g. CHECK2 is defined in the model file but no
+CHECK1. In this case the default CHECK is taken for CHECK1 as this is
+undef.
+
+\*{foreignkey (public, readonly)\label{Apiis::Model::ColumnObj_--_internal_package_to_provide_a_column_object_with_methods_to_access_a_single_column_of_a_table_foreignkey_public_readonly_}\index{Apiis::Model::ColumnObj -- internal package to provide a column object with methods to access a single column of a table!foreignkey (public, readonly)}}
+\begin{verbatim}
+   my ($fk_table, $fk_column) = $column_obj->foreignkey;
+\end{verbatim}
+
+
+foreignkey() returns the defined foreign key table and the foreign key
+column for this column, either as an array or as a
+reference to an array, depending on the callers context.
+
+
+
+It returns undef if no foreign key is defined.
+
+\subsection{Apiis::Errors -- Provide error objects for generic error handling in APIIS\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_SYNOPSIS}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!SYNOPSIS}}
+\begin{verbatim}
+   my $err_obj = Apiis::Errors->new(
+      type      => 'CONFIG',
+      severity  => 'INFO',
+      from      => 'test.Errors',
+      msg_short => "No date format defined",
+   );
+\end{verbatim}
+
+
+Apiis::Errors-$>$new() creates an error object, that describes an error
+comprehensively to enable further adequate processing.
+
+\subsubsection*{DESCRIPTION\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_DESCRIPTION}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!DESCRIPTION}}
+
+
+Apiis::Errors provides an error object with the following traits:
+
+\begin{itemize}
+
+\item Error \textbf{type}, currently:\begin{itemize}
+
+\item \textbf{DATA}    the passed data is not ok (usually in CheckRules)
+\item \textbf{DB}      errors from the database (e.g. unique index violation)
+\item \textbf{OS}      errors from the operation system (e.g. full hard disk)
+\item \textbf{AUTH}    errors concerning access rights
+\item \textbf{PARSE}   errors in ParsePseudoSQL with parsing pseudo SQL code
+\item \textbf{CODE}    programming errors, e.g. from applications like load objects
+\item \textbf{PARAM}   passed parameter is wrong or missing
+\item \textbf{CONFIG}  one of the configuration files is wrong or has missing entries
+\item \textbf{INSTALL} there is an error in the Apiis/Perl installation
+\item \textbf{UNKNOWN} is unknown.\end{itemize}
+
+\item Error \textbf{severity}, currently \textbf{DEBUG INFO NOTICE WARNING ERR CRIT
+ALERT EMERG}. These severity values are the same as the unix syslog
+priorities. See also 'man syslog.conf' under Unix/Linux.\begin{itemize}
+
+\item \textbf{DEBUG}   debugging messages for bug hunting
+\item \textbf{INFO}    informational notice
+\item \textbf{NOTICE}  more than information, somebody should notice it
+\item \textbf{WARNING} influences further processing but is not so severe
+\item \textbf{WARN}    deprecated, use WARNING
+\item \textbf{ERR}     error, handled in the normal flow control
+\item \textbf{ERROR}   deprecated, use ERR
+\item \textbf{CRIT}    critical error, but can be handled under certain circumstances
+\item \textbf{ALERT}   alarm, immediate intervention necessary
+\item \textbf{EMERG}   no further processing possible (e.g. disk full)
+\item \textbf{PANIC}   deprecated, use EMERG\end{itemize}
+
+\item Error \textbf{action}, currently:\begin{itemize}
+
+\item \textbf{INSERT}  the error occurred during a database insert
+\item \textbf{UPDATE}  the error occurred during a database update
+\item \textbf{DELETE}  the error occurred during a database delete
+\item \textbf{SELECT}  the error occurred during a database select
+\item \textbf{FETCH}   like SELECT
+\item \textbf{DECODE}  the error occurred during an attempt to decode the data
+\item \textbf{ENCODE}  the error occurred during an attempt to encode the data
+\item \textbf{UNKNOWN} the action is unknown\end{itemize}
+\end{itemize}
+
+
+The internal structure provides the following fields to describe a
+certain error:
+
+\begin{verbatim}
+ %struct = (
+    type           => undef,    # predefined values above
+    id             => undef,    # error id
+    severity       => undef,    # predefined values above
+    action         => undef,    # predefined values above
+    from           => undef,    # location where this error comes from
+                                # (e.g. sub, rule)
+    record_id      => undef,    # id of this record, e.g. record_seq
+                                # from inspool
+    unit           => undef,    # unit that provides this data
+    db_table       => undef,    # database table concerned
+    db_column      => undef,    # database column concerned
+    data           => undef,    # just handled incorrect data
+    ext_fields     => undef,    # involved external fields (array)
+    ext_fields_idx => undef,    # index of these external fields (for tabulars)
+    ds             => undef,    # data stream name
+    err_code       => undef,    # coded error message
+    msg_short      => undef,    # main error message for end users
+    msg_long       => undef,    # detailed error message
+    misc1          => undef,    # user defined scalar
+    misc2          => undef,    # user defined scalar
+    misc_arr1      => undef,    # user defined array
+    misc_arr2      => undef,    # user defined array
+    backtrace      => undef,    # backtrace in Carp::longmess style
+ );
+\end{verbatim}
+
+
+Public and internal methods are:
+
+\subsubsection*{INTERNAL METHODS\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_INTERNAL_METHODS}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!INTERNAL METHODS}}
+\paragraph*{new (mostly internal)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_new_mostly_internal_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!new (mostly internal)}}
+
+
+new creates the object and checks access rights to the object structure.
+
+\paragraph*{\$error\_obj-$>$[ type\_values $|$ severity\_values $|$ action\_values ] (all external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS__error_obj-_type_values_severity_values_action_values_all_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!\$error\ obj-$>$[ type\ values $|$ severity\ values $|$ action\ values ] (all external)}}
+
+
+These public methods provide read only access to the preconfigured values.
+
+\paragraph*{\$error\_obj-$>$[ from $|$ line $|$ backtrace $|$ record\_id $|$ unit
+            $|$ db\_table $|$ db\_column $|$ data $|$ ext\_fields $|$ ext\_fields\_idx
+            $|$ ds $|$ err\_code $|$ msg\_short $|$ msg\_long $|$ misc1 $|$ misc2
+            $|$ misc\_arr1 $|$ misc\_arr2 ] (all external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS__error_obj-_from_line_backtrace_record_id_unit_db_table_db_column_data_ext_fields_ext_fields_idx_ds_err_code_msg_short_msg_long_misc1_misc2_misc_arr1_misc_arr2_all_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!\$error\ obj-$>$[ from $|$ line $|$ backtrace $|$ record\ id $|$ unit
+            $|$ db\ table $|$ db\ column $|$ data $|$ ext\ fields $|$ ext\ fields\ idx
+            $|$ ds $|$ err\ code $|$ msg\ short $|$ msg\ long $|$ misc1 $|$ misc2
+            $|$ misc\ arr1 $|$ misc\ arr2 ] (all external)}}
+
+
+These public methods provide read/write access to the structur elements.
+
+\paragraph*{print (external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_print_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!print (external)}}
+
+
+Print the defined elements of this error object in the order of the
+hash \%struct (actually the @struct array). This is mainly used for debugging.
+
+
+
+Second input parameter can be a hash with the key:
+
+\begin{itemize}
+
+\item \textbf{filehandle} -- the output then goes to this filehandle instead of
+        STDOUT (default)
+        note: the filehandle has to be passed as a typeglob\end{itemize}
+
+
+Example:
+
+\begin{verbatim}
+   $err_obj->print(
+      filehandle => *ERR_FILE,
+   );
+\end{verbatim}
+\paragraph*{sprint (external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_sprint_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!sprint (external)}}
+
+
+Return the formatted error message as a string (used by \textbf{print}).
+
+\paragraph*{sprint\_html (external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_sprint_html_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!sprint\ html (external)}}
+
+
+Return the formatted error message as a string (used by \textbf{print}).
+
+\paragraph*{syslog\_print (external)\label{Apiis::Errors_--_Provide_error_objects_for_generic_error_handling_in_APIIS_syslog_print_external_}\index{Apiis::Errors -- Provide error objects for generic error handling in APIIS!syslog\ print (external)}}
+
+
+The error message is formatted for unix syslog (used by \$apiis-$>$log).
+
+\subsection{Apiis::Misc -- Provides some usefull subroutines, mainly for compatibility reasons\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons}\index{Apiis::Misc -- Provides some usefull subroutines, mainly for compatibility reasons}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_SYNOPSIS}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!SYNOPSIS}}
+\begin{verbatim}
+   use Apiis::Misc qw( <subroutine_name> );
+\end{verbatim}
+\subsubsection*{DESCRIPTION\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_DESCRIPTION}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!DESCRIPTION}}
+
+
+Apiis::Misc gives you access to the subroutines (not object methods!):
+
+\begin{verbatim}
+   show_progress mychomp elapsed is_true
+   Info Error
+   LocalToRawDate RawToLocalDate Decode_Date_NativeRDBMS
+   find_pod_path file2variable mimetype_of
+\end{verbatim}
+
+
+You can load some of them by writing:
+
+\begin{verbatim}
+   use Apiis::Misc qw( show_progress mychomp );
+\end{verbatim}
+
+
+They are also grouped:
+
+\begin{verbatim}
+   use Apiis::Misc qw( :Tk );    # exports the Tk routines Info and Error
+   use Apiis::Misc qw( :date );  # exports the date routines
+   use Apiis::Misc qw( :all );   # exports all routines
+\end{verbatim}
+\subsubsection*{Subroutines\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_Subroutines}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!Subroutines}}
+\paragraph*{show\_progress\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_show_progress}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!show\ progress}}
+
+
+\textbf{show\_progress} gives you some kind of progress view. It prints a dot every \$mod
+times (default 100), every \$mod*10 times it prints the number.
+   input:  1.) a reference to the counter (usually starting with 1).
+           2.) optional: modulus operator \$mod
+   return: none. The counter has to be incremented outside this routine!
+
+\paragraph*{MaskForLatex\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_MaskForLatex}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!MaskForLatex}}
+
+
+Creates Escape-sequences for print in latex
+
+\paragraph*{mychomp\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_mychomp}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!mychomp}}
+
+
+By: Chris Nandor (from the Perl Function Repository)
+removes end-of-line regardless of originating platform
+of file
+
+\paragraph*{Info\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_Info}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!Info}}
+
+
+show an Tk-Info window
+
+\begin{verbatim}
+  usage: Info("Infomessage");
+\end{verbatim}
+\paragraph*{Error\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_Error}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!Error}}
+
+
+show an error window
+
+\begin{verbatim}
+  usage: Error("Errormessage");
+\end{verbatim}
+\paragraph*{LocalToRawDate\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_LocalToRawDate}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!LocalToRawDate}}
+
+
+Date conversion.
+
+
+
+Standard SQL format seems to be 'DD-MON-YYYY', e.g. '24-MAY-2000'. At
+least PostgreSQL and Oracle6 accept this.
+As long as DBI/DBD does not convert different date formats to the standard
+formats of the databases we have to provide this conversion in apiis.
+Date::Calc has date formats EU (european format day-month-year) and US
+(US american format month-day-year)
+   input:  type of local dateformat [EU$|$US]
+           local date
+   return: old version (before Aug. 2001):
+           date in native database format or -1 in case of errors
+           LocalToRawDate('EU', '24.5.2000') will return '24-MAY-2000'.
+           new version:
+           list of ( "new\_date\_string", \$status, \$err\_msg )
+           LocalToRawDate('EU', '24.5.2000') will return ('24-MAY-2000',0,undef).
+
+
+
+Note: This is old stuff and remains here only for compatibility reasons. It
+will be removed in the near future. (2005-02-28 heli)
+
+\paragraph*{RawToLocalDate\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_RawToLocalDate}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!RawToLocalDate}}
+
+
+RawToLocalDate - change native database date format to EU/US-format (Date::Calc)
+   input:  type of local dateformat [EU$|$US]
+           native database date
+   return: date in local format or -1 in case of errors
+
+
+
+RawToLocalDate('EU', '24-MAY-2000') will return '24.5.2000'.
+
+
+
+Note: This is old stuff and remains here only for compatibility reasons. It
+will be removed in the near future. (2005-02-28 heli)
+
+\paragraph*{Decode\_Date\_NativeRDBMS\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_Decode_Date_NativeRDBMS}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!Decode\ Date\ NativeRDBMS}}
+
+
+This sub is used like Decode\_Date\_EU and Decode\_Date\_US, where 'EU' and 'US'
+is set in apiisrc. For check\_integrity only the native date values from the
+database is used. It takes DATESEP and DATEORDER from the definitions in
+Database.pm and parsed the passed date (which is in DATEORDER). It returns
+(\$year, \$month, \$day) like the Decode\_Date\_ routines from Date::Calc.
+
+
+
+Example: (\$year, \$month, \$day) = Decode\_Date\_NativeRDBMS('1999-5-13')
+
+
+
+Note: This is old stuff and remains here only for compatibility reasons. It
+will be removed in the near future. (2005-02-28 heli)
+
+\paragraph*{elapsed\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_elapsed}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!elapsed}}
+
+
+do some profiling:
+   input:  array reference with entries in order of Now()
+   output: String "Hours:Minutes:Seconds" elapsed since passed start time
+
+\paragraph*{is\_true\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_is_true}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!is\ true}}
+
+
+\textbf{is\_true} tests the passed scalar value, if it is true or false in the
+boolean sense.
+
+
+
+False are:
+
+\begin{verbatim}
+   * undef
+   * 0       (zero, either as number or as string of length 1)
+   * ''      (the empty string)
+   * all other strings and numbers that are not true
+\end{verbatim}
+
+
+True are:
+
+\begin{verbatim}
+   * all numbers different from 0
+   * the number 0E0 is zero, but true (Perl internal)
+   * all strings, which are defined as representing true like
+     'true', 'yes'. For different languages you can add the according string
+     for 'yes' like 'ja' in german.
+     Only the first character of the string in lowercase is checked.
+\end{verbatim}
+\begin{verbatim}
+   input:  any scalar value that has to be checked for being true or not
+\end{verbatim}
+\begin{verbatim}
+   return: 1 if the passed value is true, 0 or undef or the empty string
+           otherwise
+\end{verbatim}
+\paragraph*{find\_pod\_path\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_find_pod_path}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!find\ pod\ path}}
+
+
+\textbf{find\_pod\_path} tries to find the appropriate Perl POD documentation for the
+invoked programm. It first looks for language specific pod-files (taking
+\$apiis-$>$language) and continues the search to the less specific versions. Last
+ressort is the program itself:
+
+\begin{verbatim}
+    <programname>_<lang>.pod
+    <programname>.<lang>.pod
+    <programname>.pod
+    <programname>
+\end{verbatim}
+
+
+The $<$programname$>$ contains the complete path, found by the Perl core module
+FindBin.
+
+\paragraph*{file2variable\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_file2variable}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!file2variable}}
+
+
+\textbf{file2variable} loads file from the local file system and tries to guess its
+mime-type
+
+\begin{verbatim}
+   input:  file name
+   return: scalar with the file content and scalar with the mime-type
+\end{verbatim}
+\paragraph*{mimetype\_of\label{Apiis::Misc_--_Provides_some_usefull_subroutines_mainly_for_compatibility_reasons_mimetype_of}\index{Apiis::Misc -- Provides some usefull subroutines mainly for compatibility reasons!mimetype\ of}}
+
+
+\textbf{mimetype\_of} tries to find out the mimetype of a given filename. It first
+uses MIME::Types, which seems to give the best results. Only if this module is
+not installed or doesn't find any entry, a second test with File::Type is
+done. \textbf{mimetype\_of} returns the found mimetype (e.g.
+application/vnd.ms-powerpoint) or undef otherwise.
+
+\begin{verbatim}
+   Input:  filename with full path.
+   Return: mimetype or undef
+\end{verbatim}
+
+
+Example:
+
+\begin{verbatim}
+   use Apiis::Misc qw( mimetype_of );
+   my $mt = mimetype_of($file_name);
+\end{verbatim}
+\subsection{Apiis::CheckFile -- Find configuration files\label{Apiis::CheckFile_--_Find_configuration_files}\index{Apiis::CheckFile -- Find configuration files}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::CheckFile_--_Find_configuration_files_SYNOPSIS}\index{Apiis::CheckFile -- Find configuration files!SYNOPSIS}}
+\begin{verbatim}
+   my $a = CheckFile->new( file=>'apiis.model' );
+\end{verbatim}
+
+
+CheckFile gets a file name as argument and looks where it finds this file
+under \$apiis\_local.
+
+\subsubsection*{DESCRIPTION\label{Apiis::CheckFile_--_Find_configuration_files_DESCRIPTION}\index{Apiis::CheckFile -- Find configuration files!DESCRIPTION}}
+
+
+CheckFile gets a file name as argument and looks where to find this file
+under \$apiis\_local.
+The file name argument can either be
+
+
+
+a complete path (e.g.  \$apiis\_local/model/apiis.model)
+or only the file (e.g. apiis.model)
+or only the basename of the file (e.g. apiis)
+
+
+
+Examples:
+
+\begin{verbatim}
+   my $a = CheckFile->new(file=>'apiis.model'); 
+   my $a = CheckFile->new(file=>'apiis'); 
+   my $a = CheckFile->new(file=>"$apiis_local/model/forms/abc");
+   my $a = CheckFile->new(file=>"../../apiis/reports/jjj");
+\end{verbatim}
+
+
+The recognized filename extensions are defined in \$self-$>$\{\_suffixes\},
+the locations for doing the search in \$self-$>$\{\_locations\}.
+

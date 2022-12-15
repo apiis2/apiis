@@ -1,0 +1,98 @@
+##############################################################################
+# $Id: cvs-HOWTO,v 1.1 2005/05/19 07:04:20 heli Exp $
+##############################################################################
+
+# Initial setup:
+###############################
+# checkout the cvs sources of apiis by invoking the following command:
+
+# change to your development directory where you want to get the
+# subdirectory apiis, automatically created by cvs:
+
+cd your_development_directory
+
+# first you have to log into the cvs-server which is a machine at
+# tzv.fal.de. During the login procedure you will be prompted for the cvs
+# password. Substitute <user> with your login name.
+
+cvs -d :pserver:<user>@cvs-server.tzv.fal.de:/usr/local/lib/cvsroot login
+CVS password: XXXXX
+
+# Checkout the source from the cvs server.
+
+cvs -d :pserver:<user>@cvs-server.tzv.fal.de:/usr/local/lib/cvsroot checkout apiis
+
+# If you want to connect to our cvs server with an anonymous account (you
+# don't need any write access), we have the user anoncvs:
+cvs -d :pserver:anoncvs@cvs-server.tzv.fal.de:/usr/local/lib/cvsroot login
+CVS password: cvs
+
+#  This step has to be invoked only *once*!
+###############################
+
+# Every day:
+###############################
+# Every time you want to work at your sources you have to be logged into
+# cvs. You don't have to use the -d switch if you are already in the apiis
+# directory tree:
+
+cvs login
+CVS password: XXXXX
+
+# Usually it is not necessary to ...
+
+cvs logout
+
+### Troubleshooting:
+
+Problem:
+   cvs [login aborted]: connect to cvs-server.tzv.fal.de(192.108.34.41):2401
+                        failed: Connection refused
+
+Tests:
+   1.) ping
+       #> ping cvs-server.tzv.fal.de   
+       PING forssa.tzv.fal.de (192.108.34.41) 56(84) bytes of data.
+       64 bytes from forssa.tzv.fal.de (192.108.34.41): icmp_seq=1 ttl=236 time=313 ms
+       64 bytes from forssa.tzv.fal.de (192.108.34.41): icmp_seq=2 ttl=236 time=307 ms
+       64 bytes from forssa.tzv.fal.de (192.108.34.41): icmp_seq=3 ttl=236 time=331 ms
+
+       Result:
+       cvs-server.tzv.fal.de is reachable with the ping protocol (ICMP).
+       This means your (and our) network is up and you can connect.
+
+   2.) traceroute
+       #> traceroute cvs-server.tzv.fal.de
+       traceroute to forssa.tzv.fal.de (192.108.34.41), 30 hops max, 38 byte packets
+       1  * * *
+       2  * * *
+       3  * * *
+       4  * * *
+       5  * * *
+       
+       Result:
+       Your traceroute packages are blocked somewhere, maybe a firewall.
+   
+   3.) telnet
+       If you can reach csv-server.tzv.fal.de without any problems try to
+       connect directly to the cvs port 2401:
+          #> telnet cvs-server.tzv.fal.de 2401
+          Trying 192.108.34.41...
+          telnet: connect to address 192.108.34.41: Connection refused
+          telnet: Unable to connect to remote host: Connection refused  
+
+       Result:
+       Port 2401 is blocked, usually by a firewall. As our firewall has
+       opened this port you better ask your security guys.
+
+       When you can connect to port 2401 it should look like this:
+          #> telnet cvs-server.tzv.fal.de 2401
+          Trying 192.108.34.41...
+          Connected to forssa.tzv.fal.de (192.108.34.41).
+          Escape character is '^]'.
+          type some text
+          cvs [pserver aborted]: bad auth protocol start: type some text
+       The cvs-server (pserver) answered, but could not recognize your
+       typed text (unless you are able to talk cvs. Then you can start an
+       interesting conversation :^).
+

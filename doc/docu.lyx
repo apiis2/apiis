@@ -1,0 +1,7633 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\begin_preamble
+\tolerance=5000
+\usepackage{rotating}
+\usepackage{longtable}
+\usepackage{lscape}
+\end_preamble
+\language english
+\inputencoding default
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 5
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Pig Information System
+\newline 
+Documentation
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Design Goals
+\begin_inset LatexCommand \index{Design Goals}
+
+\end_inset 
+
+
+\layout Standard
+
+It is the intent of the project outlined here to produce a generic pig informati
+on system (P.I.S) that is adoptable to any pig breeding program covering the
+ all data collection areas from central to peripheral on-farm systems including
+ any intermediate organizational locations like test stations and Artificial
+ Insemination (AI) institutions.
+ It is recognized that the transfer to a new Pig Breeding Organization cannot
+ be done 
+\series bold 
+without
+\series default 
+ programming expertise.
+ To this effect the following features are required:
+\layout Itemize
+
+adaptable to any pig production system (programming expertise is still a
+ prerequisite) using any SQL-92 database engine
+\layout Itemize
+
+use the same software at the center and elsewhere (farm, regional office,
+ test stations)
+\layout Itemize
+
+ability to create full fledge system at no software costs (pure public domain
+ version possible)
+\layout Itemize
+
+ability to run on consumer electronic hardware (Intel platform) and on high
+ performance (high cost) hardware
+\layout Itemize
+
+a normalized database structure
+\layout Itemize
+
+a standard set of business rules
+\layout Itemize
+
+an efficient modification procedure of database structure and business rules
+\layout Itemize
+
+automatic creation of the business rule set
+\layout Itemize
+
+internationalization of texts in the system
+\layout Itemize
+
+documentation to perform the adaptation process
+\layout Subsection
+
+The Numbering System
+\begin_inset LatexCommand \index{Numbering System}
+
+\end_inset 
+
+
+\layout Standard
+
+Experience has shown that the numbering system of the animals is of crucial
+ importance in any database used in animal breeding.
+ One solution to this problem is the use of life time numbers as used in
+ the Federal Hybrid Crossbreeding Scheme in Germany since the late 1970s
+ 
+\begin_inset LatexCommand \cite{groeneveld:85a}
+
+\end_inset 
+
+.
+ While this system certainly alleviates the problems arising from the dual
+ numbering system commonly used in pigs it introduces other problems because
+ of the completely different organizational requirements.
+ Thus, a transfer of a traditional to a life time numbering system is prohibitiv
+ely complex if not impossible for traditional breeding programs.
+ Therefore, lifetime numbers are no solution in the context of an adaptable
+ P.I.S .
+\layout Standard
+
+Apart from lifetime numbering, concatenation of structural information like
+ herd/year/sow number have been used to create a unique animal identification.
+ However, the resulting system is not very appealing as the animal identificatio
+n is based on information used elsewhere which invariably leads to data
+ inconsistencies.
+\layout Standard
+
+The procedure that we have chosen here relies on the fact that animals will
+ always be uniquely identified from within the unit which reports measurement
+ data, i.e.
+ sows have most likely a unique number within a herd at a given time.
+ Thus, data to the database proper will be entered through an ENTRY table
+ which translates the current local identification into a unique number
+ in the database (DB_ID) using only this identification throughout it.
+ Upon insertion of a new animal in the database the last used DB_ID is increment
+ed by one and the resulting DB_ID used throughout the database for all current
+ and future references made to that particular animal, no matter what its
+ local ID may be.
+ As an example in herd 23 we have an animal with the (there) unique identificati
+on 133/21 (table 
+\begin_inset LatexCommand \ref{tab: entry1}
+
+\end_inset 
+
+).
+ Whenever data is accessed for this animal the number 129912112 will be
+ used throughout the database.
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{tab: entry1}
+
+\end_inset 
+
+ Translation of external animal identification
+\layout LaTeX
+
+~
+\backslash 
+
+\layout Standard
+\align center 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="4" columns="4">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+local ID
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+farm
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+status
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DB_ID
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+133/21
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+23
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+A
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+129912112
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+33
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+A
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+129912113
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+..
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+..
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+.
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+...
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\end_inset 
+
+
+\layout Standard
+
+With this procedure, re-numbering can be handled efficiently.
+ Let us assume that this animal gets selected and - following standard practice
+ in pig production - gets a new sow identification.
+ Then, the selection decision has to be reported with the update reflected
+ in table 
+\begin_inset LatexCommand \ref{tab: entry2}
+
+\end_inset 
+
+.
+ 
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{tab: entry2}
+
+\end_inset 
+
+Translation after new external number
+\layout LaTeX
+
+~
+\backslash 
+
+\layout Standard
+\align center 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="5" columns="4">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+local ID
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+farm
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+status
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DB_ID
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+133/21
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+23
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+H
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+129912112
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+33
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+A
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+129912113
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+1224
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+23
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+A
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+129912112
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+..
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+..
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+.
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+...
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\end_inset 
+
+After this update only data to the local ID 1224 will be accepted, while
+ entries to 133/21 will be rejected because its status has been set to historic.
+ Clearly, within the rest of the database all accesses will be using the
+ same number 129912112.
+ Actually, the user will never have to see this internal unique database
+ number because it will always be translated back to the local ID once informati
+on leaves the database.
+ Note that this procedure also handles life time numbers which are being
+ used in some breeding programs.
+\layout Standard
+
+Clearly, this numbering scheme is a prerequisite to creating a generic database
+ which can be used in variety of pig breeding programs.
+\layout Subsection
+
+The Database System
+\layout Standard
+
+A fully relational database engine will be used at the core.
+ No further requirements will be made beyond the the SQL
+\begin_inset LatexCommand \index{SQL}
+
+\end_inset 
+
+-92 industry standard.
+ The design will be such that the database engine can be replaced from one
+ installation to the next.
+ This allows public domain software like PostgreSQL
+\begin_inset LatexCommand \index{PostgreSQL}
+
+\end_inset 
+
+ to be used along with commercial engines like ORACLE
+\begin_inset LatexCommand \index{ORACLE}
+
+\end_inset 
+
+ or SYBASE
+\begin_inset LatexCommand \index{SYBASE}
+
+\end_inset 
+
+ which some central systems may prefer to use on the basis of support, reliabili
+ty or any other reason.
+\layout Subsection
+
+On-Farm
+\begin_inset LatexCommand \index{On-Farm}
+
+\end_inset 
+
+ and Central System
+\layout Standard
+
+With the availability of public domain relational database systems like
+ PostgreSQL, 
+\emph on 
+identical
+\emph toggle 
+ software can be run at the center of a pig breeding program and on the
+ farms.
+ This greatly reduces software development and maintenance costs.
+ Also by choosing the Linux operating system even all software around the
+ database can be kept identical.
+ Consumer electronic hardware will be sufficient to support the on-farm
+ system while - depending on the computing power required at the center
+ - fast multiprocessor hardware can run the central system.
+\layout Subsection
+
+Web
+\begin_inset LatexCommand \index{Web}
+
+\end_inset 
+
+ Connectivity
+\layout Standard
+
+Dissemination of results are very important in pig breeding programs.
+ Thus, Web connectivity is of great importance.
+ Seemless web integration is available for the software  components mentioned
+ before.
+\layout Section
+
+The Development
+\begin_inset LatexCommand \index{Development PLATFORM}
+
+\end_inset 
+
+ Platform
+\layout Standard
+
+The development should use identical development platforms because this
+ makes live much easier as we need to communicate via the internet working
+ on a joint project.
+ Many problems can simply be avoided by using the following:
+\layout Itemize
+
+LINUX
+\begin_inset LatexCommand \index{LINUX}
+
+\end_inset 
+
+ (RedHat5.2)
+\layout Itemize
+
+CVS
+\begin_inset LatexCommand \index{CVS}
+
+\end_inset 
+
+
+\layout Itemize
+
+PERL 5
+\begin_inset LatexCommand \index{PERL5}
+
+\end_inset 
+
+
+\layout Itemize
+
+PostgreSQL
+\begin_inset LatexCommand \index{PostgreSQL}
+
+\end_inset 
+
+6.2.4
+\layout Standard
+
+After installing Redhat5.2 only PostgreSQL needs to be installed.
+ We use the rpm
+\begin_inset LatexCommand \index{rpm}
+
+\end_inset 
+
+, thus installation is done within 10 minutes.
+\layout Subsection
+
+Source Code Development
+\layout Standard
+
+The development of the the complete system will be a joint effort of the
+ development team.
+ Thus, individuals will take on responsibility to develop well defined portions
+ of the code and make this available to the project as a whole.
+ Thus, we shall a distributed development and a central software repository
+\begin_inset LatexCommand \index{repository}
+
+\end_inset 
+
+ of data and software and documentation.
+ The repository is located at the Institute of Animal Science and Animal
+ Behavior, in Mariensee.
+ 
+\layout Standard
+
+One dataset of a real life pig breeding organization will be used as the
+ reference throughout the project.
+ 
+\layout Subsection
+
+The Source Code
+\layout Standard
+
+Source code for the project falls into two parts:
+\layout Enumerate
+
+structure independent code
+\layout Enumerate
+
+code that is not independent of the current data structure
+\layout Standard
+
+Clearly, the structure independent code can be used as is in each project,
+ while the second class has to be adapted to the current database structure.
+ The former includes methods and subroutines, while reports and any software
+ that refers to specific data items falls into the latter class.
+ 
+\layout Subsection
+
+The CVS Tree
+\layout Standard
+
+Each developer will have the CVS tree installed (figure 
+\begin_inset LatexCommand \ref{cvsstructure}
+
+\end_inset 
+
+).
+\layout Standard
+
+
+\begin_inset Float figure
+placement htbp
+collapsed true
+
+\layout LyX-Code
+
+
+\size footnotesize 
+
+\begin_inset LatexCommand \label{cvsstructure}
+
+\end_inset 
+
+
+\size scriptsize 
+/home2/eg/database/pis/apiis
+\layout LyX-Code
+
+
+\size footnotesize 
+`-----bin
+\layout LyX-Code
+
+
+\size footnotesize 
+`-----doc
+\layout LyX-Code
+
+
+\size footnotesize 
+`-----lib
+\layout LyX-Code
+
+
+\size footnotesize 
+`-----model
+\layout LyX-Code
+
+
+\size footnotesize 
+`-----reference
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----bin
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----doc
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----initial
+\layout LyX-Code
+
+
+\size footnotesize 
+|       |       `-----create_db
+\layout LyX-Code
+
+
+\size footnotesize 
+|       |       `-----data_files
+\layout LyX-Code
+
+
+\size footnotesize 
+|       |       `-----load
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----lib
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----model
+\layout LyX-Code
+
+
+\size footnotesize 
+|       `-----reports
+\layout LyX-Code
+
+
+\size scriptsize 
+                
+\size footnotesize 
+ 
+\end_inset 
+
+ 
+\layout Subsubsection
+
+A development cycle
+\layout Standard
+
+The development cycle of a piece of software starts with one partner.
+ Development will always been done in the local space of a user and in the
+ context of a database (users will tend to have different database because
+ they will develop their own national programs).
+ Once the user is satisfied and considers the code to be in good enough
+ shape for sharing with the other developers, she/he will go through the
+ following process:
+\layout Enumerate
+
+write documentation (no uploading without documentation)
+\layout Enumerate
+
+adapt code to the reference database and test
+\layout Enumerate
+
+upload the code and documentation via 
+\begin_inset Quotes eld
+\end_inset 
+
+cvs commit
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Enumerate
+
+all other developers will get automatically notified by mail of the new
+ code
+\layout Enumerate
+
+(some) developers will update their own CVS tree by 
+\begin_inset Quotes eld
+\end_inset 
+
+cvs update
+\begin_inset Quotes erd
+\end_inset 
+
+ thereby receiving the new documentation and code
+\layout Enumerate
+
+they will try to run it against the reference database (which short work
+ right out of the box)
+\layout Enumerate
+
+they will adapt the new code to their own data structure
+\layout Enumerate
+
+in case of problems they will notify the original developer
+\layout Enumerate
+
+the original developer (or the tester) will amend the code on the reference
+ database and commit it.
+ This will start a new round of testing beginning with 4.)
+\layout Enumerate
+
+this process will continue until everyone is satisfied.
+\layout LyX-Code
+
+
+\size footnotesize 
+                                  
+\layout Section
+
+The layers of the system: A Modular System Design
+\layout Standard
+
+The information system will be broken down into modules that can be handled
+ as independent units (
+\begin_inset LatexCommand \ref{fig: layer}
+
+\end_inset 
+
+).
+ For instance, the database engine can be replaced with changing the rest
+ of the system.
+ Likewise, the GUI data entry programs can be written in a number languages
+ without affecting the business rule enforcement.
+\layout Standard
+
+\layout Standard
+
+The system is comprised of the following independent layers:
+\layout Standard
+
+\begin_float fig 
+\layout Caption
+
+Software Layers of the Information System
+\layout Standard
+\align center 
+
+\begin_inset Figure size 357 300
+file layers.eps
+flags 9
+
+\end_inset 
+
+
+\end_float 
+\layout Enumerate
+
+the data repository (RDBMS or csv) accessed by SQL-92
+\layout Enumerate
+
+the model file
+\begin_deeper 
+\layout Enumerate
+
+normalized data structure
+\layout Enumerate
+
+business rules
+\end_deeper 
+\layout Enumerate
+
+the applications
+\begin_deeper 
+\layout Enumerate
+
+loading of data
+\begin_deeper 
+\layout Enumerate
+
+batch
+\layout Enumerate
+
+interactive
+\end_deeper 
+\layout Enumerate
+
+error handling
+\layout Enumerate
+
+outputs with components
+\begin_deeper 
+\layout Enumerate
+
+query and report generator
+\begin_deeper 
+\layout Enumerate
+
+text output
+\layout Enumerate
+
+graphical output
+\end_deeper 
+\end_deeper 
+\end_deeper 
+\layout Subsection
+
+The normalized
+\begin_inset LatexCommand \index{normalized}
+
+\end_inset 
+
+ database structure
+\layout Standard
+
+A sample database structure is available derived from the pig breeding program
+ of Saxony
+\begin_inset LatexCommand \index{Saxony}
+
+\end_inset 
+
+.
+ Table and item names are in English which is also the language of the developme
+nt team
+\begin_inset LatexCommand \index{team}
+
+\end_inset 
+
+.
+\layout Subsubsection
+
+The Structure of Table ENTRY
+\begin_inset LatexCommand \index{ENTRY}
+
+\end_inset 
+
+ and TRANSFER
+\begin_inset LatexCommand \index{TRANSFER}
+
+\end_inset 
+
+
+\layout Standard
+
+Data enter the database always through the table ENTRY.
+ This is in effect a table which translates an external ID into the internal
+ database id that is use throughout the database.
+ The requirement for the external number is:
+\layout Itemize
+
+it has to be unique at the time of reporting from the reporting unit
+\layout Standard
+
+In entry, ext_id||unit is the primary key and therefore prevents duplicate
+ values to be entered.
+\layout Standard
+
+
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+In the previous setup ENTRY and TRANSFER wer in one table.
+ Here, no unique key could be defined, as only the combination of EXT_ID,
+ UNIT and STATUS=A was unique.
+ This cannot be done in the SQL context.
+ Furthermore, creating ENTRY as EXT_ID|UNIT, DB_ID makes a slender translation
+ table with little overhead.
+ Then TRANSFER can hold all the (historic) transfer information and additional
+ items that some programs may require.
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+drop table entry;
+\layout LyX-Code
+
+
+\size footnotesize 
+create table entry (
+\layout LyX-Code
+
+
+\size footnotesize 
+   ext_id text,  -- external identification of the animal
+\layout LyX-Code
+
+
+\size footnotesize 
+   db_id int,    -- database-id
+\layout LyX-Code
+
+
+\size footnotesize 
+   unit int      -- reporting unit
+\layout LyX-Code
+
+
+\size footnotesize 
+   );
+\layout LyX-Code
+
+
+\size footnotesize 
+ 
+\layout LyX-Code
+
+
+\size footnotesize 
+drop table transfer;
+\layout LyX-Code
+
+
+\size footnotesize 
+create table transfer (
+\layout LyX-Code
+
+
+\size footnotesize 
+   ext_id text,    -- external identification of the animal
+\layout LyX-Code
+
+
+\size footnotesize 
+   db_id int,      -- database-id
+\layout LyX-Code
+
+
+\size footnotesize 
+   status text,    -- status of the animal
+\layout LyX-Code
+
+
+\size footnotesize 
+   action text,    -- transaction
+\layout LyX-Code
+
+
+\size footnotesize 
+   entry_dt date,  -- starting date for current action
+\layout LyX-Code
+
+
+\size footnotesize 
+   exit_dt date,   -- ending date for current action
+\layout LyX-Code
+
+
+\size footnotesize 
+   unit int        -- reporting unit
+\layout LyX-Code
+
+
+\size footnotesize 
+   );
+\layout Standard
+
+Note that UNIT refers to the reporting unit only, it does not hold the owner
+ )which may be the same but does not have to be).
+ UNIT is the organizational entity which is responsible for the EXT_ID to
+ be unique within its area at a given time.
+ This is usually the reporting unit but not always.
+ Field test and AI station may serve as an example.
+ If farms report field test results they i.e.
+ the farm will be the unit which ensures that the number used is unique
+ within the farm and only within the farm.
+ Contrary, an AI station needs to ensure that the ID of its boars are unique
+ within the scheme.
+ Here the farms will report the service records but will have to use the
+ ID given in the responsibility of the AI station.
+\layout Standard
+
+A status of 'A' means that a data channel is open for the corresponding
+ EXT_ID.
+ Thus, EXIT_DT, when set, closes the data channel.
+ Note, that EXIT_DT may and often will not be the same as CULLING_DT.
+ If a boar gets slaughtered its culling date will be set but the data channel
+ will still have to be open for future data flow which result from insemination.
+ Only if no semen is available the data channel can be closed (after a further
+ grace period).
+\layout Standard
+
+A data channel can be closed in various ways:
+\layout Itemize
+
+close at the request of the UNIT
+\layout Itemize
+
+close on the basis of culling report
+\layout Itemize
+
+close on the basis of now reports having come in for some time.
+\layout Standard
+
+If data comes in after the channel has been closed it is usually easy to
+ open it again (this is only then not possible when the same EXT_ID has
+ already been used again at the reporting UNIT).
+\layout Standard
+
+Notice that ENTRY will be a rather short list with the number o entries
+ close to the size of the active animal population.
+\layout Standard
+
+A slightly different view fo ENTRY is that it is completely derived from
+ transfer.
+ It can be viewed as an index on EXT_ID||UNIT||STATUS=
+\begin_inset Quotes erd
+\end_inset 
+
+A
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This can also lead to a sensible way of implementing: whenever a record
+ TRANSFER is modified/inserted the corresponding 
+\begin_inset Quotes eld
+\end_inset 
+
+index
+\begin_inset Quotes erd
+\end_inset 
+
+ has to be recreated.
+ This could forinstance be done by a postinsert trigger on transfer.
+\layout Subsection
+
+The Model file
+\begin_inset LatexCommand \index{model file}
+
+\end_inset 
+
+
+\layout Standard
+
+The model file is of crucial and central importance in the system.
+ It is the central and sole repository that specifies information on
+\layout Itemize
+
+the database name
+\layout Itemize
+
+its user
+\layout Itemize
+
+the host where the database resides
+\layout Itemize
+
+the SQL database engine in use (PostgreSQL, ORACLE, Sybase, Informix, CSV..)
+\layout Itemize
+
+each table 
+\layout Itemize
+
+each item in the table
+\layout Itemize
+
+the complete set of business rule specified on the basis of each item within
+ tables
+\layout Standard
+
+The model file is actually a piece of PERL
+\begin_inset LatexCommand \index{PERL}
+
+\end_inset 
+
+ code which is loaded each time the database is accessed.
+ In this way business rules
+\begin_inset LatexCommand \index{business rules}
+
+\end_inset 
+
+ are enforced by the Perl layer before the database engine takes over the
+ update.
+\layout Subsection
+
+The business rules
+\layout Standard
+
+As already mentioned all business rules are implemented as methods in the
+ object oriented sense in PERL.
+ These are:
+\layout Enumerate
+
+NotNull
+\begin_inset LatexCommand \index{business rules!NotNull}
+
+\end_inset 
+
+
+\layout Enumerate
+
+IsANumber
+\begin_inset LatexCommand \index{business rules!IsANumber}
+
+\end_inset 
+
+
+\layout Enumerate
+
+NoNumber
+\begin_inset LatexCommand \index{business rules!NoNumber}
+
+\end_inset 
+
+
+\layout Enumerate
+
+ForeignKey
+\begin_inset LatexCommand \index{business rules!ForeignKey}
+
+\end_inset 
+
+
+\layout Enumerate
+
+Range
+\begin_inset LatexCommand \index{business rules!Range}
+
+\end_inset 
+
+
+\layout Enumerate
+
+List
+\begin_inset LatexCommand \index{business rules!List}
+
+\end_inset 
+
+
+\layout Enumerate
+
+PrimaryKey
+\begin_inset LatexCommand \index{business rules!PrimaryKey}
+
+\end_inset 
+
+
+\layout Enumerate
+
+IsAFloat
+\begin_inset LatexCommand \index{business rules!IsAFloat}
+
+\end_inset 
+
+
+\layout Enumerate
+
+LastAction: for LA any number of independent sequences of events can be
+ defined and identified by a sequence name.
+ The table SEQUENCES indicates the table and field names affiliated with
+ the sequence name.
+ Then this table/col is used for checking.
+ Thus, for cows we may have a sequence LA_rep_seq and LA_milkrecording_seq,
+ both residing in ANIMAL.
+ Another sequence may be kept for breeders in the address table.
+ The calling sequence for LA will then be: LastAction LA_seq_name LA lower_limit
+ upper_limit.
+\layout Standard
+
+The following are auxillary routines
+\layout Enumerate
+
+GetNextDB_ID
+\begin_inset LatexCommand \index{subroutines!GetNextDB\_ID}
+
+\end_inset 
+
+
+\layout Enumerate
+
+GetMyDB_ID
+\begin_inset LatexCommand \index{subroutines!GetMyDB\_ID}
+
+\end_inset 
+
+
+\layout Standard
+
+So far, we have been able to reduce all business rules to only 8 methods.
+ They are:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="9" columns="3">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="left" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="left" valignment="top" leftline="true" rightline="false" width="55mm" special="">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="36mm" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="left" valignment="top" topline="true" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+method
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="true" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+description
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+example
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+Range
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+value has to be within given range
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+Range 10 33
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+List
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+only values allowed are those from list
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+List LR LW PI DU
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+NotNull
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+has to have a value
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+NotNull
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+Unique
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+the value is a unique key in the current table
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="left" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+Unique
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+ForeignKey
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+value has to have an entry in table ANIMAL using column DB_ID
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+ForeignKey ANIMAL DB_ID
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+LastAction
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+depending on the last action the allowed range.
+ If last action was selection the range is 20 100, if it was AI the range
+ is 18 30
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+LastAction SEL 30 100 AI 18 30 LITTER 10 34
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DateDiff
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+the difference between the content of farrowing date and current columns
+ of the current record must be with the given range
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+DateDiff farrow_dt 20 56
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+RangeF
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+value of function with range
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="false" bottomline="true" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size tiny 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+
+\begin_inset Quotes eld
+\end_inset 
+
+RangeF w_wt/n_born .2 .9
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout LaTeX
+
+\layout Subsection
+
+The CODES table
+\layout Standard
+
+There are many foreign keys which represent codes like m and f for male
+ and female or DL for Deutsche Landrasse.
+ Instead of storing them in different tables they are grouped together in
+ a table CODES.
+ 
+\layout Subsection
+
+Structure
+\layout Standard
+
+The codes table has the following structure:
+\layout LyX-Code
+
+cat         text  # like 
+\begin_inset Quotes eld
+\end_inset 
+
+breeds
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+ext_code    text  # external code (like 1 for DL)
+\layout LyX-Code
+
+code_id     int4  # sequence used throughout the DB
+\layout LyX-Code
+
+shortname   text  # like DL
+\layout LyX-Code
+
+longname    text  # like Deutsche Landrasse
+\layout LyX-Code
+
+desc        text  # explaining this code
+\layout LyX-Code
+
+entry_dt    date  # start of usage
+\layout LyX-Code
+
+exit_dt     date  # end of usage
+\layout LyX-Code
+
+status      text  # A(ctive) or H(istoric)
+\layout Standard
+
+The unique key is category||code for status='A'.
+ If a new code is to be used in a category a new record is inserted into
+ CODES.
+ Note that the external code that reaches the database is the column 'code'.
+ This setup allows for changing meaning of external codes.
+ This may happen when for instance scores for exterieur are changed from
+ 1--3 to 1--5.
+ If this happens all 3 codes for category EXTERIEUR are set to historic
+ ('H').
+ Then, 5 new codes are inserted into CODES with the new meaning at that
+ time when the new external codes are being used.
+ In this way, the exact meaning of a code in the database (like in ANIMAL)
+ is documented with meaning and dates.
+\layout Standard
+
+For operational purposes we may need a table CODES_ENTRY with:
+\layout LyX-Code
+
+category text  # like 
+\begin_inset Quotes eld
+\end_inset 
+
+breeds
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+code     text  # external code (like 1 for DL)
+\layout LyX-Code
+
+code_id  int4  # internal code used in DB
+\layout Standard
+
+This is defined as a conditional index on category||code for the active
+ ('A') records in CODES.
+\layout Subsubsection
+
+CODES DB Objects
+\layout Standard
+
+The following DB Objects access the CODES table:
+\layout Enumerate
+
+open_ext_code (CAT, EXT_CODE,SHORTNAME, LONGNAME, DESC) with the following
+ action:
+\begin_deeper 
+\layout Enumerate
+
+insert into CODES $CAT, $EXT_CODE, STATUS='A', ENTRY_DT=$TODAY, CODE=SEQUENCE
+\end_deeper 
+\layout Enumerate
+
+close_ext_code (CAT, EXT_CODE) with the following action: 
+\begin_deeper 
+\layout Enumerate
+
+update STATUS='H' where CAT=$CAT and EXT_CODE=$EXT_CODE
+\end_deeper 
+\layout Subsection
+
+Layering
+\begin_inset LatexCommand \index{business rules!Layering}
+
+\end_inset 
+
+ of Business Rules
+\layout Standard
+
+Depending on the class of animals loaded different business rules may apply.
+ As an example, cross bred animals may also be recorded however with less
+ stringent rules.
+ Perhaps their sires are not required to be known.
+ Another example are production populations as opposed to the nucleus population.
+ As a general rule, the majority of rules will be identical, while differences
+ will only occur in some of them.
+ To accommodate these situations the following steps are taken:
+\layout Itemize
+
+identify the number of different population groups that have different set
+ of rules.
+ Animals within each group follow the same set of rules.
+ There will be a relatively small number of such different groups.
+\layout Itemize
+
+identify the differences in rules.
+ Each group has a set of business rules which can be viewed as a profile.
+ Thus, for each group of animals there will be one profile.
+\layout Itemize
+
+specify the business rules in the model file as given above.
+ This specifies the first profile (profile 1).
+ For each additional profile
+\begin_inset LatexCommand \index{profile}
+
+\end_inset 
+
+ enter another CHECK like 
+\layout LyX-Code
+
+CHECK       => ['List DL DE'],
+\layout LyX-Code
+
+CHECK2      => ['List XX XXX'],
+\layout Itemize
+
+the profile is being chosen in the loading programs.
+\layout Subsection
+
+An alternative to layering
+\layout Standard
+
+It seems that a number of checks need to be done that cannot be handled
+ by layering.
+ These are for instance different ranges at different stages during the
+ lactation.
+ Other instances are different breeds (which could be viewed as layers).
+ All of these checks have in common that we may want to fire a range check
+ that depends on current data that may be part of the record at hand.
+ The values for those ranges and perhaps also list can be numerous and are,
+ thus, difficult to note as part of the model file.
+ Here, an alternative may be a database table that contains ranges and lists
+ for a defined key.
+ As an alternative, functional relationships can be checked against two
+ functions which serve as lower and upper limits.
+\layout Standard
+
+Assume test day records:
+\layout LyX-Code
+
+test_day
+\layout LyX-Code
+
+   db_id int
+\layout LyX-Code
+
+   mkg   float, check{Range_Lact_curve tday-la_lact_dt}
+\layout LyX-Code
+
+   tday  float
+\layout Standard
+
+Here, Range_Lact_Curve is a logical function which takes mkg, tday, and
+ la_lact_dt as parameters and returns a logical TRUE or FALSE.
+ TDAY is the column from the current record, an alternative notation would
+ be: test_day.tday.
+ LA_LACT_DT is the date column from the last action sequence LA_LACT which
+ holds the last calving date of the cow in question.
+ This would be a function which is hardcoded in that it assumes that in
+ ANIMAL for animal DB_ID the last action date exists.
+ Pseudo code for the logical function RANGE_LACT_CURVE would be:
+\layout LyX-Code
+
+logical function Rang_Lact_Curve (days_in_milk, mkg)
+\layout LyX-Code
+
+   dim = days_in_milk
+\layout LyX-Code
+
+   lower_limit = bll1*dim + exp(bll2*dim)
+\layout LyX-Code
+
+   upper_limit = bul1*dim + exp(bul2*dim)
+\layout LyX-Code
+
+   Range_Lact_Curve = .true.
+\layout LyX-Code
+
+   if (mkg>upper_limit .or.
+ mkg<lower_limit) then
+\layout LyX-Code
+
+      Range_Lact_Curve = .false.
+\layout LyX-Code
+
+   else
+\layout LyX-Code
+
+      Range_Lact_Curve = .true.
+\layout LyX-Code
+
+   endif
+\layout LyX-Code
+
+end Range_Lact_Curve
+\layout Standard
+
+Notice that the general structure of the CHECK string is (as has been defined
+ before):
+\layout LyX-Code
+
+CHECK{logical_function par1 par2 ..
+ parn}
+\layout Standard
+
+For content defined rules one other check will be:
+\layout LyX-Code
+
+FIELD
+\layout LyX-Code
+
+  DB_ID  INT
+\layout LyX-Code
+
+  BF     FLOAT, CHECK{RangeKey BREED}
+\layout Standard
+
+or
+\layout LyX-Code
+
+  BF     FLOAT, CHECK{RangeKey FIELD.BREED}
+\layout Standard
+
+or
+\layout LyX-Code
+
+  BF     FLOAT, CHECK{RangeKey ANIMAL.BREED ANIMAL.SEX}
+\layout Standard
+
+The function RangeKey will access table KEY_RANGE.
+ It has the following hardwired components:
+\layout Enumerate
+
+It assumes range table KEY_RANGE
+\layout Enumerate
+
+uses table ANIMAL for columns specified in the parameter list unless the
+ table name is specified.
+\layout Enumerate
+
+uses from current record the value of DB_ID to access DB_ID with same value
+ in ANIMAL.
+\layout Enumerate
+
+reads the content for the columns specified in the given table.
+\layout Enumerate
+
+builds a concatenation from the columns
+\layout Enumerate
+
+accesses the table KEY_RANGE with the composite key which has to be unique
+\layout Enumerate
+
+retrieves the values, min, max, warn_min and warn_max
+\layout Enumerate
+
+returns FALSE if BF 
+\layout LyX-Code
+
+\layout Section
+
+Initial Loading of Data
+\layout Standard
+
+The initial loading
+\begin_inset LatexCommand \index{initial loading}
+
+\end_inset 
+
+ of data is described on the basis of the Saxony dataset.
+ The main problem is to link records with MNR/NR to those that have HB_NR.
+ Because initial loading has to deal with data accumulated over time no
+ time dependent business rules can be enforced.
+ This means that during this phase the business rule
+\begin_inset LatexCommand \index{business rules}
+
+\end_inset 
+
+ enforcement system will be switched off.
+ However, this means that after this phase the freshly loaded system has
+ to be verified extensively to match the accuracy requirements stated in
+ the model file.
+\layout Subsection
+
+Treatment of Initial Datasets
+\layout Standard
+
+Here it is assumed that the initial datasets are available in the form of
+ flat ASCII files.
+ These files constitute the complete historic data that are intended to
+ be loaded into the central database.
+ Furthermore, this implies that never more historic data is to be included.
+ Thus, there will be only one initial step to load historic data.
+ After this process has been carried out their newly established database
+ will be the sole repository of the the programs data.
+ New data will afterwards be entered into the database via the time dependent
+ stream entry using the model file.
+\layout Standard
+
+To make the initial loading of data easier, it has proven useful to first
+ load a direct copy of the historic ASCII data files into corresponding
+ tables into the database.
+ This means that each data file is loaded as a direct copy into a corresponding
+ table.
+ Thus, the following tables will be created:
+\layout Enumerate
+
+raw_herdbook.txt
+\hfill 
+ raw_herdbook
+\begin_inset LatexCommand \index{raw\_herdbook}
+
+\end_inset 
+
+
+\layout Enumerate
+
+raw_field.txt 
+\hfill 
+raw_field
+\begin_inset LatexCommand \index{raw\_field}
+
+\end_inset 
+
+
+\layout Enumerate
+
+raw_station.txt
+\hfill 
+raw_station
+\begin_inset LatexCommand \index{raw\_station}
+
+\end_inset 
+
+
+\layout Enumerate
+
+raw_litter.txt 
+\hfill 
+raw_litter
+\begin_inset LatexCommand \index{raw\_litter}
+
+\end_inset 
+
+
+\layout Enumerate
+
+raw_addresses.tx
+\hfill 
+ raw_addresses
+\layout Standard
+
+The steps are:
+\layout Itemize
+
+write create tables ddl statements for raw_herdbook, raw_field, raw_station,
+ raw_litter
+\layout Itemize
+
+load into database using copy
+\layout Subsection
+
+load ASCII Data into the Database
+\layout Standard
+
+As an initial step ASCII data is loaded into the corresponding raw_ tables
+ using the copy command in psql (see apiis/reference/initial/load/rawdata.load)
+\layout Subsection
+
+Initializing the Database
+\layout Standard
+
+As a first step, the database needs to get initialized in regard to the
+ foreign keys.
+ Here, the table CODES takes a prominent position.
+ 
+\layout Subsubsection
+
+Setting up table CODES
+\layout Standard
+
+This table holds for each category all the external codes allowed, e.g.
+ category SEX may be M, F, C for male, female and castrate.
+ Table CODES would translate SEX/F into an internal code used throughout
+ the database.
+\layout Standard
+
+In historic data often many different codes are used for the same object.
+ For instance for male animals we may find M, m and 1.
+ These would have to be translated into one interal code number.
+ A general procedure for loading CODES would follow these steps:
+\layout Enumerate
+
+count the number of raw tables (
+\begin_inset Formula \( n_{tables} \)
+\end_inset 
+
+)
+\layout Enumerate
+
+for each table determine the columns that hold a code and give each a category
+ name
+\layout Enumerate
+
+for each table:
+\begin_deeper 
+\layout Enumerate
+
+column 1 do a select (code),count(code) group by code
+\layout Enumerate
+
+column 2 do a select (code),count(code) group by code
+\end_deeper 
+\layout Enumerate
+
+this will result in a table like this:
+\newline 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="10" columns="7">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<column alignment="center" valignment="top" leftline="false" rightline="true" width="" special="">
+<column alignment="center" valignment="top" leftline="false" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+RAW table
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+column
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+content
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+n
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+Target Code
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+shortname
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+longname
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+231
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+01
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+m
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2121
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+f
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+01
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2123
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+ok
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+216
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+99
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3221
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Enumerate
+
+write this table to a file
+\layout Enumerate
+
+manually, determine the target external code to be used in the system (this
+ will be done with your favorite editor.
+ The table will then look like this:
+\newline 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="10" columns="5">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+RAW table
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+column
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+content
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+n
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+Target Code
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+231
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+M
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+01
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+M
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+m
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2121
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+M
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+herdbook
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+sex
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+f
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3212
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+F
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+01
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2123
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+ok
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+216
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+litter
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+anomaly
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+99
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3221
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+9
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Enumerate
+
+write a program that 
+\begin_deeper 
+\layout Enumerate
+
+reads in the above table and populates CODES in the database with the values
+ from the Target Code column only.
+\layout Enumerate
+
+for each RAW table: go to each code column and replace the current code
+ with the Target Code.
+\end_deeper 
+\layout Standard
+
+After this, RAWDATA can be loaded under the control of the business rules
+ as all verified codes will be in table CODES.
+\layout Standard
+
+Two programs are available that do the above job.
+ They are: raw_codes.pl and raw_codes2.pl 
+\begin_inset LatexCommand \index{raw\_codes.pl}
+
+\end_inset 
+
+
+\begin_inset LatexCommand \index{raw\_codes2.pl}
+
+\end_inset 
+
+.
+ Follow the directions in the program, i.e.
+ determine the tables and the columns that contain codes.
+ Then run raw_codes.pl .
+ The output generated on a file needs then manual editing: you need to specify
+ the target group and target codes.
+ After having edited this file raw_codes2.pl will read the file and modify
+ the raw tables and populate you CODES table.
+\layout Subsection
+
+Population of the Target Database
+\layout Standard
+
+Prior to loading any data into the target
+\begin_inset LatexCommand \index{target}
+
+\end_inset 
+
+ structure the translation
+\begin_inset LatexCommand \index{translation}
+
+\end_inset 
+
+ table ENTRY
+\begin_inset LatexCommand \index{ENTRY}
+
+\end_inset 
+
+ will be populated.
+ This is done in two steps:
+\layout Enumerate
+
+load all herdbook numbers and create DB_IDs for them
+\layout Enumerate
+
+insert DAM/NOTCH entries with existing DB_ID for those animals already entered
+ in the previous step.
+\layout Enumerate
+
+load DAM/NOTCH numbers and create their DB_IDs
+\layout Standard
+
+This step will only affect table ENTRY and not touch any of the others.
+\layout Subsubsection
+
+Loading all herdbook numbers in ENTRY
+\layout Standard
+
+It is assumed that raw_herdbook 
+\begin_inset LatexCommand \index{raw\_herdbook}
+
+\end_inset 
+
+contains the herdbook numbers of all selected animals in the program.
+ These will be loaded first into ENTRY.
+ After this, we should have for each external herdbook number an internal
+ DB_ID
+\begin_inset LatexCommand \index{DB\_ID}
+
+\end_inset 
+
+.
+ No other external ID should occur in RAW_LITTER (which contains data on
+ selected animals only).
+\layout Standard
+
+All herdbook numbers have to be loaded in to entry.
+ This is done on the basis of the classical herdbook datasets (RAW_HERDBOOK)
+ which contains entries for all selected pure bred animals of the breeding
+ program/society.
+ From each record in RAW_HERDBOOK make the following three entries in ENTRY
+ linking the external ID and the new synthetic DB_ID (to be used throughout
+ the database):
+\layout LyX-Code
+
+\layout LyX-Code
+
+
+\size footnotesize 
+for each record in RAW_HERDBOOK
+\layout LyX-Code
+
+
+\size footnotesize 
+   do column (animal, sire, dam)
+\layout LyX-Code
+
+
+\size footnotesize 
+     EXT_ID =HB_ID (column)
+\layout LyX-Code
+
+
+\size footnotesize 
+     DB_ID = GetNextDBID
+\layout LyX-Code
+
+\layout LyX-Code
+
+
+\size footnotesize 
+        unit = owner
+\layout LyX-Code
+
+
+\size footnotesize 
+     else
+\layout LyX-Code
+
+
+\size footnotesize 
+        unit = NULL
+\layout LyX-Code
+
+
+\size footnotesize 
+     end if
+\layout LyX-Code
+
+\layout LyX-Code
+
+
+\size footnotesize 
+   end do
+\layout LyX-Code
+
+
+\size footnotesize 
+end for
+\layout Standard
+
+At this point we will have loaded all external IDs of all herdbook animals
+ and have created DB_IDs for them.
+ There may be herdbook numbers from other herdbooks that crop up in test
+ records as sires having been introduced via AI.
+ These will have to be loaded in L2: 
+\layout Itemize
+
+L2: (STATION)load HB_NR from animals NOT in the herdbook (like AI sires
+ from other societies)
+\layout Itemize
+
+\layout Itemize
+
+L4: from LITTER
+\layout Standard
+
+(What about sires in field test records that come from elsewhere?)
+\layout Subsubsection
+
+Loading all Dam/Notch numbers into ENTRY
+\layout Standard
+
+The selected animals have already been entered into ENTRY in the previous
+ step.
+ Thus, for their DAM/NOTCH numbers no new DB_IDs must be created.
+ Instead, the already allocated DB_IDs must be used.
+ These animals are identified by a selection notification:
+\layout Enumerate
+
+\begin_deeper 
+\layout LyX-Code
+
+
+\size footnotesize 
+! L5: selection notification
+\layout LyX-Code
+
+
+\size footnotesize 
+for each record in raw_herdbook
+\layout LyX-Code
+
+
+\size footnotesize 
+   create EXT_ID based on HB_NR(dam) and notch
+\layout LyX-Code
+
+
+\size footnotesize 
+   create HB_ID based on HB_NR (animal)
+\layout LyX-Code
+
+
+\size footnotesize 
+   locate HB_ID in ENTRY and get its DB_ID
+\layout LyX-Code
+
+
+\size footnotesize 
+   insert EXT_ID, DB_ID in ENTRY
+\layout LyX-Code
+
+
+\size footnotesize 
+end for
+\end_deeper 
+\layout Enumerate
+
+create DB_IDs for all animals not selected.
+ Relevant tables are RAW_STATION and RAW_FIELD.
+ For each record of each table do the following:
+\begin_deeper 
+\layout LyX-Code
+
+
+\size footnotesize 
+! L6: STATION data
+\layout LyX-Code
+
+
+\size footnotesize 
+for each record in RAW_STATION
+\layout LyX-Code
+
+
+\size footnotesize 
+   create EXT_ID from HB_NR(dam)/NOTCH
+\layout LyX-Code
+
+
+\size footnotesize 
+   UNIT = owner
+\layout LyX-Code
+
+
+\size footnotesize 
+   if EXT_ID does not exist in ENTRY then
+\layout LyX-Code
+
+
+\size footnotesize 
+      get new DB_ID
+\layout LyX-Code
+
+
+\size footnotesize 
+      insert EXT_ID, DB_ID in ENTRY 
+\layout LyX-Code
+
+
+\size footnotesize 
+   end if
+\layout LyX-Code
+
+
+\size footnotesize 
+end for
+\layout Standard
+
+The entries from RAW_FIELD are created similarly:
+\layout LyX-Code
+
+
+\size footnotesize 
+! L7: FIELD data
+\layout LyX-Code
+
+
+\size footnotesize 
+for each record in RAW_FIELD
+\layout LyX-Code
+
+
+\size footnotesize 
+   create EXT_ID from HB_NR(dam)/NOTCH
+\layout LyX-Code
+
+
+\size footnotesize 
+   UNIT = owner
+\layout LyX-Code
+
+
+\size footnotesize 
+   if EXT_ID does not exist in ENTRY then
+\layout LyX-Code
+
+
+\size footnotesize 
+      get new DB_ID
+\layout LyX-Code
+
+
+\size footnotesize 
+      insert EXT_ID, DB_ID in ENTRY 
+\layout LyX-Code
+
+
+\size footnotesize 
+   end if
+\layout LyX-Code
+
+
+\size footnotesize 
+end for
+\end_deeper 
+\layout Subsection
+
+Checking ENTRY
+\begin_inset LatexCommand \index{ENTRY}
+
+\end_inset 
+
+ for Consistency
+\begin_inset LatexCommand \index{Consistency}
+
+\end_inset 
+
+
+\layout Standard
+
+A Perl program is available for consistency checks on ENTRY.
+ It is located in references/reports/check_entry.pl.
+ It should run on each database (there is no need to have a different structure
+ for ENTRY) after ENTRY has been populated.
+ Particular focus should be on the duplicates in EXT_ID
+\begin_inset LatexCommand \index{ID}
+
+\end_inset 
+
+.
+ In general, the user should ask herself if the statistics generated are
+ acceptable.
+\layout Subsubsection
+
+populating data tables
+\layout Standard
+
+Now, all animals identifications in the historic raw dataset should have
+ an internal DB_ID in ENTRY.
+ Should this not be the case there must be an error somewhere.
+ We can now start populating the tables in the target database structure.
+\layout Paragraph
+
+ANIMAL Table
+\layout Paragraph
+
+STATION Table
+\layout Paragraph
+
+FIELD Table
+\layout Paragraph
+
+INSEMINATION Table
+\layout Paragraph
+
+LITTER Table
+\layout Enumerate
+
+load test station data (raw_station).
+ Those animals that got selected will already be in ENTRY with an existing
+ DB_ID.
+ The others have to be created with a new DB_ID.
+\layout Enumerate
+
+load field test data (raw_field).
+ The same applies here as outlined in the previous point.
+\layout Enumerate
+
+load reproduction (raw_litter): these records are identified by HB_NR and
+ should all have a DB_ID
+\begin_inset LatexCommand \index{DB\_ID}
+
+\end_inset 
+
+ already in ENTRY
+\begin_inset LatexCommand \index{ENTRY}
+
+\end_inset 
+
+.
+\layout Subsection
+
+Wrapping up Initial Loading
+\begin_inset LatexCommand \index{Initial Loading}
+
+\end_inset 
+
+
+\layout Standard
+
+After initial data have been loaded a number of housekeeping functions have
+ to be performed.
+\layout Subsection
+
+Creating Indices
+\layout Standard
+
+For speedy access a number of indices have to be created.
+ They should be defined in the model file and be created after initial data
+ has been loaded.
+ Bulk creation of indices is generally faster than creating them during
+ inserts.
+\layout Subsection
+
+Building Last Action
+\layout Standard
+
+This class of checks is more complicated as it requires the LAST_ACTION
+ column in the animal table to be filled.
+ The column can be generated by the following procedure:
+\layout LyX-Code
+
+
+\size footnotesize 
+read each record in ANIMAL
+\layout LyX-Code
+
+
+\size footnotesize 
+   if in FIELD then
+\layout LyX-Code
+
+  
+\size footnotesize 
+   if TEST_DT > LAST_ACTION_DT then
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION to 'FIELD_TEST'
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION_DT to TEST_DT
+\layout LyX-Code
+
+
+\size footnotesize 
+      endif
+\layout LyX-Code
+
+
+\size footnotesize 
+   endif   
+\layout LyX-Code
+
+
+\size footnotesize 
+   if in SERVICE then
+\layout LyX-Code
+
+
+\size footnotesize 
+      find last INSEMINATION_DT
+\layout LyX-Code
+
+
+\size footnotesize 
+      if INSEMINATION_DT > LAST_ACTION_DT then
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION to 'SERVICE'
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION_DT to INSEMINATION_DT
+\layout LyX-Code
+
+
+\size footnotesize 
+      end if
+\layout LyX-Code
+
+
+\size footnotesize 
+   endif   
+\layout LyX-Code
+
+
+\size footnotesize 
+   if in LITTER then
+\layout LyX-Code
+
+
+\size footnotesize 
+      find last FARR_DT
+\layout LyX-Code
+
+
+\size footnotesize 
+      if FARR_DT > LAST_ACTION_DT then
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION to 'LITTER'
+\layout LyX-Code
+
+
+\size footnotesize 
+         set LAST_ACTION_DT to FARR_DT
+\layout LyX-Code
+
+
+\size footnotesize 
+      end if
+\layout LyX-Code
+
+
+\size footnotesize 
+   endif
+\layout Subsection
+
+Verification
+\begin_inset LatexCommand \index{Verification}
+
+\end_inset 
+
+ of the initially loaded data
+\layout Standard
+
+Initial loading load all historic data in bulk and not as they were generated
+ over time.
+ This makes it impossible to have the records checked according to the set
+ of business rules as specified in the model file.
+ Thus, before using the newly loaded data an extensive checking procedure
+ has to be followed.
+\layout Subsubsection
+
+Checking Business Rules
+\layout Standard
+
+All the business rules are part of the model file.
+ Thus, executing the checks in the model file will test data validity.
+ There is a script in $APIIS_HOME/bin check_integrity.pl 
+\begin_inset LatexCommand \index{check\_integrity.pl}
+
+\end_inset 
+
+that does just that.
+ It should be able to run on any APIIS database as it is completely parameterize
+d from the model file.
+ Beware, it may run quite some time! 
+\layout Standard
+
+This little script may look rather unassuming.
+ However, I am actually very exited about it because it demonstrates the
+ power of the model file setup.
+\layout Subsubsection
+
+Checking the pedigree
+\layout Standard
+
+Pedigrees are not easy to check: if the raw data contain wrong parentage
+ nothing can be done.
+ However, we can check for 
+\begin_inset Quotes eld
+\end_inset 
+
+loops
+\begin_inset Quotes erd
+\end_inset 
+
+ in the pedigree.
+ This means the same animal identification comes up again in pedigree as
+ an ancester of the animal itself.
+ Because pedigrees will be extracted starting from data in an recursive
+ manner such an error will result in an indefinite run of the program.
+ Therefore, the program $APIIS_HOME/bin/pedigree_loops.pl 
+\begin_inset LatexCommand \index{pedigree\_loops.pl}
+
+\end_inset 
+
+will test for this situation.
+ You need to insert your database name and that is it.
+ In the default version table ANIMAL will be accessed with the columns db_id,
+ sire and dam.
+ If for an animal more that 500 parents are found this is considered a loop
+ and the animal will be printed at the end of the program.
+ Then follows manual work and you need to figure out what is has gone wrong.
+ If you have really lots of pedigrees you may need to increase the number
+ 500.
+ You can if this is sufficient by making two runs with different numbers.
+ If the result is the same, the lower number is ok.
+\layout Subsubsection
+
+Complete data? Proportion selected
+\layout Standard
+
+The routine selection.pl
+\begin_inset LatexCommand \index{selection.pl}
+
+\end_inset 
+
+ gives a report on the percentage of animals selected by year/month.
+ It is based on a select of young (tested) animals verified against animals
+ that are selected.
+ Typical setups would be:
+\layout Itemize
+
+all animals in field test against selected
+\layout Itemize
+
+all animals in station test against selected
+\layout Itemize
+
+all animals born against selected
+\layout Subsubsection
+
+All time/location cells filled?
+\layout Standard
+
+Who has some good ideas about this?
+\layout Subsubsection
+
+Rewriting the EXT_ID
+\layout Standard
+
+During the initial loading process the EXT_ID has been chosen such that
+ it is a unique number (as far as possible) over the complete time for which
+ data are loaded.
+ Also, the EXT_ID contains entries for all animals, historic and active.
+ Thus, before going into production mode, historic animals should be removed
+ and their status in TRANSFER be set to 'H'.
+ This should be done by the program REWRITE_EXTID
+\begin_inset LatexCommand \index{REWRITE\_EXTID}
+
+\end_inset 
+
+.
+\layout LaTeX
+
+
+\backslash 
+newpage
+\layout Section
+
+Data streams
+\begin_inset LatexCommand \index{data streams}
+
+\end_inset 
+
+
+\layout Standard
+
+Much of the data will come in terms of ASCII or text files to the central
+ system.
+ They may come either by e-mail, file transfer or local copying.
+\layout Subsection
+
+The Data Streams
+\layout Standard
+
+All data streams (DS) 
+\begin_inset LatexCommand \index{data streams}
+
+\end_inset 
+
+for the project have to be identified.
+ A DS is defined as a group of records that follows the same format.
+ Examples are field test, station test, selection notification, AI records,
+ litter records.
+ The number of different DS will be rather limited for a program and probably
+ not more than 10.
+ Each DS is identified by a number:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="11" columns="2">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="false" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS number
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS description
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS01
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+selection notification
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS02
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+service records
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS03
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+litter records
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS04
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+field test
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS05
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+station Test
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS06
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+culling record
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS07
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+sales
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS08
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+semen quality
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="false" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+DS09
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+address changes
+\end_inset 
+</cell>
+</row>
+<row topline="false" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+\SpecialChar \ldots{}
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="false" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+
+\family roman 
+\series medium 
+\shape up 
+\size normal 
+\emph off 
+\bar no 
+\noun off 
+\latex no_latex 
+\color none
+\SpecialChar \ldots{}
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+Records can come in in any order and will be stored independent of its content
+ into INSPOOL
+\begin_inset LatexCommand \index{INSPOOL}
+
+\end_inset 
+
+.
+ In particular, the content of the record is stored in ASCII format in one
+ field called RECORD.
+ This enables storage of anything without violating rules because of data
+ type violation.
+ The content can be delimited
+\begin_inset LatexCommand \index{delimiter}
+
+\end_inset 
+
+ by some character like |.
+ The format
+\begin_inset LatexCommand \index{format}
+
+\end_inset 
+
+ can be stored in either of two ways
+\layout Enumerate
+
+the loading software contains the format hard coded.
+ Then also the interactive program for correction needs to contain it.
+\layout Enumerate
+
+the format is stored in a separate table in the database with one entry
+ for each DS.
+\layout Standard
+
+As the number of programs involved is small the first option may be the
+ simplest.
+\layout Standard
+
+Also, the system is set up such that the same DS may be inserted twice without
+ causing problems.
+ Likewise, the order of the records is immaterial as each record is independent
+ from the other (which implies that it needs to contain all information
+ like herd and collection date).
+\layout Standard
+
+INSPOOL
+\begin_inset LatexCommand \index{INSPOOL}
+
+\end_inset 
+
+ will typically be loaded in response to a remote data transfer.
+\layout Standard
+
+
+\latex latex 
+
+\backslash 
+newpage
+\layout Subsubsection
+
+Data Stream 
+\begin_inset Quotes eld
+\end_inset 
+
+Importation
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+Every information system needs to be able to accommodate importation of
+ animals.
+ Here an animal can also be semen or a fertilized egg.
+ The following steps are done for a new imported animal/semen:
+\layout Enumerate
+
+insert the parents/grandparents of the animal with their external id in
+ TRANSFER and ANIMAL.
+ The external unit needs to be in address/partner.
+ The last animals in the pedigree are then set to 1 and 2 (for sire and
+ dam) thereby satisfying the foreign key requirement to transfer.
+ The breed of these animals are the breed from the source (Swedish Landrace).
+ Clearly, this needs to be in CODES.
+\layout Enumerate
+
+insert the animal with the original external id in TRANSFER and ANIMAL.
+ However, in ANIMAL the breed is the new breed in the destination system
+ (i.e.
+ the Swedish Landrace now becomes South African Landrace).
+\layout Enumerate
+
+renumber the animal and give it new external number in SA (i.e.
+ a new entry in TRANSFER).
+\layout Standard
+
+With this setup, a clear decision has to be made as to the new breed code
+ of the imported animal.
+ If the proportion of allels from different breeds is to be computed for
+ an animal, this can be done rather easily: Go back in the pedigree to the
+ last animal and take its breed (ignoring all breed code on the way).
+ On the basis of the number of generations back the contribution of the
+ founder breeds can be computed (perl does recursion very nicely; for a
+ template look at pedigree_loops.pl 
+\begin_inset LatexCommand \index{pedigree\_loops.pl}
+
+\end_inset 
+
+).
+\layout Standard
+
+The database object can be written as:
+\layout LyX-Code
+
+
+\size footnotesize 
+DatabaseObject: NewImport($ext_id,$ext_unit,sire,dam,breed.......)
+\layout LyX-Code
+
+
+\size footnotesize 
+   begin transaction 
+\layout LyX-Code
+
+
+\size footnotesize 
+      for each animal in pedigree
+\layout LyX-Code
+
+
+\size footnotesize 
+         NewAnimal ($ext_unit, $ext_id, $source_breed, $birthdate, $sire,
+ $dam...)
+\layout LyX-Code
+
+
+\size footnotesize 
+      end
+\layout LyX-Code
+
+
+\size footnotesize 
+      for import animal
+\layout LyX-Code
+
+
+\size footnotesize 
+         NewAnimal    ($ext_unit, $ext_id, $dest_breed, $birthdate, $sire,
+ $dam ...)
+\layout LyX-Code
+
+
+\size footnotesize 
+         RenameAnimal ($old_ext_unit, $old_ext_id,$new_ext_unit,$new_ext_id...)
+\layout LyX-Code
+
+
+\size footnotesize 
+      end
+\layout LyX-Code
+
+
+\size footnotesize 
+   end transaction
+\layout LyX-Code
+
+
+\size footnotesize 
+End NewImport
+\layout Standard
+
+The two database objects will do the following:
+\layout LyX-Code
+
+
+\size footnotesize 
+################
+\layout LyX-Code
+
+
+\size footnotesize 
+DataBasObject: NewAnimal ($ext_id,$unit,$ext_sire,$ext_dam,$breed,birth_dt..)
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db(insert into TRANSFER (ext_id,unit) values ($ext_id,$unit))
+\layout LyX-Code
+
+
+\size footnotesize 
+   $db_id     = Get_db_id ($ext_id,$unit) 
+\layout LyX-Code
+
+
+\size footnotesize 
+   $db_sire   = Get_db_id ($ext_sire,$unit) 
+\layout LyX-Code
+
+
+\size footnotesize 
+   $db_dam    = Get_db_id ($ext_dam ,$unit) 
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db(insert into ENTRY (ext_id,unit,db_id) values ($ext_id,$unit,$db_id))
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db(insert into ANIMAL (db_id,sire,dam,birth_dt,breed...) values   
+               
+\layout LyX-Code
+
+
+\size footnotesize 
+                     ($db_id,$db_sire,$db_dam,$birth_dt,$breed..))
+\layout LyX-Code
+
+
+\size footnotesize 
+  
+\layout LyX-Code
+
+
+\size footnotesize 
+End NewAnimal
+\layout Standard
+
+and for RenameAnimal:
+\layout LyX-Code
+
+
+\size footnotesize 
+################
+\layout LyX-Code
+
+
+\size footnotesize 
+DataBaseObject: RenameAnimal ($old_ext_unit, $old_ext_id,$new_ext_unit,$new_ext_
+id...)
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db('update TRANSFER set status='H',exit_dt=$today 
+\layout LyX-Code
+
+
+\size footnotesize 
+            where unit=$old_ext_unit and ext_id=$old_ext_id')
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db('insert into TRANSFER (ext_id,unit) values ($new_ext_id,$unit)')
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db('delete from ENTRY where unit=$old_ext_unit and ext_id=$old_ext_id')
+ 
+\layout LyX-Code
+
+
+\size footnotesize 
+   $db_id   = Get_db_id ($new_ext_id,$new_unit) 
+\layout LyX-Code
+
+
+\size footnotesize 
+   meta_db('insert into ENTRY (ext_id,unit,db_id) values ($new_ext_id,$new_unit,
+$db_id)')
+\layout LyX-Code
+
+
+\size footnotesize 
+END RenameAnimal
+\layout Standard
+
+This pseudo code assumes that the direct code translation is done at the
+ model file level using Encode.
+ Furthermore, it is assumed that the sequence is located in TRANSFER (because
+ the formal definition of ENTRY is 
+\begin_inset Quotes eld
+\end_inset 
+
+conditional index on ext_id||unit for status = 'A' 
+\begin_inset Quotes eld
+\end_inset 
+
+).
+\layout Standard
+
+The subroutine for batch processing for the above data stream would look
+ like this:
+\layout LyX-Code
+
+
+\size footnotesize 
+sub DSImport
+\layout LyX-Code
+
+
+\size footnotesize 
+  read inspool records
+\layout LyX-Code
+
+
+\size footnotesize 
+  populate structure
+\layout LyX-Code
+
+
+\size footnotesize 
+     animal => value
+\layout LyX-Code
+
+
+\size footnotesize 
+     unit   =>
+\layout LyX-Code
+
+
+\size footnotesize 
+     sire   => 
+\layout LyX-Code
+
+
+\size footnotesize 
+     dam    =>
+\layout LyX-Code
+
+
+\size footnotesize 
+  call NewImport (Structure)
+\layout LyX-Code
+
+
+\size footnotesize 
+  read next record
+\layout LyX-Code
+
+
+\size footnotesize 
+end
+\layout Standard
+
+For a GUI program the procedure could be similar:
+\layout LyX-Code
+
+
+\size footnotesize 
+pick up the values from the fields
+\layout LyX-Code
+
+
+\size footnotesize 
+populate structure
+\layout LyX-Code
+
+
+\size footnotesize 
+animal => value
+\layout LyX-Code
+
+
+\size footnotesize 
+     unit   =>
+\layout LyX-Code
+
+
+\size footnotesize 
+     sire   => 
+\layout LyX-Code
+
+
+\size footnotesize 
+     dam    =>
+\layout LyX-Code
+
+
+\size footnotesize 
+  call NewImport (Structure)
+\layout LyX-Code
+
+
+\size footnotesize 
+  read next screen
+\layout LyX-Code
+
+
+\size footnotesize 
+end
+\layout Standard
+
+
+\latex latex 
+
+\backslash 
+newpage
+\layout Subsection
+
+Conventions for incoming data
+\begin_inset LatexCommand \index{incoming data}
+
+\end_inset 
+
+ files
+\layout Standard
+
+All data files will be copied to one location in the file system of the
+ database machine which we shall call INSPOOL_DIR.
+ Different kinds of data are grouped into data streams which are identified
+ by DS01, DS02 and so on (see further down for more information).
+ Files will always start with the data stream identifier (eg DS01, DS02)
+ followed by the date and time:
+\layout LyX-Code
+
+
+\size footnotesize 
+--INSPOOL_DIR/
+\layout LyX-Code
+
+
+\size footnotesize 
+|             ds04.1999.12.24-12:32:11
+\layout LyX-Code
+
+
+\size footnotesize 
+|             ds03.1999.12.13-00:12:01
+\layout LyX-Code
+
+
+\size footnotesize 
+|             ds08.1999.11.23-09:32:02
+\layout LyX-Code
+
+
+\size footnotesize 
+--INSPOOL_DIR/done/ 
+\layout LyX-Code
+
+
+\size footnotesize 
+|                  ds02.1999.19.32_14:11:21
+\layout Standard
+
+Data files which have been processed are moved to the subdirectory done/.
+\layout Subsection
+
+The Inspool Buffer
+\layout Standard
+
+All data coming into the database will be stored in the INSPOOL
+\begin_inset LatexCommand \index{INSPOOL}
+
+\end_inset 
+
+ section of the database.
+ This is the only table which will store data without consistency checks.Its
+ purpose is to be the initial repository of all incoming data from which
+ it will then be processed and loaded into the database proper under the
+ constraints of the business rules in the model file.
+ Records that pass this test and get loaded successfully will be flagged
+ accordingly in the INSPOOL and skipped the next time it is processed.
+\layout Subsection
+
+Loading ASCII files into INSPOOL
+\layout Standard
+
+As stated above all incoming data files will arrive in the directory INSPOOL_DIR.
+ The program LOAD_INSPOOL will load each data file into the table INSPOOL.
+ The pseudo code is given in table 
+\begin_inset LatexCommand \ref{tab: load_inspool}
+
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{tab: load_inspool}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+Program Load_inspool
+\layout LyX-Code
+
+
+\size footnotesize 
+read all filenames in INSPOOL_DIR
+\layout LyX-Code
+
+
+\size footnotesize 
+for each file name
+\layout LyX-Code
+
+
+\size footnotesize 
+   set DS = substring (filename,1,4)
+\layout LyX-Code
+
+
+\size footnotesize 
+   for all records in file
+\layout LyX-Code
+
+
+\size footnotesize 
+       insert DS, sequence, timestamp, record into INSPOOL
+\layout LyX-Code
+
+
+\size footnotesize 
+   end all records
+\layout LyX-Code
+
+
+\size footnotesize 
+   mv filename to INSPOOL_DIR/done/
+\layout LyX-Code
+
+
+\size footnotesize 
+next file 
+\end_inset 
+
+
+\layout Subsection
+
+Processing of INSPOOL
+\layout Standard
+
+One loading
+\begin_inset LatexCommand \index{loading}
+
+\end_inset 
+
+ program exists for each DS (LDS01, LDS02..).
+ These jobs can be started at any time and will typically be scheduled via
+ crontab
+\begin_inset LatexCommand \index{crontab}
+
+\end_inset 
+
+.
+ Each loading program select its own records based on column DS and STATUS='new'.
+ If no business rules are violated and the operation has been done successfully,
+ the STATUS is set to 'ok' with the timestamp put into PROC_DATE.
+ Thereby, this record will not be accessed anymore and can be removed later
+ by a housekeeping program.
+\layout Standard
+
+In case of an error a new entry is made in INSPOOL_ERR with the unique IN_ID,
+ the ERRCODE and the offending column number.
+ If more than one column violates the business rules more records are inserted.
+ For each, the STATUS is set to active ('A') and the timestamp
+\begin_inset LatexCommand \index{timestamp}
+
+\end_inset 
+
+ is inserted into ERR_DATE.
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+INSPOOL tables
+\layout LyX-Code
+
+
+\size footnotesize 
+create table inspool (
+\layout LyX-Code
+
+
+\size footnotesize 
+   ds text,              -- dataset name
+\layout LyX-Code
+
+
+\size footnotesize 
+   in_id int,            -- unique ID of record(sequence)
+\layout LyX-Code
+
+
+\size footnotesize 
+   in_date timestamp,    -- Time stamp for initial entry
+\layout LyX-Code
+
+
+\size footnotesize 
+   proc_date timestamp,  -- time stamp for processing
+\layout LyX-Code
+
+
+\size footnotesize 
+   status text,          -- Status column
+\layout LyX-Code
+
+
+\size footnotesize 
+   record text           -- the data record
+\layout LyX-Code
+
+
+\size footnotesize 
+   );
+\layout LyX-Code
+
+
+\size footnotesize 
+ 
+\layout LyX-Code
+
+
+\size footnotesize 
+-- drop table inspool_err;
+\layout LyX-Code
+
+
+\size footnotesize 
+create table inspool_err (
+\layout LyX-Code
+
+
+\size footnotesize 
+   in_id int,           -- unique ID of record
+\layout LyX-Code
+
+
+\size footnotesize 
+   err_code int,        -- Error code
+\layout LyX-Code
+
+
+\size footnotesize 
+   col int,             -- offending column in INSPOOL
+\layout LyX-Code
+
+
+\size footnotesize 
+   status text,         -- Active of historic?
+\layout LyX-Code
+
+
+\size footnotesize 
+   err_date timestamp   -- timestamp for setting status
+\layout LyX-Code
+
+
+\size footnotesize 
+   );
+\layout LyX-Code
+
+
+\size footnotesize 
+ 
+\layout LyX-Code
+
+
+\size footnotesize 
+-- drop table load_stat;
+\layout LyX-Code
+
+
+\size footnotesize 
+create table load_stat (
+\layout LyX-Code
+
+
+\size footnotesize 
+   job text,             -- Program name
+\layout LyX-Code
+
+
+\size footnotesize 
+   job_start timestamp,  -- timestamp start of job
+\layout LyX-Code
+
+
+\size footnotesize 
+   job_end timestamp,    -- timestamp end of job
+\layout LyX-Code
+
+
+\size footnotesize 
+   status int,           -- completion code
+\layout LyX-Code
+
+
+\size footnotesize 
+   nrec_tot int,         -- Number of Records processed
+\layout LyX-Code
+
+
+\size footnotesize 
+   nrec_err int,         -- Number of erroneous records
+\layout LyX-Code
+
+
+\size footnotesize 
+   nrec_ok int           -- Number of correct records - inserted
+\layout LyX-Code
+
+
+\size footnotesize 
+   );                                     
+\end_inset 
+
+
+\layout Subsection
+
+ERROR Handling
+\begin_inset LatexCommand \index{Error Handling}
+
+\end_inset 
+
+
+\layout Standard
+
+Errors have to be fixed on the basis of the INSPOOL record.
+ It is located uniquely by IN_ID.
+ Error information that should help is taken from INSPOOL_ERR
+\begin_inset LatexCommand \index{ERR}
+
+\end_inset 
+
+.
+ Clearly, this has to be done by a program.
+ After the offending columns are modified the INSPOOL
+\begin_inset LatexCommand \index{INSPOOL}
+
+\end_inset 
+
+ record will be written back with the status set to 'New'.
+ In INSPOOL_ERR the STATUS will be set to historic ('H').
+ In this way the complete history of erroneous records is available.
+ The next time round the corresponding LDS program runs this record will
+ be processed again.
+\layout Subsection
+
+INSPOOL
+\begin_inset LatexCommand \index{INSPOOL}
+
+\end_inset 
+
+ Status
+\layout Standard
+
+The status of the INSPOOL queue is easily checked by a program which reports
+ the DS, the UNIT, successes and error for a given period.
+\layout Section
+
+Internationalization
+\begin_inset LatexCommand \index{Internationalization}
+
+\end_inset 
+
+
+\layout Section
+
+Modules
+\layout Subsection
+
+Herdbook output
+\begin_inset LatexCommand \index{output}
+
+\end_inset 
+
+
+\layout Subsection
+
+Routine BLUP
+\begin_inset LatexCommand \index{BLUP}
+
+\end_inset 
+
+ genetic evaluation
+\layout Standard
+
+This part covers 
+\layout Itemize
+
+the extraction of data for BLUP
+\layout Itemize
+
+the storage of BLUPs into the database, 
+\layout Itemize
+
+handling of printing of new BLUPs (status flags)
+\layout Subsection
+
+Assessing BLUP genetic evaluation
+\layout Itemize
+
+genetic trends (textual and graphically)
+\layout Itemize
+
+generation interval
+\layout Itemize
+
+selection intensities
+\layout Itemize
+
+efficiency of selection
+\layout Subsection
+
+Population Structure
+\layout Itemize
+
+effective population size
+\layout Itemize
+
+generation interval
+\layout Itemize
+
+variance of family size
+\layout Itemize
+
+inbreeding, rate of inbreeding
+\layout Subsection
+
+Management of small populations
+\layout Standard
+
+This contains parts of the above, thus it is not clearly structured yet.
+\layout Subsection
+
+Interactive data Entry
+\layout Subsection
+
+ON Farm systems
+\begin_inset LatexCommand \index{On Farm Systems}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Management support
+\layout Subsubsection
+
+Production control
+\layout Subsubsection
+
+Interfacing accounting software
+\layout Subsection
+
+Test station system
+\layout Subsection
+
+AI station system
+\layout Section
+
+Interconnecting databases
+\layout Section
+
+Modifying the Content of the Database
+\layout Standard
+
+Sometimes data has to be changed in the database even after it has passed
+ all input checks.
+ Consider litter records for two sows.
+ The first may have gotten reported with no piglets born alive while the
+ second may have had reported 10 piglets.
+ As none of the business rules was violated both litter records were inserted
+ into the database.
+ Furthermore, in ENTRY, TRANSFER and ANIMAL 12 new records were created
+ for the offspring of sow 2.
+ The true situation may have been, that the first sow had 12 piglets while
+ the second had none.
+ This mistake may become apparent at a much later stage.
+ Then a whole series of database changes will have to be made.
+ Here it is very important that each change is documented (in the database).
+ 
+\layout Standard
+
+A safe protocol/software needs to be developed to which manages and logs
+ all changes to the database proper.
+\layout Section
+
+Structure independent data synchronization protocol
+\layout Standard
+
+The topology of the information system will a central and (many) local systems
+ which will have to exchange information in both directions.
+ Thus, data will be entered into on-farm systems which will have to be sent
+ to the central system.
+ Likewise, information from the central database will flow back to the periphery.
+ Examples are breeding values computed at the center or boars being made
+ available throughout the system.
+\layout Standard
+
+One of the problems for synchronization is the know which element has to
+ be sent for updating on which system.
+ Here (at least) two options are available: data exchanges based on update
+ logs and those based to status flags in the database.
+\layout Subsection
+
+data exchange based on database update logs
+\layout Standard
+
+Data base modifications are done exclusively via SQL statements.
+ If all applications write these to one log file all database modifications
+ will be reflected and could be transfered to the target system.
+ Simply executing it there in the same order should recreate the sending
+ system.
+ Issues to be addressed are
+\layout Itemize
+
+only processes entering new data must be logged (not those that perform
+ synchronisation inserts/updates)
+\layout Itemize
+
+with a multitasking system and the possibility of more than one job doing
+ database modifications the correct sequence is a must.
+ Thus, the question is which process writes the logs: the applications,
+ a middle layer or the backend.
+\layout Itemize
+
+currently, db_id are generated locally as sequence and are therefore only
+ unique locally.
+ When more that one local system get merged on a central system uniqueness
+ of the db_id is ensured.
+ Here, two options are conceivable:
+\begin_deeper 
+\layout Enumerate
+
+recompute the db_id on each new target system.
+ This would imply, that the SQL statements from the logs cannot simply be
+ reexecuted.
+ Instead, a new format has to be used and intepreted.
+ If this route is considered, it has to be clear that different db_id for
+ the same animal in different are tolerable or if there are situations,
+ where the same db_id is required (which would rule out this option).
+\layout Enumerate
+
+it is ensured that no same db_id can be generated on any system.
+ This could be achieved by giving peripheral system a private block of numbers
+ to use as db_id.
+ Technically, this can be done by giving each system a different starting
+ value for the db_id sequence.
+ A master (the central system?) would have to keep track of this for each
+ system.
+ When the end of the block is appraoched, a new block must be made available
+ by the master.
+\end_deeper 
+\layout Itemize
+
+what happens when the log file for data exchange gets corrupted? No data
+ exchange will be possible and the synchronization status is undefined (see
+ 
+\begin_inset LatexCommand \ref{sync_conflict}
+
+\end_inset 
+
+)
+\begin_inset LatexCommand \label{inconsistence}
+
+\end_inset 
+
+
+\layout Subsection
+
+putting the log into the database
+\layout Standard
+
+To avoid possible inconsistencies mentioned above (
+\begin_inset LatexCommand \ref{inconsistence}
+
+\end_inset 
+
+) the logs could also be put into the database where they could be part
+ of the transaction.
+ The locking mechanism of the RDBMS would probably also alliviate the problem
+ of sequencing when more than one process (program) wants to write a log
+ record.
+\layout Subsection
+
+data exchange based on flags
+\layout Standard
+
+The principle behind this strategy requires all elements that have been
+ modified to be flagged.
+\layout Subsection
+
+strategy to resolve conflicts
+\begin_inset LatexCommand \label{sync_conflict}
+
+\end_inset 
+
+
+\layout Subsection
+
+management of data synchronization
+\layout Standard
+
+Some auxilliary tables will be required managed to data exchange process.
+ Every database needs to with which database is has to exchange what.
+ Thus, peripheral systems will exchange all content of certain tables (no
+ strictly local information needs to exchanged).
+ Central systems on the other hand will not send their data to all peripheral
+ systems.
+ The general procedure could be:
+\layout Itemize
+
+each application states on database modification with whome they are are
+ to be shared (like: ALL or 23, 34).
+ This should probably be coded in the LoadObjects (which are the subroutines/obj
+ects that perform the actual database modification)
+\layout Section
+
+Protocol for remote program execution
+\layout LaTeX
+
+
+\backslash 
+newpage
+\layout Section
+
+WEB and non WEB
+\begin_inset LatexCommand \index{WEB}
+
+\end_inset 
+
+ based GUI
+\begin_inset LatexCommand \index{GUI}
+
+\end_inset 
+
+ database programs
+\layout Standard
+
+Interactive
+\begin_inset LatexCommand \index{Interactive}
+
+\end_inset 
+
+ programs accessing and modifying the database are completely driven by
+ a form parameter file.
+ This is identical for both WEB and non WEB applications.
+ The process of creating an application is as follows:
+\layout Enumerate
+
+automatic generation of a GUI program on the basis of the model file.
+ The program mkform
+\begin_inset LatexCommand \index{mkform}
+
+\end_inset 
+
+ creates a GUI program for each table in the database assuming inserts.
+ This procedure can be used to quickly generate an appication for simple
+ problems.
+ 
+\layout Enumerate
+
+the resulting forms files can be edited manually
+\layout Enumerate
+
+the resulting forms files on the basis of XML
+\begin_inset LatexCommand \index{XML}
+
+\end_inset 
+
+ can be created/modified by a GUI appication.
+ It will read in the forms model file and present each field of the target
+ application as one line on the screen with the parameters given in the
+ order as described in table 
+\begin_inset LatexCommand \ref{form}
+
+\end_inset 
+
+.
+\layout Subsection
+
+Required Forms Functionality
+\layout Itemize
+
+GUI programs are completely specified by a Forms script (parameter) file
+\layout Itemize
+
+GUI programs use the model file for enforcement of business rules.
+\layout Itemize
+
+drop down menus need to supply list
+\layout Itemize
+
+calendar for dates
+\layout Itemize
+
+data variables are filled by
+\begin_deeper 
+\layout Itemize
+
+editing (keyboard)
+\hfill 
+(single field property)
+\layout Itemize
+
+from foreign key or list
+\hfill 
+(single field property)
+\layout Itemize
+
+from an direct assignment
+\hfill 
+(single field property)
+\layout Itemize
+
+from a function
+\hfill 
+(single field property)
+\layout Itemize
+
+from defaults (model file)
+\hfill 
+(single field property)
+\layout Itemize
+
+a series of fields can be filled by a set of values from a function (select
+ all litters from one sow).
+ A series of fields needs to bound to one function.
+\hfill 
+(multiple field property)
+\layout Itemize
+
+are cleared upon start of form
+\layout Itemize
+
+are skipped on certain button (collect all data for current farm: button
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+FarmDone
+\begin_inset Quotes erd
+\end_inset 
+
+ clears the farm fields for new entry, button 
+\begin_inset Quotes eld
+\end_inset 
+
+NextAnimalInFarm
+\begin_inset Quotes erd
+\end_inset 
+
+ skips the farm fields.
+\end_deeper 
+\layout Itemize
+
+data variables can have properties:
+\begin_deeper 
+\layout Itemize
+
+editable 
+\hfill 
+(single field property)
+\layout Itemize
+
+display only 
+\hfill 
+(single field property)
+\layout Itemize
+
+have coordinates 
+\hfill 
+(displayed)
+\layout Itemize
+
+no coordinates 
+\hfill 
+(only local variables)
+\end_deeper 
+\layout Itemize
+
+functions can be started 
+\begin_deeper 
+\layout Itemize
+
+upon hitting an ok button (or similar) possibly after all fields have been
+ filled
+\layout Itemize
+
+upon entry of the cursor into a field
+\layout Itemize
+
+upon leaving the field
+\end_deeper 
+\layout Subsection
+
+GUI Forms Syntax
+\layout Standard
+
+Interactive applications using a graphical user interface are completely
+ defined by a file which contains the script for its definition.
+ At the same time, information from the model file is used (such as field
+ length, descriptions, default values) if not specified in the forms
+\begin_inset LatexCommand \index{forms}
+
+\end_inset 
+
+ file.
+ The identical forms file will be used to generate a WEB and local applications.
+ The table 
+\begin_inset LatexCommand \ref{form}
+
+\end_inset 
+
+gives an example of a GUI forms file.
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed false
+
+\layout Caption
+
+Sample Form: List all Litters per sow
+\layout LyX-Code
+
+
+\size footnotesize 
+#############################################
+\layout LyX-Code
+
+
+\size footnotesize 
+##
+\layout LyX-Code
+
+
+\size footnotesize 
+lsow_id  [ 10, 10, 5, 'SOW-ID',keep] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate,ln_born=select fdate,n_born from litter 
+\layout LyX-Code
+
+
+\size footnotesize 
+               where  sow_id = lsow_id
+\layout LyX-Code
+
+
+\size footnotesize 
+# the variable are now loaded into local buffers, now we need to place them
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate  [ 15, +10, $, $]  ln_born [+15,  +0, $, $]
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate  [ 15, +10, $, $]  ln_born [+15,  +0, $, $]
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate  [ 15, +10, $, $]  ln_born [+15,  +0, $, $]
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate  [ 15, +10, $, $]  ln_born [+15,  +0, $, $]
+\layout LyX-Code
+
+
+\size footnotesize 
+lfdate  [ 15, +10, $, $]  ln_born [+15,  +0, $, $]
+\layout LyX-Code
+
+
+\size footnotesize 
+# the complete set of returned from the select
+\layout LyX-Code
+
+
+\size footnotesize 
+# is listed in blocks of 5.
+ The blocks should be scrollable
+\layout LyX-Code
+
+\layout LyX-Code
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+Sample Form
+\begin_inset LatexCommand \label{form}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+#############################################
+\layout LyX-Code
+
+
+\size footnotesize 
+# inserting new order
+\layout LyX-Code
+
+
+\size footnotesize 
+# load variable from database
+\layout LyX-Code
+
+
+\size footnotesize 
+db_fpro = selDB projekt from projekte where pid = fpid
+\layout LyX-Code
+
+
+\size footnotesize 
+##
+\layout LyX-Code
+
+
+\size footnotesize 
+fpid  [ 10, 10, 5, 'Projekt-ID',keep] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+fpro  [ 27, 10, $, $           ,keep] = db_fpro
+\layout LyX-Code
+
+
+\size footnotesize 
+fsnap [ 10,+10, $, $           ,keep] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+fkomp [ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+fkomm [ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+fpreis[ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+fstat [ 10,+10, $, $            ] = L [teile.status] 
+\layout LyX-Code
+
+
+\size footnotesize 
+fbdat [ 10,+10, $, $            ] = E  
+\layout LyX-Code
+
+
+\size footnotesize 
+fldat [ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+fadat [ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+# insert into database
+\layout LyX-Code
+
+
+\size footnotesize 
+insert into teil (pid, snapdat,teil, preis, komment,status,bestelldat,
+\layout LyX-Code
+
+
+\size footnotesize 
+                  lieferdat anweisdat) 
+\layout LyX-Code
+
+
+\size footnotesize 
+          VALUES (fpid,fsnap,  fkomp,fpreis,fkomm,  fstat, fbdat,     
+\layout LyX-Code
+
+
+\size footnotesize 
+                  fldat, fadat) 
+\layout LyX-Code
+
+
+\size footnotesize 
+# alternatively (and preferably) we call the object: Insert_Order:
+\layout LyX-Code
+
+
+\size footnotesize 
+Insert_Order(fpid,fsnap,  fkomp,fpreis,fkomm,  fstat, fbdat,     
+\layout LyX-Code
+
+
+\size footnotesize 
+                  fldat, fadat)
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+Sample Form
+\begin_inset LatexCommand \label{form}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+#############################################
+\layout LyX-Code
+
+
+\size footnotesize 
+# multiple field test records are entered for one date/herd
+\layout LyX-Code
+
+
+\size footnotesize 
+new_herd:lherd[10,10,10,'Herd'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+         ldate [ +0,+20,10,'Recording date'] = E
+\layout LyX-Code
+
+\layout LyX-Code
+
+
+\size footnotesize 
+new_rec:lanimal[ 10,+10,10,'Animal'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lweight[+15, +1, 6,'weight'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lsex   [ +6, +0, 6,'Sex'   ] = L('m','f','c')
+\layout LyX-Code
+
+
+\size footnotesize 
+        exec NewFieldTest
+\layout LyX-Code
+
+
+\size footnotesize 
+        lanimal[ 10,+10,10,'Animal'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lweight[+15, +0, 6,'weight'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lsex   [ +6, +0, 6,'Sex'   ] = L('m','f','c')
+\layout LyX-Code
+
+
+\size footnotesize 
+        exec NewFieldTest
+\layout LyX-Code
+
+
+\size footnotesize 
+        lanimal[ 10,+10,10,'Animal'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lweight[+15, +0, 6,'weight'] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+        lsex   [ +6, +0, 6,'Sex'   ] = L('m','f','c')
+\layout LyX-Code
+
+
+\size footnotesize 
+        exec NewFieldTest
+\layout LyX-Code
+
+
+\size footnotesize 
+        NewRecord[10,+10,,'NewRecord'] = Button
+\layout LyX-Code
+
+
+\size footnotesize 
+        NewHerd  [+10,+0,,'NewHerd'  ] = Button
+\layout LyX-Code
+
+
+\size footnotesize 
+        Insert   [+10,+0,,'Insert'   ] = Button
+\layout LyX-Code
+
+
+\size footnotesize 
+        exec NewFieldTest
+\layout LyX-Code
+
+
+\size footnotesize 
+goto New_rec
+\layout LyX-Code
+
+
+\size footnotesize 
+#####################
+\layout LyX-Code
+
+
+\size footnotesize 
+OnButton:NewRecord  goto new_rec
+\layout LyX-Code
+
+
+\size footnotesize 
+OnButton:NewHerd    goto new_herd
+\layout LyX-Code
+
+
+\size footnotesize 
+OnButton:Insert exec NewFieldTest
+\layout LyX-Code
+
+
+\size footnotesize 
+Exec:NewFieldTest 
+\layout LyX-Code
+
+
+\size footnotesize 
+{insert into field_test( herd,rdate, animal, weight, sex)   
+\layout LyX-Code
+
+
+\size footnotesize 
+                values (lherd,ldate,lanimal,lweight,lsex)}
+\layout LyX-Code
+
+
+\size footnotesize 
+# the following buttons are required:
+\layout LyX-Code
+
+
+\size footnotesize 
+# NewHerd, NewRecord, Insert (either automatically after the 
+\layout LyX-Code
+
+
+\size footnotesize 
+# above 3 lines or when hit)
+\end_inset 
+
+
+\layout Standard
+
+
+\latex latex 
+
+\backslash 
+begin{landscape}
+\backslash 
+begin{centering}
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed false
+
+\layout Caption
+
+Antother Sample Form
+\begin_inset LatexCommand \label{form}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size scriptsize 
+################################################################################
+##############
+\layout LyX-Code
+
+
+\size scriptsize 
+Declaration part:
+\layout LyX-Code
+
+
+\size scriptsize 
+ # we need functions:
+\layout LyX-Code
+
+
+\size scriptsize 
+  list_codes (returns the short_name for given class
+\layout LyX-Code
+
+
+\size scriptsize 
+  an_exists  (returns .true.
+ if the external/unit exists as db_id in ANIMAL
+\layout LyX-Code
+
+
+\size scriptsize 
+ # specify a few things:
+\layout LyX-Code
+
+
+\size scriptsize 
+  msg1    = 'unit/ext_animal does already exist'
+\layout LyX-Code
+
+
+\size scriptsize 
+  msg2    = 'unit/ext_animal does not exist'
+\layout LyX-Code
+
+
+\size scriptsize 
+  routdam = 'an_exists(unit,dam_ext_num)'
+\layout LyX-Code
+
+
+\size scriptsize 
+################################################################################
+###############
+\layout LyX-Code
+
+
+\size scriptsize 
+Form:  ## beginning of the forms definition:
+\layout LyX-Code
+
+
+\size scriptsize 
+ newunit:
+\layout LyX-Code
+
+
+\size scriptsize 
+   unit        [45, 80,20,'Reporting unit', keep] = E
+\layout LyX-Code
+
+
+\size scriptsize 
+   species     [45,+45,20,'Species'       , keep] = L [list_codes('species']
+ 
+\layout LyX-Code
+
+
+\size scriptsize 
+   country     [45,+45,20,'Country'       , keep] = L [list_codes('Country']
+ 
+\layout LyX-Code
+
+
+\size scriptsize 
+ newanimal:
+\layout LyX-Code
+
+
+\size scriptsize 
+   anm_ext_num [45,+45,20,'Animal external number',,NOT(an_exists),msg1
+ ]                   = E 
+\layout LyX-Code
+
+
+\size scriptsize 
+   sir_ext_num [45,+45,20,'Sire external number'  ,,    an_exists(unit,$_)
+ ,msg2 ]          = E ?
+\layout LyX-Code
+
+
+\size scriptsize 
+   dam_ext_num [45,+45,20,'Dam external number'   ,,    an_exists(unit,dam_ext_n
+um) ,msg2 ] = E ?
+\layout LyX-Code
+
+
+\size scriptsize 
+   dam_ext_num [45,+45,20,'Dam external number'   ,,    routdam        
+             ,msg2 ] = E 
+\layout LyX-Code
+
+
+\size scriptsize 
+   breed       [45,+45,20,'breed'                            ] = L [list_codes('
+breed']
+\layout LyX-Code
+
+
+\size scriptsize 
+   sex         [45,+45,20,'sex'                              ] = L [list_codes('
+sex'  ]
+\layout LyX-Code
+
+
+\size scriptsize 
+   anm_name    [45,+45,20,'Animal Name'                      ] = E 
+\layout LyX-Code
+
+
+\size scriptsize 
+   anm_name_sh [45,+45,20,'Animal Name (short)'              ] = E 
+\layout LyX-Code
+
+
+\size scriptsize 
+   birth_d     [45,+45,20,'Birth Date'                       ] = L [cal]
+\layout LyX-Code
+
+
+\size scriptsize 
+   ai_code     [45,+45,20,'Dam external number'              ] = E 
+\layout LyX-Code
+
+
+\size scriptsize 
+ exec InsertAnimal
+\layout LyX-Code
+
+
+\size scriptsize 
+ OnButton: NewAnimal newanimal
+\layout LyX-Code
+
+
+\size scriptsize 
+ OnButton: NewUnit   newunit
+\layout LyX-Code
+
+
+\size scriptsize 
+ OnButton: Exit      exit
+\layout LyX-Code
+
+
+\size scriptsize 
+################################################################################
+###############
+\layout LyX-Code
+
+
+\size scriptsize 
+Functions # beginning of the function code:
+\layout LyX-Code
+
+
+\size scriptsize 
+an_exists:   # 1st function
+\layout LyX-Code
+
+
+\size scriptsize 
+ SQL="select count(*) as cnt from transfer where ext_animal=$_ and db_unit=
+\layout LyX-Code
+
+
+\size scriptsize 
+     (select db_unit from codes where class='UNIT' and ext_code = unit)"
+\layout LyX-Code
+
+
+\size scriptsize 
+ if (cnt == 0) {
+\layout LyX-Code
+
+
+\size scriptsize 
+    status = FALSE;
+\layout LyX-Code
+
+
+\size scriptsize 
+ };
+\layout LyX-Code
+
+\layout LyX-Code
+
+
+\size scriptsize 
+InsertAnimal:  # 2nd function
+\layout LyX-Code
+
+
+\size scriptsize 
+{insert into animal (anm_ext_num,sir_ext_num,dam_ext_num,
+\layout LyX-Code
+
+
+\size scriptsize 
+  ...
+\layout LyX-Code
+
+
+\size scriptsize 
+ values(NewAnimalDbID(anm_ext_num,unit),NewaAnimalDbID(sir_ext_num),NewaAnimalDb
+ID(dam_ext_num,)}
+\layout LyX-Code
+
+
+\size scriptsize 
+#..............................
+\layout LyX-Code
+
+
+\size scriptsize 
+#or alternatively use a load object:
+\layout LyX-Code
+
+
+\size scriptsize 
+InsertAnimal:  # 3rd function
+\layout LyX-Code
+
+
+\size scriptsize 
+  %hash => {
+\layout LyX-Code
+
+
+\size scriptsize 
+           ext_unit => unit,
+\layout LyX-Code
+
+
+\size scriptsize 
+           species  => species,
+\layout LyX-Code
+
+
+\size scriptsize 
+           ...
+\layout LyX-Code
+
+
+\size scriptsize 
+ call LO_NewAnimal (
+\backslash 
+hash)
+\layout LyX-Code
+
+
+\size scriptsize 
+ call handle_errors
+\end_inset 
+
+
+\layout Standard
+
+
+\latex latex 
+
+\backslash 
+end{centering}
+\backslash 
+end{landscape}
+\layout Subsubsection
+
+Variables
+\layout Standard
+
+The syntax
+\begin_inset LatexCommand \index{syntax}
+
+\end_inset 
+
+ of the forms file operates on the basis of symbolic variables known only
+ with the form.
+ Its general syntax is:
+\layout LyX-Code
+
+
+\emph on 
+variable_1 = source
+\layout Standard
+
+The variable_1 is a variable that can be used in the form in the following
+ contexts:
+\layout Itemize
+
+it is a local variable used for intermediate storage of data
+\layout Itemize
+
+as source (i.e.
+ input) to some other variable
+\layout Itemize
+
+as a field to be shown on the screen
+\layout Itemize
+
+as a variable that contains data for database access
+\layout Subsubsection
+
+Assigning values to variables
+\layout Standard
+
+Variables can be assigned values in the following ways:
+\layout Itemize
+
+constants: 
+\emph on 
+status=' active' 
+\layout Itemize
+
+from other variables: 
+\emph on 
+status2 = status
+\layout Itemize
+
+from functions: 
+\emph on 
+status = selDB status from animal where db_id = 4711
+\layout Itemize
+
+from the keyboard: 
+\emph on 
+status = E
+\layout Itemize
+
+from a list picked via the keyboard: 
+\emph on 
+status = L ['active','passive']
+\layout Itemize
+
+from a list specified in the model file: 
+\emph on 
+status = L[animal.status]
+\emph default 
+.
+ Here the column status in table animal is used from the model file which
+ may hold 'active' and 'passive'.
+\layout Itemize
+
+from a function: 
+\emph on 
+status = L [selstat]
+\emph default 
+ where selstat is a routine that returns a set of values.
+\layout Itemize
+
+from a list allowing also other values: 
+\emph on 
+status = E['active','passive']
+\layout Subsubsection
+
+Qualifying screen fields
+\begin_inset LatexCommand \index{fields}
+
+\end_inset 
+
+
+\layout Standard
+
+Qualifying parameters are placed in brackets behind the target variable
+ and turn it thereby also into a screen field.
+ There are in all 7 parameters specified by their position.
+ These are:
+\layout Enumerate
+
+X coordinate
+\layout Enumerate
+
+Y coordinate
+\layout Enumerate
+
+field length
+\layout Enumerate
+
+Field label
+\layout Enumerate
+
+field clean indicator
+\layout Enumerate
+
+field level checking routine
+\layout Enumerate
+
+message string
+\layout Standard
+
+Fields are separated by commas, empty trailing commas may be left out.
+\layout Standard
+
+A variable is turned into a screen field by specifying coordinates
+\begin_inset LatexCommand \index{coordinates}
+
+\end_inset 
+
+:
+\layout Standard
+
+
+\emph on 
+status [10,20,15,'Status of animal'] = E
+\layout Standard
+
+Here, 10 and 20 are the x and y coordinates, 15 gives the length of the
+ field followed by the text that is displayed above the field on the screen.
+ Other specifications are:
+\layout Standard
+
+
+\emph on 
+status [+0,+10,15,'Status of animal'] = E
+\layout Standard
+
+Here, the coordinates are given relative to the coordinates of the last
+ field.
+ In this way, fields can be inserted easily without having to modify the
+ following field addresses.
+\layout Standard
+
+Yet another representation takes most of the values from the corresponding
+ model file:
+\layout Standard
+
+
+\emph on 
+status [10,+10, $, $] = E
+\layout Standard
+
+Here, the dollars indicated that the corresponding values be taken from
+ the model file.
+ Thus, the first
+\begin_inset LatexCommand \index{first}
+
+\end_inset 
+
+ $ takes the field length and the second the descriptive text from the model
+ file.
+\layout Standard
+
+
+\emph on 
+status [10,10, $, $] (= D)
+\layout Standard
+
+will place the content of status in the given location.
+\layout Standard
+
+So far fields have been considered scalars.
+ However, also tables will have to be displayed.
+ The forms local variable is then not a scalar but rather a matrix (i.e.
+ table) that may have resulted from a select.
+ As the length of the table is not known, we need a scrollable field that
+ allowes to browse through its complete content.
+ As a result the number of browse lines need to be specified.
+ Furthermore, the headings need to be printed only once on top of the browse
+ block.
+ The proposed syntax will be:
+\layout LyX-Code
+
+table = get_litters (sow_number)
+\layout LyX-Code
+
+begin browse 10
+\layout LyX-Code
+
+   table [10,10,20,'Sow'] = D
+\layout LyX-Code
+
+   table [10,10,25,'weaning date'] = D
+\layout LyX-Code
+
+end browse
+\layout Standard
+
+This code snippet creates a browse block of 10 lines.
+ Notice that the columns are accessed starting with the first in ascending
+ order.
+\layout Standard
+
+Now follows a more comprehensive description of the 7 qualifying screen
+ parameters:
+\layout List
+\labelwidthstring 00.00.0000
+
+1.\SpecialChar ~
+X\SpecialChar ~
+coordinate: a variable or constant like 20.
+ This gives an absolute adress.
+ A +10 specifies a relative location to the previous value.
+ In this way addresses do not have to be changed if lines are rearranged
+ on the screen.
+\layout List
+\labelwidthstring 00.00.0000
+
+2.\SpecialChar ~
+Y\SpecialChar ~
+coordinate: same a for the X coordinate.
+\layout List
+\labelwidthstring 00.00.0000
+
+3.\SpecialChar ~
+field\SpecialChar ~
+length: can also be a variable or constant.
+ Additionally, a $ indicates to take the field length from the model file
+ (may not work because fields are rarely linked to columns in the model
+ file.
+ It is probably better to create the complete forms file directly from the
+ model file as default forms for tables and in this process use length and
+ description from there.)
+\layout List
+\labelwidthstring 00.00.0000
+
+4.\SpecialChar ~
+Field\SpecialChar ~
+label: can also be a variable or constant.
+ Additionally, a $ indicates to take thedescription from the model file
+ (may not work because fields are rarely linked to columns in the model
+ file)
+\layout List
+\labelwidthstring 00.00.0000
+
+5.\SpecialChar ~
+field\SpecialChar ~
+clean\SpecialChar ~
+indicator: string or variable or empty.
+ 'keep' will not delete the field on screen refresh.
+ Any other status will.
+\layout List
+\labelwidthstring 00.00.0000
+
+6.\SpecialChar ~
+field\SpecialChar ~
+level\SpecialChar ~
+checking\SpecialChar ~
+routine: usually checking against the database will be
+ done by the load object which will be fired after all fields have been
+ filled.
+ In case of an error it is however difficult to conclude which field violated
+ a rule as the error messages refer to table/columns in the database and
+ not to the screen fields.
+ Currently, I see no way to automatically establish this link.
+ Here field level checking can help.
+ The sixth parameter is either empty (no checking) or contains a legal subroutin
+e which returns either TRUE or FALSE.
+ In the first case control moves to the next field while in the latter the
+ message in parameter 7 is issued in a popup box (?) and control goes back
+ to input for this field.
+\layout List
+\labelwidthstring 00.00.0000
+
+7.\SpecialChar ~
+message\SpecialChar ~
+string: This can be a string constant or a string variable.
+\layout Subsubsection
+
+Qualifying field deletion
+\begin_inset LatexCommand \index{deletion}
+
+\end_inset 
+
+
+\layout Standard
+
+After one round of data entry, it may make sense not to clear some of the
+ fields.
+ The default assumes fields to be cleared.
+ If this is not desired (keep) appended to the source will do the trick:
+\layout Standard
+
+
+\emph on 
+status [+0,+10,15,'Status of animal',keep] = E
+\layout Standard
+
+or
+\layout Standard
+
+
+\emph on 
+status [+0,+10,15,'Status of animal',keep] = L[animal.status]
+\layout Subsubsection
+
+action upon leaving the fields
+\layout Standard
+
+As a standard procedure, the fields get filled one by one.
+ Then at the end of the form the database access is performed, preferably
+ via a load object.
+ This has the disadvantage, that input errors are detected only long after
+ they may have been typed.
+ Also, allocating the errors to a particular field may be difficult.
+ Thus, in some instances it may be useful to perform business rule validation
+ on leaving a field.
+ For this the sixth parameter is introduced.
+ It contains a logical function.
+ If upon return its status is TRUE control transfers to the next field.
+ If FALSE control is passed back to the beginning of that field with a message
+ from the function being issued.
+ In this way it can already be checked early on if an external unit is legal
+ or not.
+ Note that these checks do not make use of the business rule layer but the
+ requires the corresponding knowledge on the programmers side.
+ Also, the same check will be performed again in the load object.
+\layout Subsection
+
+The data manipulation part
+\layout Standard
+
+The example in table 
+\begin_inset LatexCommand \ref{form}
+
+\end_inset 
+
+ deals with an insert into the database.
+ As can be seen, a simple SQL insert
+\begin_inset LatexCommand \index{insert}
+
+\end_inset 
+
+ is used.
+ Likewise, updates can be performed as given in table 
+\begin_inset LatexCommand \ref{updateform}
+
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Float table
+placement htbp
+collapsed true
+
+\layout Caption
+
+Update Sample Form
+\begin_inset LatexCommand \label{updateform}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+##################################################################
+\layout LyX-Code
+
+
+\size footnotesize 
+# load variable from database
+\layout LyX-Code
+
+
+\size footnotesize 
+ffarm, fbdate = selDB farm, bdate from animal where db_id = fdb_id
+\layout LyX-Code
+
+
+\size footnotesize 
+##
+\layout LyX-Code
+
+
+\size footnotesize 
+fdb_id  [ 10, 10, 12, 'Animal-ID' ] = E
+\layout LyX-Code
+
+
+\size footnotesize 
+ffarm   [ 27, 10, $, $            ] = ffarm
+\layout LyX-Code
+
+
+\size footnotesize 
+fbdate  [ 10,+10, $, $            ] = fbdate 
+\layout LyX-Code
+
+
+\size footnotesize 
+fcull_re[ 10,+10, $, $            ] = L [animal.cull_reason]
+\layout LyX-Code
+
+
+\size footnotesize 
+fcull_dt[ 10,+10, $, $            ] = E 
+\layout LyX-Code
+
+
+\size footnotesize 
+# update database
+\layout LyX-Code
+
+
+\size footnotesize 
+update ANIMAL set (cull_reason, cull_date = fcull_re,fcull_dt)  
+\layout LyX-Code
+
+
+\size footnotesize 
+          where db_id = fdb_id 
+\end_inset 
+
+
+\layout Subsection
+
+Functions
+\begin_inset LatexCommand \index{Functions}
+
+\end_inset 
+
+
+\layout Standard
+
+A number of functions are supplied for database access.
+\layout Subsubsection
+
+selDB
+\begin_inset LatexCommand \index{selDB}
+
+\end_inset 
+
+
+\latex latex 
+
+\backslash 
+index{functions!selDB}
+\layout Standard
+
+This function is basically nothing more than an ordinary SQL select statement.
+ However, it has one speciality regarding the definition of the WHERE clause:
+ local variable that are NULL (in the database context), i.e.
+ have no values specified in the fields are dropped for the select.
+ Let is assume the following function call:
+\layout Standard
+
+
+\size footnotesize 
+ffarm, fbdate = selDB farm, bdate from animal where db_id = fdb_id and sex=fsex
+\layout Standard
+
+If fsex were not specified in the form (i.e.
+ left blank) then the select issued to the RDBMS would be:
+\layout Standard
+
+
+\size footnotesize 
+select farm, bdate from animal where db_id = fdb_id
+\layout Standard
+
+Alternatively, if fdb_id were left empty and fsex set the select would be:
+\layout Standard
+
+
+\size footnotesize 
+select farm, bdate from animal where sex = fsex
+\layout Subsection
+
+GUI Form
+\begin_inset LatexCommand \index{Form}
+
+\end_inset 
+
+ generation
+\layout Standard
+
+The above syntax has been developed to specify application with a minimum
+ amount of information in a consistent syntax.
+ This does not preempt the form of entry or specification.
+ 
+\layout Standard
+
+Two programs (mkmodel
+\begin_inset LatexCommand \index{mkmodel}
+
+\end_inset 
+
+ and mkforms
+\begin_inset LatexCommand \index{mkforms}
+
+\end_inset 
+
+) are written to create the two files as given in graph 
+\begin_inset LatexCommand \ref{mkmodel}
+
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Float figure
+placement htbp
+collapsed true
+
+\layout Caption
+
+Creation of model and forms files
+\begin_inset LatexCommand \label{mkmodel}
+
+\end_inset 
+
+
+\layout Standard
+\align center 
+
+\begin_inset Figure size 170 170
+file model-gui.eps
+width 1 6
+height 1 6
+flags 9
+
+\end_inset 
+
+
+\end_inset 
+
+
+\layout Standard
+
+The resulting forms files on the basis of XML
+\begin_inset LatexCommand \index{XML}
+
+\end_inset 
+
+ can be created/modified by a GUI application.
+ It will read in the forms model file and present each field of the target
+ application as one line on the screen with the parameters given in the
+ order as described in table 
+\begin_inset LatexCommand \ref{form}
+
+\end_inset 
+
+.
+\layout Section
+
+Formal Steps to Setup an Information System for Existing Data Collection
+ Systems
+\layout Subsection
+
+Data Modelling
+\layout Subsubsection
+
+Collecting all data items in the IS
+\layout Paragraph
+
+Time dependent data streams
+\layout Subparagraph
+
+DS 01
+\layout Subparagraph
+
+DS 02
+\layout Subparagraph
+
+DS nn
+\layout Paragraph
+
+Time independent data streams
+\layout Subsubsection
+
+Creating a normalized database structure
+\layout Paragraph
+
+Fixed Structures
+\layout Paragraph
+
+Structures to be adopted
+\layout Subsubsection
+
+Creating the Business Rules
+\layout Standard
+
+This includes the definition of any number of independent LastAction sequences.
+\layout Subsection
+
+Creating the Database
+\layout Subsection
+
+Loading data in routine processing
+\layout Standard
+
+Routine data processing is based on the data that has been loaded into INSPOOL.
+ For each data stream one loading routine is required.
+ The general strategy is as follows:
+\layout List
+\labelwidthstring 00.00.0000
+
+driver_deck {DS01, DS02, DS03, DS04 ...
+ DSnn}
+\begin_deeper 
+\layout List
+\labelwidthstring 00.00.0000
+
+DS01 reads the next NEW record from inspool, creates the hash 
+\begin_inset LatexCommand \label{hash}
+
+\end_inset 
+
+required for the load object.
+ DS01 then calls LO_01:
+\begin_deeper 
+\layout List
+\labelwidthstring 00.00.0000
+
+LO_01 picks up the hash and processes all database actions required for
+ the load object as one transaction.
+ The load object 
+\begin_inset LatexCommand \label{LO_code}
+
+\end_inset 
+
+can be called from both batch and GUI programs.
+ Errors are collected in err_msg and passed back to the calling program.
+ If an error occurs, changes to the database are rolled back else they are
+ committed.
+ Thus, all database modifications are considered to be one transaction,
+ which either gets executed sucessfully in toto or not at all.
+ It is the responsibility of the programmer to ensure that at the end of
+ a Load Object a roleback conditional on the err_msg is in place.
+\end_deeper 
+\layout List
+\labelwidthstring 00.00.0000
+
+\SpecialChar ~
+ the return is handled here: if the load object executed ok, the corresponding
+ counters are incremented.
+ In case of errors INSPOOL_ERR is loaded, the status for the corresponding
+ record in INSPOOL is set.
+\layout List
+\labelwidthstring 00.00.0000
+
+DS02 read the records for data stream 2
+\begin_deeper 
+\layout List
+\labelwidthstring 00.00.0000
+
+LO_02 is the corresponding load object.
+\end_deeper 
+\end_deeper 
+\layout List
+\labelwidthstring 00.00.0000
+
+driver_deck comes to an end.
+\layout Standard
+
+Notice that the procedure for writing these applications follows from the
+ logic of the setup of the information system:
+\layout Enumerate
+
+define the data streams
+\begin_deeper 
+\layout Enumerate
+
+for each datastream define the traits involved (these are the hashes defined
+ above 
+\begin_inset LatexCommand \ref{hash}
+
+\end_inset 
+
+)
+\layout Enumerate
+
+for each datastream define the load object.
+ The equivalent program code is the one given above
+\begin_inset LatexCommand \ref{LO_code}
+
+\end_inset 
+
+.
+\end_deeper 
+\layout Subsubsection
+
+The load objects
+\layout Paragraph
+
+LO_DS 01
+\layout Paragraph
+
+LO_DS 02
+\layout Paragraph
+
+LO_DS nn
+\layout Subsubsection
+
+Creating the GUI programs
+\layout Paragraph
+
+GUI_DS 01
+\layout Paragraph
+
+GUI_DS 02
+\layout Paragraph
+
+GUI_DS nn
+\layout Subsubsection
+
+Creating the batch programs
+\layout Paragraph
+
+BATCH_DS 01
+\layout Paragraph
+
+BATCH_DS 02
+\layout Paragraph
+
+BATCH_DS nn
+\layout Subsection
+
+Presetting (initializing) the database
+\layout Subsubsection
+
+Starting without historical data
+\layout Paragraph
+
+Foreign Keys
+\layout Paragraph
+
+Starting points for pedigree recursion (base parents)
+\layout Section
+
+Software Modules
+\layout Subsection
+
+Applications
+\layout Subsubsection
+
+check_integrity
+\layout Subsubsection
+
+file2inspool.pl
+\layout Subsection
+
+low level routines
+\layout Subsubsection
+
+LastAction
+\layout Subsubsection
+
+Read_Inspool_rec
+\layout Subsubsection
+
+GetAddressId
+\layout Subsubsection
+
+get_db_id
+\layout Subsubsection
+
+open_data_channel
+\layout Standard
+
+
+\begin_inset LatexCommand \printindex{}
+
+\end_inset 
+
+
+\the_end

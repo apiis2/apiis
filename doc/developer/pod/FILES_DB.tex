@@ -1,0 +1,373 @@
+\subsection{Apiis::DataBase::Init -- Basic database initialisation\label{Apiis::DataBase::Init_--_Basic_database_initialisation}\index{Apiis::DataBase::Init -- Basic database initialisation}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::DataBase::Init_--_Basic_database_initialisation_SYNOPSIS}\index{Apiis::DataBase::Init -- Basic database initialisation!SYNOPSIS}}
+
+
+Database Initialisation based on the configuration in apiisrc and model file
+
+\subsubsection*{DESCRIPTION\label{Apiis::DataBase::Init_--_Basic_database_initialisation_DESCRIPTION}\index{Apiis::DataBase::Init -- Basic database initialisation!DESCRIPTION}}
+
+
+When loading the model file, database initialisation usually is done
+automatically. For certain special cases it can be delayed.
+
+\paragraph*{\$apiis-$>$DataBase-$>$disconnect()\label{Apiis::DataBase::Init_--_Basic_database_initialisation__apiis-_DataBase-_disconnect_}\index{Apiis::DataBase::Init -- Basic database initialisation!\$apiis-$>$DataBase-$>$disconnect()}}
+
+
+\textbf{\$apiis-}DataBase-$>$disconnect()$>$ disconnects the global database handle
+\$dbh (\$apiis-$>$DataBase-$>$dbh) from the database. If you pass a handle to
+\textbf{disconnect()} like:
+
+\begin{verbatim}
+   $apiis->DataBase->disconnect( $my_db_handle );
+\end{verbatim}
+
+
+then this \$my\_db\_handle will be disconnected.
+
+\paragraph*{commit(), user\_commit(), sys\_commit(), rollback(), user\_rollback(), sys\_rollback()\label{Apiis::DataBase::Init_--_Basic_database_initialisation_commit_user_commit_sys_commit_rollback_user_rollback_sys_rollback_}\index{Apiis::DataBase::Init -- Basic database initialisation!commit(), user\ commit(), sys\ commit(), rollback(), user\ rollback(), sys\ rollback()}}
+
+
+These methods commit/rollback all transactions for either the system
+or the user database handle.
+
+
+
+While
+
+\begin{verbatim}
+   $apiis->DataBase->sys_commit;
+   $apiis->DataBase->sys_rollback;
+\end{verbatim}
+
+
+and
+
+\begin{verbatim}
+   $apiis->DataBase->commit;
+   $apiis->DataBase->rollback;
+\end{verbatim}
+
+
+commit/rollback changes to the system database handle,
+
+\begin{verbatim}
+   $apiis->DataBase->user_commit;
+   $apiis->DataBase->user_rollback;
+\end{verbatim}
+
+
+perform this for the user database handle.
+
+
+
+If the commit/rollback fails, an error object is created and an error status
+of 1 is returned and the \$object-$>$status is set to 1.
+
+\paragraph*{seq\_next\_val\label{Apiis::DataBase::Init_--_Basic_database_initialisation_seq_next_val}\index{Apiis::DataBase::Init -- Basic database initialisation!seq\ next\ val}}
+\begin{verbatim}
+   $apiis->DataBase->seq_next_val( <sequence_name> );
+\end{verbatim}
+
+
+returns the next value of the sequence $<$sequence\_name$>$.
+
+\paragraph*{\_get\_users (internal)\label{Apiis::DataBase::Init_--_Basic_database_initialisation__get_users_internal_}\index{Apiis::DataBase::Init -- Basic database initialisation!\ get\ users (internal)}}
+
+
+\textbf{\_get\_users} retrieves all configured users from table 'users' and fills
+an internal datastructure to access the needed values.
+
+
+
+\textbf{\_get\_users} is invoked by Apiis::Init::\_join\_database.
+
+
+
+Note: As this served as some kind of caching and we have performance
+problems during initialization (especially for the web interface), this
+approach will be deactivated and replaced by queries for every single user
+(based on the login data). (20.12.04 - heli)
+
+\paragraph*{\_get\_user (internal)\label{Apiis::DataBase::Init_--_Basic_database_initialisation__get_user_internal_}\index{Apiis::DataBase::Init -- Basic database initialisation!\ get\ user (internal)}}
+
+
+\textbf{\_get\_user} retrieves the data for the passed user from table 'users' and fills
+an internal datastructure to access the needed values.
+
+
+
+\textbf{\_get\_user} is invoked by Apiis::DataBase::Init::verify\_user.
+
+\paragraph*{\_get\_user\_roles (internal)\label{Apiis::DataBase::Init_--_Basic_database_initialisation__get_user_roles_internal_}\index{Apiis::DataBase::Init -- Basic database initialisation!\ get\ user\ roles (internal)}}
+
+
+All roles of the \$apiis-$>$DataBase-$>$users are fetched from database and stored
+in the user objects.
+
+
+
+\textbf{\_get\_user\_roles} is invoked by Apiis::Init::\_join\_database.
+
+\paragraph*{users (public)\label{Apiis::DataBase::Init_--_Basic_database_initialisation_users_public_}\index{Apiis::DataBase::Init -- Basic database initialisation!users (public)}}
+
+
+\textbf{users} returns all database users of this project.
+
+\paragraph*{user (public)\label{Apiis::DataBase::Init_--_Basic_database_initialisation_user_public_}\index{Apiis::DataBase::Init -- Basic database initialisation!user (public)}}
+
+
+\textbf{user} returns a User object for the passed user.
+
+\paragraph*{verify\_user (internal)\label{Apiis::DataBase::Init_--_Basic_database_initialisation_verify_user_internal_}\index{Apiis::DataBase::Init -- Basic database initialisation!verify\ user (internal)}}
+
+
+\textbf{verify\_user} checks the login data of the passed user object (name and
+password) against the internal values from the database.
+
+\paragraph*{crosstab\label{Apiis::DataBase::Init_--_Basic_database_initialisation_crosstab}\index{Apiis::DataBase::Init -- Basic database initialisation!crosstab}}
+
+
+\textbf{crosstab} is a wrapper around the CPAN-Modules DBIx::SQLCrosstab and
+DBIx::SQLCrosstab::Format. They allow a convenient way of creating
+cross tabulations from the database and outputting it into different formats.
+See 'man DBIx::SQLCrosstab' and 'man DBIx::SQLCrosstab::Format' for details.
+
+
+
+\$apiis-$>$DataBase-$>$crosstab integrates DBIx::SQLCrosstab into the apiis
+framework. It assumes all necessary parameters getting provided with via a
+hash reference.
+
+
+
+Input parameters:
+
+\begin{verbatim}
+   * $hash_ref->{params} with all parameters according to DBIx::SQLCrosstab.
+     This includes a database handle (either user_dbh or sys_dbh).
+   * $hash_ref->{format} defines the output format
+   * $hash_ref->{aux} passes an additional parameter, which some formats
+     expect, e.g. as_xls('filename'):
+        $hash_ref->{format} = 'as_xls';
+        $hash_ref->{aux}    = 'filename';
+\end{verbatim}
+
+
+Output parameters:
+
+\begin{verbatim}
+   * According to the documentation of DBIx::SQLCrosstab::Format
+\end{verbatim}
+
+
+Example:
+
+\begin{verbatim}
+   my $return_val = $apiis->DataBase->crosstab($hash_ref);
+\end{verbatim}
+\subsection{DBCreation.pm\label{DBCreation_pm}\index{DBCreation.pm}}
+
+
+
+
+\subsubsection*{DESCRIPTION\label{DBCreation_pm_DESCRIPTION}\index{DBCreation pm!DESCRIPTION}}
+
+
+This module is used in runall process to create initial database structure. The structure of the database 
+is taken from the model file. New database is created in the system user schema (system user name is 
+taken from the modelfile) and the public schema is removed. Then the languages are loaded from 
+defined file and information about node is inserted (from apissrc settings). At the end sequences are
+corectly set.
+
+\subsubsection*{SUBROUTINES\label{DBCreation_pm_SUBROUTINES}\index{DBCreation pm!SUBROUTINES}}
+\paragraph*{CreateDatabase\label{DBCreation_pm_CreateDatabase}\index{DBCreation pm!CreateDatabase}}
+
+
+This subroutine call all subroutines which are written in this file. The parameters are defined as:
+- \$db\_encoding  -  character encoding which will be used in the database 
+- \$db\_name - databse name
+- \$user\_creator - user name which creates database
+- \$lang\_file -  file name where the initila languages are written (language.dat in the reference database) 
+- \$lang\_dir - directory for the language file
+
+\paragraph*{InitDB\label{DBCreation_pm_InitDB}\index{DBCreation pm!InitDB}}
+
+
+This subroutine creates initial database structure. PUBLIC schema is removed and the database 
+is placed in the system user schema. System user schema name is taken from the user name
+defined in the modelfile.
+
+\paragraph*{LoadLang\label{DBCreation_pm_LoadLang}\index{DBCreation pm!LoadLang}}
+
+
+This subroutine load initial languages to the languages table.
+
+\paragraph*{LoadNodeData\label{DBCreation_pm_LoadNodeData}\index{DBCreation pm!LoadNodeData}}
+
+
+This subroutine load initial information about node. These information are inserted in the nodes table.
+
+\paragraph*{SetSequences\label{DBCreation_pm_SetSequences}\index{DBCreation pm!SetSequences}}
+
+
+This subroutine sets initial sequences.
+
+\subsubsection*{AUTHORS\label{DBCreation_pm_AUTHORS}\index{DBCreation pm!AUTHORS}}
+\begin{verbatim}
+ Marek Imialek <marek@tzv.fal.de>
+\end{verbatim}
+\subsection{Apiis::DataBase::User -- collecting and providing user data\label{Apiis::DataBase::User_--_collecting_and_providing_user_data}\index{Apiis::DataBase::User -- collecting and providing user data}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_SYNOPSIS}\index{Apiis::DataBase::User -- collecting and providing user data!SYNOPSIS}}
+\begin{verbatim}
+   my $usr_obj = Apiis::DataBase::User->new( id => <userid>, %args );
+\end{verbatim}
+\subsubsection*{DESCRIPTION\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_DESCRIPTION}\index{Apiis::DataBase::User -- collecting and providing user data!DESCRIPTION}}
+
+
+To create a new User object, we need at least a user id.
+A User object is created and returned.
+
+\begin{verbatim}
+   my $usr_obj = Apiis::DataBase::User->new( id => <userid> );
+\end{verbatim}
+
+
+Other parameters can be passed to fill the object at creation time:
+
+\begin{verbatim}
+   my $usr_obj = Apiis::DataBase::User->new(
+      id       => <userid>,
+      password => <top_secret>,
+   );
+\end{verbatim}
+
+
+When you run
+
+\begin{verbatim}
+   $apiis->join_user( user_obj => $this_obj, %args );
+\end{verbatim}
+
+
+the User object \$this\_obj is joined into the \$apiis structure. This can happen
+only once as only one user can run a program at a time. If no user\_obj is passwd,
+join\_user falls back to ask for login data by itself.
+
+
+
+Nevertheless is it possible, to create other User object, e.g. to insert a new 
+user into the database.
+
+
+
+With
+
+\begin{verbatim}
+   my $user_obj = $apiis->DataBase->user( <userid> );
+\end{verbatim}
+
+
+you can retrieve all user information, stored in the database, into a User object.
+
+\subsubsection*{TODO\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_TODO}\index{Apiis::DataBase::User -- collecting and providing user data!TODO}}
+
+
+Maybe we get some class Apiis::Person later, whereof Apiis::DataBase::User is a
+subclass. So User should be restricted to the data which is needed for database
+connection (authentication and authorisation), whilst other personal data like name,
+address, etc. should be retrieved from the unit/naming/address setup via some foreign
+key. In table users, column login will then become the primary key (enforce uniqueness)
+and user\_id could point to unit (or somewhere else).
+
+\subsubsection*{METHODS\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_METHODS}\index{Apiis::DataBase::User -- collecting and providing user data!METHODS}}
+\paragraph*{new (public)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_new_public_}\index{Apiis::DataBase::User -- collecting and providing user data!new (public)}}
+
+
+\textbf{new()} returns an object reference for a new User object.
+
+\paragraph*{roles (public)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_roles_public_}\index{Apiis::DataBase::User -- collecting and providing user data!roles (public)}}
+
+
+\$usr\_obj-$>$roles returns the roles of this user either as an array or an
+arrayreference.
+Roles are stored here by:
+
+\begin{verbatim}
+   $usr_obj->roles( \@these_roles );
+   or
+   $usr_obj->roles( 'role1', 'role2', 'roleN' );
+\end{verbatim}
+\paragraph*{password\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_password}\index{Apiis::DataBase::User -- collecting and providing user data!password}}
+\begin{verbatim}
+   $usr_obj->password
+\end{verbatim}
+
+
+returns the encrypted password. If a new password is passed with
+
+\begin{verbatim}
+   $usr_obj->password( <new_password> );
+\end{verbatim}
+
+
+this password is first encrypted and then stored. If you want to store an already
+encrypted password (like one from the database) you have to invoke it
+
+\begin{verbatim}
+   $usr_obj->password( <new_password>, encrypted => 1 );
+\end{verbatim}
+\paragraph*{authenticated (public)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_authenticated_public_}\index{Apiis::DataBase::User -- collecting and providing user data!authenticated (public)}}
+
+
+This is a flag to show successful authentication of this user against his 
+database password.
+
+
+
+It is read-only to allow setting of this flag only from inside of \textbf{verify\_user}
+
+\paragraph*{print (external)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_print_external_}\index{Apiis::DataBase::User -- collecting and providing user data!print (external)}}
+
+
+Return the contents of the User object as a string, nicely formatted.
+The elements of this object are printed according to the order of the @methods
+array, if they contain data.
+
+\paragraph*{print (external)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_print_external_}\index{Apiis::DataBase::User -- collecting and providing user data!print (external)}}
+
+
+Print this user object to STDOUT (default) or the passed filehandle with the
+formatting of sprint.
+
+
+
+Examples:
+  \$user\_obj-$>$print;
+  \$user\_obj-$>$print( filehandle =$>$ *FILE );
+
+\paragraph*{user\_language\_id (external)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_user_language_id_external_}\index{Apiis::DataBase::User -- collecting and providing user data!user\ language\ id (external)}}
+
+
+\$usr\_obj-$>$user\_language\_id returns the language id as stored in table ar\_users
+(new Auth/AR setup).
+
+\paragraph*{lang\_id (external)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_lang_id_external_}\index{Apiis::DataBase::User -- collecting and providing user data!lang\ id (external)}}
+
+
+\$usr\_obj-$>$lang\_id returns the language id as stored in table users (old,
+deprecated Auth/AR setup).
+
+\paragraph*{language (external)\label{Apiis::DataBase::User_--_collecting_and_providing_user_data_language_external_}\index{Apiis::DataBase::User -- collecting and providing user data!language (external)}}
+
+
+\$usr\_obj-$>$language returns the value of iso\_lang from table languages with
+the given lang\_id. It is preset with \$apiis-$>$language as default.
+

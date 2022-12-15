@@ -1,0 +1,183 @@
+##############################################################################
+# $Id: INSTALL,v 1.7 2004/02/10 07:50:33 heli Exp $
+##############################################################################
+
+=== BASIC PERL INSTALLATION:
+APIIS is written in Perl. Perl provides a huge number of modules. Some of
+them are used for APIIS and have to be installed before use. These are:
+   Tk
+   Tk::DateEntry
+   DBI
+   DBD::Pg  # or another database driver
+   IniConf
+   DBIx::Recordset
+if you want to use a CSV database:
+   DBD::CSV
+   Text::CSV_XS
+   SQL::Statement
+Further information about Perl modules see below.
+
+=== ENVIRONMENT:
+APIIS, the 'Adaptable Platform Independant Information System' is
+distributed as a tar-file.  After unpacking it you have to change your
+environment to point to the root directory of the APIIS tree.
+
+for bash:
+Change the following commands according to your setup
+and add them to your ~/.bashrc:
+
+   export APIIS_HOME=~/apiis
+   export APIIS_LOCAL=$APIIS_HOME/test/animal
+   export PATH=$PATH:$APIIS_HOME/bin:$APIIS_LOCAL/bin
+
+$APIIS_HOME is the base directory for all the global files needed to run the
+software.  $APIIS_LOCAL points to your local development tree which should
+be set up in the same structure as the global one. For developing in the
+global modules you should set $APIIS_LOCAL to $APIIS_HOME/test/animal, which
+is one of our test databases.
+
+=== OWN APPLICATIONS:
+If you want to start an own application with APIIS follow these steps:
+1. create your own development directory, e.g.:
+   mkdir $HOME/mydb $HOME/mydb/bin $HOME/mydb/model
+
+2. set $APIIS_LOCAL with:
+   export APIIS_LOCAL=$HOME/mydb
+
+3. If you create own binaries for your application put them into
+   $APIIS_LOCAL/bin and:
+   export PATH=$PATH:$APIIS_HOME/bin:$APIIS_LOCAL/bin 
+
+4. Copy the model file from $APIIS_HOME/test/animal/model/animal.model to
+   $APIIS_LOCAL/model/mydb.model as a starting point. Later we will develop
+   a graphical shell to create new model files. A very basic tool (mkmodel)
+   is already available in text mode.
+
+5. Modify the new model file mydb.model to your own needs.
+   You get the already existing rules for the CHECK columns with:
+   perldoc $APIIS_HOME/lib/Rules
+   If you want to MODIFY your data before checking try:
+   grep ^sub $APIIS_HOME/lib/Modify.pm        :^)
+
+6. If your model file is ready create the database from it:
+   mksql mydb.model
+   This currently works for PostgreSQL, our development database. Please
+   add the appropriate entries for other databases in
+   $APIIS_HOME/lib/DataBase.pm in the sub DBspecific() and send us a copy of
+   your enhancements.  Have a look at the resulting file mydb_driver.sql and throw
+   it against your database, e.g. for PostgreSQL:
+
+   createdb mydb
+   psql -f mydb_Pg.sql mydb
+   This could differ widely for other databases.
+
+7. Your basic setup is ready now and you can create basic forms for data
+   input:
+   mkform mydb.model
+   This will create default forms for your tables in $APIIS_LOCAL/model/forms.
+   You can extend the functionality of these forms. Please read the docs in
+   $APIIS_HOME/doc. They are written with lyx, a *very* nice frontend for LaTeX
+   (www.lyx.org). Maybe we should provide other formats?
+
+8. APIIS is at a very early stage and under heavy development. A lot of
+   things are missing, buggy and not working very well, but as a german
+   proverb tells: 'Rom wurde auch nicht an einem Tag erbaut' (roughly
+   translated into 'Rome was not built in one day' :^).
+   
+   Any comments, hints, patches, and new modules are very welcome.
+
+The is a graphical shell to run APIIS called 'apiish'. It is
+intended to run all modularized programs either from apiish or as standalone
+programs. These modules are:
+mkform           - create a simple and incomplete template for a new model
+                   file
+mksql            - create sql DDL statements from the modelfile
+model2xfig       - create a .fig file for xfig to display the structure of
+                   your database graphically
+show_rules       - display the CHECK rules used in your model file
+mkform           - create a set of standard form parameter files with 1:1
+                   relation between forms and tables
+Form             - run a single form based on the parameter files.
+check_integrity  - check the data in an existing database against the
+                   business rules defined in the model file
+csv.init         - create a CSV database (flat files) from a model file
+
+
+=== PERL MODULES:
+There is a worldwide network of CPAN-servers which build the 'Comprehensive
+Perl Archive Network'. From ftp://ftp.cpan.org/pub/perl/CPAN/README:
+
+"CPAN is the Comprehensive Perl Archive Network. Comprehensive: the aim
+is to contain all the Perl material you will need. Archive: 600
+megabytes as of December 1998. Network: CPAN is mirrored at almost one
+hundred sites around the world. The CPAN Multiplexor can either
+automatically select a site <URL:http://www.perl.com/CPAN/>
+(hopefully) close to you or you can select a site manually
+<URL:http://www.perl.com/CPAN> . From then on, your CPAN requests will
+go to the selected site (your browser will remember the
+selection). The automatic selection is especially nifty outside United
+States because for example all requests coming from .fr sites will be
+multiplexed to the French CPAN sites, instead of going to USA."
+
+The relevant modules for APIIS are located on CPAN in the subdirectories
+   CPAN/modules/by-authors/id/
+
+NI-S/Tk800.018.tar.gz
+H/HJ/HJHELGE/Tk-DateEntry-1.3.tar.gz
+TIMB/DBI-1.13.tar.gz
+MERGL/DBD-Pg-0.93.tar.gz
+RBOW/IniConf-0.95.tar.gz
+JWIED/DBD-CSV-0.1022.tar.gz
+JWIED/Text-CSV_XS-0.20.tar.gz
+JWIED/SQL-Statement-0.1016.tar.gz
+
+These are the current versions of Feb. 2000 but you always should download
+the latest versions.
+
+Some mirror sites of CPAN are:
+ftp://ftp.cpan.org/pub/perl/CPAN/
+ftp://ftp.cis.ufl.edu/pub/perl/CPAN/
+ftp://ftp.cs.ruu.nl/pub/PERL/CPAN/
+ftp://ftp.delphi.com/pub/mirrors/packages/perl/CPAN/
+ftp://ftp.funet.fi/pub/languages/perl/CPAN/
+ftp://ftp.is.co.za/programming/perl/CPAN/
+ftp://ftp.pasteur.fr/pub/Perl/CPAN/
+ftp://ftp.sterling.com/programming/languages/perl/
+ftp://janus.sedl.org/pub/mirrors/CPAN/
+ftp://orpheu.ci.uminho.pt/pub/lang/perl/    
+
+To get anything about Perl visit the CPAN (Comprehensive Perl Archive
+Network) servers at:
+
+   http://www.perl.com
+   http://www.perl.com/CPAN
+   ftp://ftp.cpan.org/pub/CPAN/
+
+The (free) 32bit MS-Windows port of Perl can be found at:
+   http://www.activestate.com
+
+Example to install a module:
+   # get your favourite module, eg
+   ftp://ftp.cpan.org/pub/CPAN/modules/by-authors/id/\
+      NI-S/Tk800.018.tar.gz
+
+   # unpack it:
+   tar xzvf Tk800.018.tar.gz
+   cd Tk800.018
+   
+   # standard way to compile and install a module:
+   perl Makefile.PL
+   make
+   make test
+   make install                  
+
+
+----------------------------------------
+Debian packages are created by :
+dh-make-perl --cpan Tk::DateEntry --build --install
+or:
+dh-make-perl --cpan XY
+cd /root/.cpan/build/XY
+dpkg-buildpackage # -us -uc ## if you don't want to sign the package
+dpkg -i XY
+

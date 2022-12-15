@@ -1,0 +1,296 @@
+#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{eurosym}
+\end_preamble
+\language english
+\inputencoding latin9
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "Eildert Groeneveld,,+49 (0)5034 871 155,+49 (0)5034 4426" eildert.groeneveld@fal.de
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Requirements for Graphical User Interfaces in APIIS
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Requirements (finish in week 28)
+\end_layout
+
+\begin_layout Enumerate
+The objective is to have a GUI development framework, that allows the rapid
+ development of WEB applications interfacing to the APIIS metalayer.
+ The definition of the complete side is done through the XML forms file
+ (which Helmut and Ulf already use).
+ The target group are implementers, meaning that coding for the eventhandlers
+ will be required.
+ In contrast, RapidAPIIS users will not require coding, but here database
+ access is based solely on on record objects on the one-form-per-table paradigm
+ for user specified data (i.e.
+ for the non core tables.
+ Thus, here we require free definition of the GUI layout which is disconnected
+ from the underlying record object structure.
+ (most likely, backend interaction will be SQL for reading and load objects
+ for insert/updates/deletes)
+\end_layout
+
+\begin_layout Enumerate
+the definitions under this chapter are the requirements from the implementers
+ side and do not consider any implementation issues be it html or Tk.
+ The scope is intended such that an external person (like a graphics designer
+ or even end user) determines the layout and actions not knwoing anything
+ about implementation.
+\end_layout
+
+\begin_layout Enumerate
+The definition of the complete GUI and its logic is done in an XML file.
+ While this is intrinsically static and has no provision for flow control,
+ the GUI actions (amounting to flow control) is done through actions starting
+ from event handlers which are determined by the GUI user and her mouse
+ actions.
+\end_layout
+
+\begin_layout Enumerate
+definitions:
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+FORM one page in the browser, accessed through tabs
+\end_layout
+
+\begin_layout Description
+FRAME subset of field within a FORM, may get called from menu or EH, serves
+ for grouping with same properties
+\end_layout
+
+\begin_layout Description
+DF field displayed in the browser; filled through typing, pull down or EH
+\end_layout
+
+\begin_layout Description
+BF blind field that has values but is not shown; filled through EH
+\end_layout
+
+\begin_layout Description
+EH the event handler is some piece of code attached to a field/botton, that
+ is executed to compute or display something, often into a FRAME
+\end_layout
+
+\begin_layout Description
+ALL fields/variable of the complete tree are accessible for reading and
+ writing
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The global GUI components are:
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+FORM: all tabs (i.e) screens are uniquely addressable as are fields
+\end_layout
+
+\begin_layout Description
+FRAME: within each tab a number of FRAMEs can be defined.
+ A FRAME is called through the EH which has access to all data fields in
+ all FORMs.
+ For instance, a FRAME may display the results from a select.
+ After entering an animal ID hitting the attached button or return, may
+ fires the EH 'select db_animal, birth_dt from animal where db_sire=$db_sire'
+ into another form, that would contain then a list of offspring created
+ from the SQL.
+ Each such line returned from the SQL could have its own EH attached, which
+ could display more info about this offspring.
+ Thus, a form may contain one line or many lines like a spreadsheet each
+ with an EH (button or focus action or other) attached.
+ A form has attributes: apart from CSS specs it has x,y,z coordinates of
+ anchor placement, with z being the window/tab.
+\end_layout
+
+\begin_layout Description
+EH: behind an action event (AE, button or 'focus change')), an implementer
+ defined procedure or event handler (EH) can be fired.
+ The EH has access to all data fields in the complete FORM tree for reading
+ and writing.
+ Thus, an action event is parameterized through the three parts EH name,
+ data passed to the EH, the target FRAME: EH{subsetof(DF,BF)}{FRAME}.
+ The procedure can be any piece of code, it may, for instance, perform an
+ SQL select for a given sire, which comes from field.
+ This is similar to a subroutine call which does not know a return.
+ If this is intended, then the FRAME containing the block that called the
+ EH has to be called again from this form.
+ Thus, the procedural requirements are executed through the series of EH,
+ which are normally triggered by the user actions (e.g.
+ mouse clicks on buttons).
+\end_layout
+
+\begin_layout Description
+Diagram: of GUI elements:
+\end_layout
+
+\begin_layout Description
+\begin_inset Graphics
+	filename GUIform.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+MenuStructure: The menu structure needs to be parameterizable (TAB organization)
+ Ulf?
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Field features are:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+display
+\end_layout
+
+\begin_layout Enumerate
+default
+\end_layout
+
+\begin_layout Enumerate
+data type
+\end_layout
+
+\begin_layout Enumerate
+next field
+\end_layout
+
+\begin_layout Enumerate
+default
+\end_layout
+
+\begin_layout Enumerate
+keep
+\end_layout
+
+\begin_layout Enumerate
+erase
+\end_layout
+
+\begin_layout Enumerate
+...
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Controls
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+combo
+\end_layout
+
+\begin_layout Enumerate
+pull down
+\end_layout
+
+\begin_layout Enumerate
+..
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+BLOB loading and display
+\end_layout
+
+\begin_layout Section
+XML Sufficiency (finish in July)
+\end_layout
+
+\begin_layout Standard
+Here, it needs to be tested if the DTD is able to define any specific instance
+ of the general requirements listed above.
+ This should be done by defining existing applications in the XML definitions.
+ These applications should be defined:
+\end_layout
+
+\begin_layout Enumerate
+Cryo_WEB
+\end_layout
+
+\begin_layout Enumerate
+EFABIS
+\end_layout
+
+\begin_layout Section
+Degree of Implementation (Mid August)
+\end_layout
+
+\begin_layout Standard
+We need to have a list of required routines from the XML and the one that
+ is already implemented.
+ On the basis of this difference we can get an idea about the required implement
+ation time.
+\end_layout
+
+\begin_layout Section
+Start Implementation of the Remaining features
+\end_layout
+
+\begin_layout Standard
+when?
+\end_layout
+
+\begin_layout Section
+Design of missing components
+\end_layout
+
+\begin_layout Standard
+who does what?
+\end_layout
+
+\end_body
+\end_document

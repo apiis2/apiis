@@ -1,0 +1,71 @@
+apt-get update;
+apt-get install postgresql apache2 cvs r-cran texlive-common texlive-font-utils texlive-base texlive texlive-generic-recommended texinfo texlive-lang-german xfig xfig-doc
+
+#-- cvs initialisieren
+cvs -d :pserver:michel@cvs-server.tzv.fal.de:2401/usr/local/lib/cvsroot login
+GoPerl!
+
+#-- apiis, mszv, qs, reference, ref_breedprg auschecken
+cvs -d :pserver:michel@cvs-server.tzv.fal.de:2401/usr/local/lib/cvsroot co apiis
+cvs -d :pserver:michel@cvs-server.tzv.fal.de:2401/usr/local/lib/cvsroot co reference
+cvs -d :pserver:michel@cvs-server.tzv.fal.de:2401/usr/local/lib/cvsroot co ref_breedprg
+
+cd ..
+cvs -d :pserver:michel@cvs-server.tzv.fal.de:2401/usr/local/lib/cvsroot co msz
+
+
+#-- Rechte ändern
+vi /etc/postgresql/8.4/main/pg_hba.conf
+
+# "local" is for Unix domain socket connections only
+local   all         all                               trust
+# IPv4 local connections:
+host    all         all         127.0.0.1/32         trust
+
+#perlquellen nachinstallieren
+su root
+$APIIS_HOME/bin/apiis-test-dependencie
+
+
+#-- Platte vergrößern
+vgdisplay -v vg00       # Anzeigen
+lvextend -L +10G /dev/vg00/var  # logisch vergrößern
+xfs_growfs /var         # physisch vergrößern
+
+# Sourcelist erweitern
+vi /etc/apt/sources.list
+deb http://forssa.tzv.fal.de/debian-apiis-perl/ ./
+
+
+apt-get install libxml-dtdparser-perl
+
+#-- Projekt anmelden
+vi $APIIS_HOME/etc/apiisrc
+mszv = $APIIS_HOME/mszv
+date_sep    = . 
+date_order  = DD.MM.YYYY
+
+#-- Verzeichnisse und Links erstellen
+$APIIS_HOME/mszv/bin/create_mszv.sh
+ln -s /home/michel/apiis/etc/AR.xml .
+mkdir /home/michel/apiis/tmp/sessiondata
+
+#-- reoback einrichten
+mkdir /etc/reoback
+scp zwisss@zwisss.net:/etc/reoback/* .
+vi files.conf settings.conf
+mkdir /var/lib/reoback/
+mkdir /var/lib/reoback/tmp
+mkdir /var/lib/reoback/data
+
+#-- Virtualhost einrichten
+
+
+#-- Rechte vergeben für logs
+
+#-- Pfade in etc/form.dtd anpassen. + entsprechende xmls kopieren
+navigationButtons_Fields SYSTEM "/home/michel/apiis/etc/navigationbuttons.xml">
+
+# in modelfile nachtragen <!ENTITY GlobalColumns SYSTEM "GlobalColumns.xml">
+
+

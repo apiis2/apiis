@@ -1,0 +1,76 @@
+\documentclass[12pt,a4paper,DIV12]{scrartcl}
+\usepackage{german}
+\usepackage{umlaut}
+\usepackage{longtable}
+\usepackage{fancyvrb}
+
+\begin{document}
+\begin{center}{ \Large \bf Protokoll der APIIS-Entwicklerzusammenkunft\\ 4.~und
+  5.~Februar 2004 in Köllitsch }
+\end{center}
+
+\section{Teilnehmer}
+\begin{itemize}
+\item Eildert Groeneveld (eg)
+\item Helmut Lichtenberg (hl)
+\item Hartmut Börner (hb)
+\item Detlef Schulze (ds)
+\item Zhivko Duchev (zd)
+\item Marek Imialek (mi)
+\item Ulf Müller (um)
+\item Ralf Fischer (rf)
+\end{itemize}
+
+\section{Ergebnisse}
+\begin{enumerate}
+\item alle CVS Dateien werden mit einem 'Tag' für die
+  Versionskontrolle versehen
+\begin{itemize}
+\item hl setzt diese und erstellt ein Beispiel für die Nutzung
+\item rf klärt das Auschecken und Pflegen für die MINIPIGS (Göttingen)
+\end{itemize}
+\item[$\Rightarrow$] hat sich inzwischen erledigt, die neuen Kernstrukturen werden in einem
+neuen Modul (apiis) abgebildet, pdbl bleibt so wie bisher
+\item Umstellung interner Strukturen -- hb, um und rf machen einen Vorschlag für
+  die zusätzliche Anforderungen an Input/Output Objekte basierend auf
+  den Strukturen von Recordset (hl), dabei sollen auch beliebige
+  SQL-Statements möglich sein 
+\item Dokumentation
+\begin{itemize}
+\item die Quellprograme und Libraries werden am Ort mittels POD dokumentiert
+\item hl erstellt ein Makefile welches diese Informationen
+  zusammensucht und daraus eine Dokumentation erstellt
+\item die Anwenderdokumentation ist zu Modularisieren und mittels
+  \verb/\input/ in einem \LaTeX--Dokument zusammenzufassen
+\item ds macht hierfür einen Vorschlag für eine generische
+  Dokumentstruktur und passt die bisherige Doku daran an
+\item innerhalb der doc-Pfade in jedem Projekt sind die
+  Unterverzeichnisse 'developer', 'implementer' und 'user' zu
+  erstellen und zu nutzen
+\end{itemize}
+\item keine \verb/die/ und \verb/print/ Statements in Programmen
+  welche auch in Verbindung mit HTML genutzt wefrden sollen
+  (z.\,B.~pdf-Reports)
+\item zd stellt den Patch für DBD bereit (für Köllitsch)
+\item für die Graphische Darstellung von Abläufen u.\,ä.~ist auf die
+  Mithilfe von Jutta Moosdorf zurückzugreifen, dafür sind
+  aussagekräftige Skizzen zu erstellen
+\end{enumerate}
+
+\section{Zusätze}
+\begin{enumerate}
+\item eg
+\begin{itemize}
+\item ds übernimmt die Koordinierung und Überwachung der Doku als
+  'documentation officer'
+\item bei Umstellung interner Strukturen müssen die jetzigen
+  'Implementer Interfaces' in Forms und LO weiter möglich sein
+\end{itemize}
+\end{enumerate}
+
+\end{document}
+
+
+
+
+

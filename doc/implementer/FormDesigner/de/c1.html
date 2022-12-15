@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+ <TITLE>FormDesigner: MainWindow</TITLE>
+</HEAD>
+<body alink="#ee0000" bgcolor="#e4e4e4" link="blue" text="#42426f" vlink="darkBlue">
+
+<table width="100%" border="0">
+  <tr bgcolor="white">
+  <td width="10%"><img src="../images/FDicon.png" alt="FormDesigner Icon" align="right" width="64" height="64" border="0" vspace="10" hspace="10">
+</td>
+<td><img src="../images/formdesigner.png" width="321" height="89" border="0" hspace="100"></td>
+  </tr>
+</table>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c0.html">1. Einführung</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c2.html">3. Generelle Konfiguration</a></font></td>
+  </tr>
+</table>
+
+<H1>2. Das Hauptfenster</H1>
+
+Beim Start des FormDesigners erscheint zun&auml;chst das Hauptfenster auf dem
+Bildschirm (Abbildung 1). Das Fenster besteht aus mehreren Teilen: einer Menüleiste, einem
+mit Database bezeichneten Bereich, einem Feld zur Auswahl der Maskenobjekte und zwei Knöpfen.
+<br><br>
+
+Die <a href="c1.html#menu"><b>Men&uuml;leiste</b></a> besteht aus vier Men&uuml;s: <a href="#file"><b>File</b></a>,
+<a href="#edit"><b>Edit</b></a>, <a href="#options"><b>Options</b></a> und
+<a href="#help"><b>Help</b></a>.<br><br>
+
+In dem mit <i>Database</i> bezeichneten Bereich sind die Felder <i>Tables</i> und <i>Columns</i>
+zun&auml;chst leer. Nach Angabe einer Model-Datei werden im Feld <i>Tables</i> alle definierten
+Tabellen angezeigt. Durch Anklicken eines Tabellenamens werden im Feld <i>Columns</i> die
+dazugeh&ouml;rigen Spalten aufgef&uuml;hrt (Abbildung 2).
+<br><br>
+Im Listenfeld <b>Form Field Types</b> sind alle verf&uuml;gbaren Objekttypen aufgelistet
+und k&ouml;nnen per Mausklick ausgew&auml;hlt werden. Durch Wahl eines Typs
+wird der darunterbefindliche rechte Knopf aktiv und bringt ein dem Typ entsprechendes
+Konfigurationsfenster auf den Schirm.<br><br>
+Der linke Knopf <b>Update</b> dient zum Aktualisieren der Maske. Der rechte Knopf ist zu Beginn
+unbeschriftet.<br>
+<br><br>
+<table align="center">
+<tr align="center " valign="bottom">
+<td align="left" valign="bottom">
+<img src="../images/MainWindow.gif" width="314" height="320" border="0" title="Abbildung 1: MainWindow" align="left" hspace="20">
+</td>
+<td align="left" valign="bottom">
+<img src="../images/MainWindow1.gif" width="314" height="320" border="0" align="left" title="Abbildung 2: MainWindow: Form-Datei codes.frm" hspace="20">
+</td>
+</tr>
+<tr align="center " valign="center">
+<td align="center" valign="top">Abbildung 1</td>
+<td align="center" valign="top">Abbildung 2</td>
+</tr>
+</table><br><br>
+
+<a name="menu"><h2>Die Menüs</h2></a>
+Dieser Abschnitt enthält eine kurze Beschreibung über die Wirkungsweise der einzelnen Menüpunkte.<br>
+<a name="file"><h2>File</h2></a>
+<b>File->New</b><br>Neue Maske erstellen: Startet eine Dialogbox zum Konfigurieren einer neuen Maske.<br><br>
+<b>File->Open...</b><br>Öffnet eine Form-Datei zum Editieren.<br><br>
+<b>File->Save</b><br>Maskendefinitionen in eine Form-Datei speichern. Wenn noch kein Dateiname
+angegeben wurde, wird eine Datei <i>untitled.form</i> angelegt.<br><br>
+<b>File->Save as...</b><br>Maskendefinition unter Angabe eines Dateinames in eine Form-Datei speichern.<br><br>
+<b>File->Exit</b><br>Schließen aller offenen Fenster und Beenden des FormDesigners.<br><br>
+<br>
+<a name="edit"><h2>Edit</h2></a>
+<b>Edit->GENERAL</b><br>Dialogbox zum Konfigurieren der generellen Maskenparameter.<br>
+Für jedes auf der Maske plazierte Objekt wird ein Eintrag in das Menü aufgenommen.
+Das Edit-Menü kann an der gestrichelten Linie abgerissen werden.<br><br>
+<br>
+<a name="options"><h2>Options</h2></a>
+<b>Options->Debug</b><br>Schaltet Debug-Meldungen an oder aus. Die Meldungen werden in der Shell,
+in der der FormDesigner gestartet wurde, ausgegeben.<br>
+Entspricht <i>Form -d</i><br><br>
+<b>Options->SQL-Print</b><br>On oder Off. SQL-Print On gibt das letzte SQL-Statement in der
+Shell aus.<br><br>
+<b>Options->set APIIS_HOME...</b><br>Zum Ändern oder Setzen der Umgebungsvariable $APIIS_HOME.<br><br>
+<b>Options->set APIIS_LOCAL...</b><br>Zum Ändern oder Setzen der Umgebungsvariable $APIIS_LOCAL.<br><br>
+<b>Options->Browser...</b><br>Ein HTML-Browser dient zum Anzeigen der Hilfe-Seiten. Ein bevorzugter
+Browser kann hier gewählen werden. Um die Einstellung permanent zu machen, kann in der Datei
+$APIIS_HOME/apiisrc ein Eintrag folgender Art gemacht werden:
+<pre>            $browser = 'netscape';</pre><br><br>
+<b>Options->File Selector...</b><br>Der FormDesigner stellt zwei verschiedene Datei-Dialog-Boxen
+zur Verfügung: FBox und FileSelector. FBox ist voreingestellt, weil er gewisse Vorteile bei der
+Auswahl von Dateien hat,
+z.B. anzuzeigende Dateitypen können spezifiziert werden. Leider läuft FBox auf einigen
+Computern nicht korrekt, da das Einstiegsverzeichniss '/' (root-Verzeichnis) ist.
+Normalerweise ist das Einstiegsverzeichnis $APIIS_LOCAL b.z.w. $APIIS_LOCAL/model/forms falls
+dieses Verzeichnis existiert. Um die Einstellung permanent auf FileSelector zu setzen, kann in
+der Datei $APIIS_HOME/apiisrc ein Eintrag folgender Art gemacht werden:
+<pre>            $fileselector = 'FileSelector';</pre>
+<br><br>
+Der Patch von Slaven Rezic <b>Patch::SREZIC::Tk::FBox</b> behebt das Problem mit FBox.<br><br>
+<br>
+<a name="help"><h2>Help</h2></a>
+<b>Help->Contents</b><br>Mit diesem Menüeintrag wird die Dokumentation von FormDesigner in einem
+HTML-Browser geöffnet.<br><br>
+<b>Help->About Fonts</b><br>Beschreibt die Unterschiede zwischen MS Windows- und X11-Zeichensätzen
+und wie systemunabhängige Zeichensätze erstellt werden können.<br><br>
+<b>Help->About...</b><br>Zeigt Informationen zum FormDesigner an, z.B. die Versionsnummer.<br><br>
+
+
+
+
+<p></p>
+<table width="100%" align="center">
+  <tr bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c0.html">1. Einführung</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="c2.html">3. Generelle Konfiguration</a></font></td>
+  </tr>
+</table>
+<table width="100%" border=0 bgcolor="white">
+  <tr><td><font size="-2">$Id: c1.html,v 1.2 2004/02/10 07:38:21 heli Exp $</font></td>
+</tr>
+</table>
+</BODY>
+</HTML>

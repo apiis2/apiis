@@ -1,0 +1,72 @@
+%\section{The Database Record Object}
+
+Still unwritten. \frownie \\
+But some POD already exists. \smiley
+
+At least here is the list of the public methods of
+\verb+Apiis::DataBase::Record+\index{Apiis::DataBase::Record}:
+
+\smallskip
+\begin{tabular}{rl|l}
+\multicolumn{3}{l}{\texttt{\$record\_obj->}}       \\
+               &\verb+action+               & record action (like insert, update) \\
+               &\verb+addcolumn+            & add a column to the record object \\
+               &\verb+check_level+          & get/set check level \\
+               &\verb+column+               & reference to a column object \\
+               &\verb+columns+              & names of all columns \\
+               &\verb+decode_column+        & decode on column level \\
+               &\verb+decoded+              & decoded flag \\
+               &\verb+decode_record+        & decode whole record \\
+               &\verb+delcolumn+            & delete a column from the record object \\
+               &\verb+delete+               & SQL delete action \\
+               &\verb+encode_column+        & encode on column level \\
+               &\verb+encoded+              & encoded flag \\
+               &\verb+encode_record+        & encode whole record \\
+               &\verb+expect_columns+       & which columns are expected by a fetch \\
+               &\verb+expect_rows+          & how many records are expected by a fetch \\
+               &\verb+fetch+                & SQL fetch/query action \\
+               &\verb+fk_table+             & foreign key table \\
+               &\verb+indexes+              & indexes of this table \\
+               &\verb+insert+               & SQL insert action \\
+               &\verb+max_check_level+      & max check level in model file \\
+               &\verb+name+                 & (table)name of this record \\
+               &\verb+new+                  & create new record object \\
+               &\verb+print+                & print record (debug) \\
+               &\verb+rows+                 & number of rows returned by SQL action \\
+               &\verb+sequences+            & sequences defined in this table \\
+               &\verb+tablename+            & name of this table \\
+               &\verb+type+                 & type of this record object (database) \\
+               &\verb+update+               & SQL update action \\
+               &\verb+value+                & value returned by last SQL action \\
+               &\verb+values+               & values returned by last SQL action \\
+\end{tabular}
+\medskip
+
+\subsection{The Column Object}
+Besides record level methods, the record object contains one column object for each column of this table. The public
+methods to access the columns are:
+
+\smallskip
+\begin{tabular}{rl|l}
+\multicolumn{3}{l}{\texttt{\$record\_obj->column(<columnname>)->}} \\
+         & \verb+check+         & check rules of this column \\
+         & \verb+datatype+      & datatype \\
+         & \verb+db_column+     & database column name \\
+         & \verb+default+       & default value from model file \\
+         & \verb+description+   & description for this column \\
+         & \verb+extdata+       & external data (array!) \\
+         & \verb+foreignkey+    & foreign key definition of this column \\
+         & \verb+intdata+       & internal data (scalar) \\
+         & \verb+length+        & default length of this column (forms) \\
+         & \verb+modify+        & modify rules of this column \\
+         & \verb+name+          & name of this column (usually =db\_column) \\
+         & \verb+updated+       & updated flag \\
+\end{tabular}
+\medskip
+
+Example:
+
+\begin{verbatim}
+    my ($fk_table, $fk_column, @rest) =
+       $record_obj->column( $thiscolumn )->foreignkey;
+\end{verbatim}

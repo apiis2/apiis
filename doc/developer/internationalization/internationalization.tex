@@ -1,0 +1,183 @@
+\chapter{Internationalization in APIIS}
+This chapter deals with the localization (internationalization?) aspects
+and the design in APIIS. Here, we distinguish two parts:
+\begin{itemize}
+\item localization of interfaces
+\item localization of database content
+\end{itemize} 
+\section{Localization of Interfaces}
+Helmut: hier kennst Du Dich aus.
+\section{Multilanguage Handling of Database Content}
+In the EFABIS database we have much database content that needs to be available in a number of languages. These are for instance breed descriptions, codes like male and female. With national database feeding their data into the regional database at the EAAP breed descriptions will have to be in the national language, while for the upper levels (EAAP and FAO) these will have to be in one of the official languages. As a result, if data are to be entered for a public record at the national level a national and an international version of the same field will have to be supplied.
+Operationally, only the international version will go the regional level, while the national information will stay where it is. Being public data, the new record will go up the FAO. From there it will go down to a translator, all via the standard synchronization protocol. The translator will create a new record in a new official language, this will then via the same protocol go down to the regional and finally national level.
+Thus, there will be private (local) and public (international) data for one entity.
+\subsection{Implementation}
+\subsubsection{Database Structure}
+Starting point is a table that initially contains multilingual content, i.e. text columns that will appear in more than one language. The procedure followed is:
+\begin{enumerate}
+\item split the table into a part that contains only columns which do not need translation, i.e. numerical values. This part will keep the original primary key. For the breeds table in EFABIS this will be the breed\_id.
+\item have another part that contains all those columns that need translation, one row per language. Accordingly, the primary key will be composed from the original primary key (the breed\_id in the EFABIS example) and the language. This will be a pointer to langugages table where we have ISO language code eg. PL or EN and other language description.
+\end{enumerate} 
+An example is given in table \ref{master}. This is the "master" with PK breed\_id while the second table \ref{translation} has a unique key consisting of breed\_id and language.
+
+
+\begin{table}
+\caption{master part}\label {master}
+\begin{center}\begin{tabular}{|c|c|c|}
+\hline breed\_id (PK) &male  &female  \\ 
+\hline 25 & 2 & 0 \\ 
+\hline 26 & 0 & 2 \\ 
+\hline 
+\end{tabular} \end{center}
+\end{table}
+
+
+\begin{table}
+\caption {translation part}
+\label{translation}\begin{center}\begin{tabular}{|c|c|c|}
+\hline  breed\_id& language\_id &shape  \\ 
+\hline  25&  2&  Dlugie krecone rogi\\ 
+\hline  25&  1&  Long curved horn\\ 
+\hline 
+\end{tabular} \end{center}
+\end{table}
+
+Some tables will not be splited into two parts eg. CODES. Primary key of is defined as conactenated from ext\_code, class and lang\_id where closing date is NULL. Aditional table for language information was added (see table \ref{langtable}).
+
+
+\begin{table}
+\caption {language table}
+\label{langtable}\begin{center}\begin{tabular}{|c|c|c|}
+\hline  lang\_id& iso\_lang& lang  \\ 
+\hline  1&  EN&  English\\ 
+\hline  2&  PL&  Polski or Polish?\\ 
+\hline 
+\end{tabular} \end{center}
+\end{table}
+
+Generaly tables which have translatable primary key or part of primary key
+will not be splited into two tables. Columns ext\_name in naming table and
+ext\_unit in unit table are not translatable. 
+
+\subsubsection{Encoding}
+Currently, encoding relies on one language only. Extension to a multi language setting will be made through views. Views will mask tables used for current coding/encoding only for one language. Thus views will be created dinamicly in user schema. Name of view will be same as table name.
+\normalsize
+Language views will be created after access right views. 
+Thus, in a load object we want to insert the translation of a German and English text. Assuming that the column 'shape' is encoded in the model file, then the pseudo SQL in a load object will look like:
+\scriptsize {\begin{verbatim}
+        set_lang=>'DE';$lang='DE';
+        $pseudo_sql[1] =
+         'INSERT INTO breeds_lang_horns (
+                      lang,
+		      breed_id,
+                      shape
+                 ) VALUES (
+		      $lang,
+                      $breed_id,
+                      'gerade'
+                 )';
+        set_lang=>'EN'; $lang='EN';
+        $pseudo_sql[1] =
+         'INSERT INTO breeds_lang_horns (
+	              lang,
+                      breed_id,
+                      shape
+                 ) VALUES (
+		      $lang,
+                      $breed_id,
+                      'straight'
+                 )';
+		 
+\end{verbatim} }
+\normalsize
+The call to the object set\_lang (Apiis->language?) will set the language for the encoding to either 'DE' or 'EN' and create or recreate aproporiate views for codding/encoding.
+
+\subsection{Meta level}
+
+The meta layer will be treated as before.
+(Zhivko???: The meta level should be based on the view system build for one language.)
+Probably it will be the only change there.
+
+\begin{itemize}
+\item Inserting a new record\\
+\scriptsize{
+SELECT \$breed\_id FROM breeds WHERE mcname=\$mcname AND country\_id=\$country\_id
+AND tax\_id=\$tax\_id;\\
+INSERT INTO breeds\_horns\_master (breed\_id,male,female) VALUES (\$breed\_id,\$male,\$female);\\
+INSERT INTO breeds\_horns\_transl (breed\_id,lang\_id,shape) VALUES
+(\$breed\_id,\$lang,\$shape\_pl);\\
+INSERT INTO breeds\_horns\_transl (breed\_id,lang\_id,shape) VALUES
+(\$breed\_id,\$lang1,\$shape\_en);
+\item Updating existing record\\
+SELECT \$breed\_id FROM breeds WHERE mcname=\$mcname AND country\_id=\$country\_id
+AND tax\_id=\$tax\_id;\\
+UPDATE breeds\_horns\_master SET male=\$male WHERE breed\_id=\$breed\_id;\\
+UPDATE breeds\_horns\_transl SET shape=\$shape\_en WHERE breed\_id=\$breed\_id
+AND lang\_id=\$lang1;
+}
+\end{itemize}
+\normalsize
+All statements have be wrapped in one transaction block.
+
+
+\subsection{Access rights}
+
+Again the Access rights system should be revisited, but probably will
+stay the same. There should be only mechanism for consistency of the
+user rights, i.e. if he can enter the most common name (which is in
+the master table because is not translatable), he has to be able to
+enter the language of the most common name (which is in the translation
+table).
+
+
+\subsection{Synchronization}
+
+Since the structure will be the same on all levels and we have clear
+mechanism to mark the records to be synchronized the synchronization
+will remain the same. All records to be synchronized will be marked
+manually by the user.
+\subsection{Outputs}
+Outputs could be routed via views which can bre created (automatically?)
+   for each language. It would simply present the master and translation
+   table as one for a given language via a join on the primary key of the
+   master with the primary key and languange (which should be a unique
+         composite index) for the translation table.
+\section{International Character Sets}
+Localized languages require for their presentation a corresponding character set. 
+Therefore, we do not only need to take note of the correct character set that goes with a language but also need to be able to use them appropriately. It is the problem to work with many different character encodings. Two character encodings can use the same number representation for two different characters, or use different numbers for the same character. Any given computer (especially servers) needs to support many different encodings. Now whenever data are sending between different encodings or platforms there is a risk of data coruption when we don't use aproporiate character encoding. The best way is use one character encoding which can cover all languages used in a system. The best way here is to use UNICODE standards.
+
+\subsection{UNICODE}
+
+Unicode and ISO/IEC 10646 are coordinated standards that provide code points for characters in almost all modern character set standards, covering more than 30 writing systems and hundreds of languages, including important modern languages. All characters in the largest Chinese, Japanese, and Korean dictionaries are also encoded. Unicode 1.0 was released in October 1991, and 4.0 in April 2003.
+A Unicode character is an abstract entity. Unicode provides a unique number for every character, no matter what the platform, no matter what the program, no matter what the language.
+
+\subsection{Support for UNICODE}
+
+UNICODE is supported in many operating systems, all modern browsers, database and programming enviroments. PostgreSQL database hass support of UNICODE (from version 7.1). After using UNICODE as a database character encoding we can sotre any language in database text field, if we want we can generate outputs in other encodings eg. LATIN2 because Postgres has support for automatic characters encoding but is better to use one character encoding everywhere.
+ Perl is also supporting Unicode characters (from version 5.6, but more complete support is in Perl form version 5.8). Perl should automaticly work with strings encoded in Unicode correctly. If we want also use variables name encoded in Unicode  we need to specify this with Perl pragma:\\
+\scriptsize{
+use encoding 'utf8';
+}
+\normalsize
+after that we can use variables name with national characters. Perl characters representations is hidden from user. Perl scripts should work whit unicode date same as with data encodet for eg. latin but it depends on operating system enviroment. Probabyl we need examine regular expressions for unicode compatibility because we now will have much wider characters set then in eg. LATIN encoding. In some places we need accept not only [A-Za-z] characters but also some national special characters as German ö, ä, ü  etc.  with  [:alpha:] (see perlre documentation for more).
+For user interface it should be no problem to use unicode for web interface, also a Tk interface is working with unicode (form version 8.00) only need correct font to show all characters.
+
+
+\subsection{Locales and fonts}
+
+For proper working of Unicode settings in database or in Perl script we also need to use LOCALE settings. Locale are important when we are sorting and comparing strings with national characters. By default Perl is ignoring locale settings if we want to use it we need to specify it:\\
+\scriptsize{
+use locale;
+}
+\normalsize
+This is needed if we for eg. want to change character case with lc or uc function in Perl. If we don't specify this that Perl will not change case correctly for all characters in our string. Most of Perl operators don't need to know about characters in string. If there are utf8 characters in is working with utf8 characters. Generaly is hiding internal representation of characters from outside world.
+\\
+Unicode is platform endependent but if we want to use national characters on some operating system we need to have approperite fonts which can show all characters described in Unicode. It is mostly important for languages like Chinese, Japanese, Korean, Arabic etc.
+
+\begin{itemize}
+\item how do we handle latin based character sets?
+\item what about others like cyrilic?
+\item even more complicated: what about Arabic, Chinese, Japaneze etc?
+\item do we have to go UNICODE?
+\item what can be put in a filed of type text in the database? Using a local keyboard and the appropriate character set, can we store Bulgarian in one row and French or Chineze in others?
+\end{itemize}

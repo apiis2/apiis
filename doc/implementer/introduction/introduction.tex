@@ -1,0 +1,17 @@
+\chapter{Introduction}
+
+This paper represents the documentation of APIIS. It tries to explain
+all steps required to setup and run an information system. This will
+be done using one reference database for breeding programs and is
+available as a module (ref\_breedprg) in the CVS tree. It resides
+in \$APIIS\_HOME/ref\_breedprg. Other modules come soon, for example
+for manage the datas from molecular laboratories or for cryo conservation
+systems. 
+
+The directory initial\index{initial} contains all data and programs
+required to load the historic data. The batch job runall\index{runall}
+should be sufficient to execute the complete procedure for creating
+the database and loading the historic data sets. There are two further
+runall jobs, runall\_cleaning\_and\_LO.pl to demonstrate the handling
+of load objects and the error handling, and runall\_output.pl to show
+some outputs from the database.

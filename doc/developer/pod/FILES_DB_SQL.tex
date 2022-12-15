@@ -1,0 +1,437 @@
+\subsubsection{DataStream\label{DataStream}\index{DataStream}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{DataStream_SYNOPSIS}\index{DataStream!SYNOPSIS}}
+\begin{verbatim}
+    $ds = Apiis::DataBase::SQL::DataStream->new(
+                                                ds     => $ds,
+                                                debug  => $debug
+   );
+\end{verbatim}
+
+
+This is the module for creating an object for handling datasteams.
+
+\paragraph*{DESCRIPTION\label{DataStream_DESCRIPTION}\index{DataStream!DESCRIPTION}}
+
+
+Creates the internal structure for the hash previously used in the batch processing and provides methods for accessing them.
+
+
+
+Public and internal methods are:
+
+\paragraph*{PUBLIC METHODS\label{DataStream_PUBLIC_METHODS}\index{DataStream!PUBLIC METHODS}}
+\subparagraph*{ds\label{DataStream_ds}\index{DataStream!ds}}
+
+
+- returns the name of the datastream
+
+\subparagraph*{job\_start\label{DataStream_job_start}\index{DataStream!job\ start}}
+
+
+- sets or returns the time when the job was started
+
+\subparagraph*{job\_end\label{DataStream_job_end}\index{DataStream!job\ end}}
+\begin{verbatim}
+ - sets or returns the time when the job was finished
+\end{verbatim}
+\subparagraph*{records\_total\label{DataStream_records_total}\index{DataStream!records\ total}}
+
+
+- sets or returns total number of processed records
+
+\subparagraph*{records\_error\label{DataStream_records_error}\index{DataStream!records\ error}}
+
+
+- sets or returns the number of errors that occure in the records - it is not precise and can give only impression of real number of errors
+
+\subparagraph*{records\_ok\label{DataStream_records_ok}\index{DataStream!records\ ok}}
+
+
+- sets or returns total number of records that was OK
+
+\subparagraph*{data\label{DataStream_data}\index{DataStream!data}}
+
+
+- sets or returns the data
+
+\subparagraph*{LO\_keys\label{DataStream_LO_keys}\index{DataStream!LO\ keys}}
+
+
+- sets or returns the list of LO\_keys
+
+\subparagraph*{ext\_unit\label{DataStream_ext_unit}\index{DataStream!ext\ unit}}
+
+
+- sets or returns the ext\_unit that has supplied this record
+
+\subparagraph*{record\_seq\label{DataStream_record_seq}\index{DataStream!record\ seq}}
+
+
+- sets or returns the record number from INSPOOL system
+
+\subparagraph*{target\_column\label{DataStream_target_column}\index{DataStream!target\ column}}
+
+
+- sets or returns an extra information for linking the errors to special column
+
+\subparagraph*{debug\label{DataStream_debug}\index{DataStream!debug}}
+
+
+- sets or returns debug level
+
+\subparagraph*{verbose\label{DataStream_verbose}\index{DataStream!verbose}}
+
+
+- sets or returns the verbose mode (more output messages)
+
+\subparagraph*{sth\_update\_inspool\label{DataStream_sth_update_inspool}\index{DataStream!sth\ update\ inspool}}
+
+
+- sets or returns statement handle for updating inspool
+
+\subparagraph*{sth\_inspool\_err\label{DataStream_sth_inspool_err}\index{DataStream!sth\ inspool\ err}}
+
+
+- sets or returns statement handle for inserting new record in inspool\_err
+
+\subparagraph*{sth\_ds\label{DataStream_sth_ds}\index{DataStream!sth\ ds}}
+
+
+- sets or returns statement handle for reading record from  inspool
+
+\subparagraph*{sth\_load\_stat\label{DataStream_sth_load_stat}\index{DataStream!sth\ load\ stat}}
+
+
+- sets or returns statement handle for inserting new record in load\_stat
+
+\subparagraph*{status\label{DataStream_status}\index{DataStream!status}}
+
+
+- sets or returns the object status - inherited from apiis
+
+\subparagraph*{errors\label{DataStream_errors}\index{DataStream!errors}}
+
+
+- sets or returns list of error objects - inherited from apiis
+
+\subparagraph*{\_standard\_keys (internal)\label{DataStream__standard_keys_internal_}\index{DataStream!\ standard\ keys (internal)}}
+
+
+- encapsulates the names of the automatically created methods
+
+\subparagraph*{\_accessible (internal)\label{DataStream__accessible_internal_}\index{DataStream!\ accessible (internal)}}
+
+
+- checks if the method is read-only or read-write
+
+\subparagraph*{new\label{DataStream_new}\index{DataStream!new}}
+
+
+- creates the datastream object
+
+\subparagraph*{\_init (internal)\label{DataStream__init_internal_}\index{DataStream!\ init (internal)}}
+
+
+- initializes the counters and prepares several database statements
+
+\subparagraph*{CheckDS\label{DataStream_CheckDS}\index{DataStream!CheckDS}}
+
+
+Verifies if the number of elements in the DS is the same as the number of LO keys
+
+\subparagraph*{PostHandling\label{DataStream_PostHandling}\index{DataStream!PostHandling}}
+
+
+Writes the summary statistics on the screen and in tableload\_stat and  error\_messages in table inspool\_err
+
+\paragraph*{AUTHORS\label{DataStream_AUTHORS}\index{DataStream!AUTHORS}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+Zhivko Duchev $<$duchev@tzv.fal.de$>$
+
+\subsubsection{Apiis::DataBase::SQL::DirectSQL  Direct access to SQL\label{Apiis::DataBase::SQL::DirectSQL_Direct_access_to_SQL}\index{Apiis::DataBase::SQL::DirectSQL  Direct access to SQL}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Apiis::DataBase::SQL::DirectSQL_Direct_access_to_SQL_SYNOPSIS}\index{Apiis::DataBase::SQL::DirectSQL Direct access to SQL!SYNOPSIS}}
+\begin{verbatim}
+   $apiis->DataBase->user_sql( $sql_statement );
+   $apiis->DataBase->sys_sql( $sql_statement );
+\end{verbatim}
+\paragraph*{DESCRIPTION\label{Apiis::DataBase::SQL::DirectSQL_Direct_access_to_SQL_DESCRIPTION}\index{Apiis::DataBase::SQL::DirectSQL Direct access to SQL!DESCRIPTION}}
+
+
+Both of these methods point to the internal work horse \textbf{\_sql} with the
+invocation parameters as a hash reference:
+
+\begin{verbatim}
+   _sql( { statement => $sql_statement, user => 'system' } )
+\end{verbatim}
+
+
+in case of sys\_sql or without the 'user' parameter for user\_sql.
+
+
+
+\textbf{\_sql} creates its own statement object, which is returned.
+
+\paragraph*{METHODS\label{Apiis::DataBase::SQL::DirectSQL_Direct_access_to_SQL_METHODS}\index{Apiis::DataBase::SQL::DirectSQL Direct access to SQL!METHODS}}
+\subparagraph*{user\_sql $|$ sys\_sql $|$ \_sql\label{Apiis::DataBase::SQL::DirectSQL_Direct_access_to_SQL_user_sql_sys_sql_sql}\index{Apiis::DataBase::SQL::DirectSQL Direct access to SQL!user\ sql $|$ sys\ sql $|$ \ sql}}
+
+
+The only input parameter for \textbf{user\_sql} and \textbf{sys\_sql} is a valid SQL
+statement. Returned will be a statement object with the following methods:
+
+
+
+Examples:
+
+\begin{verbatim}
+    my $statement_obj    = $apiis->DataBase->user_sql('select * from codes');
+    my $statement_handle = $statement_obj->handle;
+    my $processed_rows   = $statement_obj->rows;
+    if ( $statement_obj->status ) {
+        for my $error ( $statement_obj->errors ) {
+            # handle error:
+            $error->print;
+        }
+    }
+\end{verbatim}
+
+
+See 'man DBI' for detailed information about the statement handle and rows.
+
+\subsubsection{PseudoStatement\label{PseudoStatement}\index{PseudoStatement}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{PseudoStatement_SYNOPSIS}\index{PseudoStatement!SYNOPSIS}}
+\begin{verbatim}
+    $statement = Apiis::DataBase::SQL::PseudoStatement->new(
+         pseudosql     => $sqltext,
+         data_hash     => \%data_hash
+   );
+\end{verbatim}
+
+
+This is the module for creating an object for parsed PseudoSQL.
+
+\paragraph*{DESCRIPTION\label{PseudoStatement_DESCRIPTION}\index{PseudoStatement!DESCRIPTION}}
+
+
+Creates the internal structure for the important elements of an PseudoSQL statement and provides methods for accessing them.
+For parsing the PseudoSQL, the original parser written by Helmut Lichtenberg $<$heli@tzv.fal.de$>$ was used.
+
+
+
+Public and internal methods are:
+
+\paragraph*{PUBLIC METHODS\label{PseudoStatement_PUBLIC_METHODS}\index{PseudoStatement!PUBLIC METHODS}}
+\subparagraph*{actionname\label{PseudoStatement_actionname}\index{PseudoStatement!actionname}}
+
+
+- returns the sql action
+
+\subparagraph*{tablename\label{PseudoStatement_tablename}\index{PseudoStatement!tablename}}
+
+
+- returns the table name used in the statement - only one table is allowed per statement!
+
+\subparagraph*{columns\label{PseudoStatement_columns}\index{PseudoStatement!columns}}
+\begin{verbatim}
+ - returns list of column names
+\end{verbatim}
+\subparagraph*{values\label{PseudoStatement_values}\index{PseudoStatement!values}}
+
+
+- returns list of column values
+
+\subparagraph*{extfields\label{PseudoStatement_extfields}\index{PseudoStatement!extfields}}
+
+
+- returns list of external fields that are targeted for errors
+
+\subparagraph*{value\label{PseudoStatement_value}\index{PseudoStatement!value}}
+
+
+- returns the value of the supplied column
+
+\subparagraph*{column\_extfields\label{PseudoStatement_column_extfields}\index{PseudoStatement!column\ extfields}}
+
+
+- returns list of external fields for a certain column
+
+\subparagraph*{whereclause\label{PseudoStatement_whereclause}\index{PseudoStatement!whereclause}}
+
+
+- returns the where part of the statement
+
+\subparagraph*{status\label{PseudoStatement_status}\index{PseudoStatement!status}}
+
+
+- returns the object status - inherited from apiis
+
+\subparagraph*{errors\label{PseudoStatement_errors}\index{PseudoStatement!errors}}
+
+
+- returns list of error object - inherited from apiis
+
+\subparagraph*{\_standard\_keys (internal)\label{PseudoStatement__standard_keys_internal_}\index{PseudoStatement!\ standard\ keys (internal)}}
+
+
+- encapsulates the names of the automatically created methods
+
+\subparagraph*{\_accessible (internal)\label{PseudoStatement__accessible_internal_}\index{PseudoStatement!\ accessible (internal)}}
+
+
+- checks if the method is read-only or read-write
+
+\subparagraph*{new\label{PseudoStatement_new}\index{PseudoStatement!new}}
+
+
+- creates the parsed sql object
+
+\subparagraph*{\_init (internal)\label{PseudoStatement__init_internal_}\index{PseudoStatement!\ init (internal)}}
+
+
+- calls \_ParsePseudoSQL for parsing of the SQL and fills the structure
+
+\subparagraph*{pull\_quotes\label{PseudoStatement_pull_quotes}\index{PseudoStatement!pull\ quotes}}
+\begin{verbatim}
+ pull_quotes -- tom christiansen, tchrist@convex.com
+\end{verbatim}
+\paragraph*{AUTHORS\label{PseudoStatement_AUTHORS}\index{PseudoStatement!AUTHORS}}
+
+
+Zhivko Duchev $<$duchev@tzv.fal.de$>$
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsubsection{Statement\label{Statement}\index{Statement}}
+
+
+
+
+\paragraph*{SYNOPSIS\label{Statement_SYNOPSIS}\index{Statement!SYNOPSIS}}
+\begin{verbatim}
+    $statement = Apiis::DataBase::SQL::Statement->new(
+         sql     => $sqltext
+   );
+\end{verbatim}
+
+
+This is the module for creating an object for parsed normal SQL. This module is intended for parsing simple SQL statements: INSERT,UPDATE,DELETE,SELECT (without aggregate functions).
+
+\paragraph*{DESCRIPTION\label{Statement_DESCRIPTION}\index{Statement!DESCRIPTION}}
+
+
+Creates the internal structure for important elements of SQL statement and provides methods for accessing them
+
+
+
+Public and internal methods are:
+
+\paragraph*{PUBLIC METHODS\label{Statement_PUBLIC_METHODS}\index{Statement!PUBLIC METHODS}}
+\subparagraph*{actionname\label{Statement_actionname}\index{Statement!actionname}}
+
+
+- returns the sql action
+
+\subparagraph*{tablename\label{Statement_tablename}\index{Statement!tablename}}
+
+
+- returns the table name used in the statement - only one table is allowed per statement!
+
+\subparagraph*{columns\label{Statement_columns}\index{Statement!columns}}
+\begin{verbatim}
+ - returns list of column names
+\end{verbatim}
+\subparagraph*{values\label{Statement_values}\index{Statement!values}}
+
+
+- returns list of column values
+
+\subparagraph*{value\label{Statement_value}\index{Statement!value}}
+
+
+- returns the value of the supplied column
+
+\subparagraph*{whereclause\label{Statement_whereclause}\index{Statement!whereclause}}
+
+
+- returns the where part of the statement
+
+\subparagraph*{status\label{Statement_status}\index{Statement!status}}
+
+
+- returns the object status - inherited from apiis
+
+\subparagraph*{errors\label{Statement_errors}\index{Statement!errors}}
+
+
+- returns list of error object - inherited from apiis
+
+\subparagraph*{\_standard\_keys (internal)\label{Statement__standard_keys_internal_}\index{Statement!\ standard\ keys (internal)}}
+
+
+encapsulates the names of the automatically created methods
+
+\subparagraph*{\_accessible (internal)\label{Statement__accessible_internal_}\index{Statement!\ accessible (internal)}}
+
+
+checks if the method is read-only or read-write
+
+\subparagraph*{new\label{Statement_new}\index{Statement!new}}
+
+
+- creates the parsed sql object
+
+\subparagraph*{\_init (internal)\label{Statement__init_internal_}\index{Statement!\ init (internal)}}
+
+
+- parses the SQL and fills the structure
+
+\paragraph*{AUTHORS\label{Statement_AUTHORS}\index{Statement!AUTHORS}}
+
+
+Zhivko Duchev $<$duchev@tzv.fal.de$>$
+
+\subsubsection{Apiis::DataBase::MakeSQL Module to create SQL-statements from the model file\label{Apiis::DataBase::MakeSQL_Module_to_create_SQL-statements_from_the_model_file}\index{Apiis::DataBase::MakeSQL Module to create SQL-statements from the model file}}
+
+
+
+
+\paragraph*{DESCRIPTION\label{Apiis::DataBase::MakeSQL_Module_to_create_SQL-statements_from_the_model_file_DESCRIPTION}\index{Apiis::DataBase::MakeSQL Module to create SQL-statements from the model file!DESCRIPTION}}
+
+
+\textbf{MakeSQL} as the main method and some auxiliary routines read the Apiis model
+file and create a file with SQL data definition commands to create tables,
+views, indices, sequences, etc.
+
+
+
+The resulting file will either be written to STDOUT or placed in the
+var-subdirectory of the given project. Its name is created from the project
+name with database driver and .sql extension appended:
+
+\begin{verbatim}
+   <project>_<db_driver>.sql
+   breedprg_Pg.sql
+\end{verbatim}
+\paragraph*{METHODS\label{Apiis::DataBase::MakeSQL_Module_to_create_SQL-statements_from_the_model_file_METHODS}\index{Apiis::DataBase::MakeSQL Module to create SQL-statements from the model file!METHODS}}
+
+
+Besides the main method \textbf{MakeSQL} there are the auxiliary methods
+\textbf{Cascaded\_FK}, \textbf{resolve\_concatenations}, and \textbf{HasFKRule}.
+
+
+
+Read 'perldoc \$APIIS\_HOME/bin/mksql' for the most prominent implementation and
+for detailed usage information.
+

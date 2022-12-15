@@ -1,0 +1,222 @@
+\subsection{usage\label{usage}\index{usage}}
+
+
+get\_value( 'position cfix position2', $\backslash$@lineref, format )
+
+\subsection{description\label{description}\index{description}}
+
+
+return value from datafile at specific position   @lineref is the line from datafile
+return: value if position known as code (from collect\_codes1.pl)
+return db\_code after check file codes.chg for possible changing this code
+same for unit and table\_id
+MUST be used if fields can be empty: as a consequence the variable is not an
+empty string but a NULL value!!!
+
+\subsection{configuration\label{configuration}\index{configuration}}
+\subsubsection*{position\label{position}\index{position}}
+
+
+describe the position on input line. could be more than once and also
+fixed parts are possible (see the c-option).
+
+\subsubsection*{format\label{format}\index{format}}
+
+
+define either an date format, a simple test if the return value is
+an number or lower resp. upper case any character.
+
+\paragraph*{[dmyj] plus any character which split the date (.-/...)\label{_dmyj_plus_any_character_which_split_the_date_-_}\index{[dmyj] plus any character which split the date (.-/...)}}
+
+
+date format use the function getdate(). this allow an specific format
+like 'dd.mm.yyyy' or 'ddmmjj' or use the number of elements in the
+data. for further details see function getdate().
+
+\paragraph*{n\label{n}\index{n}}
+
+
+test is a number else ignore the value. also change from ',' to '.' if exist.
+
+\paragraph*{cl\label{cl}\index{cl}}
+
+
+lower case characters.
+
+\paragraph*{cu\label{cu}\index{cu}}
+
+
+upper case characters.
+
+\subsection{used in\label{used_in}\index{used in}}
+
+
+loading historic data (load\_data.pl)
+
+\subsection{usage\label{usage}\index{usage}}
+
+
+getdate(date) or getdate(date, format)
+
+\subsection{return\label{return}\index{return}}
+\begin{verbatim}
+ formated date, status, err_msg
+\end{verbatim}
+\subsection{description\label{description}\index{description}}
+
+
+getdate should be simplify the handling of dates in incomming
+datastreams.
+
+
+
+only the following dates are possible:
+
+\begin{enumerate}
+
+\item 799 -$>$3-Juli-1999
+\item 799 -$>$ 12-Juli-1999
+\item -$>$ 12-Dezember-1999
+\item [12.07.99$|$12-07-99$|$12:07:99] -$>$ 12-Juli-1999\end{enumerate}
+
+
+or using a format as second parameter like 'dd.mm.jjjj or 'yyy.tt.mm'
+or 'ttmmjj' and so on
+
+
+
+getdate('19984/02','yyyymm/tt') =$>$ 2-April-1998
+
+\subsection{xfig\_lib.pm\label{xfig_lib_pm}\index{xfig\ lib.pm}}
+
+
+Library for model2xfig
+
+\subsubsection*{DESCRIPTION\label{xfig_lib_pm_DESCRIPTION}\index{xfig lib pm!DESCRIPTION}}
+
+
+xfig\_lib initialized basic variables, sets default values and defines subroutines
+for creating the FIG-header, for compounding objects, drawing lines, arrowlines,
+boxes and text.
+
+\subsubsection*{SUBROUTINES\label{xfig_lib_pm_SUBROUTINES}\index{xfig lib pm!SUBROUTINES}}
+\paragraph*{getFileHeader\label{xfig_lib_pm_getFileHeader}\index{xfig lib pm!getFileHeader}}
+
+
+getFileHeader creates the FIG-file header.
+
+
+
+usage: \$header = getFileHeader( [comment] )
+
+\begin{verbatim}
+   comment: comment to print into the header
+\end{verbatim}
+\begin{verbatim}
+   returnvalue: string with header
+\end{verbatim}
+\paragraph*{texttype\label{xfig_lib_pm_texttype}\index{xfig lib pm!texttype}}
+
+
+creates a \emph{text} object.
+
+
+
+usage: \$textobj = texttype( \$text, \$type,
+                            \$xpos, \$ypos, \$depthT )
+
+\begin{verbatim}
+    text: string
+    type: t = title;  c = columnname ; h = head line
+    xpos: x-position
+    ypos: y-position
+  depthT: depth (layer)
+\end{verbatim}
+\begin{verbatim}
+ returnvalue: string with text object
+\end{verbatim}
+\paragraph*{boxtype\label{xfig_lib_pm_boxtype}\index{xfig lib pm!boxtype}}
+
+
+creates a \emph{box} object.
+
+
+
+usage: \$boxobj = boxtype( \$x1, \$y1 ,\$x2 ,\$y2 )
+
+\begin{verbatim}
+   x1,y1: first corner point
+   x2,y2: final corner point
+\end{verbatim}
+\begin{verbatim}
+ returnvalue: string with box object
+\end{verbatim}
+\paragraph*{linetype\label{xfig_lib_pm_linetype}\index{xfig lib pm!linetype}}
+
+
+creates a \emph{line} object.
+
+
+
+usage: \$lineobj = linetype( \$x1, \$y1 ,\$x2 ,\$y2 )
+
+\begin{verbatim}
+   x1,y1: first point
+   x2,y2: final point
+\end{verbatim}
+\begin{verbatim}
+ returnvalue: string with line object
+\end{verbatim}
+\paragraph*{arrowlinetype\label{xfig_lib_pm_arrowlinetype}\index{xfig lib pm!arrowlinetype}}
+
+
+creates a \emph{arrowline} object with a \textbf{backward} arrow.
+
+
+
+usage: \$arrowlineobj = arrowlinetype( \$x1, \$y1 ,\$x2 ,\$y2 )
+
+\begin{verbatim}
+   x1,y1: first point
+   x2,y2: final point
+\end{verbatim}
+\begin{verbatim}
+ returnvalue: string with arrowline object
+\end{verbatim}
+\paragraph*{compoundtype\label{xfig_lib_pm_compoundtype}\index{xfig lib pm!compoundtype}}
+
+
+creates a \emph{compound} object.
+
+
+
+usage: \$compoundobj = compoundtype( \$objects,
+                                   \$upperight\_corner\_x,
+                                   \$upperight\_corner\_y,
+                                   \$lowerleft\_corner\_x,
+                                   \$lowerleft\_corner\_y )
+
+\begin{verbatim}
+         objects:  string with xfig objects. Created with
+                   texttype,boxtype,linetype and
+                   arrowlinetype
+\end{verbatim}
+\begin{verbatim}
+         upperight_corner_x, upperight_corner_y,
+         lowerleft_corner_x, lowerleft_corner_y
+         defines a rectangle so that all objects are
+         inside of this region.
+\end{verbatim}
+\begin{verbatim}
+ returnvalue: string with compound object
+\end{verbatim}
+\subsubsection*{SEE ALSO\label{xfig_lib_pm_SEE_ALSO}\index{xfig lib pm!SEE ALSO}}
+
+
+model2xfig, xfig (www.xfig.org)
+
+\subsubsection*{AUTHOR\label{xfig_lib_pm_AUTHOR}\index{xfig lib pm!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+

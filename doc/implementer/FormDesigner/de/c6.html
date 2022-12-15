@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+ <TITLE>FormDesigner: Funktionen</TITLE>
+</HEAD>
+<body alink="#ee0000" bgcolor="#e4e4e4" link="blue" text="#42426f" vlink="darkBlue">
+<table width="100%" border="0">
+  <tr bgcolor="white">
+  <td width="10%"><img src="../images/FDicon.png" alt="FormDesigner Icon" align="right" width="64" height="64" border="0" vspace="10" hspace="10">
+</td>
+<td><img src="../images/formdesigner.png" width="321" height="89" border="0" hspace="100"></td>
+  </tr>
+</table>
+<table width="100%" align="center">
+  <tr  bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c5.html">5. Funktionen für den Action-Parameter</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="faq.html">FAQ - häufig gestellte Fragen</a></font></td>
+  </tr>
+</table>
+
+
+<H1>6. Perl-Code in Maskenparametern</H1>
+Es gibt eine Reihe von Konfigurationsparametern, die das Ausführen von Perl-Code ermöglichen.
+In der <a href="c2.html">generelle Konfiguration</a> ist dies das
+<i><a href="c2.html#startup">Startup Command</a></i>, welches Perl-Befehle ausführt, bevor Daten
+eingegeben oder abgerufen werden können. Hier kann z.B. ein Befehl zur Entfernung der unteren
+Knopfleiste stehen, wenn diese für eine gegebene Anwendung nicht sinnvoll ist. Nicht ohne
+Perl-Befehle geht es bei den Knöpfen. Jeder Knopf, der auf der Maske plaziert ist, erfordert
+die Ausführung von Kommandos, die in Perl kodiert werden müssen. Weitere Konfigurationsparameter
+mit der Möglichkeit Perl-Befehle auszuführen sind <i>Enter</i> und <i>Leave</i> bei den Maskenobjekten,
+welche den Fokus - einen Eingabecursor - bekommen bzw. verlieren können. Hierdurch kann automatisch
+ein Programm getriggert werden.<br><br>
+Im Folgenden sollen nun einige grundsätzliche Dinge geklärt werden, um vorhandene Variablen
+und Subroutinen nutzen zu können.<br><br>
+
+<h3>Variablen</h3>
+Die wichtigste Variable ist <b>$form</b> ein Referenz auf ein Hash, das die gesamte
+Konfiguration, die plazierten Objekte (Widgets) und weitere Tk-Widgets wie Titelrahmen, untere
+Knopfleiste, Rahmen in dem Objekte plaziert werden u.a. enthält. Die einzelnen Objekte und
+Konfigurationsparameter sind unter bestimmten Schlüsseln (hash keys) abgelegt.<br><br>
+Grundsätzlicher Zugriff auf einen Konfigurationsparameter:<br><br>
+<table align="center" cellpadding="15" bgcolor="#ffffff" border="3">
+        <th>$$form{<font color="#a9a900">Schlüssel_1</font>}{<font color="#a900d3">Schlüssel_2</font>}</th></table><br>
+Bei Perl-Tk-Objekten können durchaus noch weitere Schlüssel hinzukommen.<br><br>
+Bei den Konfigurationsparametern entspricht der erste Schlüsselname dem Sektionsnamen.
+Für die generellen Konfigurationparameter ist der Sektionsname immer 'GENERAL'.
+Die genauen Schlüsselnamen für den <font color="#a900d3">Schlüssel_2</font> sind aus der Formdatei
+zu ermitteln. Es sollte nicht schwierig sein, die Bezeichnung eine Parameters des FormDesigners in
+der Datei wiederzufinden. Meist ist nur die Schreibweise geändert - alles Großbuchstaben.<br><br>
+
+Die untenstehende Tabelle zeigt weitere nützliche Parameter zum manipulieren der Maske bzw. der
+Feldinhalte. Der dort aufgeführte <font color="#a9a900">Schlüssel_1</font> 'section' muss durch den
+Sektionsnamen ersetzt werden.<br><br>
+<table align="center" bgcolor="#ffffff" border="3" cellpadding="8">
+  <tr><th align="left" bgcolor="#d4d4df">Schlüssel 1</th>
+        <th align="left" bgcolor="#d4d4df">Schlüssel 2</th>
+                <th align="left" bgcolor="#d4d4df">Beschreibung</th></tr>
+  <tr><td align="left"><font color="#a9a900"><b>GENERAL</b></font></td><td align="left"><font color="#a900d3"><b>WIDGET</b></font></td><td align="left">Titelrahmen</td></tr>
+  <tr><td align="left"><font color="#a9a900"><b>GENERAL</b></font></td><td align="left"><font color="#a900d3"><b>TOPLEVEL</b></font></td><td align="left">gesamte Maske</td></tr>
+  <tr><td align="left"><font color="#a9a900"><b>GENERAL</b></font></td><td align="left"><font color="#a900d3"><b>FRAME</b></font></td><td align="left">Bereich, in den die Masken-Objekte plaziert werden</td></tr>
+  <tr><td align="left"><font color="#a9a900"><b>GENERAL</b></font></td><td align="left"><font color="#a900d3"><b>BUTTONBAR</b></font></td><td align="left">untere Knopfleiste</td></tr>
+  <tr><td align="left"><font color="#a9a900"><b>section</b></font></td><td><font color="#a900d3"><b>DATA</b></font></td><td>Inhalt eines Feldes, auch unsichtbares Feld</td></tr>
+  <tr><td align="left"><font color="#a9a900"><b>section</b></font></td><td><font color="#a900d3"><b>WIDGET</b></font></td><td>Tk-Widget</td></tr>
+</table><br><br><br>
+Einige Beispiele für die Verwendung des <i>form-hashes</i>:<br><br>
+
+1. Entfernung der unteren Knopfleiste:<br><br>
+<pre>   $$form{GENERAL}{BUTTONBAR}->destroy
+
+</pre>
+Angegeben in der generellen Konfiguration im Feld <i>Startup Command</i> bewirkt dieses die
+Entfernung der Knopfleiste beim Sichtbarwerden der Maske. Möglich ist auch eine Entfernung
+auf Knopfdruck. Dazu wird der destroy-Befehl in das Konfigurationsfenster eines
+Knopfes (Typ P) in das Feld <i>Command</i> eingetragen.<br><br>
+
+2. Beenden der Maske, wenn z.B. keine Knopfleiste vorhanden ist:<br><br>
+<pre>    $$form{GENERAL}{TOPLEVEL}->destroy
+
+</pre>
+Dieses Kommando, einem Knopf zugeordnet, schliesst die Maske.<br><br>
+
+3. Im Feld mit dem Sektionsnamen 'sec200' das aktuelle Datum anzeigen:<br><br>
+<pre>    $$form{sec200}{DATA}=GetToday()
+
+</pre>
+Weitere Beispiele sind in den Demo-Formdateien im Verzeichnis $APIIS_HOME/test/demo
+und in <a href="../../../apiis/model/forms/unit.frm">$APIIS_HOME/apiis/model/forms/unit.frm</a>
+<br><br><br>
+
+
+<h3>Subroutinen</h3>
+Nützliche Subroutinen und Interaktionen mit dem System:<br><br>
+<table border="3" align="center" cellpadding="8" bgcolor="#ffffff">
+ <tr><th align="left" bgcolor="#d4d4df">Subroutine / Funktionsaufruf</th>
+        <th align="left" bgcolor="#d4d4df">Beschreibung</th></tr>
+
+ <tr>   <td align="left" valign="top"><font color="#a900d3"><b><br>system("Programm")<br><br>@var = `command`</b></font></td>
+        <td align="left">Führt System Kommandos aus, startet Programme.<br>
+                 Kann auch weitere Masken starten.<br> Beispiele:
+                   <pre>1.   system("Form $APIIS_HOME/test/demo/text.form")   </pre> Maske test.form anzeigen:
+                   <pre>2.   system("xfontsel")  </pre>   Startet das Programm 'xfontsel'
+                   <pre>3.   @add=`Form -p address.frm $$form{sec005}{DATA}`</pre>
+                          Startet Maske address.frm mit Übergabe des Wertes von Feld sec005 ins
+                          erste Feld von address.frm. Nach Beendigung von address.frm stehen
+                          die Feldwerte von address.frm in der Array-Variablen @add
+                   </td></tr>
+
+ <tr>   <td align="left" valign="top"><font color="#a900d3"><b>clearForm($form)</b></font></td>
+        <td align="left">Löscht alle Felder der Maske.<br>Hiervon ausgenommen sind Felder
+                 bei denen <i>Clear</i>=<i>never</i> ist. Diese lassen sich nur mit<br>
+                 <pre>   $$form{section}{DATA}='' </pre> löschen.</td></tr>
+
+ <tr>   <td align="left" valign="top"><font color="#a900d3"><b>query($form)</b></font></td>
+        <td align="left">Gleiche Funktionalität wie der Suchen/Query -Knopf in der unteren Knopfleiste.</td></tr>
+
+ <tr>   <td align="left" valign="top"><font color="#a900d3"><b>function($form,'Ff')<br>function($form,'f')<br>
+              function($form,'F')</b></font></td>
+        <td align="left">Ausführen aller,<br> mit 'f' oder<br> 'F' bezeichneten Funktionen in den <i>Action</i>-Parametern.</td></tr>
+
+</table>
+
+
+
+<p></p>
+<table width="100%" align="center">
+  <tr  bgcolor="#d3d3d3"><td width="33%" align="left"><font size="-2"><a href="c5.html">5. Funktionen für den Action-Parameter.</a></font></td>
+      <td width="34%" align="center"><font size="-2"><a href="FormDesigner.html">Inhalt</a></font></td>
+      <td width="33%" align="right"><font size="-2"><a href="faq.html">FAQ - häufig gestellte Fragen</a></font></td>
+  </tr>
+</table>
+<table width="100%" border=0 bgcolor="white">
+  <tr><td><font size="-2">$Id: c6.html,v 1.2 2004/02/10 07:38:21 heli Exp $</font></td>
+</tr>
+</table>
+</BODY>
+</HTML>

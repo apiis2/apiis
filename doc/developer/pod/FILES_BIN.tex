@@ -1,0 +1,1536 @@
+\subsection{check\_integrity\label{check_integrity}\index{check\ integrity}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{check_integrity_SYNOPSIS}\index{check integrity!SYNOPSIS}}
+
+
+check\_integrity -p $<$project$>$ [Options]
+
+\subsubsection*{OPTIONS\label{check_integrity_OPTIONS}\index{check integrity!OPTIONS}}
+\begin{verbatim}
+ -p | --project <project>  defines the project to check (r)
+\end{verbatim}
+\begin{verbatim}
+ -u | --user  <user>       provide username <user> to connect to project (o)
+ -P | --password <passwd>  provide password <passwd> to connect to project (o)
+\end{verbatim}
+\begin{verbatim}
+ -t | --table  <table>     check only this table. You can provide several -t
+                           options or a list of comma separated tables (o)
+ -s | --stop   <number>    stop checking after <number> records (o)
+\end{verbatim}
+\begin{verbatim}
+ -e | --errfile            write detailed errors into files of the form
+                           <project>_<table>.err (o)
+ -f | --filename <file>    writes summary of check results into <file>
+                           instead of the default file check_integrity.erg. (o)
+ -D | --dirtyflag          use column 'dirty' to flag checked records (o)
+ -S | --skipdirty          skip records which are already flagged as dirty (o)
+\end{verbatim}
+\begin{verbatim}
+ -h | -? | --help          short help (o)
+ -m | --man                detailed man page (o)
+ -v | --version            current version of check_integrity (o)
+\end{verbatim}
+\begin{verbatim}
+                           (r) - required, (o) - optional
+\end{verbatim}
+\subsubsection*{DESCRIPTION\label{check_integrity_DESCRIPTION}\index{check integrity!DESCRIPTION}}
+
+
+\textbf{check\_integrity} checks your database for data integrity according to the
+defined rule in the project's model file.
+
+
+
+The option \textbf{-p $<$project}$>$ is the only required one.
+
+
+
+The \textbf{-t $<$table}$>$ options allows specifying either a single table or several
+tables in a comma separated list. The list must not contain any blanks. You
+can also give several \textbf{-t $<$table}$>$ options on the command line.
+
+\subsubsection*{EXAMPLES\label{check_integrity_EXAMPLES}\index{check integrity!EXAMPLES}}
+\begin{verbatim}
+ check_integrity -p breedprg
+ check_integrity -p breedprg -u demo -P 'my secret' -t animal -s 100
+ check_integrity -p breedprg -t animal -t transfer -t codes -D -S
+ check_integrity -p breedprg -t animal,transfer,codes -DSe -f check_report.txt
+\end{verbatim}
+\subsubsection*{BUGS\label{check_integrity_BUGS}\index{check integrity!BUGS}}
+
+
+\textbf{check\_integrity} is slow. The main area to speed it up will be an
+optimization of the Record objects.
+
+\subsubsection*{VERSION\label{check_integrity_VERSION}\index{check integrity!VERSION}}
+
+
+\$Revision: 1.54 \$
+
+\subsubsection*{AUTHOR\label{check_integrity_AUTHOR}\index{check integrity!AUTHOR}}
+\begin{verbatim}
+ Helmut Lichtenberg <heli@tzv.fal.de>
+ Ralf Fischer <ralf@tzv.fal.de>
+\end{verbatim}
+\subsection{cvs2cl.pl\label{cvs2cl_pl}\index{cvs2cl.pl}}
+
+
+Convert cvs log messages to changelogs
+
+\subsubsection*{SYNOPSIS\label{cvs2cl_pl_SYNOPSIS}\index{cvs2cl pl!SYNOPSIS}}
+
+
+\textbf{cvs2cl} [\textit{options}] [\textit{FILE1} [\textit{FILE2} ...]]
+
+\subsubsection*{DESCRIPTION\label{cvs2cl_pl_DESCRIPTION}\index{cvs2cl pl!DESCRIPTION}}
+
+
+cvs2cl produces a GNU-style ChangeLog for CVS-controlled sources by
+running "cvs log" and parsing the output. Duplicate log messages get
+unified in the Right Way.
+
+
+
+The default output of cvs2cl is designed to be compact, formally unambiguous,
+but still easy for humans to read.  It should be largely self-explanatory; the
+one abbreviation that might not be obvious is "utags".  That stands for
+"universal tags" -- a universal tag is one held by all the files in a given
+change entry.
+
+
+
+If you need output that's easy for a program to parse, use the \textbf{--xml} option.
+Note that with XML output, just about all available information is included
+with each change entry, whether you asked for it or not, on the theory that
+your parser can ignore anything it's not looking for.
+
+
+
+If filenames are given as arguments cvs2cl only shows log information for the
+named files.
+
+\subsubsection*{OPTIONS\label{cvs2cl_pl_OPTIONS}\index{cvs2cl pl!OPTIONS}}
+\begin{description}
+
+\item[{\textbf{-h}, \textbf{-help}, \textbf{--help},}] \textbf{\textbf{-?}}
+
+Show a short help and exit.
+
+
+\item[{\textbf{--version}}] \mbox{}
+
+Show version and exit.
+
+
+\item[{\textbf{-r}, \textbf{--revisions}}] \mbox{}
+
+Show revision numbers in output.
+
+
+\item[{\textbf{-b}, \textbf{--branches}}] \mbox{}
+
+Show branch names in revisions when possible.
+
+
+\item[{\textbf{-t}, \textbf{--tags}}] \mbox{}
+
+Show tags (symbolic names) in output.
+
+
+\item[{\textbf{-T}, \textbf{--tagdates}}] \mbox{}
+
+Show tags in output on their first occurance.
+
+
+\item[{\textbf{--show-dead}}] \mbox{}
+
+Show dead files.
+
+
+\item[{\textbf{--stdin}}] \mbox{}
+
+Read from stdin, don't run cvs log.
+
+
+\item[{\textbf{--stdout}}] \mbox{}
+
+Output to stdout not to ChangeLog.
+
+
+\item[{\textbf{-d}, \textbf{--distributed}}] \mbox{}
+
+Put ChangeLogs in subdirs.
+
+
+\item[{\textbf{-f} \textit{FILE}, \textbf{--file}}] \textbf{\textit{FILE}}
+
+Write to \textit{FILE} instead of ChangeLog.
+
+
+\item[{\textbf{--fsf}}] \mbox{}
+
+Use this if log data is in FSF ChangeLog style.
+
+
+\item[{\textbf{--FSF}}] \mbox{}
+
+Attempt strict FSF-standard compatible output.
+
+
+\item[{\textbf{-W} \textit{SECS}, \textbf{--window}}] \textbf{\textit{SECS}}
+
+Window of time within which log entries unify.
+
+
+\item[{-\textbf{U} \textit{UFILE}, \textbf{--usermap}}] \textbf{\textit{UFILE}}
+
+Expand usernames to email addresses from \textit{UFILE}.
+
+
+\item[{\textbf{--passwd} \textit{PASSWORDFILE}}] \mbox{}
+
+Use system passwd file for user name expansion.  If no mail domain is provided
+(via \textbf{--domain}), it tries to read one from \textbf{/etc/mailname}, output of \textbf{hostname
+-d}, \textbf{dnsdomainname}, or \textbf{domain-name}.  cvs2cl exits with an error if none of
+those options is successful. Use a domain of '' to prevent the addition of a
+mail domain.
+
+
+\item[{\textbf{--domain} \textit{DOMAIN}}] \mbox{}
+
+Domain to build email addresses from.
+
+
+\item[{\textbf{--gecos}}] \mbox{}
+
+Get user information from GECOS data.
+
+
+\item[{\textbf{-R} \textit{REGEXP}, \textbf{--regexp}}] \textbf{\textit{REGEXP}}
+
+Include only entries that match \textit{REGEXP}.  This option may be used multiple
+times.
+
+
+\item[{\textbf{-I} \textit{REGEXP}, \textbf{--ignore}}] \textbf{\textit{REGEXP}}
+
+Ignore files whose names match \textit{REGEXP}.  This option may be used multiple
+times.  The regexp is a perl regular expression.  It is matched as is; you may
+want to prefix with a \^{} or suffix with a \$ to anchor the match.
+
+
+\item[{\textbf{-C}, \textbf{--case-insensitive}}] \mbox{}
+
+Any regexp matching is done case-insensitively.
+
+
+\item[{\textbf{-F} \textit{BRANCH}, \textbf{--follow}}] \textbf{\textit{BRANCH}}
+
+Show only revisions on or ancestral to \textit{BRANCH}.
+
+
+\item[{\textbf{--follow-only} \textit{BRANCH}}] \mbox{}
+
+Like --follow, but sub-branches are not followed.
+
+
+\item[{\textbf{--no-ancestors}}] \mbox{}
+
+When using \textbf{-F}, only track changes since the \textit{BRANCH} started.
+
+
+\item[{\textbf{--no-hide-branch-additions}}] \mbox{}
+
+By default, entries generated by cvs for a file added on a branch (a dead 1.1
+entry) are not shown.  This flag reverses that action.
+
+
+\item[{\textbf{-S}, \textbf{--separate-header}}] \mbox{}
+
+Blank line between each header and log message.
+
+
+\item[{\textbf{--summary}}] \mbox{}
+
+Add CVS change summary information.
+
+
+\item[{\textbf{--no-wrap}}] \mbox{}
+
+Don't auto-wrap log message (recommend \textbf{-S} also).
+
+
+\item[{\textbf{--no-indent}}] \mbox{}
+
+Don't indent log message
+
+
+\item[{\textbf{--gmt}, \textbf{--utc}}] \mbox{}
+
+Show times in GMT/UTC instead of local time.
+
+
+\item[{\textbf{--accum}}] \mbox{}
+
+Add to an existing ChangeLog (incompatible with \textbf{--xml}).
+
+
+\item[{\textbf{-w}, \textbf{--day-of-week}}] \mbox{}
+
+Show day of week.
+
+
+\item[{\textbf{--no-times}}] \mbox{}
+
+Don't show times in output.
+
+
+\item[{\textbf{--chrono}}] \mbox{}
+
+Output log in chronological order (default is reverse chronological order).
+
+
+\item[{\textbf{--header} \textit{FILE}}] \mbox{}
+
+Get ChangeLog header from \textit{FILE} ("\textbf{-}" means stdin).
+
+
+\item[{\textbf{--xml}}] \mbox{}
+
+Output XML instead of ChangeLog format.
+
+
+\item[{\textbf{--xml-encoding} \textit{ENCODING.}}] \mbox{}
+
+Insert encoding clause in XML header.
+
+
+\item[{\textbf{--noxmlns}}] \mbox{}
+
+Don't include xmlns= attribute in root element.
+
+
+\item[{\textbf{--hide-filenames}}] \mbox{}
+
+Don't show filenames (ignored for XML output).
+
+
+\item[{\textbf{--no-common-dir}}] \mbox{}
+
+Don't shorten directory names from filenames.
+
+
+\item[{\textbf{--rcs} \textit{CVSROOT}}] \mbox{}
+
+Handle filenames from raw RCS, for instance those produced by "cvs rlog"
+output, stripping the prefix \textit{CVSROOT}.
+
+
+\item[{\textbf{-P}, \textbf{--prune}}] \mbox{}
+
+Don't show empty log messages.
+
+
+\item[{\textbf{--lines-modified}}] \mbox{}
+
+Output the number of lines added and the number of lines removed for
+each checkin (if applicable). At the moment, this only affects the
+XML output mode.
+
+
+\item[{\textbf{--ignore-tag} \textit{TAG}}] \mbox{}
+
+Ignore individual changes that are associated with a given tag.
+May be repeated, if so, changes that are associated with any of
+the given tags are ignored.
+
+
+\item[{\textbf{--show-tag} \textit{TAG}}] \mbox{}
+
+Log only individual changes that are associated with a given
+tag.  May be repeated, if so, changes that are associated with
+any of the given tags are logged.
+
+
+\item[{\textbf{--delta} \textit{FROM\_TAG}\textbf{:}\textit{TO\_TAG}}] \mbox{}
+
+Attempt a delta between two tags (since \textit{FROM\_TAG} up to and
+including \textit{TO\_TAG}).  The algorithm is a simple date-based one
+(this is a hard problem) so results are imperfect.
+
+
+\item[{\textbf{-g} \textit{OPTS}, \textbf{--global-opts}}] \textbf{\textit{OPTS}}
+
+Pass \textit{OPTS} to cvs like in "cvs \textit{OPTS} log ...".
+
+
+\item[{\textbf{-l} \textit{OPTS}, \textbf{--log-opts}}] \textbf{\textit{OPTS}}
+
+Pass \textit{OPTS} to cvs log like in "cvs ... log \textit{OPTS}".
+
+\end{description}
+
+
+Notes about the options and arguments:
+
+\begin{itemize}
+
+\item 
+
+The \textbf{-I} and \textbf{-F} options may appear multiple times.
+
+
+\item 
+
+To follow trunk revisions, use "\textbf{-F trunk}" ("\textbf{-F TRUNK}" also works).  This is
+okay because no would ever, ever be crazy enough to name a branch "trunk",
+right?  Right.
+
+
+\item 
+
+For the \textbf{-U} option, the \textit{UFILE} should be formatted like CVSROOT/users. That is,
+each line of \textit{UFILE} looks like this:
+
+\begin{verbatim}
+       jrandom:jrandom@red-bean.com
+\end{verbatim}
+
+
+or maybe even like this
+
+\begin{verbatim}
+       jrandom:'Jesse Q. Random <jrandom@red-bean.com>'
+\end{verbatim}
+
+
+Don't forget to quote the portion after the colon if necessary.
+
+
+\item 
+
+Many people want to filter by date.  To do so, invoke cvs2cl.pl like this:
+
+\begin{verbatim}
+       cvs2cl.pl -l "-d'DATESPEC'"
+\end{verbatim}
+
+
+where DATESPEC is any date specification valid for "cvs log -d".  (Note that
+CVS 1.10.7 and below requires there be no space between -d and its argument).
+
+
+\item 
+
+Dates/times are interpreted in the local time zone.
+
+
+\item 
+
+Remember to quote the argument to `\textbf{-l}' so that your shell doesn't interpret
+spaces as argument separators.
+
+
+\item 
+
+See the 'Common Options' section of the cvs manual ('info cvs' on UNIX-like
+systems) for more information.
+
+
+\item 
+
+Note that the rules for quoting under windows shells are different.
+
+
+\item 
+
+To run in an automated environment such as CGI or PHP, suidperl may be needed
+in order to execute as the correct user to enable /cvsroot read lock files to
+be written for the 'cvs log' command.  This is likely just a case of changing
+the /usr/bin/perl command to /usr/bin/suidperl, and explicitly declaring the
+PATH variable.
+
+\end{itemize}
+\subsubsection*{EXAMPLES\label{cvs2cl_pl_EXAMPLES}\index{cvs2cl pl!EXAMPLES}}
+
+
+Some examples (working on UNIX shells):
+
+\begin{verbatim}
+      # logs after 6th March, 2003 (inclusive)
+      cvs2cl.pl -l "-d'>2003-03-06'"
+      # logs after 4:34PM 6th March, 2003 (inclusive)
+      cvs2cl.pl -l "-d'>2003-03-06 16:34'"
+      # logs between 4:46PM 6th March, 2003 (exclusive) and
+      # 4:34PM 6th March, 2003 (inclusive)
+      cvs2cl.pl -l "-d'2003-03-06 16:46>2003-03-06 16:34'"
+\end{verbatim}
+
+
+Some examples (on non-UNIX shells):
+
+\begin{verbatim}
+      # Reported to work on windows xp/2000
+      cvs2cl.pl -l  "-d"">2003-10-18;today<"""
+\end{verbatim}
+\subsubsection*{AUTHORS\label{cvs2cl_pl_AUTHORS}\index{cvs2cl pl!AUTHORS}}
+\begin{description}
+
+\item[{Karl Fogel}] \mbox{}
+\item[{Melissa O'Neill}] \mbox{}
+\item[{Martyn J. Pearce}] \mbox{}\end{description}
+
+
+Contributions from
+
+\begin{description}
+
+\item[{Mike Ayers}] \mbox{}
+\item[{Tim Bradshaw}] \mbox{}
+\item[{Richard Broberg}] \mbox{}
+\item[{Nathan Bryant}] \mbox{}
+\item[{Oswald Buddenhagen}] \mbox{}
+\item[{Neil Conway}] \mbox{}
+\item[{Arthur de Jong}] \mbox{}
+\item[{Mark W. Eichin}] \mbox{}
+\item[{Dave Elcock}] \mbox{}
+\item[{Reid Ellis}] \mbox{}
+\item[{Simon Josefsson}] \mbox{}
+\item[{Robin Hugh Johnson}] \mbox{}
+\item[{Terry Kane}] \mbox{}
+\item[{Pete Kempf}] \mbox{}
+\item[{Akos Kiss}] \mbox{}
+\item[{Claus Klein}] \mbox{}
+\item[{Eddie Kohler}] \mbox{}
+\item[{Richard Laager}] \mbox{}
+\item[{Kevin Lilly}] \mbox{}
+\item[{Karl-Heinz Marbaise}] \mbox{}
+\item[{Mitsuaki Masuhara}] \mbox{}
+\item[{Henrik Nordstrom}] \mbox{}
+\item[{Joe Orton}] \mbox{}
+\item[{Peter Palfrader}] \mbox{}
+\item[{Thomas Parmelan}] \mbox{}
+\item[{Jordan Russell}] \mbox{}
+\item[{Jacek Sliwerski}] \mbox{}
+\item[{Johannes Stezenbach}] \mbox{}
+\item[{Joseph Walton}] \mbox{}
+\item[{Ernie Zapata}] \mbox{}\end{description}
+\subsubsection*{BUGS\label{cvs2cl_pl_BUGS}\index{cvs2cl pl!BUGS}}
+
+
+Please report bugs to \texttt{bug-cvs2cl@red-bean.com}.
+
+\subsubsection*{PREREQUISITES\label{cvs2cl_pl_PREREQUISITES}\index{cvs2cl pl!PREREQUISITES}}
+
+
+This script requires \texttt{Text::Wrap}, \texttt{Time::Local}, and \texttt{File::Basename}.  It
+also seems to require \texttt{Perl 5.004\_04} or higher.
+
+\subsubsection*{OPERATING SYSTEM COMPATIBILITY\label{cvs2cl_pl_OPERATING_SYSTEM_COMPATIBILITY}\index{cvs2cl pl!OPERATING SYSTEM COMPATIBILITY}}
+
+
+Should work on any OS.
+
+\subsubsection*{SCRIPT CATEGORIES\label{cvs2cl_pl_SCRIPT_CATEGORIES}\index{cvs2cl pl!SCRIPT CATEGORIES}}
+
+
+Version\_Control/CVS
+
+\subsubsection*{COPYRIGHT\label{cvs2cl_pl_COPYRIGHT}\index{cvs2cl pl!COPYRIGHT}}
+
+
+(C) 2001,2002,2003,2004 Martyn J. Pearce $<$fluffy@cpan.org$>$, under the GNU GPL.
+
+
+
+(C) 1999 Karl Fogel $<$kfogel@red-bean.com$>$, under the GNU GPL.
+
+
+
+cvs2cl.pl is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+
+
+cvs2cl.pl is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+
+
+You may have received a copy of the GNU General Public License
+along with cvs2cl.pl; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.
+
+\subsubsection*{SEE ALSO\label{cvs2cl_pl_SEE_ALSO}\index{cvs2cl pl!SEE ALSO}}
+
+
+cvs(1)
+
+\subsection{file2inspool.pl\label{file2inspool_pl}\index{file2inspool.pl}}
+
+
+The program is looking for  files in directory "\$APIIS\_LOCAL/load/inspool",
+reads the data and loads them into the INSPOOL table in your database.
+Files in the inspool directory have to be text files containing one record
+per line.
+
+
+
+Each filename in your inspool directory has to start with DSxx where xx is
+the number of the data stream (DS01, DS02, ...)
+
+
+
+After running the program, each row of the INSPOOL table contains the data
+stream identification (DS01, DS02...) in column ds, a unique number
+generated by sequence 'seq\_inspool\_\_in\_id' (column in\_id), the status
+(NEW), the time of processing (timestamp) and the whole, unchanged record
+in ASCII format (column record).
+
+
+
+The table LOAD\_STAT is populated with a new record about the insertion of
+the new datastream into INSPOOL.
+The filename of the loaded data is stored in column JOB, the start and end
+of this job are recorded in the appropriate columns, also the total number
+of inserted records (nrec\_tot).
+
+
+
+After successful loading the datafile is moved to "\$APIIS\_LOCAL/load/inspool/done".
+
+
+
+If the datastream contains BLOBS (binary large objects) - pictures, movies etc. then the new special table "blobs" is used. In the datastream on the third row - the word "blobs" should occure followed by the number of elements in a row and position number of the file names in the data rows.
+For example:
+
+
+
+DS01
+
+
+
+ini
+
+
+
+blobs 5 1 3
+
+
+
+cat$|$/home/zgr/duchev/pictures/IN00006A.JPG$|$123.56$|$IN00009A.JPG$|$jpg
+
+
+
+dog$|$IN00004A.JPG$|$87.10$|$/home/zgr/duchev/pictures/IN00005A.JPG$|$jpg
+
+
+
+All files from one datastream should be stored in separate subfolder of the "inspool" folder. The "file2inspool.pl" should be invoked in the following manner:
+
+
+
+file2inspool.pl -f $<$folder name$>$ -m $<$model\_file$>$
+
+
+
+The script reads DS file from this folder, loads files into BLOBS table, stores the returned record identifiers insted of the file names in the DS file and load these records as usual in the INSPOOL table.
+
+\subsection{Form\label{Form}\index{Form}}
+
+
+Create a window with the form defined in formfile
+
+\subsubsection*{SYNOPSIS\label{Form_SYNOPSIS}\index{Form!SYNOPSIS}}
+
+
+Form [-s][-d][-D level][-p][-P pos] [formfile] [data ... ]
+
+\subsubsection*{DESCRIPTION\label{Form_DESCRIPTION}\index{Form!DESCRIPTION}}
+
+
+The formfile describe the appearance and functionality of a form. \textbf{Form} initializes
+neccessary things and passes the formfile and parameter to the module 'yaform.pm'.
+For using more than one form at a time one can also use the wrapper \textbf{apiish}.
+
+
+
+To pass data directly into fields of the form one can give the data to the command line.
+The first given parameter after formfile will be written into the first field of the form,
+the second into the second field and so on. One can check the order of the form field with
+the FormDesigner at the Edit menu.
+With option -p and the data parameter it is possible to pass values from one form to an other.
+
+\subsubsection*{OPTIONS\label{Form_OPTIONS}\index{Form!OPTIONS}}
+\begin{description}
+
+\item[{\textbf{-s}}] \mbox{}
+
+print last SQL Statement
+
+
+\item[{\textbf{-d}}] \mbox{}
+
+print debug messages from yaform
+
+
+\item[{\textbf{-D} level}] \mbox{}
+
+DBIx::Recordset debuglevel 1..4
+
+
+\item[{\textbf{-p}}] \mbox{}
+
+print field values from the returned hash
+
+
+\item[{\textbf{-P} pos}] \mbox{}
+
+place in one of seven screen positions (default: 0)
+pos:   .-------.
+       $|$1  2  3$|$
+       $|$   0   $|$
+       $|$4  5  6$|$
+       '-------'
+
+\end{description}
+\subsubsection*{SEE ALSO\label{Form_SEE_ALSO}\index{Form!SEE ALSO}}
+
+
+yaform.pm, form\_ulib.pm, FormDesigner, apiish
+
+\subsubsection*{AUTHOR\label{Form_AUTHOR}\index{Form!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+\subsection{FormDesigner\label{FormDesigner}\index{FormDesigner}}
+
+
+GUI for creating/editing formfiles
+
+\subsubsection*{SYNOPSIS\label{FormDesigner_SYNOPSIS}\index{FormDesigner!SYNOPSIS}}
+
+
+\textbf{FormDesigner}
+
+\subsubsection*{DESCRIPTION\label{FormDesigner_DESCRIPTION}\index{FormDesigner!DESCRIPTION}}
+
+
+\emph{FormDesigner} is a graphical user interface for creating and editing
+form files (formfile) for APIIS (Adaptable Platform Independent Information System).
+
+
+
+The bulk of the documentation for \emph{FormDesigner} is in an HTML-based implementer guide.
+See the Help menu in \emph{FormDesigner} or point your browser at
+\emph{\$APIIS\_HOME/doc/implementer/FormDesigner/de/FormDesigner.html}. At this time, there is
+only a german version available.
+
+
+
+For the help system the preferred browser can be permanently set in the apiis configuration
+file \emph{\$APIIS\_HOME/apiisrc}
+
+\subsubsection*{SUBROUTINES\label{FormDesigner_SUBROUTINES}\index{FormDesigner!SUBROUTINES}}
+\paragraph*{newForm\label{FormDesigner_newForm}\index{FormDesigner!newForm}}
+
+
+newForm initialize or reset some variables for a new Form.
+If a form exists ask about destroying, then create a new one.
+Creates the GENERAL-configuration window.
+
+
+
+Subroutine is called form the main window menu: File-$>$New and Edit-$>$GENERAL
+
+
+
+usage: newForm( \$ToplevelWindow [,\$switch] )
+
+\begin{verbatim}
+   ToplevelWindow:  created with i.e. $ToplevelWindow = MainWindow->new();
+\end{verbatim}
+\begin{verbatim}
+           switch:  if set, create only the GENERAL-configuration window.
+\end{verbatim}
+\paragraph*{loadForm\label{FormDesigner_loadForm}\index{FormDesigner!loadForm}}
+
+
+loadForm loads a existing formfile for editing.
+
+
+
+usage: loadForm( \$ToplevelWindow )
+
+\paragraph*{saveForm\label{FormDesigner_saveForm}\index{FormDesigner!saveForm}}
+
+
+saveForm stores the form definitions to a formfile.
+
+
+
+usage: saveForm( \$ToplevelWindow [,\$Mode] )
+
+\begin{verbatim}
+   ToplevelWindow:  toplevel widget
+\end{verbatim}
+\begin{verbatim}
+             Mode:  if set, ask about filename.
+                    if not set, store either to untitled.form or
+                    to a previously given filename.
+\end{verbatim}
+\paragraph*{loadmodel\label{FormDesigner_loadmodel}\index{FormDesigner!loadmodel}}
+
+
+Load model from given modelfile.
+
+
+
+usage: loadmodel( \$ToplevelWindow [,\$nFwin] )
+
+\begin{verbatim}
+   ToplevelWindow:  toplevel widget
+            nFwin:  GENERAL-configuration toplevel widget
+                    if given, destroy widget
+\end{verbatim}
+\paragraph*{selectFile\label{FormDesigner_selectFile}\index{FormDesigner!selectFile}}
+
+
+selectFile opens a file selector box to choose a filename for loading or saving.
+Two different file selctor boxes are available. Tk::FBox (default) and Tk::FileSelect.
+In \emph{\$APIIS\_HOME/apiisrc} one can overwrite the default by setting the \$fileselector
+variable to 'FileSelect'.
+
+
+
+usage: \$filename = selectFile( \$operation, \$ToplevelWindow )
+
+\begin{verbatim}
+       operation: one of four operations
+                   model: to open a modelfile
+                loadform: to open a formfile
+                saveform: to save a formfile
+                     gif: to open a GIF-image
+\end{verbatim}
+\begin{verbatim}
+  ToplevelWindow:  toplevel widget
+\end{verbatim}
+\paragraph*{selectFont\label{FormDesigner_selectFont}\index{FormDesigner!selectFont}}
+
+
+selectFont is a font browser and chooser for X Window fonts. Therefore only
+available for unix operating systems.
+
+
+
+usage:  selectFont( \$ToplevelWindow, \$switch, \$font\_ref)
+
+\begin{verbatim}
+   ToplevelWindow:  toplevel widget
+           switch:  one of six settings. It is only 
+                    used to set the title of the 
+                    font browser window.
+                    0: "Select: Title Font"
+                    1: "Select: Normal Font"
+                    2: "Select: Label Font"
+                    3: "Select: Button Font"
+                    4: "Select: Font for digital time"
+                    5: "Select: Font for digital date"
+         font_ref: a reference to the name of the X font string
+\end{verbatim}
+\paragraph*{warnwin\label{FormDesigner_warnwin}\index{FormDesigner!warnwin}}
+
+
+warnwin creates a modal dialogbox window and waits for response.
+
+
+
+usage: \$answer = warnwin( \$ToplevelWindow, \$title, \$bitmap, \$text, [$\backslash$@buttons] )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+            title: title of the dialogbox window
+           bitmap: specifies a bitmap to display in the top portion
+                   of the dialog, to the left of the text.  If this
+                   is an empty string then no bitmap is displayed in
+                   the dialog. There are a set of Tk build-in bitmaps.
+                   The most used are 'error', 'info', 'question',
+                   'questhead' and 'warning'.
+                   bitmap can also be a Tk::Pixmap object. 
+             text: the text to display on the dialogbox 
+          buttons: reference to an array with the buttons text.
+                   i.e. ['Ok', 'Cancel'] (two button)
+                        ['Red', 'Green', 'Blue'] (three button)
+\end{verbatim}
+\begin{verbatim}
+ Example: # what would you do?
+         $answer = warnwin($top,                       # toplevel window
+                           'Question',                 # window title
+                           'questhead',                # predefined bitmap
+                           'What would you do?',       # text
+                           ['work', 'play', 'sleep']); # three buttons
+         if($answer eq 'work') { # do something }
+         if($answer eq 'play') { system("battlechess" }
+         if($answer eq 'sleep') { sleep(28800) }
+\end{verbatim}
+\paragraph*{clearGENERAL\label{FormDesigner_clearGENERAL}\index{FormDesigner!clearGENERAL}}
+
+
+clearGENERAL clears all entrys in the GENERAL-configuration window
+
+
+
+usage: clearGENERAL( \$ToplevelWindow, \$GeneralWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+    GeneralWindow: widget of the GENERAL-configuration window
+\end{verbatim}
+\paragraph*{fillColList\label{FormDesigner_fillColList}\index{FormDesigner!fillColList}}
+
+
+fillColList fills for a given table in the column listbox the
+existing column names. After choosing a table this subroutine is executed.
+
+
+
+usage: fillColList( \$table-Listbox-widget );
+
+\begin{verbatim}
+   table-Listbox-widget: widget of the table listbox.
+                         It's used to retrieve the selected table
+                         from the table listbox.
+\end{verbatim}
+\paragraph*{proceed\label{FormDesigner_proceed}\index{FormDesigner!proceed}}
+
+
+proceed sets formfile section name and field type.
+
+
+
+usage: proceed( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{config\_EDLBNCATIOPMRU\label{FormDesigner_config_EDLBNCATIOPMRU}\index{FormDesigner!config\ EDLBNCATIOPMRU}}
+
+
+creates for each field types a different configuration window.
+Only necessary parameters will be shown.
+
+
+
+usage: config\_EDLBNCATIOPMRU( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{config\_unknown\label{FormDesigner_config_unknown}\index{FormDesigner!config\ unknown}}
+
+
+usage: config\_unknown( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{placeField\label{FormDesigner_placeField}\index{FormDesigner!placeField}}
+
+
+register a section and place it on the form
+
+
+
+usage: placeField( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{editsection\label{FormDesigner_editsection}\index{FormDesigner!editsection}}
+
+
+open a registered section for editing
+
+
+
+usage: editsection( \$section )
+
+\begin{verbatim}
+   section: section name to be edited
+\end{verbatim}
+\paragraph*{updateField\label{FormDesigner_updateField}\index{FormDesigner!updateField}}
+
+
+if a Field is placed then this is the right subroutine
+to create or update the Form$\backslash$().
+
+
+
+usage: updateField()
+
+\paragraph*{deleteField\label{FormDesigner_deleteField}\index{FormDesigner!deleteField}}
+
+
+delete a registered section
+
+
+
+usage: deleteField( \$section )
+
+\begin{verbatim}
+   section: a registered section to delete
+\end{verbatim}
+\paragraph*{textEdit\label{FormDesigner_textEdit}\index{FormDesigner!textEdit}}
+
+
+textEdit is a small text editor for editing parameters that could be
+more than one line long.
+
+
+
+usage: textEdit( \$section, \$parameter, \$ToplevelWindow )
+
+\begin{verbatim}
+          section: a registered section
+        parameter: parameter of section
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{options\label{FormDesigner_options}\index{FormDesigner!options}}
+
+
+creates a window for selecting a browser
+
+
+
+usage: options( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{option\_debug\label{FormDesigner_option_debug}\index{FormDesigner!option\ debug}}
+
+
+set debug option. Used to print some debug messages from yaform.pm
+
+
+
+usage: option\_debug()
+
+\paragraph*{option\_sql\label{FormDesigner_option_sql}\index{FormDesigner!option\ sql}}
+
+
+set option 'last SQL statement'. Used to print some SQL messages from yaform.pm
+
+
+
+usage: option\_sql()
+
+\paragraph*{option\_apiis\label{FormDesigner_option_apiis}\index{FormDesigner!option\ apiis}}
+
+
+option\_apiis creates a window to set or edit \$APIIS\_HOME
+and \$APIIS\_LOCAL.
+
+
+
+usage: option\_apiis( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{option\_grid\label{FormDesigner_option_grid}\index{FormDesigner!option\ grid}}
+
+
+option\_grid creates a window to set x/y grid values.
+
+
+
+usage: option\_grid( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{opt\_fsel\label{FormDesigner_opt_fsel}\index{FormDesigner!opt\ fsel}}
+
+
+creates a window to select a fileselctor (FBox/FileSelector).
+
+
+
+usage: opt\_fsel( \$ToplevelWindow )
+
+\begin{verbatim}
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{renSection\label{FormDesigner_renSection}\index{FormDesigner!renSection}}
+
+
+renSection creates a window to rename a formfile section
+
+
+
+usage: renSection( \$section, \$ToplevelWindow )
+
+\begin{verbatim}
+          section: section name to delete
+   ToplevelWindow: toplevel widget
+\end{verbatim}
+\paragraph*{checkSec\label{FormDesigner_checkSec}\index{FormDesigner!checkSec}}
+
+
+checkSec is called from subroutine renSection. Makes the extensive stuff
+to check of existing sections, changes the form hash and the registration,
+adjusts the edit menu, renames some window titles and button text.
+
+
+
+usage: checkSec( \$cursec, \$newsec, \$toplevel )
+
+\begin{verbatim}
+     cursec: current section name to be renamed
+     newsec: the new section name
+   toplevel: toplevel window ('Rename Section' window)
+             will be destroyed after successfull renaming.
+\end{verbatim}
+\paragraph*{Post\label{FormDesigner_Post}\index{FormDesigner!Post}}
+
+
+Slaven Rezic has made a nice patch that solves the problem of slow
+Dialog boxes perfectly. Here is his solution.
+
+
+
+thanx Slaven!
+
+\subsubsection*{SEE ALSO\label{FormDesigner_SEE_ALSO}\index{FormDesigner!SEE ALSO}}
+
+
+\$APIIS\_HOME/lib/yaform.pm, \$APIIS\_HOME/lib/form\_ulib.pm
+
+\subsubsection*{AUTHOR\label{FormDesigner_AUTHOR}\index{FormDesigner!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+\subsection{mkform\label{mkform}\index{mkform}}
+
+
+Create a formfile for each table in the database
+
+\subsubsection*{SYNOPSIS\label{mkform_SYNOPSIS}\index{mkform!SYNOPSIS}}
+
+
+mkform [-y deltaY][-c column1[,column2 ...]] $<$modelfile$>$
+mkform [-h]
+
+\subsubsection*{DESCRIPTION\label{mkform_DESCRIPTION}\index{mkform!DESCRIPTION}}
+
+
+The program mkform creates a GUI parameter file for each
+table in the database assuming inserts. This procedure
+can be used to quickly generate an application for simple
+problems. The resulting form files can be edited manually.
+
+
+
+Reads the modelfile from the current working directory
+or from directory \$APIIS\_LOCAL/model/
+
+
+
+The formfiles will be written either to
+ \emph{dirname($<$modelfile$>$)/default\_forms},
+ \emph{\$APIIS\_HOME/model/default\_forms} or
+in an subdirectory default\_forms of the current directory. 
+The name of the created formfile is \emph{$<$table$>$.frm}
+
+\subsubsection*{OPTIONS\label{mkform_OPTIONS}\index{mkform!OPTIONS}}
+\begin{description}
+
+\item[{\textbf{-y} vertical field spacing.}] \mbox{}
+
+Formfile parameter YLOCATION (default 50)
+
+
+\item[{\textbf{-c} omit column}] \mbox{}
+\item[{\textbf{-h} short help}] \mbox{}\end{description}
+\subsubsection*{FILES\label{mkform_FILES}\index{mkform!FILES}}
+\begin{verbatim}
+ $APIIS_LOCAL/<model>.model
+ $APIIS_HOME/apiisrc
+ $HOME/.apiisrc
+\end{verbatim}
+\subsubsection*{AUTHOR\label{mkform_AUTHOR}\index{mkform!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+\begin{description}
+
+\item[{mkLOfForm -}] \mbox{}\subsection{create a \textbf{formatted} form file from each given loadobject
+by parsing the loadobject file about variable @LO\_keys\label{create_a_formatted_form_file_from_each_given_loadobject_by_parsing_the_loadobject_file_about_variable_LO_keys}\index{create a formatted form file from each given loadobject
+by parsing the loadobject file about variable @LO\ keys}}
+
+
+
+
+\end{description}
+\subsubsection*{SYNOPSIS\label{create_a_formatted_form_file_from_each_given_loadobject_by_parsing_the_loadobject_file_about_variable_LO_keys_SYNOPSIS}\index{create a formatted form file from each given loadobject by parsing the loadobject file about variable LO keys!SYNOPSIS}}
+
+
+mkLOfForm [-y] [-f] $<$load\_object\_files$>$
+
+
+
+mkLOfForm -h $|$ -v
+
+\begin{description}
+
+\item[{\textbf{-y} vertical field spacing.}] \mbox{}
+
+Formfile parameter YLOCATION (default 48)
+
+
+\item[{\textbf{-f} fieldlength}] \mbox{}
+
+fieldlength of each field (default 25)
+
+
+\item[{\textbf{-v} version}] \mbox{}
+\item[{\textbf{-h} help}] \mbox{}\end{description}
+\subsubsection*{EXAMPLE\label{create_a_formatted_form_file_from_each_given_loadobject_by_parsing_the_loadobject_file_about_variable_LO_keys_EXAMPLE}\index{create a formatted form file from each given loadobject by parsing the loadobject file about variable LO keys!EXAMPLE}}
+
+
+mkLOfForm LO\_*
+
+\subsubsection*{SEE ALSO\label{create_a_formatted_form_file_from_each_given_loadobject_by_parsing_the_loadobject_file_about_variable_LO_keys_SEE_ALSO}\index{create a formatted form file from each given loadobject by parsing the loadobject file about variable LO keys!SEE ALSO}}
+
+
+mkform, mkLOform
+
+\subsubsection*{AUTHOR\label{create_a_formatted_form_file_from_each_given_loadobject_by_parsing_the_loadobject_file_about_variable_LO_keys_AUTHOR}\index{create a formatted form file from each given loadobject by parsing the loadobject file about variable LO keys!AUTHOR}}
+
+
+Hartmut Boerner (haboe@tzv.fal.de)
+
+\subsection{mkLOform\label{mkLOform}\index{mkLOform}}
+
+
+Create a form file from each given loadobject
+
+\subsubsection*{SYNOPSIS\label{mkLOform_SYNOPSIS}\index{mkLOform!SYNOPSIS}}
+
+
+mkLOform [-y] [-f] $<$load\_object\_files$>$ $<$modelfile$>$
+
+\begin{description}
+
+\item[{\textbf{-y} vertical field spacing.}] \mbox{}
+
+Formfile parameter YLOCATION (default 48)
+
+
+\item[{\textbf{-f} fieldlength}] \mbox{}
+
+fieldlength of each field (default 45)
+
+
+\item[{\textbf{-v} version}] \mbox{}
+\item[{\textbf{-h} help}] \mbox{}\end{description}
+\subsubsection*{EXAMPLE\label{mkLOform_EXAMPLE}\index{mkLOform!EXAMPLE}}
+
+
+mkLOform LO\_* '\$APIIS\_LOCAL/model/apiis.model'
+
+\subsubsection*{SEE ALSO\label{mkLOform_SEE_ALSO}\index{mkLOform!SEE ALSO}}
+
+
+mkform
+
+\subsubsection*{AUTHOR\label{mkLOform_AUTHOR}\index{mkLOform!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+\subsection{mksql -- create SQL commands from the model file\label{mksql_--_create_SQL_commands_from_the_model_file}\index{mksql -- create SQL commands from the model file}}
+
+
+
+
+\subsubsection*{SYNOPSIS\label{mksql_--_create_SQL_commands_from_the_model_file_SYNOPSIS}\index{mksql -- create SQL commands from the model file!SYNOPSIS}}
+\begin{verbatim}
+   mksql [-h|v|t|d|n|s] [-f] <model file>
+\end{verbatim}
+
+
+Create SQL commands from the model file to create the database structure
+
+\subsubsection*{OPTIONS\label{mksql_--_create_SQL_commands_from_the_model_file_OPTIONS}\index{mksql -- create SQL commands from the model file!OPTIONS}}
+\begin{verbatim}
+   -h                Help
+   -m                show manpage
+   -v                Version
+   -f <modelfile>    Name of model file (required)
+   -t <table>        only for table <table>
+   -d                delete: DROP-statements are not commented out!
+   -n                create no views
+   -s                write to STDOUT
+\end{verbatim}
+\subsubsection*{DESCRIPTION\label{mksql_--_create_SQL_commands_from_the_model_file_DESCRIPTION}\index{mksql -- create SQL commands from the model file!DESCRIPTION}}
+
+
+mksql reads the model file and writes a SQL-file (unless -s) to create
+all necessary tables, view, indexes, sequences, etc.
+As this is very database specific you have to run this file by hand. Maybe
+you want to inspect it before. :\^{})
+
+\subsubsection*{SEE ALSO\label{mksql_--_create_SQL_commands_from_the_model_file_SEE_ALSO}\index{mksql -- create SQL commands from the model file!SEE ALSO}}
+
+
+Apiis::DataBase::SQL::MakeSQL;
+
+\subsubsection*{COPYRIGHT\label{mksql_--_create_SQL_commands_from_the_model_file_COPYRIGHT}\index{mksql -- create SQL commands from the model file!COPYRIGHT}}
+
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+
+
+See $<$http://www.perl.com/perl/misc/Artistic.html$>$
+
+\subsubsection*{AUTHOR\label{mksql_--_create_SQL_commands_from_the_model_file_AUTHOR}\index{mksql -- create SQL commands from the model file!AUTHOR}}
+
+
+Helmut Lichtenberg $<$heli@tzv.fal.de$>$
+
+\subsection{model2xfig\label{model2xfig}\index{model2xfig}}
+
+
+Create a database relationship diagram
+
+\subsubsection*{SYNOPSIS\label{model2xfig_SYNOPSIS}\index{model2xfig!SYNOPSIS}}
+
+
+\textbf{model2xfig} [\emph{options}] [modelfile]
+
+\subsubsection*{DESCRIPTION\label{model2xfig_DESCRIPTION}\index{model2xfig!DESCRIPTION}}
+
+
+model2xfig creates a relationship diagram from a modelfile
+in xfig file format (FIG 3.2). The name of the xfig file is
+\emph{modelfile.fig}.
+
+
+
+After loading the file into \textbf{xfig} one can move tables with 'Smart Links'
+set to 'MOVE'. In this mode the end of lines (foreign keys) persists.
+
+\subsubsection*{OPTIONS\label{model2xfig_OPTIONS}\index{model2xfig!OPTIONS}}
+\begin{description}
+
+\item[{\textbf{-h}}] \mbox{}
+
+help
+
+
+\item[{\textbf{-v}}] \mbox{}
+
+version
+
+
+\item[{\textbf{-s}}] \mbox{}
+
+stack tables - put tables in layers one on top of the other.
+The order of the stacked tables correspondence to the order
+of the defined tables in the model file. The last defined
+table lies on top of the others.
+
+
+\item[{\textbf{-R} $<$yes $|$ no$>$}] \mbox{}
+
+relations
+ yes:  lines with arrows to indicate foreign keys
+       (default)
+ no:  no lines for foreign keys
+
+
+\item[{\textbf{-b} $<$fill $|$ nofill $|$ value$>$}] \mbox{}
+
+box fill
+   fill: opaque table boxes, color white
+ nofill: (default) transparent table boxes,
+         visible crossing lines within the boxes.
+  value: -1 = not filled, same as 'nofill'
+          0 = black
+          1-19 shades of grey,
+               from darker to lighter
+         20 = white, same as 'fill'
+         41-56 patterns(?)
+
+\end{description}
+\subsubsection*{SEE ALSO\label{model2xfig_SEE_ALSO}\index{model2xfig!SEE ALSO}}
+
+
+xfig (www.xfig.org)
+
+\subsubsection*{AUTHOR\label{model2xfig_AUTHOR}\index{model2xfig!AUTHOR}}
+
+
+Hartmut Börner (haboe@tzv.fal.de)
+
+\subsection{show\_rules\label{show_rules}\index{show\ rules}}
+
+
+
+
+\subsubsection*{usage\label{show_rules_usage}\index{show rules!usage}}
+
+
+show\_rules -h -v -o $<$output file$>$ -p $<$projectname$>$
+
+\subsubsection*{description\label{show_rules_description}\index{show rules!description}}
+
+
+used to compare some values from the parents with the same trait from
+the animal. for example to check the breeds of an animal in
+comparison of the breed from his parents.
+
+\subsubsection*{options\label{show_rules_options}\index{show rules!options}}
+\paragraph*{-h\label{show_rules_-h}\index{show rules!-h}}
+
+
+some help about the options.
+
+\paragraph*{-v\label{show_rules_-v}\index{show rules!-v}}
+
+
+print the version of the programm.
+
+\paragraph*{-p $<$project$>$\label{show_rules_-p_project_}\index{show rules!-p $<$project$>$}}
+
+
+project name same as defined in \$APIIS\_HOME/etc/apiisrc.
+
+\paragraph*{-o $<$outfile$>$\label{show_rules_-o_outfile_}\index{show rules!-o $<$outfile$>$}}
+
+
+name of the outputfile. else printing on STDOUT.
+
+\subsection{WebForm.pl\label{WebForm_pl}\index{WebForm.pl}}
+
+
+
+
+\subsubsection*{ABSTRACT\label{WebForm_pl_ABSTRACT}\index{WebForm pl!ABSTRACT}}
+
+
+WebForm.pl is a Web-Frontend on basis of yaform.pm. It reads *.frm-Files
+and create a Browser-Form for the input of datas.
+
+\subsubsection*{PROGRAMMING STYLE\label{WebForm_pl_PROGRAMMING_STYLE}\index{WebForm pl!PROGRAMMING STYLE}}
+
+
+WebForm.pl is written in OO-Stile.
+
+\subsubsection*{Notice\label{WebForm_pl_Notice}\index{WebForm pl!Notice}}
+
+
+The communication of a browser with a database via HTML is very different
+to the communication via TK. That's why, not all features of Form.pl are implemented
+in WebForm.pl. For example getting information from the database by pushing
+the TAB-button.
+
+\subsubsection*{Configuration\label{WebForm_pl_Configuration}\index{WebForm pl!Configuration}}
+
+
+1.: apache runs under the user-id "wwwrun" (suse) , "www-data" (debian) or something like that.
+    This user-id needs read-rights (group or other) for apiis/index and the project-directory and
+    execute-rights for apiis/bin/WebForm.pl
+
+
+
+2.: httpd.conf ("/etc/apache/" (debian) or "/etc/httpd/" (suse) needs this entry in
+    "Section 3: Virtual Hosts":
+    For using Internet each project needs a subdomain.
+    There will be defined directories or variables.
+    Do define subdomains a entry in /etc/httpd/httpd.conf for each subdomain is necessary.
+
+\begin{verbatim}
+    #you must replace  /home/... with your current pfad.
+    ################
+    <VirtualHost ref_breedprg.apiis.org>
+      ServerName ref_breedprg.apiis.org
+      ServerAlias ref_breedprg.apiis.org
+\end{verbatim}
+\begin{verbatim}
+      DocumentRoot /home/zwisss/devel/apiis/ref_breedprg
+      ScriptAlias /cgi-bin/ /home/zwisss/devel/apiis/bin/
+      Alias images /home/zwisss/devel/apiis/lib/images
+\end{verbatim}
+\begin{verbatim}
+      SetEnv APIIS_HOME /home/zwisss/devel/apiis
+      SetEnv APIIS_LOCAL /home/zwisss/devel/apiis/ref_breedprg
+      SetEnv HOME /home/zwisss
+\end{verbatim}
+\begin{verbatim}
+      ServerAdmin webmaster@www.apiis-sachsen.de>
+    </VirtualHost>
+    ################
+\end{verbatim}
+
+
+3.: Add in "/etc/hosts"
+
+\begin{verbatim}
+    127.0.0.2       ref_breedprg.localhost                         ref_breedprg
+\end{verbatim}
+\begin{verbatim}
+    If you define a ServerAlias in section VirtualHost, this entry
+    isn't necessary.
+\end{verbatim}
+
+
+4.: user-id "wwwrun" or "www-data" must exists in postgres
+
+\begin{verbatim}
+    su root
+    su postgres
+    createuser wwwrun
+\end{verbatim}
+\subsubsection*{Comment\label{WebForm_pl_Comment}\index{WebForm pl!Comment}}
+
+
+Please note, all functions in LO\_*.pm Objects and all global-variables
+must be expand to main::. For example \$main::dbh-$>$rollback or main::CheckLO, because,
+WebForm.pl is programmed in OO-Stile.
+
+\subsubsection*{AUTHOR INFORMATION\label{WebForm_pl_AUTHOR_INFORMATION}\index{WebForm pl!AUTHOR INFORMATION}}
+\begin{verbatim}
+ Ulf Müller.
+\end{verbatim}
+\subsubsection*{BUGS\label{WebForm_pl_BUGS}\index{WebForm pl!BUGS}}
+
+
+Normally, the most features of Form.pl should be work, but not all posibilities
+were tested at time.
+
+\subsubsection*{SEE ALSO\label{WebForm_pl_SEE_ALSO}\index{WebForm pl!SEE ALSO}}
+
+
+\emph{Apiis::Form::Base.pm}, \emph{Apiis::Form::HTML.pm},\emph{Apiis::Form::Tk.pm}
+
+\subsection{\label{}\index{}}
+\begin{verbatim}
+  standalone wrapper for the xml2model subroutine
+\end{verbatim}

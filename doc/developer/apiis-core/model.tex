@@ -1,0 +1,107 @@
+%\section{Interfaces to the Model File}
+
+Usually you have to provide the model file\index{Model file}, you
+want to use with your \apiis{} program. This is done with
+\verb+$apiis->join_model('my_model_file');+.
+\verb+join_model()+\index{\verb+$apiis+!\verb+->join_model+} reads in
+the model file, parses it and creates public interfaces to all the
+information via an object, which is added to the \verb+$apiis+ structure
+via \verb+Apiis::Init::_add_object+\index{\verb+$apiis+!\verb+->_add_object+}.
+The entry point for these methods is
+\verb+$apiis->Model+\index{\verb+$apiis+!\verb+->Model+}.
+
+An auxiliary module to find the model file in the \verb+$APIIS_HOME+
+hierarchy is \verb+Apiis::CheckFile+\index{Apiis::CheckFile},
+which scans some likely directories for candidates. It also can be used for searching
+other configuration files like those for forms or reports.
+
+The model file contains both some basic informations and -- primarily --
+the complete database structure\index{database structure}, including business rules.
+
+The basic information can be accessed by these public
+methods:\index{\verb+$apiis+!\verb+->Model+!public methods}
+
+\smallskip
+\begin{tabular}{rl|l}
+\multicolumn{3}{l}{\texttt{\$apiis->Model->}}       \\
+                      &\verb+basename+         & basename of the model file \\
+                      &\verb+check_level+      & get/set check level \\
+                      &\verb+db_driver+        & database driver \\
+                      &\verb+db_host+          & database host machine \\
+                      &\verb+db_name+          & database name \\
+                      &\verb+db_password+      & database password of current user \\
+                      &\verb+db_port+          & database system port \\
+                      &\verb+db_user+          & database system (meta) user \\
+                      &\verb+ext+              & extension of model file name \\
+                      &\verb+fullname+         & full name of model file \\
+                      &\verb+max_check_level+  & maximum check level reached \\
+                      &\verb+path+             & path to model file \\
+                      &\verb+table+            & object for detailed table information \\
+                      &\verb+tables+           & array(ref) of all tablenames \\
+\end{tabular}
+\medskip
+
+For all tables in the model file, a table object is created which contains the
+information for this table. To get all columns of table 'animal' you could write:
+
+\begin{verbatim}
+   my $table_obj = $apiis->Model->table('animal');
+   printf "Columns of table animal are: %s\n",
+      join(', ', $table_obj->columns);
+\end{verbatim}
+
+A more intuitive and shorter way is:
+
+\begin{verbatim}
+   printf "Columns of table animal are: %s\n",
+      join(', ', $apiis->Model->table('animal')->columns);
+\end{verbatim}
+
+The methods of the table object are:\index{\verb+$apiis+!\verb+->Model+!\verb+->table()+!public methods}
+
+\smallskip
+\begin{tabular}{rl|l}
+\multicolumn{3}{l}{\texttt{\$apiis->Model->table(<name>)->}}       \\
+                                     &\verb+check+       & check rules of a column \\
+                                     &\verb+cols+        & columns of this table \\
+                                     &\verb+columns+     & columns of this table \\
+                                     &\verb+datatype+    & meta-datatype of a column \\
+                                     &\verb+default+     & default value of a column \\
+                                     &\verb+description+ & description of a column \\
+                                     &\verb+foreignkey+  & foreign key definition of a column \\
+                                     &\verb+index+       & indices for this table \\
+                                     &\verb+indexes+     & indices for this table \\
+                                     &\verb+indices+     & indices for this table \\
+                                     &\verb+length+      & default length of a column (forms) \\
+                                     &\verb+modify+      & modify rules of a column \\
+                                     &\verb+name+        & name of this table \\
+                                     &\verb+primarykey+  & primary key definitions of this table \\
+                                     &\verb+rowid+       & get/set rowid of this record \\
+                                     &\verb+sequence+    & sequences defined for this table \\
+                                     &\verb+sequences+   & sequences defined for this table \\
+                                     &\verb+triggers+    & trigger definitions for this table \\
+\end{tabular}
+\medskip
+
+Most of the mentioned methods will be used rarely as they are implemented in the
+newer record object in a more consistent way. Some of them are even outdated, like
+the read/write method
+\begin{verbatim}
+$apiis->Model->table( $mytable )->rowid( $thisrowid );
+\end{verbatim}
+
+A future rewrite of the model file interface will have a syntax similar to the record
+objects. Instead of 
+\begin{verbatim}
+$apiis->Model->table($thistable)->foreignkey->($thiscolumn);
+\end{verbatim}
+it  likely will look like
+\begin{verbatim}
+$apiis->Model->table($thistable)->column($thiscolumn)->foreignkey;
+\end{verbatim}
+This will give a a consistent syntax according to this record object example:
+\begin{verbatim}
+$record_obj->column($thiscolumn)->foreignkey;
+\end{verbatim}
+
+% vim: expandtab:tw=100

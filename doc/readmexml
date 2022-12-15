@@ -1,0 +1,75 @@
+In order to use faster way for writing a model file we implemented xml.
+1. Needed modules for:
+1.1. xml parsing (names are given in the file 'needed_modules' also):
+XML:Parser
+XML::Writer 
+They are standard for last perl version.
+(Perhaps, you have them yet installed during regullar perl instalation.)
+
+1.2. converting the model file to xml format and vice versa:
+'xml2model.pl'
+'model2xml.pl'
+They must be in apiis/bin.
+
+1.3. xml document type definition 
+'model.dtd' 
+It is in apiis/lib
+
+1.4. for better xml print  a code, version of XML::Writer  
+'myWriter' 
+It is in apiis/lib. 
+
+1.5. editting xml documents
+'xerlin'
+The program 'xerlin' is available in http://www.xerlin.org.
+It demands Java machine to be insatlled.
+
+2. How to use?
+The idea is using the document type definition in 'model.dtd' and working
+with the program 'xerlin' to write your model file in format of xml document.
+Which is really easier and faster. 
+
+2.1. You will need to choose first a  'model.dtd' file, which will control
+all inserts. 'xerlin' program offers you to choose start element as you can
+create only a table, for example, all document elements are given in a
+list. The elements of the document are:
+model - root element
+general, table - children of the model
+column, TABLE - children of the table
+TRIGGER, CONSTRAINTS- children of the TABLE.
+For creatiing a complete model file is recommended to start with root
+element. On the next steps a context menu of the right mouse button allows
+you to insert before or after current element elements from document 
+tree defined in 'model.dtd'. In the context menu only legal elements are
+accessed.    
+When an element is chosen its attributes are shown in right panel
+part, default values are there and we insert only attribute values which 
+are different from default ones. The mandatory attributes are marked with
+flags.  
+The file you create will contain all tables, columns and their
+attributes. The default attributes' values are not recorded in this file if
+the property 'merlot.write.default-attr' has a value 'false' in preference panel.  
+'xelin' has a good help.
+
+2.2. To produse your APIIS format model file in syntax we use in APIIS
+environment you must use the module 'xml2model.pl'. The syntax is the
+next:
+       xml2model.pl xml_file model_file 
+where the arguments are the names, respectively, of the xml format file and of
+the model file.
+
+2.3. If you want to edit your current model file using 'xerlin' again you need to
+convert it to xml format via 'model2xml.pl' in next syntax:
+       model2xml model_file xml_file
+Here the required arguments are also your model file name and result file name what
+will be in xml format again. 
+It is good to have extension xml for the xml_file. 
+The current document will be in apiis/doc.
+
+3. Using alternative XML editors.
+In case 'xerlin' is not accessible another xml editor could be used.
+3.1 xemacs
+
+3.2 kxmleditor
+
+3.3 kate

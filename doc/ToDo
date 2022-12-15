@@ -1,0 +1,45 @@
+Things to do:
+
+* 10. Jun 1999:
+  - Rebuild the reference database on base of the South African dataset
+    (reduced to a handy size).
+    [Frits]
+
+  - Some methods need to be created:
+    RangeF -> Create a Range function for the whole record, allowing legal
+              Perl expressions as parameters.
+              [Helmut, NN]
+    LastAction
+
+  - Write documentation for the already created code.
+    Dito for the whole project.
+    How is documentation of such a project done elsewhere?
+    [all]
+
+  - TkForms has a lot of bugs, Search/Query/Edit does not work, ...
+    [Helmut, NN]
+
+  - Create a mailing list for internal communication.
+    [Monika]
+
+  - Collect a complete list of all central output, reports, etc. like sow
+    card, herd book, reports for organisations and farmers.
+    [all, send them to Milena]
+
+  - Define the different datastreams (DS), document the structures and put
+    them into CVS into $APIIS_HOME/reference/doc.
+    [all]
+
+  - Get all the machine back on the internet after the workshop (mail,
+    cvs), everybody should have his/her own email address for the mailing
+    list.
+    [all]
+
+  - Preparations for the EU project.
+    Define unique national topics in the context of this project.
+    [all]
+
+* 11. Jun 1999:
+  Change i18n_apiis.pm from an array of hashes to a hash of hashes. This
+  will make the code more readable ( msg('file_open') instead of msg(78) ).
+
