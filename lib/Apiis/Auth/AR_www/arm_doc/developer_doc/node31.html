@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Grouping groups </TITLE>
+<META NAME="description" CONTENT="Grouping groups ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="previous" HREF="node30.html">
+<LINK REL="up" HREF="node29.html">
+<LINK REL="next" HREF="node32.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html518"
+  HREF="node32.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html514"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html510"
+  HREF="node30.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html516"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html519"
+  HREF="node32.html">Specifying constraints for the</A>
+<B> Up:</B> <A NAME="tex2html515"
+  HREF="node29.html">Grouping access rights</A>
+<B> Previous:</B> <A NAME="tex2html511"
+  HREF="node30.html">Grouping roles</A>
+ &nbsp; <B>  <A NAME="tex2html517"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00282000000000000000"></A><A NAME="groupinggroups"></A>
+<BR>
+Grouping groups 
+</H2> 
+The groups can be also assigned to the other groups. This can be done only if the content of the group to which we want to add new group is defined as "Groups" and the types of the groups are the same. The relations beetwen the groups are kept in the separate database table (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:users-groups-roles">1.5</A>): AR_Group_Groups) where we define the group_id from higher level (parent) and group_id from lower level (child). In this table the unique key is defined on both of the columns. The important rules are that the group can not be ascended to itself and also that there is no possibility to create the same combination of groups but with different order of columns (the group ids changed beetwen the columns).
+<BR>
+If we want to add the group to the other group, we have to be in right with the condition presented above. Then we have to check the group constraints (checking that the new child group can cooperate with the other already defined child groups).  This constraints are stored in the same table where the constraints for the assigning user to the groups are defined (AR_Group_Constraints - Table <A HREF="node15.html#groupconstraints">1.4</A>). The difference is only in the relation type, her it is defined as "group-group".
+
+<P>
+In this case the algorithm takes from the parent group the current list of its child groups. The existing children are set together one by one with the new child. Each couple of values is used as a condition for the WHERE clause in the following SQL statement:
+<DIV ALIGN="CENTER">
+<I>SELECT group_cons_id FROM ar_group_constraints WHERE
+((group1_cons_id='</I><B><I>existing_child_group</I></B><I>' and group2_cons_id='</I><B><I>new_child_group</I></B><I>') or (group1_cons_id='</I><B><I>new_child_group</I></B><I>' and group2_cons_id='</I><B><I>existing_child_group</I></B><I>'))</I> and (group_cons_type='<B>group-group-cons</B>')
+</DIV>
+
+<P>
+For each couple of role values one SELECT is executed. When all combination are positively verified (no results for each combination) then new child group can be appraised to the parent group. If there is a result for some union then this means that some constraints are defined and new group can not be added. The algorithm is not stooped in this point and it just go through the all combinations. All results are collected and then they are showed to the administrator. The administrator has clear picture which existing groups are in the conflict with the new child group.
+<BR>
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html518"
+  HREF="node32.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html514"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html510"
+  HREF="node30.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html516"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html519"
+  HREF="node32.html">Specifying constraints for the</A>
+<B> Up:</B> <A NAME="tex2html515"
+  HREF="node29.html">Grouping access rights</A>
+<B> Previous:</B> <A NAME="tex2html511"
+  HREF="node30.html">Grouping roles</A>
+ &nbsp; <B>  <A NAME="tex2html517"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

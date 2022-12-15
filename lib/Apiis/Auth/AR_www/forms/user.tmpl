@@ -1,0 +1,124 @@
+
+  <tmpl_var name=div>
+  <form name="user" id="user" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT_USER> class="pageForm">
+   <table cellpadding="3" cellspacing="3" border="0" class="fullWidth">
+   <tbody>
+    <tr>
+     <td colspan="4"></td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_login>: *</td>
+     <td class="value">
+      <input <TMPL_VAR NAME=readonly>  name="ar_users__user_login" class="<tmpl_var name=class_user_login>"  tabindex="1" value="<TMPL_VAR NAME=user_login>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_pass1>: *</td>
+     <td class="value">
+      <input type=password name="ar_users__pass1" class="<tmpl_var name=class_pass1>"  tabindex="2" value="<TMPL_VAR NAME=user_pass1>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_status>:</td>
+     <td>
+      <TMPL_IF NAME=user_disabled>
+           <input type="radio" checked name="ar_users__user_disabled" value="<TMPL_VAR NAME=user_disabled>" <TMPL_VAR NAME=JS_CHANGE> /><TMPL_VAR NAME=l_arm_user_locked>
+           <input type="radio" name="ar_users__user_disabled" value="f" <TMPL_VAR NAME=JS_CHANGE> /><TMPL_VAR NAME=l_arm_user_unlocked>
+      <TMPL_ELSE>
+           <input type="radio" name="ar_users__user_disabled" value="t" <TMPL_VAR NAME=JS_CHANGE> /><TMPL_VAR NAME=l_arm_user_locked>
+           <input type="radio" checked name="ar_users__user_disabled" value="f" <TMPL_VAR NAME=JS_CHANGE> /><TMPL_VAR NAME=l_arm_user_unlocked>
+      </TMPL_IF>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_pass2>: *</td>
+     <td class="value">
+      <input type=password name="ar_users__pass2" class="<tmpl_var name=class_pass2>"  tabindex="3" value="<TMPL_VAR NAME=user_pass2>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td colspan="4"></td>
+    </tr>
+    <tr>
+     <td colspan="4"></td>
+    </tr>
+    <tr>
+     <td colspan="4"></td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_fname>:</td>
+     <td class="value">
+      <input name="ar_users__user_first_name" class="<tmpl_var name=class_user_first_name>"  tabindex="4" value="<TMPL_VAR NAME=user_first_name>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_institution>:</td>
+     <td class="value">
+      <input name="ar_users__user_institution" class="<tmpl_var name=class_user_institution>"  tabindex="9" value="<TMPL_VAR NAME=user_institution>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_sname>:</td>
+     <td class="value">
+      <input name="ar_users__user_second_name" class="<tmpl_var name=class_user_second_name>"  tabindex="5" value="<TMPL_VAR NAME=user_second_name>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_street>:</td>
+     <td class="value">
+      <input name="ar_users__user_street" class="<tmpl_var name=class_user_street>"  tabindex="10" value="<TMPL_VAR NAME=user_street>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_email>:</td>
+     <td class="value">
+      <input name="ar_users__user_email" class="<tmpl_var name=class_user_email>"  tabindex="6" value="<TMPL_VAR NAME=user_email>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_town>:</td>
+     <td class="value">
+      <input name="ar_users__user_town" class="<tmpl_var name=class_user_town>"  tabindex="11" value="<TMPL_VAR NAME=user_town>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_language>: *</td>
+     <td class="value">
+      <select name="ar_users__user_language_id"  tabindex="7" <TMPL_VAR NAME=JS_CHANGE>>
+       <option value="">&nbsp;</option><TMPL_LOOP NAME=user_lang_loop>
+       <option value="<TMPL_VAR NAME=LANG_ID>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=LANG></option></TMPL_LOOP>
+      </select>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_zip>:</td>
+     <td class="value">
+      <input name="ar_users__user_zip" class="<tmpl_var name=class_user_zip>"  tabindex="12" value="<TMPL_VAR NAME=user_zip>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+    </tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_marker>: *</td>
+     <td class="value">
+      <input name="ar_users__user_marker" class="<tmpl_var name=class_user_marker>"  tabindex="8" value="<TMPL_VAR NAME=user_marker>" <TMPL_VAR NAME=JS_CHANGE>>
+     </td>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_country>:</td>
+     <td class="value">
+      <select name="ar_users__user_country"  tabindex="13" <TMPL_VAR NAME=JS_CHANGE>>
+       <option value="">&nbsp;</option><TMPL_LOOP NAME=user_country_loop>
+       <option value="<TMPL_VAR NAME=COUNTRY_ID>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=NAME></option></TMPL_LOOP>
+      </select>
+     </td>
+    </tr>
+    <tr>
+     <td colspan="4"></td></tr>
+    <tr>
+     <td class="label"><TMPL_VAR NAME=l_arm_user_remarks></td>
+     <td colspan="2">
+      <textarea name="ar_users__user_other_info" class="<tmpl_var name=class_user_other_info>"  rows="2" tabindex="14" <TMPL_VAR NAME=JS_CHANGE>><TMPL_VAR NAME=user_other_info></textarea>
+     </td>
+     <td></td>
+    </tr>
+    <tr>
+     <td colspan="4" class="label">* - <tmpl_var name=l_arm_user_req_fields></td></tr>
+    <tr>
+    <tr>
+     <td class="control buttons" colspan="4">
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+      <input type=hidden name="show_apply" value="<TMPL_VAR NAME=user_id>">
+      <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+      <input type="hidden" name="action" value="<TMPL_VAR NAME=action>">
+      <input type="submit" name="user" value="<TMPL_VAR NAME=l_arm_submit>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>>
+     </td>
+    </tr>
+   </tbody>
+   </table>
+  </form>
+

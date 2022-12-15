@@ -1,0 +1,44 @@
+
+/* Author: Lucjan Soltys */
+/* some elements have to be disabled (hidden) for printer */
+/* width of some elements have to be reset to 0 to hide them for printer */
+
+div#mainMenu { 
+	visibility: hidden;
+	border: 0px;
+	w\idth: 0px; 
+	width: 0px; 
+}
+#mainMenuMenu{
+	visibility: hidden;
+	border: 0px;
+	w\idth: 0px; 
+	width: 0px;
+}
+#headerImage {
+	visibility: hidden;
+	w\idth: 0px; 
+	width: 0px;
+}
+#headerBanner {
+	visibility: hidden;
+	w\idth: 0px; 
+	width: 0px;
+}
+table#main_table{
+	border: 0px;
+}
+td#menu_table { 
+	border: 0px;
+	w\idth: 0px; 
+	width: 0px; 
+}
+
+/* reset menu position width to 0 */
+.tb_menu_listLabel {  
+	w\idth: 0px; 
+	width: 0px; 
+}
+
+td.value { width: 8em; }
+td.novalue { width: 8em; text-align: center; vertical-align: middle;}

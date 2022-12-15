@@ -1,0 +1,9 @@
+<!-- main menu -->
+     <div id="mainMenuMenu">
+      <ul><TMPL_LOOP NAME="MENU_LIST">
+       <li class="<tmpl_var name=cmenu default=none>">
+        <a href="<tmpl_var name=script_name>?sid=<TMPL_VAR NAME=SESSION>,<TMPL_VAR NAME=ACTION>,<TMPL_VAR NAME=SELECTED_PROJECT>" title="<TMPL_VAR NAME=DESC_TITLE>"><TMPL_VAR NAME=DESC></a>
+       </li></TMPL_LOOP>
+      </ul>
+     </div>
+     <!-- main menu end -->

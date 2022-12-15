@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Checking insert statement</TITLE>
+<META NAME="description" CONTENT="Checking insert statement">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node24.html">
+<LINK REL="previous" HREF="node22.html">
+<LINK REL="up" HREF="node22.html">
+<LINK REL="next" HREF="node24.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html426"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html422"
+  HREF="node22.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html416"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html424"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html427"
+  HREF="node24.html">Checking update statement</A>
+<B> Up:</B> <A NAME="tex2html423"
+  HREF="node22.html">Checking of the access</A>
+<B> Previous:</B> <A NAME="tex2html417"
+  HREF="node22.html">Checking of the access</A>
+ &nbsp; <B>  <A NAME="tex2html425"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H4><A NAME="SECTION00271210000000000000">
+<B>Checking insert statement</B></A>
+</H4>
+
+<P>
+
+<OL>
+<LI>Getting the action name, table name and the column names from the SQL statement which user want to execute.
+This information is taken from the record object.
+
+<P>
+</LI>
+<LI>Verifying user access rights for the action and the table.
+<BR>
+Special ''SELECT'' statement is executed on the user access rights view. The action name and the table name (received in step 1) are used
+as a arguments in the WHERE clause. It returns allowed column names and descriptors for defined table and action.
+<BR>
+If there is some result from the SELECT statement then the access rights are valid for the action and the table and we can go to step 3. If there is no result (no record returned) user is not allowed to execute his SQL query and the algorithm is stopped.
+
+<P>
+</LI>
+<LI>Verifying user access rights for the columns.
+<BR>
+Set of column from user SQL is matched with the sets of columns which are defined in the policies. If the algorithm finds the definition  which is identical (or if the policy definition contain all column from user SQL) then the descriptor of this policy is collected (the order of column can be different but the names have to be the same). Algorithm goes through the all records returned in step 2 and accumulates all descriptors. Error message (no access rights) is generated in case if there is no applicable column definitions in the user rights.
+
+<P>
+</LI>
+<LI>Verifying user access rights for the record .
+<BR>
+Now we have to prove all descriptors returned in the previous step. The value of each descriptor is set together with the value of the corresponding column from the user SQL<A NAME="tex2html19"
+  HREF="footnode.html#foot287"><SUP>1.7</SUP></A>. If the value from user SQL is in the right with the descriptor value then the next pair of value is checked. If there is no compatibility for some pair of value then the error message is printed and action is stopped. The process of access rights checking is finished successfully if data introduced by the insert are contained in the user limitations. 
+</LI>
+</OL>
+Examples:
+<DIV ALIGN="CENTER">
+</DIV><PRE>
+(1) INSERT INTO breeds(breed_id,country_id,lean_meat_avg)
+      VALUE (50000055,500000001,68);
+(2) INSERT INTO breeds(breed_id,country_id,lean_meat_avg)
+      VALUE (50000055,500000001,45);
+(3) INSERT INTO breeds(breed_id,tax_id)
+      VALUE (50000055,6);
+(4) INSERT INTO breeds(breed_id,country_id,tax_id,lean_meat_avg)
+      VALUE (50000055,500000001,7,45);
+(5) INSERT INTO breeds(breed_id,lang_id,intname)
+      VALUE (50000055,300000001,'name');
+</PRE>
+<DIV ALIGN="CENTER">
+</DIV>
+If we look at our view (Table <A HREF="node21.html#userarview">1.10</A>) then: 
+- the first insert can be executed by the user because the lean_meat_avg is 68  and allowed range is 60-74
+<BR>- the second insert can not be executed because lean_meat_avg is out of defined range 
+<BR>- the third insert can be executed 
+<BR>- the forth insert can not be executed because there is no such set of column definitions in any policy.
+<BR>- the fifth insert can be executed if the owner name which will be inserted to the record is defined as PL (the owner is a special case     which is existing only in EFABIS project and it is taken from the user table).  
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html426"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html422"
+  HREF="node22.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html416"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html424"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html427"
+  HREF="node24.html">Checking update statement</A>
+<B> Up:</B> <A NAME="tex2html423"
+  HREF="node22.html">Checking of the access</A>
+<B> Previous:</B> <A NAME="tex2html417"
+  HREF="node22.html">Checking of the access</A>
+ &nbsp; <B>  <A NAME="tex2html425"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

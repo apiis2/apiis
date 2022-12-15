@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Definitions of the access rights </TITLE>
+<META NAME="description" CONTENT="Definitions of the access rights ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node18.html">
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node16.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html341"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html337"
+  HREF="node16.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html331"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html339"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html342"
+  HREF="node18.html">Checking of the access</A>
+<B> Up:</B> <A NAME="tex2html338"
+  HREF="node16.html">Access rights for the</A>
+<B> Previous:</B> <A NAME="tex2html332"
+  HREF="node16.html">Access rights for the</A>
+ &nbsp; <B>  <A NAME="tex2html340"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00261000000000000000"></A><A NAME="definitionarST"></A>
+<BR>
+Definitions of the access rights 
+</H2> 
+
+<P>
+This access control definition is designed for the scripts, forms, reports, interface, subroutines and all other actions which are executed on the basis of APIIS software (I called these action as a system tasks). The administrator of the system has to be sure that the user runs only these tasks which are allowed for him. This means that every user has to have defined access rights for the each system task. The definition of the access rights is based on the roles - roles based system (RBAC<A NAME="tex2html11"
+  HREF="footnode.html#foot189"><SUP>1.6</SUP></A>). In this type of system each role is a definition of the group of the access rights. In the roles, the access rights are defined via policies. In our case each policy defines access to one system task. All roles are grouped and they are assigned to the user groups. The whole structure of access control for the system tasks is defined in the following manner: the policies are ascribed to the one or more roles, the roles are ascribed to the one or more role groups, the role groups are ascribed to the one or more user or to the next role groups.
+<BR>
+The information about access rights needed to control system tasks is stored in the three following tables (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:stpolicies">1.7</A>):
+
+<UL>
+<LI>roles table (AR_Roles) - this table stores information about roles. The role definition is a set of role name and the role type where the role type can be defined as ST (System Task) or DBT (Database Task). In this case the role should be defined as a ST.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="199"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.5:</STRONG>
+Roles table</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">role_id</TD>
+<TD ALIGN="CENTER">role_name</TD>
+<TD ALIGN="CENTER">role_type
+ 
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="rolestable"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+
+<P>
+</LI>
+<LI>system task policies table (AR_StPolicies) - this table stores information about system tasks. Each system task consist of the name and the category. The category of the system task can be defined as: program, www, form, report, action. 
+
+<P>
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="209"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.6:</STRONG>
+Policies for the system tasks</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">stpolicy_id</TD>
+<TD ALIGN="CENTER">stpolicy_name</TD>
+<TD ALIGN="CENTER">stpolicy_type
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="STpoliciestable"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+</LI>
+<LI>link table (AR_Role_StPolicies) - it joins roles with the policies together. 
+</LI>
+</UL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html341"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html337"
+  HREF="node16.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html331"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html339"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html342"
+  HREF="node18.html">Checking of the access</A>
+<B> Up:</B> <A NAME="tex2html338"
+  HREF="node16.html">Access rights for the</A>
+<B> Previous:</B> <A NAME="tex2html332"
+  HREF="node16.html">Access rights for the</A>
+ &nbsp; <B>  <A NAME="tex2html340"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,3842 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- Name: apiis_admin; Type: SCHEMA; Schema: -; Owner: apiis_admin
+--
+
+CREATE SCHEMA apiis_admin;
+
+
+ALTER SCHEMA apiis_admin OWNER TO apiis_admin;
+
+--
+-- Name: heli; Type: SCHEMA; Schema: -; Owner: apiis_admin
+--
+
+CREATE SCHEMA heli;
+
+
+ALTER SCHEMA heli OWNER TO apiis_admin;
+
+SET search_path = apiis_admin, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: animal; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE animal (
+    db_animal integer,
+    db_sex integer,
+    db_breed integer,
+    birth_dt date,
+    db_sire integer,
+    db_dam integer,
+    la_rep text,
+    la_rep_dt date,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean,
+    db_hybrid integer,
+    comment text
+);
+
+
+ALTER TABLE apiis_admin.animal OWNER TO apiis_admin;
+
+--
+-- Name: ar_constraints; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_constraints (
+    cons_id integer,
+    cons_name text,
+    cons_type text,
+    cons_desc text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_constraints OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbtdescriptors; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_dbtdescriptors (
+    descriptor_id integer,
+    descriptor_name text,
+    descriptor_value text,
+    descriptor_desc text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_dbtdescriptors OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbtpolicies; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_dbtpolicies (
+    dbtpolicy_id integer,
+    action_id integer,
+    table_id integer,
+    descriptor_id integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbttables; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_dbttables (
+    table_id integer,
+    table_name text,
+    table_columns text,
+    table_desc text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_dbttables OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_constraints; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_role_constraints (
+    cons_id integer,
+    first_role_id integer,
+    second_role_id integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_role_constraints OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_dbtpolicies; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_role_dbtpolicies (
+    role_id integer,
+    dbtpolicy_id integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_role_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_stpolicies; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_role_stpolicies (
+    role_id integer,
+    stpolicy_id integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_role_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_roles; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_roles (
+    role_id integer,
+    role_name text,
+    role_long_name text,
+    role_type text,
+    role_subset text,
+    role_descr text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_roles OWNER TO apiis_admin;
+
+--
+-- Name: ar_stpolicies; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_stpolicies (
+    stpolicy_id integer,
+    stpolicy_name text,
+    stpolicy_type text,
+    stpolicy_desc text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_user_roles; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_user_roles (
+    user_id integer,
+    role_id integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_user_roles OWNER TO apiis_admin;
+
+--
+-- Name: ar_users; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_users (
+    user_id integer,
+    user_login text,
+    user_password text,
+    user_language_id integer,
+    user_marker text,
+    user_disabled boolean,
+    user_status boolean,
+    user_last_login timestamp without time zone,
+    user_last_activ_time time without time zone,
+    user_session_id text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_users OWNER TO apiis_admin;
+
+--
+-- Name: ar_users_data; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE ar_users_data (
+    user_id integer,
+    user_first_name text,
+    user_second_name text,
+    user_institution text,
+    user_email text,
+    user_country text,
+    user_street text,
+    user_town text,
+    user_zip text,
+    user_other_info text,
+    opening_dt date,
+    closing_dt date,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    creation_dt timestamp without time zone,
+    creation_user text,
+    end_dt timestamp without time zone,
+    end_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.ar_users_data OWNER TO apiis_admin;
+
+--
+-- Name: blobs; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE blobs (
+    blob_id integer,
+    blob bytea,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean,
+    db_mimetype integer
+);
+
+
+ALTER TABLE apiis_admin.blobs OWNER TO apiis_admin;
+
+--
+-- Name: codes; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE codes (
+    ext_code text,
+    class text,
+    db_code integer,
+    short_name text,
+    long_name text,
+    description text,
+    opening_dt date,
+    closing_dt date,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.codes OWNER TO apiis_admin;
+
+--
+-- Name: contacts; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE contacts (
+    db_contact integer,
+    title text,
+    salutation text,
+    first_name text,
+    second_name text,
+    third_name text,
+    birth_dt date,
+    db_language integer,
+    street text,
+    zip text,
+    town text,
+    db_country integer,
+    label text,
+    phone text,
+    phone2 text,
+    fax text,
+    email text,
+    bank_name text,
+    bank_zip text,
+    account text,
+    opening_dt date,
+    closing_dt date,
+    comment text,
+    chk_lvl smallint,
+    dirty boolean,
+    guid bigint,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    owner text,
+    synch boolean,
+    version smallint
+);
+
+
+ALTER TABLE apiis_admin.contacts OWNER TO apiis_admin;
+
+--
+-- Name: entry_codes; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW entry_codes AS
+    SELECT codes.ext_code, codes.class, codes.db_code, codes.short_name, codes.long_name, codes.description, codes.opening_dt, codes.closing_dt, codes.last_change_dt, codes.last_change_user, codes.dirty, codes.chk_lvl, codes.guid, codes.owner, codes.version, codes.synch FROM codes WHERE (codes.closing_dt IS NULL);
+
+
+ALTER TABLE apiis_admin.entry_codes OWNER TO apiis_admin;
+
+--
+-- Name: transfer; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE transfer (
+    db_animal integer,
+    ext_animal text,
+    db_unit integer,
+    id_set integer,
+    opening_dt date,
+    closing_dt date,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.transfer OWNER TO apiis_admin;
+
+--
+-- Name: entry_transfer; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW entry_transfer AS
+    SELECT transfer.db_animal, transfer.ext_animal, transfer.db_unit, transfer.id_set, transfer.opening_dt, transfer.closing_dt, transfer.last_change_dt, transfer.last_change_user, transfer.dirty, transfer.chk_lvl, transfer.guid, transfer.owner, transfer.version, transfer.synch FROM transfer WHERE (transfer.closing_dt IS NULL);
+
+
+ALTER TABLE apiis_admin.entry_transfer OWNER TO apiis_admin;
+
+--
+-- Name: unit; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE unit (
+    db_unit integer,
+    ext_unit text,
+    ext_id text,
+    db_contact integer,
+    db_member integer,
+    opening_dt date,
+    closing_dt date,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.unit OWNER TO apiis_admin;
+
+--
+-- Name: entry_unit; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW entry_unit AS
+    SELECT unit.db_unit, unit.ext_unit, unit.ext_id, unit.db_contact, unit.db_member, unit.opening_dt, unit.closing_dt, unit.last_change_dt, unit.last_change_user, unit.dirty, unit.chk_lvl, unit.guid, unit.owner, unit.version, unit.synch FROM unit WHERE (unit.closing_dt IS NULL);
+
+
+ALTER TABLE apiis_admin.entry_unit OWNER TO apiis_admin;
+
+--
+-- Name: event; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE event (
+    event_id integer,
+    db_event_type integer,
+    db_sampler integer,
+    event_dt date,
+    db_location integer,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.event OWNER TO apiis_admin;
+
+--
+-- Name: inspool; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE inspool (
+    ds text,
+    record_seq integer,
+    in_date date,
+    ext_unit integer,
+    proc_dt date,
+    status text,
+    record text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.inspool OWNER TO apiis_admin;
+
+--
+-- Name: inspool_err; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE inspool_err (
+    record_seq integer,
+    err_type text,
+    action text,
+    dbtable text,
+    dbcol text,
+    err_source text,
+    short_msg text,
+    long_msg text,
+    ext_col text,
+    ext_val text,
+    mod_val text,
+    comp_val text,
+    target_col text,
+    ds text,
+    ext_unit text,
+    status text,
+    err_dt timestamp without time zone,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.inspool_err OWNER TO apiis_admin;
+
+--
+-- Name: languages; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE languages (
+    lang_id integer,
+    iso_lang text,
+    lang text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    creation_dt timestamp without time zone,
+    creation_user text,
+    end_dt timestamp without time zone,
+    end_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.languages OWNER TO apiis_admin;
+
+--
+-- Name: load_stat; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE load_stat (
+    ds text,
+    job_start timestamp without time zone,
+    job_end timestamp without time zone,
+    status integer,
+    rec_tot_no smallint,
+    rec_err_no smallint,
+    rec_ok_no smallint,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.load_stat OWNER TO apiis_admin;
+
+--
+-- Name: locations; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE locations (
+    db_animal integer,
+    db_location integer,
+    entry_dt date,
+    db_entry_action integer,
+    exit_dt date,
+    db_exit_action integer,
+    chk_lvl smallint,
+    dirty boolean,
+    guid bigint,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    owner text,
+    synch boolean,
+    version smallint
+);
+
+
+ALTER TABLE apiis_admin.locations OWNER TO apiis_admin;
+
+--
+-- Name: new_pest; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE new_pest (
+    class text,
+    key text,
+    trait text,
+    estimator double precision,
+    pev double precision,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.new_pest OWNER TO apiis_admin;
+
+--
+-- Name: nodes; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE nodes (
+    nodename text,
+    address text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.nodes OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_constraints__cons_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_constraints__cons_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_constraints__cons_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_constraints__cons_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_constraints__cons_id', 100, false);
+
+
+--
+-- Name: seq_ar_dbtdescriptor__descriptor_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_dbtdescriptor__descriptor_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_dbtdescriptor__descriptor_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_dbtdescriptor__descriptor_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_dbtdescriptor__descriptor_id', 100, false);
+
+
+--
+-- Name: seq_ar_dbtpolicies__dbtpolicy_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_dbtpolicies__dbtpolicy_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_dbtpolicies__dbtpolicy_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_dbtpolicies__dbtpolicy_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_dbtpolicies__dbtpolicy_id', 100, false);
+
+
+--
+-- Name: seq_ar_dbttabels__table_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_dbttabels__table_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_dbttabels__table_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_dbttabels__table_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_dbttabels__table_id', 100, false);
+
+
+--
+-- Name: seq_ar_roles__role_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_roles__role_id
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_roles__role_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_roles__role_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_roles__role_id', 110, true);
+
+
+--
+-- Name: seq_ar_stpolicies__stpolicy_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_stpolicies__stpolicy_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_stpolicies__stpolicy_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_stpolicies__stpolicy_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_stpolicies__stpolicy_id', 100, false);
+
+
+--
+-- Name: seq_ar_users__user_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_ar_users__user_id
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_ar_users__user_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_ar_users__user_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_ar_users__user_id', 100, true);
+
+
+--
+-- Name: seq_blobs__blob_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_blobs__blob_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_blobs__blob_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_blobs__blob_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_blobs__blob_id', 100, false);
+
+
+--
+-- Name: seq_codes__db_code; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_codes__db_code
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_codes__db_code OWNER TO apiis_admin;
+
+--
+-- Name: seq_codes__db_code; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_codes__db_code', 116, true);
+
+
+--
+-- Name: seq_contacts__db_contact; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_contacts__db_contact
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_contacts__db_contact OWNER TO apiis_admin;
+
+--
+-- Name: seq_contacts__db_contact; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_contacts__db_contact', 100, false);
+
+
+--
+-- Name: seq_database__guid; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_database__guid
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_database__guid OWNER TO apiis_admin;
+
+--
+-- Name: seq_database__guid; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_database__guid', 444, true);
+
+
+--
+-- Name: seq_event__event_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_event__event_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_event__event_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_event__event_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_event__event_id', 100, false);
+
+
+--
+-- Name: seq_inspool__record_seq; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_inspool__record_seq
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_inspool__record_seq OWNER TO apiis_admin;
+
+--
+-- Name: seq_inspool__record_seq; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_inspool__record_seq', 100, false);
+
+
+--
+-- Name: seq_languages__lang_id; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_languages__lang_id
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_languages__lang_id OWNER TO apiis_admin;
+
+--
+-- Name: seq_languages__lang_id; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_languages__lang_id', 100, false);
+
+
+--
+-- Name: seq_transfer__db_animal; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_transfer__db_animal
+    START WITH 100
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_transfer__db_animal OWNER TO apiis_admin;
+
+--
+-- Name: seq_transfer__db_animal; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_transfer__db_animal', 100, false);
+
+
+--
+-- Name: seq_unit__db_unit; Type: SEQUENCE; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE SEQUENCE seq_unit__db_unit
+    INCREMENT BY 1
+    MAXVALUE 100000000
+    MINVALUE 100
+    CACHE 1;
+
+
+ALTER TABLE apiis_admin.seq_unit__db_unit OWNER TO apiis_admin;
+
+--
+-- Name: seq_unit__db_unit; Type: SEQUENCE SET; Schema: apiis_admin; Owner: apiis_admin
+--
+
+SELECT pg_catalog.setval('seq_unit__db_unit', 101, true);
+
+
+--
+-- Name: sources; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE sources (
+    source text,
+    tablename text,
+    class text,
+    columnnames text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.sources OWNER TO apiis_admin;
+
+--
+-- Name: targets; Type: TABLE; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE TABLE targets (
+    target text,
+    tablename text,
+    class text,
+    columnnames text,
+    last_change_dt timestamp without time zone,
+    last_change_user text,
+    dirty boolean,
+    chk_lvl smallint,
+    guid integer,
+    owner text,
+    version integer,
+    synch boolean
+);
+
+
+ALTER TABLE apiis_admin.targets OWNER TO apiis_admin;
+
+--
+-- Name: v_animal; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_animal AS
+    SELECT a.guid AS v_guid, a.db_animal, ((((c.ext_unit || ':::'::text) || c.ext_id) || ':::'::text) || b.ext_animal) AS ext_animal, a.db_sex, d.ext_code AS ext_sex, a.db_breed, e.ext_code AS ext_breed, a.birth_dt, a.db_sire, ((((g.ext_unit || ':::'::text) || g.ext_id) || ':::'::text) || f.ext_animal) AS ext_sire, a.db_dam, ((((i.ext_unit || ':::'::text) || i.ext_id) || ':::'::text) || h.ext_animal) AS ext_dam, a.la_rep, a.la_rep_dt, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch, a.db_hybrid, j.ext_code AS ext_hybrid, a.comment FROM (((((((((animal a LEFT JOIN transfer b ON ((a.db_animal = b.db_animal))) LEFT JOIN unit c ON ((b.db_unit = c.db_unit))) LEFT JOIN codes d ON ((a.db_sex = d.db_code))) LEFT JOIN codes e ON ((a.db_breed = e.db_code))) LEFT JOIN transfer f ON ((a.db_sire = f.db_animal))) LEFT JOIN unit g ON ((f.db_unit = g.db_unit))) LEFT JOIN transfer h ON ((a.db_dam = h.db_animal))) LEFT JOIN unit i ON ((h.db_unit = i.db_unit))) LEFT JOIN codes j ON ((a.db_hybrid = j.db_code)));
+
+
+ALTER TABLE apiis_admin.v_animal OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_constraints; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_constraints AS
+    SELECT a.guid AS v_guid, a.cons_id, a.cons_name, a.cons_type, a.cons_desc, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_constraints a;
+
+
+ALTER TABLE apiis_admin.v_ar_constraints OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbtdescriptors; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbtdescriptors AS
+    SELECT a.guid AS v_guid, a.descriptor_id, a.descriptor_name, a.descriptor_value, a.descriptor_desc, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_dbtdescriptors a;
+
+
+ALTER TABLE apiis_admin.v_ar_dbtdescriptors OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbtpolicies; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbtpolicies AS
+    SELECT a.guid AS v_guid, a.dbtpolicy_id, a.action_id, b.ext_code AS ext_action_id, a.table_id, a.descriptor_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM (ar_dbtpolicies a LEFT JOIN codes b ON ((a.action_id = b.db_code)));
+
+
+ALTER TABLE apiis_admin.v_ar_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbttables; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbttables AS
+    SELECT a.guid AS v_guid, a.table_id, a.table_name, a.table_columns, a.table_desc, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_dbttables a;
+
+
+ALTER TABLE apiis_admin.v_ar_dbttables OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_constraints; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_constraints AS
+    SELECT a.guid AS v_guid, a.cons_id, a.first_role_id, a.second_role_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_role_constraints a;
+
+
+ALTER TABLE apiis_admin.v_ar_role_constraints OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_dbtpolicies; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_dbtpolicies AS
+    SELECT a.guid AS v_guid, a.role_id, a.dbtpolicy_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_role_dbtpolicies a;
+
+
+ALTER TABLE apiis_admin.v_ar_role_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_stpolicies; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_stpolicies AS
+    SELECT a.guid AS v_guid, a.role_id, a.stpolicy_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_role_stpolicies a;
+
+
+ALTER TABLE apiis_admin.v_ar_role_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_roles; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_roles AS
+    SELECT a.guid AS v_guid, a.role_id, a.role_name, a.role_long_name, a.role_type, a.role_subset, a.role_descr, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_roles a;
+
+
+ALTER TABLE apiis_admin.v_ar_roles OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_stpolicies; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_stpolicies AS
+    SELECT a.guid AS v_guid, a.stpolicy_id, a.stpolicy_name, a.stpolicy_type, a.stpolicy_desc, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_stpolicies a;
+
+
+ALTER TABLE apiis_admin.v_ar_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_user_roles; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_user_roles AS
+    SELECT a.guid AS v_guid, a.user_id, a.role_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_user_roles a;
+
+
+ALTER TABLE apiis_admin.v_ar_user_roles OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_users; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_users AS
+    SELECT a.guid AS v_guid, a.user_id, a.user_login, a.user_password, a.user_language_id, a.user_marker, a.user_disabled, a.user_status, a.user_last_login, a.user_last_activ_time, a.user_session_id, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_users a;
+
+
+ALTER TABLE apiis_admin.v_ar_users OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_users_data; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_users_data AS
+    SELECT a.guid AS v_guid, a.user_id, a.user_first_name, a.user_second_name, a.user_institution, a.user_email, a.user_country, a.user_street, a.user_town, a.user_zip, a.user_other_info, a.opening_dt, a.closing_dt, a.last_change_dt, a.last_change_user, a.creation_dt, a.creation_user, a.end_dt, a.end_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ar_users_data a;
+
+
+ALTER TABLE apiis_admin.v_ar_users_data OWNER TO apiis_admin;
+
+--
+-- Name: v_blobs; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_blobs AS
+    SELECT a.guid AS v_guid, a.blob_id, a.blob, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch, a.db_mimetype, b.ext_code AS ext_mimetype FROM (blobs a LEFT JOIN codes b ON ((a.db_mimetype = b.db_code)));
+
+
+ALTER TABLE apiis_admin.v_blobs OWNER TO apiis_admin;
+
+--
+-- Name: v_codes; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_codes AS
+    SELECT a.guid AS v_guid, a.ext_code, a.class, a.db_code, a.short_name, a.long_name, a.description, a.opening_dt, a.closing_dt, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM codes a;
+
+
+ALTER TABLE apiis_admin.v_codes OWNER TO apiis_admin;
+
+--
+-- Name: v_contacts; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_contacts AS
+    SELECT a.guid AS v_guid, a.db_contact, a.title, a.salutation, a.first_name, a.second_name, a.third_name, a.birth_dt, a.db_language, a.street, a.zip, a.town, a.db_country, b.ext_code AS ext_country, a.label, a.phone, a.phone2, a.fax, a.email, a.bank_name, a.bank_zip, a.account, a.opening_dt, a.closing_dt, a.comment, a.chk_lvl, a.dirty, a.guid, a.last_change_dt, a.last_change_user, a.owner, a.synch, a.version FROM (contacts a LEFT JOIN codes b ON ((a.db_country = b.db_code)));
+
+
+ALTER TABLE apiis_admin.v_contacts OWNER TO apiis_admin;
+
+--
+-- Name: v_event; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_event AS
+    SELECT a.guid AS v_guid, a.event_id, a.db_event_type, b.ext_code AS ext_event_type, a.db_sampler, ((c.ext_unit || ':::'::text) || c.ext_id) AS ext_sampler, a.event_dt, a.db_location, ((d.ext_unit || ':::'::text) || d.ext_id) AS ext_location, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM (((event a LEFT JOIN codes b ON ((a.db_event_type = b.db_code))) LEFT JOIN unit c ON ((a.db_sampler = c.db_unit))) LEFT JOIN unit d ON ((a.db_location = d.db_unit)));
+
+
+ALTER TABLE apiis_admin.v_event OWNER TO apiis_admin;
+
+--
+-- Name: v_inspool; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_inspool AS
+    SELECT a.guid AS v_guid, a.ds, a.record_seq, a.in_date, a.ext_unit, a.proc_dt, a.status, a.record, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM inspool a;
+
+
+ALTER TABLE apiis_admin.v_inspool OWNER TO apiis_admin;
+
+--
+-- Name: v_inspool_err; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_inspool_err AS
+    SELECT a.guid AS v_guid, a.record_seq, a.err_type, a.action, a.dbtable, a.dbcol, a.err_source, a.short_msg, a.long_msg, a.ext_col, a.ext_val, a.mod_val, a.comp_val, a.target_col, a.ds, a.ext_unit, a.status, a.err_dt, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM inspool_err a;
+
+
+ALTER TABLE apiis_admin.v_inspool_err OWNER TO apiis_admin;
+
+--
+-- Name: v_languages; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_languages AS
+    SELECT a.guid AS v_guid, a.lang_id, a.iso_lang, a.lang, a.last_change_dt, a.last_change_user, a.creation_dt, a.creation_user, a.end_dt, a.end_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM languages a;
+
+
+ALTER TABLE apiis_admin.v_languages OWNER TO apiis_admin;
+
+--
+-- Name: v_load_stat; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_load_stat AS
+    SELECT a.guid AS v_guid, a.ds, a.job_start, a.job_end, a.status, a.rec_tot_no, a.rec_err_no, a.rec_ok_no, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM load_stat a;
+
+
+ALTER TABLE apiis_admin.v_load_stat OWNER TO apiis_admin;
+
+--
+-- Name: v_locations; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_locations AS
+    SELECT a.guid AS v_guid, a.db_animal, ((((c.ext_unit || ':::'::text) || c.ext_id) || ':::'::text) || b.ext_animal) AS ext_animal, a.db_location, ((d.ext_unit || ':::'::text) || d.ext_id) AS ext_location, a.entry_dt, a.db_entry_action, e.ext_code AS ext_entry_action, a.exit_dt, a.db_exit_action, f.ext_code AS ext_exit_action, a.chk_lvl, a.dirty, a.guid, a.last_change_dt, a.last_change_user, a.owner, a.synch, a.version FROM (((((locations a LEFT JOIN transfer b ON ((a.db_animal = b.db_animal))) LEFT JOIN unit c ON ((b.db_unit = c.db_unit))) LEFT JOIN unit d ON ((a.db_location = d.db_unit))) LEFT JOIN codes e ON ((a.db_entry_action = e.db_code))) LEFT JOIN codes f ON ((a.db_exit_action = f.db_code)));
+
+
+ALTER TABLE apiis_admin.v_locations OWNER TO apiis_admin;
+
+--
+-- Name: v_new_pest; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_new_pest AS
+    SELECT a.guid AS v_guid, a.class, a.key, a.trait, a.estimator, a.pev, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM new_pest a;
+
+
+ALTER TABLE apiis_admin.v_new_pest OWNER TO apiis_admin;
+
+--
+-- Name: v_nodes; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_nodes AS
+    SELECT a.guid AS v_guid, a.nodename, a.address, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM nodes a;
+
+
+ALTER TABLE apiis_admin.v_nodes OWNER TO apiis_admin;
+
+--
+-- Name: v_sources; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_sources AS
+    SELECT a.guid AS v_guid, a.source, a.tablename, a.class, a.columnnames, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM sources a;
+
+
+ALTER TABLE apiis_admin.v_sources OWNER TO apiis_admin;
+
+--
+-- Name: v_targets; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_targets AS
+    SELECT a.guid AS v_guid, a.target, a.tablename, a.class, a.columnnames, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM targets a;
+
+
+ALTER TABLE apiis_admin.v_targets OWNER TO apiis_admin;
+
+--
+-- Name: v_transfer; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_transfer AS
+    SELECT a.guid AS v_guid, a.db_animal, a.ext_animal, a.db_unit, ((b.ext_unit || ':::'::text) || b.ext_id) AS ext_unit, a.id_set, c.ext_code AS ext_id_set, a.opening_dt, a.closing_dt, a.last_change_dt, a.last_change_user, a.dirty, a.chk_lvl, a.guid, a.owner, a.version, a.synch FROM ((transfer a LEFT JOIN unit b ON ((a.db_unit = b.db_unit))) LEFT JOIN codes c ON ((a.id_set = c.db_code)));
+
+
+ALTER TABLE apiis_admin.v_transfer OWNER TO apiis_admin;
+
+--
+-- Name: v_unit; Type: VIEW; Schema: apiis_admin; Owner: apiis_admin
+--
+
+CREATE VIEW v_unit AS
+    SELECT a.guid AS v_guid, a.db_unit, a.ext_unit, a.ext_id, a.db_contact, a.db_member, ((b.ext_unit || ':::'::text) || b.ext_id) AS ext_member, b.opening_dt, b.closing_dt, b.last_change_dt, b.last_change_user, b.dirty, b.chk_lvl, b.guid, b.owner, b.version, b.synch FROM (unit a LEFT JOIN unit b ON ((b.db_member = b.db_unit)));
+
+
+ALTER TABLE apiis_admin.v_unit OWNER TO apiis_admin;
+
+SET search_path = heli, pg_catalog;
+
+--
+-- Name: animal; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW animal AS
+    SELECT animal.db_animal, animal.db_sex, animal.db_breed, animal.birth_dt, animal.db_sire, animal.db_dam, animal.la_rep, animal.la_rep_dt, animal.last_change_dt, animal.last_change_user, animal.dirty, animal.chk_lvl, animal.guid, animal.owner, animal.version, animal.synch, animal.db_hybrid, animal.comment FROM apiis_admin.animal WHERE (animal.owner = NULL::text) UNION SELECT animal.db_animal, animal.db_sex, animal.db_breed, animal.birth_dt, animal.db_sire, animal.db_dam, animal.la_rep, animal.la_rep_dt, animal.last_change_dt, animal.last_change_user, animal.dirty, animal.chk_lvl, animal.guid, animal.owner, animal.version, animal.synch, animal.db_hybrid, animal.comment FROM apiis_admin.animal WHERE (animal.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.animal OWNER TO apiis_admin;
+
+--
+-- Name: ar_constraints; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_constraints AS
+    SELECT ar_constraints.cons_id, ar_constraints.cons_name, ar_constraints.cons_type, ar_constraints.cons_desc, ar_constraints.last_change_dt, ar_constraints.last_change_user, ar_constraints.dirty, ar_constraints.chk_lvl, ar_constraints.guid, ar_constraints.owner, ar_constraints.version, ar_constraints.synch FROM apiis_admin.ar_constraints WHERE (ar_constraints.owner = NULL::text) UNION SELECT ar_constraints.cons_id, ar_constraints.cons_name, ar_constraints.cons_type, ar_constraints.cons_desc, ar_constraints.last_change_dt, ar_constraints.last_change_user, ar_constraints.dirty, ar_constraints.chk_lvl, ar_constraints.guid, ar_constraints.owner, ar_constraints.version, ar_constraints.synch FROM apiis_admin.ar_constraints WHERE (ar_constraints.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_constraints OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbtdescriptors; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_dbtdescriptors AS
+    SELECT ar_dbtdescriptors.descriptor_id, ar_dbtdescriptors.descriptor_name, ar_dbtdescriptors.descriptor_value, ar_dbtdescriptors.descriptor_desc, ar_dbtdescriptors.last_change_dt, ar_dbtdescriptors.last_change_user, ar_dbtdescriptors.dirty, ar_dbtdescriptors.chk_lvl, ar_dbtdescriptors.guid, ar_dbtdescriptors.owner, ar_dbtdescriptors.version, ar_dbtdescriptors.synch FROM apiis_admin.ar_dbtdescriptors WHERE (ar_dbtdescriptors.owner = NULL::text) UNION SELECT ar_dbtdescriptors.descriptor_id, ar_dbtdescriptors.descriptor_name, ar_dbtdescriptors.descriptor_value, ar_dbtdescriptors.descriptor_desc, ar_dbtdescriptors.last_change_dt, ar_dbtdescriptors.last_change_user, ar_dbtdescriptors.dirty, ar_dbtdescriptors.chk_lvl, ar_dbtdescriptors.guid, ar_dbtdescriptors.owner, ar_dbtdescriptors.version, ar_dbtdescriptors.synch FROM apiis_admin.ar_dbtdescriptors WHERE (ar_dbtdescriptors.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_dbtdescriptors OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbtpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_dbtpolicies AS
+    SELECT ar_dbtpolicies.dbtpolicy_id, ar_dbtpolicies.action_id, ar_dbtpolicies.table_id, ar_dbtpolicies.descriptor_id, ar_dbtpolicies.last_change_dt, ar_dbtpolicies.last_change_user, ar_dbtpolicies.dirty, ar_dbtpolicies.chk_lvl, ar_dbtpolicies.guid, ar_dbtpolicies.owner, ar_dbtpolicies.version, ar_dbtpolicies.synch FROM apiis_admin.ar_dbtpolicies WHERE (ar_dbtpolicies.owner = NULL::text) UNION SELECT ar_dbtpolicies.dbtpolicy_id, ar_dbtpolicies.action_id, ar_dbtpolicies.table_id, ar_dbtpolicies.descriptor_id, ar_dbtpolicies.last_change_dt, ar_dbtpolicies.last_change_user, ar_dbtpolicies.dirty, ar_dbtpolicies.chk_lvl, ar_dbtpolicies.guid, ar_dbtpolicies.owner, ar_dbtpolicies.version, ar_dbtpolicies.synch FROM apiis_admin.ar_dbtpolicies WHERE (ar_dbtpolicies.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_dbttables; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_dbttables AS
+    SELECT ar_dbttables.table_id, ar_dbttables.table_name, ar_dbttables.table_columns, ar_dbttables.table_desc, ar_dbttables.last_change_dt, ar_dbttables.last_change_user, ar_dbttables.dirty, ar_dbttables.chk_lvl, ar_dbttables.guid, ar_dbttables.owner, ar_dbttables.version, ar_dbttables.synch FROM apiis_admin.ar_dbttables WHERE (ar_dbttables.owner = NULL::text) UNION SELECT ar_dbttables.table_id, ar_dbttables.table_name, ar_dbttables.table_columns, ar_dbttables.table_desc, ar_dbttables.last_change_dt, ar_dbttables.last_change_user, ar_dbttables.dirty, ar_dbttables.chk_lvl, ar_dbttables.guid, ar_dbttables.owner, ar_dbttables.version, ar_dbttables.synch FROM apiis_admin.ar_dbttables WHERE (ar_dbttables.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_dbttables OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_constraints; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_role_constraints AS
+    SELECT ar_role_constraints.cons_id, ar_role_constraints.first_role_id, ar_role_constraints.second_role_id, ar_role_constraints.last_change_dt, ar_role_constraints.last_change_user, ar_role_constraints.dirty, ar_role_constraints.chk_lvl, ar_role_constraints.guid, ar_role_constraints.owner, ar_role_constraints.version, ar_role_constraints.synch FROM apiis_admin.ar_role_constraints WHERE (ar_role_constraints.owner = NULL::text) UNION SELECT ar_role_constraints.cons_id, ar_role_constraints.first_role_id, ar_role_constraints.second_role_id, ar_role_constraints.last_change_dt, ar_role_constraints.last_change_user, ar_role_constraints.dirty, ar_role_constraints.chk_lvl, ar_role_constraints.guid, ar_role_constraints.owner, ar_role_constraints.version, ar_role_constraints.synch FROM apiis_admin.ar_role_constraints WHERE (ar_role_constraints.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_role_constraints OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_dbtpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_role_dbtpolicies AS
+    SELECT ar_role_dbtpolicies.role_id, ar_role_dbtpolicies.dbtpolicy_id, ar_role_dbtpolicies.last_change_dt, ar_role_dbtpolicies.last_change_user, ar_role_dbtpolicies.dirty, ar_role_dbtpolicies.chk_lvl, ar_role_dbtpolicies.guid, ar_role_dbtpolicies.owner, ar_role_dbtpolicies.version, ar_role_dbtpolicies.synch FROM apiis_admin.ar_role_dbtpolicies WHERE (ar_role_dbtpolicies.owner = NULL::text) UNION SELECT ar_role_dbtpolicies.role_id, ar_role_dbtpolicies.dbtpolicy_id, ar_role_dbtpolicies.last_change_dt, ar_role_dbtpolicies.last_change_user, ar_role_dbtpolicies.dirty, ar_role_dbtpolicies.chk_lvl, ar_role_dbtpolicies.guid, ar_role_dbtpolicies.owner, ar_role_dbtpolicies.version, ar_role_dbtpolicies.synch FROM apiis_admin.ar_role_dbtpolicies WHERE (ar_role_dbtpolicies.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_role_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_role_stpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_role_stpolicies AS
+    SELECT ar_role_stpolicies.role_id, ar_role_stpolicies.stpolicy_id, ar_role_stpolicies.last_change_dt, ar_role_stpolicies.last_change_user, ar_role_stpolicies.dirty, ar_role_stpolicies.chk_lvl, ar_role_stpolicies.guid, ar_role_stpolicies.owner, ar_role_stpolicies.version, ar_role_stpolicies.synch FROM apiis_admin.ar_role_stpolicies WHERE (ar_role_stpolicies.owner = NULL::text) UNION SELECT ar_role_stpolicies.role_id, ar_role_stpolicies.stpolicy_id, ar_role_stpolicies.last_change_dt, ar_role_stpolicies.last_change_user, ar_role_stpolicies.dirty, ar_role_stpolicies.chk_lvl, ar_role_stpolicies.guid, ar_role_stpolicies.owner, ar_role_stpolicies.version, ar_role_stpolicies.synch FROM apiis_admin.ar_role_stpolicies WHERE (ar_role_stpolicies.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_role_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_roles; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_roles AS
+    SELECT ar_roles.role_id, ar_roles.role_name, ar_roles.role_long_name, ar_roles.role_type, ar_roles.role_subset, ar_roles.role_descr, ar_roles.last_change_dt, ar_roles.last_change_user, ar_roles.dirty, ar_roles.chk_lvl, ar_roles.guid, ar_roles.owner, ar_roles.version, ar_roles.synch FROM apiis_admin.ar_roles WHERE (ar_roles.owner = NULL::text) UNION SELECT ar_roles.role_id, ar_roles.role_name, ar_roles.role_long_name, ar_roles.role_type, ar_roles.role_subset, ar_roles.role_descr, ar_roles.last_change_dt, ar_roles.last_change_user, ar_roles.dirty, ar_roles.chk_lvl, ar_roles.guid, ar_roles.owner, ar_roles.version, ar_roles.synch FROM apiis_admin.ar_roles WHERE (ar_roles.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_roles OWNER TO apiis_admin;
+
+--
+-- Name: ar_stpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_stpolicies AS
+    SELECT ar_stpolicies.stpolicy_id, ar_stpolicies.stpolicy_name, ar_stpolicies.stpolicy_type, ar_stpolicies.stpolicy_desc, ar_stpolicies.last_change_dt, ar_stpolicies.last_change_user, ar_stpolicies.dirty, ar_stpolicies.chk_lvl, ar_stpolicies.guid, ar_stpolicies.owner, ar_stpolicies.version, ar_stpolicies.synch FROM apiis_admin.ar_stpolicies WHERE (ar_stpolicies.owner = NULL::text) UNION SELECT ar_stpolicies.stpolicy_id, ar_stpolicies.stpolicy_name, ar_stpolicies.stpolicy_type, ar_stpolicies.stpolicy_desc, ar_stpolicies.last_change_dt, ar_stpolicies.last_change_user, ar_stpolicies.dirty, ar_stpolicies.chk_lvl, ar_stpolicies.guid, ar_stpolicies.owner, ar_stpolicies.version, ar_stpolicies.synch FROM apiis_admin.ar_stpolicies WHERE (ar_stpolicies.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: ar_user_roles; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_user_roles AS
+    SELECT ar_user_roles.user_id, ar_user_roles.role_id, ar_user_roles.last_change_dt, ar_user_roles.last_change_user, ar_user_roles.dirty, ar_user_roles.chk_lvl, ar_user_roles.guid, ar_user_roles.owner, ar_user_roles.version, ar_user_roles.synch FROM apiis_admin.ar_user_roles WHERE (ar_user_roles.owner = NULL::text) UNION SELECT ar_user_roles.user_id, ar_user_roles.role_id, ar_user_roles.last_change_dt, ar_user_roles.last_change_user, ar_user_roles.dirty, ar_user_roles.chk_lvl, ar_user_roles.guid, ar_user_roles.owner, ar_user_roles.version, ar_user_roles.synch FROM apiis_admin.ar_user_roles WHERE (ar_user_roles.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_user_roles OWNER TO apiis_admin;
+
+--
+-- Name: ar_users; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_users AS
+    SELECT ar_users.user_id, ar_users.user_login, ar_users.user_password, ar_users.user_language_id, ar_users.user_marker, ar_users.user_disabled, ar_users.user_status, ar_users.user_last_login, ar_users.user_last_activ_time, ar_users.user_session_id, ar_users.last_change_dt, ar_users.last_change_user, ar_users.dirty, ar_users.chk_lvl, ar_users.guid, ar_users.owner, ar_users.version, ar_users.synch FROM apiis_admin.ar_users WHERE (ar_users.owner = NULL::text) UNION SELECT ar_users.user_id, ar_users.user_login, ar_users.user_password, ar_users.user_language_id, ar_users.user_marker, ar_users.user_disabled, ar_users.user_status, ar_users.user_last_login, ar_users.user_last_activ_time, ar_users.user_session_id, ar_users.last_change_dt, ar_users.last_change_user, ar_users.dirty, ar_users.chk_lvl, ar_users.guid, ar_users.owner, ar_users.version, ar_users.synch FROM apiis_admin.ar_users WHERE (ar_users.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_users OWNER TO apiis_admin;
+
+--
+-- Name: ar_users_data; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW ar_users_data AS
+    SELECT ar_users_data.user_id, ar_users_data.user_first_name, ar_users_data.user_second_name, ar_users_data.user_institution, ar_users_data.user_email, ar_users_data.user_country, ar_users_data.user_street, ar_users_data.user_town, ar_users_data.user_zip, ar_users_data.user_other_info, ar_users_data.opening_dt, ar_users_data.closing_dt, ar_users_data.last_change_dt, ar_users_data.last_change_user, ar_users_data.creation_dt, ar_users_data.creation_user, ar_users_data.end_dt, ar_users_data.end_user, ar_users_data.dirty, ar_users_data.chk_lvl, ar_users_data.guid, ar_users_data.owner, ar_users_data.version, ar_users_data.synch FROM apiis_admin.ar_users_data WHERE (ar_users_data.owner = NULL::text) UNION SELECT ar_users_data.user_id, ar_users_data.user_first_name, ar_users_data.user_second_name, ar_users_data.user_institution, ar_users_data.user_email, ar_users_data.user_country, ar_users_data.user_street, ar_users_data.user_town, ar_users_data.user_zip, ar_users_data.user_other_info, ar_users_data.opening_dt, ar_users_data.closing_dt, ar_users_data.last_change_dt, ar_users_data.last_change_user, ar_users_data.creation_dt, ar_users_data.creation_user, ar_users_data.end_dt, ar_users_data.end_user, ar_users_data.dirty, ar_users_data.chk_lvl, ar_users_data.guid, ar_users_data.owner, ar_users_data.version, ar_users_data.synch FROM apiis_admin.ar_users_data WHERE (ar_users_data.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.ar_users_data OWNER TO apiis_admin;
+
+--
+-- Name: blobs; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW blobs AS
+    SELECT blobs.blob_id, blobs.blob, blobs.last_change_dt, blobs.last_change_user, blobs.dirty, blobs.chk_lvl, blobs.guid, blobs.owner, blobs.version, blobs.synch, blobs.db_mimetype FROM apiis_admin.blobs WHERE (blobs.owner = NULL::text) UNION SELECT blobs.blob_id, blobs.blob, blobs.last_change_dt, blobs.last_change_user, blobs.dirty, blobs.chk_lvl, blobs.guid, blobs.owner, blobs.version, blobs.synch, blobs.db_mimetype FROM apiis_admin.blobs WHERE (blobs.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.blobs OWNER TO apiis_admin;
+
+--
+-- Name: codes; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW codes AS
+    SELECT codes.ext_code, codes.class, codes.db_code, codes.short_name, codes.long_name, codes.description, codes.opening_dt, codes.closing_dt, codes.last_change_dt, codes.last_change_user, codes.dirty, codes.chk_lvl, codes.guid, codes.owner, codes.version, codes.synch FROM apiis_admin.codes WHERE (codes.owner = NULL::text) UNION SELECT codes.ext_code, codes.class, codes.db_code, codes.short_name, codes.long_name, codes.description, codes.opening_dt, codes.closing_dt, codes.last_change_dt, codes.last_change_user, codes.dirty, codes.chk_lvl, codes.guid, codes.owner, codes.version, codes.synch FROM apiis_admin.codes WHERE (codes.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.codes OWNER TO apiis_admin;
+
+--
+-- Name: contacts; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW contacts AS
+    SELECT contacts.db_contact, contacts.title, contacts.salutation, contacts.first_name, contacts.second_name, contacts.third_name, contacts.birth_dt, contacts.db_language, contacts.street, contacts.zip, contacts.town, contacts.db_country, contacts.label, contacts.phone, contacts.phone2, contacts.fax, contacts.email, contacts.bank_name, contacts.bank_zip, contacts.account, contacts.opening_dt, contacts.closing_dt, contacts.comment, contacts.chk_lvl, contacts.dirty, contacts.guid, contacts.last_change_dt, contacts.last_change_user, contacts.owner, contacts.synch, contacts.version FROM apiis_admin.contacts WHERE (contacts.owner = NULL::text) UNION SELECT contacts.db_contact, contacts.title, contacts.salutation, contacts.first_name, contacts.second_name, contacts.third_name, contacts.birth_dt, contacts.db_language, contacts.street, contacts.zip, contacts.town, contacts.db_country, contacts.label, contacts.phone, contacts.phone2, contacts.fax, contacts.email, contacts.bank_name, contacts.bank_zip, contacts.account, contacts.opening_dt, contacts.closing_dt, contacts.comment, contacts.chk_lvl, contacts.dirty, contacts.guid, contacts.last_change_dt, contacts.last_change_user, contacts.owner, contacts.synch, contacts.version FROM apiis_admin.contacts WHERE (contacts.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.contacts OWNER TO apiis_admin;
+
+--
+-- Name: entry_codes; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW entry_codes AS
+    SELECT codes.ext_code, codes.class, codes.db_code, codes.short_name, codes.long_name, codes.description, codes.opening_dt, codes.closing_dt, codes.last_change_dt, codes.last_change_user, codes.dirty, codes.chk_lvl, codes.guid, codes.owner, codes.version, codes.synch FROM codes WHERE (codes.closing_dt IS NULL);
+
+
+ALTER TABLE heli.entry_codes OWNER TO apiis_admin;
+
+--
+-- Name: transfer; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW transfer AS
+    SELECT transfer.db_animal, transfer.ext_animal, transfer.db_unit, transfer.id_set, transfer.opening_dt, transfer.closing_dt, transfer.last_change_dt, transfer.last_change_user, transfer.dirty, transfer.chk_lvl, transfer.guid, transfer.owner, transfer.version, transfer.synch FROM apiis_admin.transfer WHERE (transfer.owner = NULL::text) UNION SELECT transfer.db_animal, transfer.ext_animal, transfer.db_unit, transfer.id_set, transfer.opening_dt, transfer.closing_dt, transfer.last_change_dt, transfer.last_change_user, transfer.dirty, transfer.chk_lvl, transfer.guid, transfer.owner, transfer.version, transfer.synch FROM apiis_admin.transfer WHERE (transfer.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.transfer OWNER TO apiis_admin;
+
+--
+-- Name: entry_transfer; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW entry_transfer AS
+    SELECT transfer.db_animal, transfer.ext_animal, transfer.db_unit, transfer.id_set, transfer.opening_dt, transfer.closing_dt, transfer.last_change_dt, transfer.last_change_user, transfer.dirty, transfer.chk_lvl, transfer.guid, transfer.owner, transfer.version, transfer.synch FROM transfer WHERE (transfer.closing_dt IS NULL);
+
+
+ALTER TABLE heli.entry_transfer OWNER TO apiis_admin;
+
+--
+-- Name: unit; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW unit AS
+    SELECT unit.db_unit, unit.ext_unit, unit.ext_id, unit.db_contact, unit.db_member, unit.opening_dt, unit.closing_dt, unit.last_change_dt, unit.last_change_user, unit.dirty, unit.chk_lvl, unit.guid, unit.owner, unit.version, unit.synch FROM apiis_admin.unit WHERE (unit.owner = NULL::text) UNION SELECT unit.db_unit, unit.ext_unit, unit.ext_id, unit.db_contact, unit.db_member, unit.opening_dt, unit.closing_dt, unit.last_change_dt, unit.last_change_user, unit.dirty, unit.chk_lvl, unit.guid, unit.owner, unit.version, unit.synch FROM apiis_admin.unit WHERE (unit.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.unit OWNER TO apiis_admin;
+
+--
+-- Name: entry_unit; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW entry_unit AS
+    SELECT unit.db_unit, unit.ext_unit, unit.ext_id, unit.db_contact, unit.db_member, unit.opening_dt, unit.closing_dt, unit.last_change_dt, unit.last_change_user, unit.dirty, unit.chk_lvl, unit.guid, unit.owner, unit.version, unit.synch FROM unit WHERE (unit.closing_dt IS NULL);
+
+
+ALTER TABLE heli.entry_unit OWNER TO apiis_admin;
+
+--
+-- Name: event; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW event AS
+    SELECT event.event_id, event.db_event_type, event.db_sampler, event.event_dt, event.db_location, event.last_change_dt, event.last_change_user, event.dirty, event.chk_lvl, event.guid, event.owner, event.version, event.synch FROM apiis_admin.event WHERE (event.owner = NULL::text) UNION SELECT event.event_id, event.db_event_type, event.db_sampler, event.event_dt, event.db_location, event.last_change_dt, event.last_change_user, event.dirty, event.chk_lvl, event.guid, event.owner, event.version, event.synch FROM apiis_admin.event WHERE (event.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.event OWNER TO apiis_admin;
+
+--
+-- Name: inspool; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW inspool AS
+    SELECT inspool.ds, inspool.record_seq, inspool.in_date, inspool.ext_unit, inspool.proc_dt, inspool.status, inspool.record, inspool.last_change_dt, inspool.last_change_user, inspool.dirty, inspool.chk_lvl, inspool.guid, inspool.owner, inspool.version, inspool.synch FROM apiis_admin.inspool WHERE (inspool.owner = NULL::text) UNION SELECT inspool.ds, inspool.record_seq, inspool.in_date, inspool.ext_unit, inspool.proc_dt, inspool.status, inspool.record, inspool.last_change_dt, inspool.last_change_user, inspool.dirty, inspool.chk_lvl, inspool.guid, inspool.owner, inspool.version, inspool.synch FROM apiis_admin.inspool WHERE (inspool.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.inspool OWNER TO apiis_admin;
+
+--
+-- Name: inspool_err; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW inspool_err AS
+    SELECT inspool_err.record_seq, inspool_err.err_type, inspool_err.action, inspool_err.dbtable, inspool_err.dbcol, inspool_err.err_source, inspool_err.short_msg, inspool_err.long_msg, inspool_err.ext_col, inspool_err.ext_val, inspool_err.mod_val, inspool_err.comp_val, inspool_err.target_col, inspool_err.ds, inspool_err.ext_unit, inspool_err.status, inspool_err.err_dt, inspool_err.last_change_dt, inspool_err.last_change_user, inspool_err.dirty, inspool_err.chk_lvl, inspool_err.guid, inspool_err.owner, inspool_err.version, inspool_err.synch FROM apiis_admin.inspool_err WHERE (inspool_err.owner = NULL::text) UNION SELECT inspool_err.record_seq, inspool_err.err_type, inspool_err.action, inspool_err.dbtable, inspool_err.dbcol, inspool_err.err_source, inspool_err.short_msg, inspool_err.long_msg, inspool_err.ext_col, inspool_err.ext_val, inspool_err.mod_val, inspool_err.comp_val, inspool_err.target_col, inspool_err.ds, inspool_err.ext_unit, inspool_err.status, inspool_err.err_dt, inspool_err.last_change_dt, inspool_err.last_change_user, inspool_err.dirty, inspool_err.chk_lvl, inspool_err.guid, inspool_err.owner, inspool_err.version, inspool_err.synch FROM apiis_admin.inspool_err WHERE (inspool_err.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.inspool_err OWNER TO apiis_admin;
+
+--
+-- Name: languages; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW languages AS
+    SELECT languages.lang_id, languages.iso_lang, languages.lang, languages.last_change_dt, languages.last_change_user, languages.creation_dt, languages.creation_user, languages.end_dt, languages.end_user, languages.dirty, languages.chk_lvl, languages.guid, languages.owner, languages.version, languages.synch FROM apiis_admin.languages WHERE (languages.owner = NULL::text) UNION SELECT languages.lang_id, languages.iso_lang, languages.lang, languages.last_change_dt, languages.last_change_user, languages.creation_dt, languages.creation_user, languages.end_dt, languages.end_user, languages.dirty, languages.chk_lvl, languages.guid, languages.owner, languages.version, languages.synch FROM apiis_admin.languages WHERE (languages.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.languages OWNER TO apiis_admin;
+
+--
+-- Name: load_stat; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW load_stat AS
+    SELECT load_stat.ds, load_stat.job_start, load_stat.job_end, load_stat.status, load_stat.rec_tot_no, load_stat.rec_err_no, load_stat.rec_ok_no, load_stat.last_change_dt, load_stat.last_change_user, load_stat.dirty, load_stat.chk_lvl, load_stat.guid, load_stat.owner, load_stat.version, load_stat.synch FROM apiis_admin.load_stat WHERE (load_stat.owner = NULL::text) UNION SELECT load_stat.ds, load_stat.job_start, load_stat.job_end, load_stat.status, load_stat.rec_tot_no, load_stat.rec_err_no, load_stat.rec_ok_no, load_stat.last_change_dt, load_stat.last_change_user, load_stat.dirty, load_stat.chk_lvl, load_stat.guid, load_stat.owner, load_stat.version, load_stat.synch FROM apiis_admin.load_stat WHERE (load_stat.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.load_stat OWNER TO apiis_admin;
+
+--
+-- Name: locations; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW locations AS
+    SELECT locations.db_animal, locations.db_location, locations.entry_dt, locations.db_entry_action, locations.exit_dt, locations.db_exit_action, locations.chk_lvl, locations.dirty, locations.guid, locations.last_change_dt, locations.last_change_user, locations.owner, locations.synch, locations.version FROM apiis_admin.locations WHERE (locations.owner = NULL::text) UNION SELECT locations.db_animal, locations.db_location, locations.entry_dt, locations.db_entry_action, locations.exit_dt, locations.db_exit_action, locations.chk_lvl, locations.dirty, locations.guid, locations.last_change_dt, locations.last_change_user, locations.owner, locations.synch, locations.version FROM apiis_admin.locations WHERE (locations.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.locations OWNER TO apiis_admin;
+
+--
+-- Name: new_pest; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW new_pest AS
+    SELECT new_pest.class, new_pest.key, new_pest.trait, new_pest.estimator, new_pest.pev, new_pest.last_change_dt, new_pest.last_change_user, new_pest.dirty, new_pest.chk_lvl, new_pest.guid, new_pest.owner, new_pest.version, new_pest.synch FROM apiis_admin.new_pest WHERE (new_pest.owner = NULL::text) UNION SELECT new_pest.class, new_pest.key, new_pest.trait, new_pest.estimator, new_pest.pev, new_pest.last_change_dt, new_pest.last_change_user, new_pest.dirty, new_pest.chk_lvl, new_pest.guid, new_pest.owner, new_pest.version, new_pest.synch FROM apiis_admin.new_pest WHERE (new_pest.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.new_pest OWNER TO apiis_admin;
+
+--
+-- Name: nodes; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW nodes AS
+    SELECT nodes.nodename, nodes.address, nodes.last_change_dt, nodes.last_change_user, nodes.dirty, nodes.chk_lvl, nodes.guid, nodes.owner, nodes.version, nodes.synch FROM apiis_admin.nodes WHERE (nodes.owner = NULL::text) UNION SELECT nodes.nodename, nodes.address, nodes.last_change_dt, nodes.last_change_user, nodes.dirty, nodes.chk_lvl, nodes.guid, nodes.owner, nodes.version, nodes.synch FROM apiis_admin.nodes WHERE (nodes.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.nodes OWNER TO apiis_admin;
+
+--
+-- Name: sources; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW sources AS
+    SELECT sources.source, sources.tablename, sources.class, sources.columnnames, sources.last_change_dt, sources.last_change_user, sources.dirty, sources.chk_lvl, sources.guid, sources.owner, sources.version, sources.synch FROM apiis_admin.sources WHERE (sources.owner = NULL::text) UNION SELECT sources.source, sources.tablename, sources.class, sources.columnnames, sources.last_change_dt, sources.last_change_user, sources.dirty, sources.chk_lvl, sources.guid, sources.owner, sources.version, sources.synch FROM apiis_admin.sources WHERE (sources.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.sources OWNER TO apiis_admin;
+
+--
+-- Name: targets; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW targets AS
+    SELECT targets.target, targets.tablename, targets.class, targets.columnnames, targets.last_change_dt, targets.last_change_user, targets.dirty, targets.chk_lvl, targets.guid, targets.owner, targets.version, targets.synch FROM apiis_admin.targets WHERE (targets.owner = NULL::text) UNION SELECT targets.target, targets.tablename, targets.class, targets.columnnames, targets.last_change_dt, targets.last_change_user, targets.dirty, targets.chk_lvl, targets.guid, targets.owner, targets.version, targets.synch FROM apiis_admin.targets WHERE (targets.owner = 'SmallPop'::text);
+
+
+ALTER TABLE heli.targets OWNER TO apiis_admin;
+
+--
+-- Name: v_animal; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_animal AS
+    SELECT a.guid AS v_guid, a.db_animal, ((((c.ext_unit || ':::'::text) || c.ext_id) || ':::'::text) || b.ext_animal) AS ext_animal, a.db_sex, d.ext_code AS ext_sex, a.db_breed, e.ext_code AS ext_breed, a.birth_dt, a.db_sire, ((((g.ext_unit || ':::'::text) || g.ext_id) || ':::'::text) || f.ext_animal) AS ext_sire, a.db_dam, ((((i.ext_unit || ':::'::text) || i.ext_id) || ':::'::text) || h.ext_animal) AS ext_dam, a.la_rep, a.la_rep_dt, a.synch, a.db_hybrid, j.ext_code AS ext_hybrid, a.comment FROM (((((((((animal a LEFT JOIN transfer b ON ((a.db_animal = b.db_animal))) LEFT JOIN unit c ON ((b.db_unit = c.db_unit))) LEFT JOIN codes d ON ((a.db_sex = d.db_code))) LEFT JOIN codes e ON ((a.db_breed = e.db_code))) LEFT JOIN transfer f ON ((a.db_sire = f.db_animal))) LEFT JOIN unit g ON ((f.db_unit = g.db_unit))) LEFT JOIN transfer h ON ((a.db_dam = h.db_animal))) LEFT JOIN unit i ON ((h.db_unit = i.db_unit))) LEFT JOIN codes j ON ((a.db_hybrid = j.db_code)));
+
+
+ALTER TABLE heli.v_animal OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_constraints; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_constraints AS
+    SELECT a.guid AS v_guid, a.cons_id, a.cons_name, a.cons_type, a.cons_desc, a.synch FROM ar_constraints a;
+
+
+ALTER TABLE heli.v_ar_constraints OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbtdescriptors; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbtdescriptors AS
+    SELECT a.guid AS v_guid, a.descriptor_id, a.descriptor_name, a.descriptor_value, a.descriptor_desc, a.synch FROM ar_dbtdescriptors a;
+
+
+ALTER TABLE heli.v_ar_dbtdescriptors OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbtpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbtpolicies AS
+    SELECT a.guid AS v_guid, a.dbtpolicy_id, a.action_id, b.ext_code AS ext_action_id, a.table_id, a.descriptor_id, a.synch FROM (ar_dbtpolicies a LEFT JOIN codes b ON ((a.action_id = b.db_code)));
+
+
+ALTER TABLE heli.v_ar_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_dbttables; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_dbttables AS
+    SELECT a.guid AS v_guid, a.table_id, a.table_name, a.table_columns, a.table_desc, a.synch FROM ar_dbttables a;
+
+
+ALTER TABLE heli.v_ar_dbttables OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_constraints; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_constraints AS
+    SELECT a.guid AS v_guid, a.cons_id, a.first_role_id, a.second_role_id, a.synch FROM ar_role_constraints a;
+
+
+ALTER TABLE heli.v_ar_role_constraints OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_dbtpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_dbtpolicies AS
+    SELECT a.guid AS v_guid, a.role_id, a.dbtpolicy_id, a.synch FROM ar_role_dbtpolicies a;
+
+
+ALTER TABLE heli.v_ar_role_dbtpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_role_stpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_role_stpolicies AS
+    SELECT a.guid AS v_guid, a.role_id, a.stpolicy_id, a.synch FROM ar_role_stpolicies a;
+
+
+ALTER TABLE heli.v_ar_role_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_roles; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_roles AS
+    SELECT a.guid AS v_guid, a.role_id, a.role_name, a.role_long_name, a.role_type, a.role_subset, a.role_descr, a.synch FROM ar_roles a;
+
+
+ALTER TABLE heli.v_ar_roles OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_stpolicies; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_stpolicies AS
+    SELECT a.guid AS v_guid, a.stpolicy_id, a.stpolicy_name, a.stpolicy_type, a.stpolicy_desc, a.synch FROM ar_stpolicies a;
+
+
+ALTER TABLE heli.v_ar_stpolicies OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_user_roles; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_user_roles AS
+    SELECT a.guid AS v_guid, a.user_id, a.role_id, a.synch FROM ar_user_roles a;
+
+
+ALTER TABLE heli.v_ar_user_roles OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_users; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_users AS
+    SELECT a.guid AS v_guid, a.user_id, a.user_login, a.user_password, a.user_language_id, a.user_marker, a.user_disabled, a.user_status, a.user_last_login, a.user_last_activ_time, a.user_session_id, a.synch FROM ar_users a;
+
+
+ALTER TABLE heli.v_ar_users OWNER TO apiis_admin;
+
+--
+-- Name: v_ar_users_data; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_ar_users_data AS
+    SELECT a.guid AS v_guid, a.user_id, a.user_first_name, a.user_second_name, a.user_institution, a.user_email, a.user_country, a.user_street, a.user_town, a.user_zip, a.user_other_info, a.closing_dt, a.synch FROM ar_users_data a;
+
+
+ALTER TABLE heli.v_ar_users_data OWNER TO apiis_admin;
+
+--
+-- Name: v_blobs; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_blobs AS
+    SELECT a.guid AS v_guid, a.blob_id, a.blob, a.synch, a.db_mimetype, b.ext_code AS ext_mimetype FROM (blobs a LEFT JOIN codes b ON ((a.db_mimetype = b.db_code)));
+
+
+ALTER TABLE heli.v_blobs OWNER TO apiis_admin;
+
+--
+-- Name: v_codes; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_codes AS
+    SELECT a.guid AS v_guid, a.ext_code, a.class, a.db_code, a.short_name, a.long_name, a.description, a.closing_dt, a.synch FROM codes a;
+
+
+ALTER TABLE heli.v_codes OWNER TO apiis_admin;
+
+--
+-- Name: v_contacts; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_contacts AS
+    SELECT a.guid AS v_guid, a.db_contact, a.title, a.salutation, a.first_name, a.second_name, a.third_name, a.birth_dt, a.db_language, a.street, a.zip, a.town, a.db_country, b.ext_code AS ext_country, a.label, a.phone, a.phone2, a.fax, a.email, a.bank_name, a.bank_zip, a.account, a.closing_dt, a.comment, a.synch FROM (contacts a LEFT JOIN codes b ON ((a.db_country = b.db_code)));
+
+
+ALTER TABLE heli.v_contacts OWNER TO apiis_admin;
+
+--
+-- Name: v_dbtar_heli; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_dbtar_heli AS
+    SELECT ar_dbtpolicies.dbtpolicy_id, codes.ext_code AS sqlaction, ar_dbttables.table_name, ar_dbttables.table_columns, ar_dbtdescriptors.descriptor_name, ar_dbtdescriptors.descriptor_value FROM apiis_admin.codes, apiis_admin.ar_dbtpolicies, apiis_admin.ar_dbttables, apiis_admin.ar_dbtdescriptors WHERE ((((ar_dbtpolicies.table_id = ar_dbttables.table_id) AND (ar_dbtpolicies.descriptor_id = ar_dbtdescriptors.descriptor_id)) AND (ar_dbtpolicies.action_id = codes.db_code)) AND (ar_dbtpolicies.dbtpolicy_id IN (SELECT ar_role_dbtpolicies.dbtpolicy_id FROM apiis_admin.ar_role_dbtpolicies WHERE (ar_role_dbtpolicies.role_id = ANY (ARRAY[105, 101, 109, 100, 102, 103, 104, 106, 107, 108, 110])))));
+
+
+ALTER TABLE heli.v_dbtar_heli OWNER TO apiis_admin;
+
+--
+-- Name: v_event; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_event AS
+    SELECT a.guid AS v_guid, a.event_id, a.db_event_type, b.ext_code AS ext_event_type, a.db_sampler, ((c.ext_unit || ':::'::text) || c.ext_id) AS ext_sampler, a.event_dt, a.db_location, ((d.ext_unit || ':::'::text) || d.ext_id) AS ext_location, a.synch FROM (((event a LEFT JOIN codes b ON ((a.db_event_type = b.db_code))) LEFT JOIN unit c ON ((a.db_sampler = c.db_unit))) LEFT JOIN unit d ON ((a.db_location = d.db_unit)));
+
+
+ALTER TABLE heli.v_event OWNER TO apiis_admin;
+
+--
+-- Name: v_inspool; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_inspool AS
+    SELECT a.guid AS v_guid, a.ds, a.record_seq, a.in_date, a.ext_unit, a.proc_dt, a.status, a.record, a.synch FROM inspool a;
+
+
+ALTER TABLE heli.v_inspool OWNER TO apiis_admin;
+
+--
+-- Name: v_inspool_err; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_inspool_err AS
+    SELECT a.guid AS v_guid, a.record_seq, a.err_type, a.action, a.dbtable, a.dbcol, a.err_source, a.short_msg, a.long_msg, a.ext_col, a.ext_val, a.mod_val, a.comp_val, a.target_col, a.ds, a.ext_unit, a.status, a.err_dt, a.synch FROM inspool_err a;
+
+
+ALTER TABLE heli.v_inspool_err OWNER TO apiis_admin;
+
+--
+-- Name: v_languages; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_languages AS
+    SELECT a.guid AS v_guid, a.lang_id, a.iso_lang, a.lang, a.synch FROM languages a;
+
+
+ALTER TABLE heli.v_languages OWNER TO apiis_admin;
+
+--
+-- Name: v_load_stat; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_load_stat AS
+    SELECT a.guid AS v_guid, a.ds, a.job_start, a.job_end, a.status, a.rec_tot_no, a.rec_err_no, a.rec_ok_no, a.synch FROM load_stat a;
+
+
+ALTER TABLE heli.v_load_stat OWNER TO apiis_admin;
+
+--
+-- Name: v_locations; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_locations AS
+    SELECT a.guid AS v_guid, a.db_animal, ((((c.ext_unit || ':::'::text) || c.ext_id) || ':::'::text) || b.ext_animal) AS ext_animal, a.db_location, ((d.ext_unit || ':::'::text) || d.ext_id) AS ext_location, a.entry_dt, a.db_entry_action, e.ext_code AS ext_entry_action, a.exit_dt, a.db_exit_action, f.ext_code AS ext_exit_action, a.synch FROM (((((locations a LEFT JOIN transfer b ON ((a.db_animal = b.db_animal))) LEFT JOIN unit c ON ((b.db_unit = c.db_unit))) LEFT JOIN unit d ON ((a.db_location = d.db_unit))) LEFT JOIN codes e ON ((a.db_entry_action = e.db_code))) LEFT JOIN codes f ON ((a.db_exit_action = f.db_code)));
+
+
+ALTER TABLE heli.v_locations OWNER TO apiis_admin;
+
+--
+-- Name: v_new_pest; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_new_pest AS
+    SELECT a.guid AS v_guid, a.class, a.key, a.trait, a.estimator, a.pev, a.synch FROM new_pest a;
+
+
+ALTER TABLE heli.v_new_pest OWNER TO apiis_admin;
+
+--
+-- Name: v_nodes; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_nodes AS
+    SELECT a.guid AS v_guid, a.nodename, a.address, a.synch FROM nodes a;
+
+
+ALTER TABLE heli.v_nodes OWNER TO apiis_admin;
+
+--
+-- Name: v_sources; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_sources AS
+    SELECT a.guid AS v_guid, a.source, a.tablename, a.class, a.columnnames, a.synch FROM sources a;
+
+
+ALTER TABLE heli.v_sources OWNER TO apiis_admin;
+
+--
+-- Name: v_star_heli; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_star_heli AS
+    SELECT ar_stpolicies.stpolicy_id, ar_stpolicies.stpolicy_name, ar_stpolicies.stpolicy_type, ar_stpolicies.stpolicy_desc FROM apiis_admin.ar_stpolicies WHERE (ar_stpolicies.stpolicy_id IN (SELECT ar_role_stpolicies.stpolicy_id FROM apiis_admin.ar_role_stpolicies WHERE (ar_role_stpolicies.role_id = ANY (ARRAY[105, 101, 109, 100, 102, 103, 104, 106, 107, 108, 110]))));
+
+
+ALTER TABLE heli.v_star_heli OWNER TO apiis_admin;
+
+--
+-- Name: v_targets; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_targets AS
+    SELECT a.guid AS v_guid, a.target, a.tablename, a.class, a.columnnames, a.synch FROM targets a;
+
+
+ALTER TABLE heli.v_targets OWNER TO apiis_admin;
+
+--
+-- Name: v_transfer; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_transfer AS
+    SELECT a.guid AS v_guid, a.db_animal, a.ext_animal, a.db_unit, ((b.ext_unit || ':::'::text) || b.ext_id) AS ext_unit, a.id_set, c.ext_code AS ext_id_set, a.closing_dt, a.synch FROM ((transfer a LEFT JOIN unit b ON ((a.db_unit = b.db_unit))) LEFT JOIN codes c ON ((a.id_set = c.db_code)));
+
+
+ALTER TABLE heli.v_transfer OWNER TO apiis_admin;
+
+--
+-- Name: v_unit; Type: VIEW; Schema: heli; Owner: apiis_admin
+--
+
+CREATE VIEW v_unit AS
+    SELECT a.guid AS v_guid, a.db_unit, a.ext_unit, a.ext_id, a.db_contact, a.db_member, ((b.ext_unit || ':::'::text) || b.ext_id) AS ext_member, b.closing_dt, b.synch FROM (unit a LEFT JOIN unit b ON ((b.db_member = b.db_unit)));
+
+
+ALTER TABLE heli.v_unit OWNER TO apiis_admin;
+
+SET search_path = apiis_admin, pg_catalog;
+
+--
+-- Data for Name: animal; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY animal (db_animal, db_sex, db_breed, birth_dt, db_sire, db_dam, la_rep, la_rep_dt, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch, db_hybrid, comment) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ar_constraints; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_constraints (cons_id, cons_name, cons_type, cons_desc, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ar_dbtdescriptors; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_dbtdescriptors (descriptor_id, descriptor_name, descriptor_value, descriptor_desc, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+1	owner	(=)SmallPop	\N	2009-06-29 13:07:46	heli	\N	\N	186	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_dbtpolicies; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_dbtpolicies (dbtpolicy_id, action_id, table_id, descriptor_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+33	103	17	1	2009-06-29 13:07:46	heli	\N	\N	187	SmallPop	1	f
+32	102	16	1	2009-06-29 13:07:46	heli	\N	\N	188	SmallPop	1	f
+90	100	46	1	2009-06-29 13:07:46	heli	\N	\N	189	SmallPop	1	f
+63	101	32	1	2009-06-29 13:07:46	heli	\N	\N	190	SmallPop	1	f
+21	103	11	1	2009-06-29 13:07:46	heli	\N	\N	191	SmallPop	1	f
+71	101	36	1	2009-06-29 13:07:46	heli	\N	\N	192	SmallPop	1	f
+102	100	52	1	2009-06-29 13:07:46	heli	\N	\N	193	SmallPop	1	f
+7	101	4	1	2009-06-29 13:07:46	heli	\N	\N	194	SmallPop	1	f
+80	102	40	1	2009-06-29 13:07:46	heli	\N	\N	195	SmallPop	1	f
+26	100	14	1	2009-06-29 13:07:46	heli	\N	\N	196	SmallPop	1	f
+99	101	50	1	2009-06-29 13:07:46	heli	\N	\N	197	SmallPop	1	f
+18	100	10	1	2009-06-29 13:07:46	heli	\N	\N	198	SmallPop	1	f
+72	102	36	1	2009-06-29 13:07:46	heli	\N	\N	199	SmallPop	1	f
+16	102	8	1	2009-06-29 13:07:46	heli	\N	\N	200	SmallPop	1	f
+44	102	22	1	2009-06-29 13:07:46	heli	\N	\N	201	SmallPop	1	f
+55	101	28	1	2009-06-29 13:07:46	heli	\N	\N	202	SmallPop	1	f
+84	102	42	1	2009-06-29 13:07:46	heli	\N	\N	203	SmallPop	1	f
+74	100	38	1	2009-06-29 13:07:46	heli	\N	\N	204	SmallPop	1	f
+27	101	14	1	2009-06-29 13:07:46	heli	\N	\N	205	SmallPop	1	f
+95	101	48	1	2009-06-29 13:07:46	heli	\N	\N	206	SmallPop	1	f
+57	103	29	1	2009-06-29 13:07:46	heli	\N	\N	207	SmallPop	1	f
+61	103	31	1	2009-06-29 13:07:46	heli	\N	\N	208	SmallPop	1	f
+108	102	54	1	2009-06-29 13:07:46	heli	\N	\N	209	SmallPop	1	f
+20	102	10	1	2009-06-29 13:07:46	heli	\N	\N	210	SmallPop	1	f
+109	103	55	1	2009-06-29 13:07:46	heli	\N	\N	211	SmallPop	1	f
+92	102	46	1	2009-06-29 13:07:46	heli	\N	\N	212	SmallPop	1	f
+103	101	52	1	2009-06-29 13:07:46	heli	\N	\N	213	SmallPop	1	f
+89	103	45	1	2009-06-29 13:07:46	heli	\N	\N	214	SmallPop	1	f
+10	100	6	1	2009-06-29 13:07:46	heli	\N	\N	215	SmallPop	1	f
+31	101	16	1	2009-06-29 13:07:46	heli	\N	\N	216	SmallPop	1	f
+35	101	18	1	2009-06-29 13:07:46	heli	\N	\N	217	SmallPop	1	f
+11	101	6	1	2009-06-29 13:07:46	heli	\N	\N	218	SmallPop	1	f
+91	101	46	1	2009-06-29 13:07:46	heli	\N	\N	219	SmallPop	1	f
+78	100	40	1	2009-06-29 13:07:46	heli	\N	\N	220	SmallPop	1	f
+107	101	54	1	2009-06-29 13:07:46	heli	\N	\N	221	SmallPop	1	f
+48	102	24	1	2009-06-29 13:07:46	heli	\N	\N	222	SmallPop	1	f
+87	101	44	1	2009-06-29 13:07:46	heli	\N	\N	223	SmallPop	1	f
+93	103	47	1	2009-06-29 13:07:46	heli	\N	\N	224	SmallPop	1	f
+77	103	39	1	2009-06-29 13:07:46	heli	\N	\N	225	SmallPop	1	f
+106	100	54	1	2009-06-29 13:07:46	heli	\N	\N	226	SmallPop	1	f
+65	103	33	1	2009-06-29 13:07:46	heli	\N	\N	227	SmallPop	1	f
+29	103	15	1	2009-06-29 13:07:46	heli	\N	\N	228	SmallPop	1	f
+50	100	26	1	2009-06-29 13:07:46	heli	\N	\N	229	SmallPop	1	f
+39	101	20	1	2009-06-29 13:07:46	heli	\N	\N	230	SmallPop	1	f
+64	102	32	1	2009-06-29 13:07:46	heli	\N	\N	231	SmallPop	1	f
+97	103	49	1	2009-06-29 13:07:46	heli	\N	\N	232	SmallPop	1	f
+58	100	30	1	2009-06-29 13:07:46	heli	\N	\N	233	SmallPop	1	f
+41	103	21	1	2009-06-29 13:07:46	heli	\N	\N	234	SmallPop	1	f
+12	102	6	1	2009-06-29 13:07:46	heli	\N	\N	235	SmallPop	1	f
+15	101	8	1	2009-06-29 13:07:46	heli	\N	\N	236	SmallPop	1	f
+81	103	41	1	2009-06-29 13:07:46	heli	\N	\N	237	SmallPop	1	f
+52	102	26	1	2009-06-29 13:07:46	heli	\N	\N	238	SmallPop	1	f
+60	102	30	1	2009-06-29 13:07:46	heli	\N	\N	239	SmallPop	1	f
+56	102	28	1	2009-06-29 13:07:46	heli	\N	\N	240	SmallPop	1	f
+101	103	51	1	2009-06-29 13:07:46	heli	\N	\N	241	SmallPop	1	f
+73	103	37	1	2009-06-29 13:07:46	heli	\N	\N	242	SmallPop	1	f
+66	100	34	1	2009-06-29 13:07:46	heli	\N	\N	243	SmallPop	1	f
+45	103	23	1	2009-06-29 13:07:46	heli	\N	\N	244	SmallPop	1	f
+86	100	44	1	2009-06-29 13:07:46	heli	\N	\N	245	SmallPop	1	f
+76	102	38	1	2009-06-29 13:07:46	heli	\N	\N	246	SmallPop	1	f
+19	101	10	1	2009-06-29 13:07:46	heli	\N	\N	247	SmallPop	1	f
+62	100	32	1	2009-06-29 13:07:46	heli	\N	\N	248	SmallPop	1	f
+54	100	28	1	2009-06-29 13:07:46	heli	\N	\N	249	SmallPop	1	f
+67	101	34	1	2009-06-29 13:07:46	heli	\N	\N	250	SmallPop	1	f
+70	100	36	1	2009-06-29 13:07:46	heli	\N	\N	251	SmallPop	1	f
+68	102	34	1	2009-06-29 13:07:46	heli	\N	\N	252	SmallPop	1	f
+2	100	2	1	2009-06-29 13:07:46	heli	\N	\N	253	SmallPop	1	f
+17	103	9	1	2009-06-29 13:07:46	heli	\N	\N	254	SmallPop	1	f
+1	103	1	1	2009-06-29 13:07:46	heli	\N	\N	255	SmallPop	1	f
+88	102	44	1	2009-06-29 13:07:46	heli	\N	\N	256	SmallPop	1	f
+30	100	16	1	2009-06-29 13:07:46	heli	\N	\N	257	SmallPop	1	f
+100	102	50	1	2009-06-29 13:07:46	heli	\N	\N	258	SmallPop	1	f
+110	100	56	1	2009-06-29 13:07:46	heli	\N	\N	259	SmallPop	1	f
+82	100	42	1	2009-06-29 13:07:46	heli	\N	\N	260	SmallPop	1	f
+25	103	13	1	2009-06-29 13:07:46	heli	\N	\N	261	SmallPop	1	f
+28	102	14	1	2009-06-29 13:07:46	heli	\N	\N	262	SmallPop	1	f
+83	101	42	1	2009-06-29 13:07:46	heli	\N	\N	263	SmallPop	1	f
+75	101	38	1	2009-06-29 13:07:46	heli	\N	\N	264	SmallPop	1	f
+40	102	20	1	2009-06-29 13:07:46	heli	\N	\N	265	SmallPop	1	f
+14	100	8	1	2009-06-29 13:07:46	heli	\N	\N	266	SmallPop	1	f
+112	102	56	1	2009-06-29 13:07:46	heli	\N	\N	267	SmallPop	1	f
+69	103	35	1	2009-06-29 13:07:46	heli	\N	\N	268	SmallPop	1	f
+59	101	30	1	2009-06-29 13:07:46	heli	\N	\N	269	SmallPop	1	f
+49	103	25	1	2009-06-29 13:07:46	heli	\N	\N	270	SmallPop	1	f
+24	102	12	1	2009-06-29 13:07:46	heli	\N	\N	271	SmallPop	1	f
+104	102	52	1	2009-06-29 13:07:46	heli	\N	\N	272	SmallPop	1	f
+53	103	27	1	2009-06-29 13:07:46	heli	\N	\N	273	SmallPop	1	f
+79	101	40	1	2009-06-29 13:07:46	heli	\N	\N	274	SmallPop	1	f
+22	100	12	1	2009-06-29 13:07:46	heli	\N	\N	275	SmallPop	1	f
+42	100	22	1	2009-06-29 13:07:46	heli	\N	\N	276	SmallPop	1	f
+46	100	24	1	2009-06-29 13:07:46	heli	\N	\N	277	SmallPop	1	f
+23	101	12	1	2009-06-29 13:07:46	heli	\N	\N	278	SmallPop	1	f
+13	103	7	1	2009-06-29 13:07:46	heli	\N	\N	279	SmallPop	1	f
+105	103	53	1	2009-06-29 13:07:46	heli	\N	\N	280	SmallPop	1	f
+96	102	48	1	2009-06-29 13:07:46	heli	\N	\N	281	SmallPop	1	f
+6	100	4	1	2009-06-29 13:07:46	heli	\N	\N	282	SmallPop	1	f
+85	103	43	1	2009-06-29 13:07:46	heli	\N	\N	283	SmallPop	1	f
+3	101	2	1	2009-06-29 13:07:46	heli	\N	\N	284	SmallPop	1	f
+36	102	18	1	2009-06-29 13:07:46	heli	\N	\N	285	SmallPop	1	f
+94	100	48	1	2009-06-29 13:07:46	heli	\N	\N	286	SmallPop	1	f
+111	101	56	1	2009-06-29 13:07:46	heli	\N	\N	287	SmallPop	1	f
+9	103	5	1	2009-06-29 13:07:46	heli	\N	\N	288	SmallPop	1	f
+51	101	26	1	2009-06-29 13:07:46	heli	\N	\N	289	SmallPop	1	f
+47	101	24	1	2009-06-29 13:07:46	heli	\N	\N	290	SmallPop	1	f
+8	102	4	1	2009-06-29 13:07:46	heli	\N	\N	291	SmallPop	1	f
+38	100	20	1	2009-06-29 13:07:46	heli	\N	\N	292	SmallPop	1	f
+98	100	50	1	2009-06-29 13:07:46	heli	\N	\N	293	SmallPop	1	f
+4	102	2	1	2009-06-29 13:07:46	heli	\N	\N	294	SmallPop	1	f
+34	100	18	1	2009-06-29 13:07:46	heli	\N	\N	295	SmallPop	1	f
+37	103	19	1	2009-06-29 13:07:46	heli	\N	\N	296	SmallPop	1	f
+43	101	22	1	2009-06-29 13:07:46	heli	\N	\N	297	SmallPop	1	f
+5	103	3	1	2009-06-29 13:07:46	heli	\N	\N	298	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_dbttables; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_dbttables (table_id, table_name, table_columns, table_desc, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+33	ar_dbttables	table_id,table_name,table_columns,table_desc,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	130	SmallPop	1	f
+32	ar_role_dbtpolicies	role_id,dbtpolicy_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	131	SmallPop	1	f
+21	ar_users	user_id,user_login,user_password,user_language_id,user_marker,user_disabled,user_status,user_last_login,user_last_activ_time,user_session_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	132	SmallPop	1	f
+7	load_stat	ds,job_start,job_end,status,rec_tot_no,rec_err_no,rec_ok_no,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	133	SmallPop	1	f
+26	ar_roles	role_id,role_name,role_long_name,role_type,role_subset,role_descr,synch	\N	2009-06-29 13:07:46	heli	\N	\N	134	SmallPop	1	f
+17	blobs	blob_id,blob,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch,db_mimetype	\N	2009-06-29 13:07:46	heli	\N	\N	135	SmallPop	1	f
+2	unit	db_unit,ext_unit,ext_id,db_contact,db_member,opening_dt,closing_dt,synch	\N	2009-06-29 13:07:46	heli	\N	\N	136	SmallPop	1	f
+1	unit	db_unit,ext_unit,ext_id,db_contact,db_member,opening_dt,closing_dt,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	137	SmallPop	1	f
+18	blobs	blob_id,blob,synch,db_mimetype	\N	2009-06-29 13:07:46	heli	\N	\N	138	SmallPop	1	f
+30	ar_dbtpolicies	dbtpolicy_id,action_id,table_id,descriptor_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	139	SmallPop	1	f
+16	nodes	nodename,address,synch	\N	2009-06-29 13:07:46	heli	\N	\N	140	SmallPop	1	f
+44	ar_role_constraints	cons_id,first_role_id,second_role_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	141	SmallPop	1	f
+55	contacts	db_contact,title,salutation,first_name,second_name,third_name,birth_dt,db_language,street,zip,town,db_country,label,phone,phone2,fax,email,bank_name,bank_zip,account,opening_dt,closing_dt,comment,chk_lvl,dirty,guid,last_change_dt,last_change_user,owner,synch,version	\N	2009-06-29 13:07:46	heli	\N	\N	142	SmallPop	1	f
+27	ar_user_roles	user_id,role_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	143	SmallPop	1	f
+25	ar_roles	role_id,role_name,role_long_name,role_type,role_subset,role_descr,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	144	SmallPop	1	f
+28	ar_user_roles	user_id,role_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	145	SmallPop	1	f
+40	ar_role_stpolicies	role_id,stpolicy_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	146	SmallPop	1	f
+20	languages	lang_id,iso_lang,lang,synch	\N	2009-06-29 13:07:46	heli	\N	\N	147	SmallPop	1	f
+14	targets	target,tablename,class,columnnames,synch	\N	2009-06-29 13:07:46	heli	\N	\N	148	SmallPop	1	f
+49	animal	db_animal,db_sex,db_breed,birth_dt,db_sire,db_dam,la_rep,la_rep_dt,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch,db_hybrid,comment	\N	2009-06-29 13:07:46	heli	\N	\N	149	SmallPop	1	f
+24	ar_users_data	user_id,user_first_name,user_second_name,user_institution,user_email,user_country,user_street,user_town,user_zip,user_other_info,opening_dt,closing_dt,synch	\N	2009-06-29 13:07:46	heli	\N	\N	150	SmallPop	1	f
+10	new_pest	class,key,trait,estimator,pev,synch	\N	2009-06-29 13:07:46	heli	\N	\N	151	SmallPop	1	f
+31	ar_role_dbtpolicies	role_id,dbtpolicy_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	152	SmallPop	1	f
+35	ar_dbtdescriptors	descriptor_id,descriptor_name,descriptor_value,descriptor_desc,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	153	SmallPop	1	f
+11	sources	source,tablename,class,columnnames,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	154	SmallPop	1	f
+53	event	event_id,db_event_type,db_sampler,event_dt,db_location,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	155	SmallPop	1	f
+48	transfer	db_animal,ext_animal,db_unit,id_set,opening_dt,closing_dt,synch	\N	2009-06-29 13:07:46	heli	\N	\N	156	SmallPop	1	f
+42	ar_constraints	cons_id,cons_name,cons_type,cons_desc,synch	\N	2009-06-29 13:07:46	heli	\N	\N	157	SmallPop	1	f
+22	ar_users	user_id,user_login,user_password,user_language_id,user_marker,user_disabled,user_status,user_last_login,user_last_activ_time,user_session_id,synch	\N	2009-06-29 13:07:46	heli	\N	\N	158	SmallPop	1	f
+46	codes	ext_code,class,db_code,short_name,long_name,description,opening_dt,closing_dt,synch	\N	2009-06-29 13:07:46	heli	\N	\N	159	SmallPop	1	f
+13	targets	target,tablename,class,columnnames,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	160	SmallPop	1	f
+23	ar_users_data	user_id,user_first_name,user_second_name,user_institution,user_email,user_country,user_street,user_town,user_zip,user_other_info,opening_dt,closing_dt,last_change_dt,last_change_user,creation_dt,creation_user,end_dt,end_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	161	SmallPop	1	f
+29	ar_dbtpolicies	dbtpolicy_id,action_id,table_id,descriptor_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	162	SmallPop	1	f
+6	inspool_err	record_seq,err_type,action,dbtable,dbcol,err_source,short_msg,long_msg,ext_col,ext_val,mod_val,comp_val,target_col,ds,ext_unit,status,err_dt,synch	\N	2009-06-29 13:07:46	heli	\N	\N	163	SmallPop	1	f
+50	animal	db_animal,db_sex,db_breed,birth_dt,db_sire,db_dam,la_rep,la_rep_dt,synch,db_hybrid,comment	\N	2009-06-29 13:07:46	heli	\N	\N	164	SmallPop	1	f
+39	ar_role_stpolicies	role_id,stpolicy_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	165	SmallPop	1	f
+36	ar_dbtdescriptors	descriptor_id,descriptor_name,descriptor_value,descriptor_desc,synch	\N	2009-06-29 13:07:46	heli	\N	\N	166	SmallPop	1	f
+3	inspool	ds,record_seq,in_date,ext_unit,proc_dt,status,record,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	167	SmallPop	1	f
+51	locations	db_animal,db_location,entry_dt,db_entry_action,exit_dt,db_exit_action,chk_lvl,dirty,guid,last_change_dt,last_change_user,owner,synch,version	\N	2009-06-29 13:07:46	heli	\N	\N	168	SmallPop	1	f
+9	new_pest	class,key,trait,estimator,pev,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	169	SmallPop	1	f
+41	ar_constraints	cons_id,cons_name,cons_type,cons_desc,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	170	SmallPop	1	f
+12	sources	source,tablename,class,columnnames,synch	\N	2009-06-29 13:07:46	heli	\N	\N	171	SmallPop	1	f
+47	transfer	db_animal,ext_animal,db_unit,id_set,opening_dt,closing_dt,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	172	SmallPop	1	f
+15	nodes	nodename,address,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	173	SmallPop	1	f
+52	locations	db_animal,db_location,entry_dt,db_entry_action,exit_dt,db_exit_action,synch	\N	2009-06-29 13:07:46	heli	\N	\N	174	SmallPop	1	f
+38	ar_stpolicies	stpolicy_id,stpolicy_name,stpolicy_type,stpolicy_desc,synch	\N	2009-06-29 13:07:46	heli	\N	\N	175	SmallPop	1	f
+8	load_stat	ds,job_start,job_end,status,rec_tot_no,rec_err_no,rec_ok_no,synch	\N	2009-06-29 13:07:46	heli	\N	\N	176	SmallPop	1	f
+4	inspool	ds,record_seq,in_date,ext_unit,proc_dt,status,record,synch	\N	2009-06-29 13:07:46	heli	\N	\N	177	SmallPop	1	f
+34	ar_dbttables	table_id,table_name,table_columns,table_desc,synch	\N	2009-06-29 13:07:46	heli	\N	\N	178	SmallPop	1	f
+56	contacts	db_contact,title,salutation,first_name,second_name,third_name,birth_dt,db_language,street,zip,town,db_country,label,phone,phone2,fax,email,bank_name,bank_zip,account,opening_dt,closing_dt,comment,synch	\N	2009-06-29 13:07:46	heli	\N	\N	179	SmallPop	1	f
+45	codes	ext_code,class,db_code,short_name,long_name,description,opening_dt,closing_dt,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	180	SmallPop	1	f
+37	ar_stpolicies	stpolicy_id,stpolicy_name,stpolicy_type,stpolicy_desc,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	181	SmallPop	1	f
+43	ar_role_constraints	cons_id,first_role_id,second_role_id,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	182	SmallPop	1	f
+19	languages	lang_id,iso_lang,lang,last_change_dt,last_change_user,creation_dt,creation_user,end_dt,end_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	183	SmallPop	1	f
+54	event	event_id,db_event_type,db_sampler,event_dt,db_location,synch	\N	2009-06-29 13:07:46	heli	\N	\N	184	SmallPop	1	f
+5	inspool_err	record_seq,err_type,action,dbtable,dbcol,err_source,short_msg,long_msg,ext_col,ext_val,mod_val,comp_val,target_col,ds,ext_unit,status,err_dt,last_change_dt,last_change_user,dirty,chk_lvl,guid,owner,version,synch	\N	2009-06-29 13:07:46	heli	\N	\N	185	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_role_constraints; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_role_constraints (cons_id, first_role_id, second_role_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ar_role_dbtpolicies; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_role_dbtpolicies (role_id, dbtpolicy_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+100	22	2009-06-29 13:07:46	heli	\N	\N	299	SmallPop	1	f
+100	26	2009-06-29 13:07:46	heli	\N	\N	300	SmallPop	1	f
+100	30	2009-06-29 13:07:46	heli	\N	\N	301	SmallPop	1	f
+100	42	2009-06-29 13:07:46	heli	\N	\N	302	SmallPop	1	f
+100	46	2009-06-29 13:07:46	heli	\N	\N	303	SmallPop	1	f
+100	50	2009-06-29 13:07:46	heli	\N	\N	304	SmallPop	1	f
+100	54	2009-06-29 13:07:46	heli	\N	\N	305	SmallPop	1	f
+100	58	2009-06-29 13:07:46	heli	\N	\N	306	SmallPop	1	f
+100	62	2009-06-29 13:07:46	heli	\N	\N	307	SmallPop	1	f
+100	66	2009-06-29 13:07:46	heli	\N	\N	308	SmallPop	1	f
+100	70	2009-06-29 13:07:46	heli	\N	\N	309	SmallPop	1	f
+100	74	2009-06-29 13:07:46	heli	\N	\N	310	SmallPop	1	f
+100	78	2009-06-29 13:07:46	heli	\N	\N	311	SmallPop	1	f
+100	82	2009-06-29 13:07:46	heli	\N	\N	312	SmallPop	1	f
+100	86	2009-06-29 13:07:46	heli	\N	\N	313	SmallPop	1	f
+102	4	2009-06-29 13:07:46	heli	\N	\N	314	SmallPop	1	f
+102	8	2009-06-29 13:07:46	heli	\N	\N	315	SmallPop	1	f
+102	12	2009-06-29 13:07:46	heli	\N	\N	316	SmallPop	1	f
+102	16	2009-06-29 13:07:46	heli	\N	\N	317	SmallPop	1	f
+102	20	2009-06-29 13:07:46	heli	\N	\N	318	SmallPop	1	f
+102	36	2009-06-29 13:07:46	heli	\N	\N	319	SmallPop	1	f
+102	40	2009-06-29 13:07:46	heli	\N	\N	320	SmallPop	1	f
+102	92	2009-06-29 13:07:46	heli	\N	\N	321	SmallPop	1	f
+102	96	2009-06-29 13:07:46	heli	\N	\N	322	SmallPop	1	f
+102	100	2009-06-29 13:07:46	heli	\N	\N	323	SmallPop	1	f
+102	104	2009-06-29 13:07:46	heli	\N	\N	324	SmallPop	1	f
+102	108	2009-06-29 13:07:46	heli	\N	\N	325	SmallPop	1	f
+102	112	2009-06-29 13:07:46	heli	\N	\N	326	SmallPop	1	f
+103	24	2009-06-29 13:07:46	heli	\N	\N	327	SmallPop	1	f
+103	28	2009-06-29 13:07:46	heli	\N	\N	328	SmallPop	1	f
+103	32	2009-06-29 13:07:46	heli	\N	\N	329	SmallPop	1	f
+103	44	2009-06-29 13:07:46	heli	\N	\N	330	SmallPop	1	f
+103	48	2009-06-29 13:07:46	heli	\N	\N	331	SmallPop	1	f
+103	52	2009-06-29 13:07:46	heli	\N	\N	332	SmallPop	1	f
+103	56	2009-06-29 13:07:46	heli	\N	\N	333	SmallPop	1	f
+103	60	2009-06-29 13:07:46	heli	\N	\N	334	SmallPop	1	f
+103	64	2009-06-29 13:07:46	heli	\N	\N	335	SmallPop	1	f
+103	68	2009-06-29 13:07:46	heli	\N	\N	336	SmallPop	1	f
+103	72	2009-06-29 13:07:46	heli	\N	\N	337	SmallPop	1	f
+103	76	2009-06-29 13:07:46	heli	\N	\N	338	SmallPop	1	f
+103	80	2009-06-29 13:07:46	heli	\N	\N	339	SmallPop	1	f
+103	84	2009-06-29 13:07:46	heli	\N	\N	340	SmallPop	1	f
+103	88	2009-06-29 13:07:46	heli	\N	\N	341	SmallPop	1	f
+104	3	2009-06-29 13:07:46	heli	\N	\N	342	SmallPop	1	f
+104	7	2009-06-29 13:07:46	heli	\N	\N	343	SmallPop	1	f
+104	11	2009-06-29 13:07:46	heli	\N	\N	344	SmallPop	1	f
+104	15	2009-06-29 13:07:46	heli	\N	\N	345	SmallPop	1	f
+104	19	2009-06-29 13:07:46	heli	\N	\N	346	SmallPop	1	f
+104	35	2009-06-29 13:07:46	heli	\N	\N	347	SmallPop	1	f
+104	39	2009-06-29 13:07:46	heli	\N	\N	348	SmallPop	1	f
+104	91	2009-06-29 13:07:46	heli	\N	\N	349	SmallPop	1	f
+104	95	2009-06-29 13:07:46	heli	\N	\N	350	SmallPop	1	f
+104	99	2009-06-29 13:07:46	heli	\N	\N	351	SmallPop	1	f
+104	103	2009-06-29 13:07:46	heli	\N	\N	352	SmallPop	1	f
+104	107	2009-06-29 13:07:46	heli	\N	\N	353	SmallPop	1	f
+104	111	2009-06-29 13:07:46	heli	\N	\N	354	SmallPop	1	f
+108	23	2009-06-29 13:07:46	heli	\N	\N	369	SmallPop	1	f
+108	27	2009-06-29 13:07:46	heli	\N	\N	370	SmallPop	1	f
+108	31	2009-06-29 13:07:46	heli	\N	\N	371	SmallPop	1	f
+108	43	2009-06-29 13:07:46	heli	\N	\N	372	SmallPop	1	f
+108	47	2009-06-29 13:07:46	heli	\N	\N	373	SmallPop	1	f
+108	51	2009-06-29 13:07:46	heli	\N	\N	374	SmallPop	1	f
+108	55	2009-06-29 13:07:46	heli	\N	\N	375	SmallPop	1	f
+108	59	2009-06-29 13:07:46	heli	\N	\N	376	SmallPop	1	f
+108	63	2009-06-29 13:07:46	heli	\N	\N	377	SmallPop	1	f
+108	67	2009-06-29 13:07:46	heli	\N	\N	378	SmallPop	1	f
+108	71	2009-06-29 13:07:46	heli	\N	\N	379	SmallPop	1	f
+108	75	2009-06-29 13:07:46	heli	\N	\N	380	SmallPop	1	f
+108	79	2009-06-29 13:07:46	heli	\N	\N	381	SmallPop	1	f
+108	83	2009-06-29 13:07:46	heli	\N	\N	382	SmallPop	1	f
+108	87	2009-06-29 13:07:46	heli	\N	\N	383	SmallPop	1	f
+107	1	2009-06-29 13:07:46	heli	\N	\N	384	SmallPop	1	f
+107	5	2009-06-29 13:07:46	heli	\N	\N	385	SmallPop	1	f
+107	9	2009-06-29 13:07:46	heli	\N	\N	386	SmallPop	1	f
+107	13	2009-06-29 13:07:46	heli	\N	\N	387	SmallPop	1	f
+107	17	2009-06-29 13:07:46	heli	\N	\N	388	SmallPop	1	f
+107	33	2009-06-29 13:07:46	heli	\N	\N	389	SmallPop	1	f
+107	37	2009-06-29 13:07:46	heli	\N	\N	390	SmallPop	1	f
+107	89	2009-06-29 13:07:46	heli	\N	\N	391	SmallPop	1	f
+107	93	2009-06-29 13:07:46	heli	\N	\N	392	SmallPop	1	f
+107	97	2009-06-29 13:07:46	heli	\N	\N	393	SmallPop	1	f
+107	101	2009-06-29 13:07:46	heli	\N	\N	394	SmallPop	1	f
+107	105	2009-06-29 13:07:46	heli	\N	\N	395	SmallPop	1	f
+107	109	2009-06-29 13:07:46	heli	\N	\N	396	SmallPop	1	f
+106	2	2009-06-29 13:07:46	heli	\N	\N	397	SmallPop	1	f
+106	6	2009-06-29 13:07:46	heli	\N	\N	398	SmallPop	1	f
+106	10	2009-06-29 13:07:46	heli	\N	\N	399	SmallPop	1	f
+106	14	2009-06-29 13:07:46	heli	\N	\N	400	SmallPop	1	f
+106	18	2009-06-29 13:07:46	heli	\N	\N	401	SmallPop	1	f
+106	34	2009-06-29 13:07:46	heli	\N	\N	402	SmallPop	1	f
+106	38	2009-06-29 13:07:46	heli	\N	\N	403	SmallPop	1	f
+106	90	2009-06-29 13:07:46	heli	\N	\N	404	SmallPop	1	f
+106	94	2009-06-29 13:07:46	heli	\N	\N	405	SmallPop	1	f
+106	98	2009-06-29 13:07:46	heli	\N	\N	406	SmallPop	1	f
+106	102	2009-06-29 13:07:46	heli	\N	\N	407	SmallPop	1	f
+106	106	2009-06-29 13:07:46	heli	\N	\N	408	SmallPop	1	f
+106	110	2009-06-29 13:07:46	heli	\N	\N	409	SmallPop	1	f
+110	21	2009-06-29 13:07:46	heli	\N	\N	410	SmallPop	1	f
+110	25	2009-06-29 13:07:46	heli	\N	\N	411	SmallPop	1	f
+110	29	2009-06-29 13:07:46	heli	\N	\N	412	SmallPop	1	f
+110	41	2009-06-29 13:07:46	heli	\N	\N	413	SmallPop	1	f
+110	45	2009-06-29 13:07:46	heli	\N	\N	414	SmallPop	1	f
+110	49	2009-06-29 13:07:46	heli	\N	\N	415	SmallPop	1	f
+110	53	2009-06-29 13:07:46	heli	\N	\N	416	SmallPop	1	f
+110	57	2009-06-29 13:07:46	heli	\N	\N	417	SmallPop	1	f
+110	61	2009-06-29 13:07:46	heli	\N	\N	418	SmallPop	1	f
+110	65	2009-06-29 13:07:46	heli	\N	\N	419	SmallPop	1	f
+110	69	2009-06-29 13:07:46	heli	\N	\N	420	SmallPop	1	f
+110	73	2009-06-29 13:07:46	heli	\N	\N	421	SmallPop	1	f
+110	77	2009-06-29 13:07:46	heli	\N	\N	422	SmallPop	1	f
+110	81	2009-06-29 13:07:46	heli	\N	\N	423	SmallPop	1	f
+110	85	2009-06-29 13:07:46	heli	\N	\N	424	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_role_stpolicies; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_role_stpolicies (role_id, stpolicy_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+105	1	2009-06-29 13:07:46	heli	\N	\N	355	SmallPop	1	f
+105	2	2009-06-29 13:07:46	heli	\N	\N	356	SmallPop	1	f
+105	3	2009-06-29 13:07:46	heli	\N	\N	357	SmallPop	1	f
+105	4	2009-06-29 13:07:46	heli	\N	\N	358	SmallPop	1	f
+105	5	2009-06-29 13:07:46	heli	\N	\N	359	SmallPop	1	f
+105	6	2009-06-29 13:07:46	heli	\N	\N	360	SmallPop	1	f
+105	7	2009-06-29 13:07:46	heli	\N	\N	361	SmallPop	1	f
+105	8	2009-06-29 13:07:46	heli	\N	\N	362	SmallPop	1	f
+105	9	2009-06-29 13:07:46	heli	\N	\N	363	SmallPop	1	f
+109	10	2009-06-29 13:07:46	heli	\N	\N	364	SmallPop	1	f
+109	11	2009-06-29 13:07:46	heli	\N	\N	365	SmallPop	1	f
+109	12	2009-06-29 13:07:46	heli	\N	\N	366	SmallPop	1	f
+109	13	2009-06-29 13:07:46	heli	\N	\N	367	SmallPop	1	f
+109	14	2009-06-29 13:07:46	heli	\N	\N	368	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_roles; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_roles (role_id, role_name, role_long_name, role_type, role_subset, role_descr, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+100	insert_sys_data	inserting sys data	DBT		The role gives a permissions for inserting data into the system tables (access rights and synchronization table).	2009-06-29 13:07:46	heli	\N	\N	105	SmallPop	1	f
+101	administrator_dbt	database administrator	DBT	insert_breed_data,update_breed_data,delete_breed_data,select_breed_data,insert_sys_data,update_sys_data,delete_sys_data,select_sys_data	The role gives a permissions for executing all sql actions on the all tables.	2009-06-29 13:07:46	heli	\N	\N	106	SmallPop	1	f
+102	delete_breed_data	deleting breed data	DBT	delete_sys_data	The role gives a permissions for inserting data from the breed tables.	2009-06-29 13:07:46	heli	\N	\N	107	SmallPop	1	f
+103	delete_sys_data	deleting sys data	DBT	delete_breed_data	The role gives a permissions for deleting data from the system tables (access rights and synchronization table).	2009-06-29 13:07:46	heli	\N	\N	108	SmallPop	1	f
+104	update_breed_data	updating breed data	DBT	delete_breed_data	The role gives a permissions for updating data in the breed tables.	2009-06-29 13:07:46	heli	\N	\N	109	SmallPop	1	f
+105	administrator_scripts	executing administrator scripts	ST		This role gives a possibility to execute access control scripts	2009-06-29 13:07:46	heli	\N	\N	110	SmallPop	1	f
+106	insert_breed_data	inserting breed data	DBT	update_breed_data	The role gives a permissions for inserting data into the breed tables.	2009-06-29 13:07:46	heli	\N	\N	111	SmallPop	1	f
+107	select_breed_data	selecting breed data	DBT		The role gives a permissions for selecting data from the breed tables.	2009-06-29 13:07:46	heli	\N	\N	112	SmallPop	1	f
+108	update_sys_data	updating sys data	DBT		The role gives a permissions for updating data in the system tables (access rights and synchronization table).	2009-06-29 13:07:46	heli	\N	\N	113	SmallPop	1	f
+109	arm_admin	arm admin	ST		admin actions for the web access rights manager	2009-06-29 13:07:46	heli	\N	\N	114	SmallPop	1	f
+110	select_sys_data	selecting sys data	DBT		The role gives a permissions for selecting data from the system tables (access rights and synchronization table).	2009-06-29 13:07:46	heli	\N	\N	115	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_stpolicies; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_stpolicies (stpolicy_id, stpolicy_name, stpolicy_type, stpolicy_desc, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+6	grant role to the user	action	\N	2009-06-29 13:07:46	heli	\N	\N	116	SmallPop	1	f
+11	logout	www	\N	2009-06-29 13:07:46	heli	\N	\N	117	SmallPop	1	f
+3	create public views	action	\N	2009-06-29 13:07:46	heli	\N	\N	118	SmallPop	1	f
+7	delete role	action	\N	2009-06-29 13:07:46	heli	\N	\N	119	SmallPop	1	f
+9	revoke role from the user	action	\N	2009-06-29 13:07:46	heli	\N	\N	120	SmallPop	1	f
+2	show info about users or roles	action	\N	2009-06-29 13:07:46	heli	\N	\N	121	SmallPop	1	f
+12	help	www	\N	2009-06-29 13:07:46	heli	\N	\N	122	SmallPop	1	f
+14	arm	www	\N	2009-06-29 13:07:46	heli	\N	\N	123	SmallPop	1	f
+8	delete user	action	\N	2009-06-29 13:07:46	heli	\N	\N	124	SmallPop	1	f
+4	add new user	action	\N	2009-06-29 13:07:46	heli	\N	\N	125	SmallPop	1	f
+1	access_rights_manager.pl	program	\N	2009-06-29 13:07:46	heli	\N	\N	126	SmallPop	1	f
+10	documentation	www	\N	2009-06-29 13:07:46	heli	\N	\N	127	SmallPop	1	f
+13	access_rights_manager tool	form	\N	2009-06-29 13:07:46	heli	\N	\N	128	SmallPop	1	f
+5	add new role	action	\N	2009-06-29 13:07:46	heli	\N	\N	129	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_user_roles; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_user_roles (user_id, role_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+100	105	2009-06-29 13:07:46	heli	\N	\N	425	SmallPop	1	f
+100	101	2009-06-29 13:07:46	heli	\N	\N	426	SmallPop	1	f
+100	109	2009-06-29 13:07:46	heli	\N	\N	427	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_users; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_users (user_id, user_login, user_password, user_language_id, user_marker, user_disabled, user_status, user_last_login, user_last_activ_time, user_session_id, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+100	heli	Gh3JHJBzJcaScd3wyUS8cg	25	SmallPop	f	f	\N	\N	\N	2009-06-29 13:07:46	heli	\N	\N	104	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: ar_users_data; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY ar_users_data (user_id, user_first_name, user_second_name, user_institution, user_email, user_country, user_street, user_town, user_zip, user_other_info, opening_dt, closing_dt, last_change_dt, last_change_user, creation_dt, creation_user, end_dt, end_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+100	Administrator	Administrator	\N	\N	\N	\N	\N	\N	\N	\N	\N	2009-06-29 13:07:46	heli	2009-06-29 13:07:46	heli	\N	\N	\N	\N	104	SmallPop	1	f
+\.
+
+
+--
+-- Data for Name: blobs; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY blobs (blob_id, blob, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch, db_mimetype) FROM stdin;
+\.
+
+
+--
+-- Data for Name: codes; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY codes (ext_code, class, db_code, short_name, long_name, description, opening_dt, closing_dt, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+insert	SQLACTION	100	insert	\N	\N	\N	\N	2009-06-29 13:07:46	heli	\N	\N	100	SmallPop	1	f
+update	SQLACTION	101	update	\N	\N	\N	\N	2009-06-29 13:07:46	heli	\N	\N	101	SmallPop	1	f
+delete	SQLACTION	102	delete	\N	\N	\N	\N	2009-06-29 13:07:46	heli	\N	\N	102	SmallPop	1	f
+select	SQLACTION	103	select	\N	\N	\N	\N	2009-06-29 13:07:46	heli	\N	\N	103	SmallPop	1	f
+DEFAULT	COUNTRY	104	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	432	SmallPop	1	\N
+id_set0	ID_SET	105	scheme0	scheme0	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	433	SmallPop	1	\N
+id_set1	ID_SET	106	scheme1	scheme1	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	434	SmallPop	1	\N
+id_set2	ID_SET	107	scheme2	scheme2	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	435	SmallPop	1	\N
+DEFAULT	EXIT_ACTION	108	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	436	SmallPop	1	\N
+DEFAULT	ENTRY_ACTION	109	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	437	SmallPop	1	\N
+DEFAULT	MIMETYPE	110	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	438	SmallPop	1	\N
+DEFAULT	HYBRID	111	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	439	SmallPop	1	\N
+DEFAULT	BREED	112	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	440	SmallPop	1	\N
+DEFAULT	EVENT	113	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	441	SmallPop	1	\N
+DEFAULT	SQLACTION	114	DEFAULT	DEFAULT	\N	2009-06-29	\N	2009-06-29 13:07:47	heli	\N	\N	442	SmallPop	1	\N
+\.
+
+
+--
+-- Data for Name: contacts; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY contacts (db_contact, title, salutation, first_name, second_name, third_name, birth_dt, db_language, street, zip, town, db_country, label, phone, phone2, fax, email, bank_name, bank_zip, account, opening_dt, closing_dt, comment, chk_lvl, dirty, guid, last_change_dt, last_change_user, owner, synch, version) FROM stdin;
+\.
+
+
+--
+-- Data for Name: event; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY event (event_id, db_event_type, db_sampler, event_dt, db_location, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: inspool; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY inspool (ds, record_seq, in_date, ext_unit, proc_dt, status, record, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: inspool_err; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY inspool_err (record_seq, err_type, action, dbtable, dbcol, err_source, short_msg, long_msg, ext_col, ext_val, mod_val, comp_val, target_col, ds, ext_unit, status, err_dt, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: languages; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY languages (lang_id, iso_lang, lang, last_change_dt, last_change_user, creation_dt, creation_user, end_dt, end_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+1	aa	Afar	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	1	SmallPop	1	t
+2	ab	Abkhazian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	2	SmallPop	1	t
+3	af	Afrikanns	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	3	SmallPop	1	t
+4	am	Amharic	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	4	SmallPop	1	t
+5	ar	Arabic	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	5	SmallPop	1	t
+6	as	Assamese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	6	SmallPop	1	t
+7	ay	Aymara	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	7	SmallPop	1	t
+8	az	Azwerbaijani	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	8	SmallPop	1	t
+9	ba	Bashkir	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	9	SmallPop	1	t
+10	be	Byelorussian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	10	SmallPop	1	t
+11	bg	Bulgarian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	11	SmallPop	1	t
+12	bh	Bihari	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	12	SmallPop	1	t
+13	bi	Bislama	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	13	SmallPop	1	t
+14	bn	Bengali	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	14	SmallPop	1	t
+15	bo	Tibetan	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	15	SmallPop	1	t
+16	br	Breton	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	16	SmallPop	1	t
+17	ca	Catalan	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	17	SmallPop	1	t
+18	co	Corsican	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	18	SmallPop	1	t
+19	cs	Czech	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	19	SmallPop	1	t
+20	cy	Welch	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	20	SmallPop	1	t
+21	da	Danish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	21	SmallPop	1	t
+22	de	German	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	22	SmallPop	1	t
+23	dz	Bhutani	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	23	SmallPop	1	t
+24	el	Greek	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	24	SmallPop	1	t
+25	en	English	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	25	SmallPop	1	t
+26	eo	Esperanto	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	26	SmallPop	1	t
+27	es	Spanish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	27	SmallPop	1	t
+28	et	Estonian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	28	SmallPop	1	t
+29	eu	Basque	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	29	SmallPop	1	t
+30	fa	Persian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	30	SmallPop	1	t
+31	fi	Finnish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	31	SmallPop	1	t
+32	fj	Fiji	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	32	SmallPop	1	t
+33	fo	Faeroese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	33	SmallPop	1	t
+34	fr	French	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	34	SmallPop	1	t
+35	fy	Frisian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	35	SmallPop	1	t
+36	ga	Irish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	36	SmallPop	1	t
+37	gd	Scots Gaelic	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	37	SmallPop	1	t
+38	gl	Galician	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	38	SmallPop	1	t
+39	gn	Guarani	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	39	SmallPop	1	t
+40	gu	Gujarati	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	40	SmallPop	1	t
+41	ha	Hausa	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	41	SmallPop	1	t
+42	he	Hebrew	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	42	SmallPop	1	t
+43	hi	Hindi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	43	SmallPop	1	t
+44	hr	Croatian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	44	SmallPop	1	t
+45	hu	Hungarian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	45	SmallPop	1	t
+46	hy	Armenian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	46	SmallPop	1	t
+47	ia	Interlingua	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	47	SmallPop	1	t
+48	id	Indonesian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	48	SmallPop	1	t
+49	ie	Interlingue	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	49	SmallPop	1	t
+50	ik	Inupiak	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	50	SmallPop	1	t
+51	in	former Indonesian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	51	SmallPop	1	t
+52	is	Icelandic	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	52	SmallPop	1	t
+53	it	Italian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	53	SmallPop	1	t
+54	iu	Inuktitut (eskimo)	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	54	SmallPop	1	t
+55	iw	former Hebrew	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	55	SmallPop	1	t
+56	ja	Japanese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	56	SmallPop	1	t
+57	ji	former Yiddish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	57	SmallPop	1	t
+58	jw	Javanese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	58	SmallPop	1	t
+59	ka	Georgian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	59	SmallPop	1	t
+60	kk	Kazakh	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	60	SmallPop	1	t
+61	kl	Greenlandic	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	61	SmallPop	1	t
+62	km	Cambodian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	62	SmallPop	1	t
+63	kn	Kannada	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	63	SmallPop	1	t
+64	ko	Korean	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	64	SmallPop	1	t
+65	ks	Kashmiri	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	65	SmallPop	1	t
+66	ku	Kurdish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	66	SmallPop	1	t
+67	ky	Kirghiz	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	67	SmallPop	1	t
+68	la	Latin	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	68	SmallPop	1	t
+69	ln	Lingala	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	69	SmallPop	1	t
+70	lo	Laothian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	70	SmallPop	1	t
+71	lt	Lithuanian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	71	SmallPop	1	t
+72	lv	Latvian, Lettish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	72	SmallPop	1	t
+73	mg	Malagasy	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	73	SmallPop	1	t
+74	mi	Maori	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	74	SmallPop	1	t
+75	mk	Macedonian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	75	SmallPop	1	t
+76	ml	Malayalam	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	76	SmallPop	1	t
+77	mn	Mongolian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	77	SmallPop	1	t
+78	mo	Moldavian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	78	SmallPop	1	t
+79	mr	Marathi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	79	SmallPop	1	t
+80	ms	Malayalam	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	80	SmallPop	1	t
+81	mt	Maltese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	81	SmallPop	1	t
+82	my	Burmese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	82	SmallPop	1	t
+83	na	Nauru	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	83	SmallPop	1	t
+84	ne	Nepali	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	84	SmallPop	1	t
+85	nl	Dutch	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	85	SmallPop	1	t
+86	no	Norwegian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	86	SmallPop	1	t
+87	oc	Occitan	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	87	SmallPop	1	t
+88	om	(Afan) Oromo	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	88	SmallPop	1	t
+89	or	Oriya	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	89	SmallPop	1	t
+90	pa	Punjabi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	90	SmallPop	1	t
+91	pl	Polish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	91	SmallPop	1	t
+92	ps	Pashto, Pushto	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	92	SmallPop	1	t
+93	pt	Portuguese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	93	SmallPop	1	t
+94	qu	Quechua	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	94	SmallPop	1	t
+95	rm	Rhaeto-Romance	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	95	SmallPop	1	t
+96	rn	Kirundi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	96	SmallPop	1	t
+97	ro	Romanian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	97	SmallPop	1	t
+98	ru	Russian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	98	SmallPop	1	t
+99	rw	Kinyarwanda	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	99	SmallPop	1	t
+100	sa	Sanskrit	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	100	SmallPop	1	t
+101	sd	Sindhi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	101	SmallPop	1	t
+102	sg	Sangro	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	102	SmallPop	1	t
+103	sh	Serbo-Croatian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	103	SmallPop	1	t
+104	si	Singhalese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	104	SmallPop	1	t
+105	sk	Slovak	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	105	SmallPop	1	t
+106	sl	Slovenian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	106	SmallPop	1	t
+107	sm	Samoan	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	107	SmallPop	1	t
+108	sn	Shona	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	108	SmallPop	1	t
+109	so	Somali	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	109	SmallPop	1	t
+110	sq	Albanien	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	110	SmallPop	1	t
+111	sr	Serbian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	111	SmallPop	1	t
+112	ss	Siswati	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	112	SmallPop	1	t
+113	st	Sesotho	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	113	SmallPop	1	t
+114	su	Sudanese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	114	SmallPop	1	t
+115	sv	Swedish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	115	SmallPop	1	t
+116	sw	Swahili	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	116	SmallPop	1	t
+117	ta	Tamil	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	117	SmallPop	1	t
+118	te	Tegulu	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	118	SmallPop	1	t
+119	tg	Tajik	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	119	SmallPop	1	t
+120	th	Thai	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	120	SmallPop	1	t
+121	ti	Tigrinya	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	121	SmallPop	1	t
+122	tk	Turkmen	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	122	SmallPop	1	t
+123	tl	Tagalog	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	123	SmallPop	1	t
+124	tn	Setswana	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	124	SmallPop	1	t
+125	to	Tonga	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	125	SmallPop	1	t
+126	tr	Turkish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	126	SmallPop	1	t
+127	ts	Tsongo	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	127	SmallPop	1	t
+128	tt	Tatar	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	128	SmallPop	1	t
+129	tw	Twi	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	129	SmallPop	1	t
+130	ug	Uigur	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	130	SmallPop	1	t
+131	uk	Ukrainian	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	131	SmallPop	1	t
+132	ur	Urdu	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	132	SmallPop	1	t
+133	uz	Uzbek	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	133	SmallPop	1	t
+134	vi	Vietnamese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	134	SmallPop	1	t
+135	vo	Volapuk	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	135	SmallPop	1	t
+136	wo	Wolof	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	136	SmallPop	1	t
+137	xh	Xhosa	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	137	SmallPop	1	t
+138	yi	Yiddish	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	138	SmallPop	1	t
+139	yo	Yoruba	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	139	SmallPop	1	t
+140	za	Zhuang	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	140	SmallPop	1	t
+141	zh	Chinese	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	141	SmallPop	1	t
+142	zu	Zulu	2009-06-29 13:07:46		2009-06-29 13:07:46		\N	\N	\N	\N	142	SmallPop	1	t
+\.
+
+
+--
+-- Data for Name: load_stat; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY load_stat (ds, job_start, job_end, status, rec_tot_no, rec_err_no, rec_ok_no, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: locations; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY locations (db_animal, db_location, entry_dt, db_entry_action, exit_dt, db_exit_action, chk_lvl, dirty, guid, last_change_dt, last_change_user, owner, synch, version) FROM stdin;
+\.
+
+
+--
+-- Data for Name: new_pest; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY new_pest (class, key, trait, estimator, pev, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: nodes; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY nodes (nodename, address, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+SmallPop	10.1.1.126	2009-06-29 13:07:46		\N	\N	143	SmallPop	1	\N
+\.
+
+
+--
+-- Data for Name: sources; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY sources (source, tablename, class, columnnames, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Data for Name: targets; Type: TABLE DATA; Schema: apiis_admin; Owner: apiis_admin
+--
+
+COPY targets (target, tablename, class, columnnames, last_change_dt, last_change_user, dirty, chk_lvl, guid, owner, version, synch) FROM stdin;
+\.
+
+
+--
+-- Name: idx_inspool_err_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE INDEX idx_inspool_err_1 ON inspool_err USING btree (record_seq);
+
+
+--
+-- Name: idx_transfer_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE INDEX idx_transfer_1 ON transfer USING btree (db_animal);
+
+
+--
+-- Name: idx_transfer_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE INDEX idx_transfer_2 ON transfer USING btree (ext_animal, db_unit);
+
+
+--
+-- Name: uidx_animal_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_animal_1 ON animal USING btree (db_animal);
+
+
+--
+-- Name: uidx_animal_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_animal_rowid ON animal USING btree (guid);
+
+
+--
+-- Name: uidx_ar_constraints_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_constraints_1 ON ar_constraints USING btree (cons_id);
+
+
+--
+-- Name: uidx_ar_constraints_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_constraints_2 ON ar_constraints USING btree (cons_name, cons_type);
+
+
+--
+-- Name: uidx_ar_constraints_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_constraints_3 ON ar_constraints USING btree (guid);
+
+
+--
+-- Name: uidx_ar_constraints_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_constraints_rowid ON ar_constraints USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbtdescriptors_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtdescriptors_1 ON ar_dbtdescriptors USING btree (descriptor_id);
+
+
+--
+-- Name: uidx_ar_dbtdescriptors_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtdescriptors_2 ON ar_dbtdescriptors USING btree (descriptor_name, descriptor_value);
+
+
+--
+-- Name: uidx_ar_dbtdescriptors_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtdescriptors_3 ON ar_dbtdescriptors USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbtdescriptors_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtdescriptors_rowid ON ar_dbtdescriptors USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbtpolicies_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtpolicies_1 ON ar_dbtpolicies USING btree (dbtpolicy_id);
+
+
+--
+-- Name: uidx_ar_dbtpolicies_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtpolicies_2 ON ar_dbtpolicies USING btree (action_id, table_id, descriptor_id);
+
+
+--
+-- Name: uidx_ar_dbtpolicies_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtpolicies_3 ON ar_dbtpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbtpolicies_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbtpolicies_rowid ON ar_dbtpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbttables_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbttables_1 ON ar_dbttables USING btree (table_id);
+
+
+--
+-- Name: uidx_ar_dbttables_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbttables_2 ON ar_dbttables USING btree (table_name, table_columns);
+
+
+--
+-- Name: uidx_ar_dbttables_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbttables_3 ON ar_dbttables USING btree (guid);
+
+
+--
+-- Name: uidx_ar_dbttables_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_dbttables_rowid ON ar_dbttables USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_constraints_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_constraints_1 ON ar_role_constraints USING btree (cons_id, first_role_id, second_role_id);
+
+
+--
+-- Name: uidx_ar_role_constraints_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_constraints_2 ON ar_role_constraints USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_constraints_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_constraints_rowid ON ar_role_constraints USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_dbtpolicies_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_dbtpolicies_1 ON ar_role_dbtpolicies USING btree (role_id, dbtpolicy_id);
+
+
+--
+-- Name: uidx_ar_role_dbtpolicies_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_dbtpolicies_2 ON ar_role_dbtpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_dbtpolicies_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_dbtpolicies_rowid ON ar_role_dbtpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_stpolicies_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_stpolicies_1 ON ar_role_stpolicies USING btree (role_id, stpolicy_id);
+
+
+--
+-- Name: uidx_ar_role_stpolicies_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_stpolicies_2 ON ar_role_stpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_role_stpolicies_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_role_stpolicies_rowid ON ar_role_stpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_roles_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_roles_1 ON ar_roles USING btree (role_id);
+
+
+--
+-- Name: uidx_ar_roles_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_roles_2 ON ar_roles USING btree (role_name, role_type);
+
+
+--
+-- Name: uidx_ar_roles_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_roles_3 ON ar_roles USING btree (guid);
+
+
+--
+-- Name: uidx_ar_roles_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_roles_rowid ON ar_roles USING btree (guid);
+
+
+--
+-- Name: uidx_ar_stpolicies_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_stpolicies_1 ON ar_stpolicies USING btree (stpolicy_id);
+
+
+--
+-- Name: uidx_ar_stpolicies_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_stpolicies_2 ON ar_stpolicies USING btree (stpolicy_name, stpolicy_type);
+
+
+--
+-- Name: uidx_ar_stpolicies_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_stpolicies_3 ON ar_stpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_stpolicies_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_stpolicies_rowid ON ar_stpolicies USING btree (guid);
+
+
+--
+-- Name: uidx_ar_user_roles_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_user_roles_1 ON ar_user_roles USING btree (user_id, role_id);
+
+
+--
+-- Name: uidx_ar_user_roles_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_user_roles_2 ON ar_user_roles USING btree (guid);
+
+
+--
+-- Name: uidx_ar_user_roles_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_user_roles_rowid ON ar_user_roles USING btree (guid);
+
+
+--
+-- Name: uidx_ar_users_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_1 ON ar_users USING btree (user_id);
+
+
+--
+-- Name: uidx_ar_users_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_2 ON ar_users USING btree (user_login);
+
+
+--
+-- Name: uidx_ar_users_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_3 ON ar_users USING btree (guid);
+
+
+--
+-- Name: uidx_ar_users_data_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_data_1 ON ar_users_data USING btree (user_id);
+
+
+--
+-- Name: uidx_ar_users_data_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_data_2 ON ar_users_data USING btree (guid);
+
+
+--
+-- Name: uidx_ar_users_data_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_data_rowid ON ar_users_data USING btree (guid);
+
+
+--
+-- Name: uidx_ar_users_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_ar_users_rowid ON ar_users USING btree (guid);
+
+
+--
+-- Name: uidx_blobs_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_blobs_rowid ON blobs USING btree (guid);
+
+
+--
+-- Name: uidx_codes_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_codes_1 ON codes USING btree (db_code);
+
+
+--
+-- Name: uidx_codes_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_codes_2 ON codes USING btree (class, ext_code, closing_dt);
+
+
+--
+-- Name: uidx_codes_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_codes_rowid ON codes USING btree (guid);
+
+
+--
+-- Name: uidx_contacts_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_contacts_1 ON contacts USING btree (db_contact);
+
+
+--
+-- Name: uidx_contacts_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_contacts_rowid ON contacts USING btree (guid);
+
+
+--
+-- Name: uidx_event_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_event_1 ON event USING btree (event_id, db_event_type, db_location, event_dt);
+
+
+--
+-- Name: uidx_event_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_event_rowid ON event USING btree (guid);
+
+
+--
+-- Name: uidx_inspool_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_inspool_1 ON inspool USING btree (record_seq);
+
+
+--
+-- Name: uidx_inspool_err_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_inspool_err_rowid ON inspool_err USING btree (guid);
+
+
+--
+-- Name: uidx_inspool_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_inspool_rowid ON inspool USING btree (guid);
+
+
+--
+-- Name: uidx_languages_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_languages_1 ON languages USING btree (lang_id);
+
+
+--
+-- Name: uidx_languages_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_languages_2 ON languages USING btree (iso_lang);
+
+
+--
+-- Name: uidx_languages_3; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_languages_3 ON languages USING btree (guid);
+
+
+--
+-- Name: uidx_languages_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_languages_rowid ON languages USING btree (guid);
+
+
+--
+-- Name: uidx_load_stat_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_load_stat_rowid ON load_stat USING btree (guid);
+
+
+--
+-- Name: uidx_locations_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_locations_rowid ON locations USING btree (guid);
+
+
+--
+-- Name: uidx_new_pest_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_new_pest_1 ON new_pest USING btree (class, key, trait);
+
+
+--
+-- Name: uidx_new_pest_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_new_pest_rowid ON new_pest USING btree (guid);
+
+
+--
+-- Name: uidx_nodes_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_nodes_1 ON nodes USING btree (guid);
+
+
+--
+-- Name: uidx_nodes_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_nodes_rowid ON nodes USING btree (guid);
+
+
+--
+-- Name: uidx_pk_codes; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_pk_codes ON codes USING btree (class, ext_code) WHERE (closing_dt IS NULL);
+
+
+--
+-- Name: uidx_pk_transfer; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_pk_transfer ON transfer USING btree (db_unit, ext_animal) WHERE (closing_dt IS NULL);
+
+
+--
+-- Name: uidx_pk_unit; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_pk_unit ON unit USING btree (ext_unit, ext_id) WHERE (closing_dt IS NULL);
+
+
+--
+-- Name: uidx_sources_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_sources_1 ON sources USING btree (guid);
+
+
+--
+-- Name: uidx_sources_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_sources_rowid ON sources USING btree (guid);
+
+
+--
+-- Name: uidx_targets_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_targets_1 ON targets USING btree (guid);
+
+
+--
+-- Name: uidx_targets_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_targets_rowid ON targets USING btree (guid);
+
+
+--
+-- Name: uidx_transfer_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_transfer_rowid ON transfer USING btree (guid);
+
+
+--
+-- Name: uidx_unit_1; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_unit_1 ON unit USING btree (db_unit);
+
+
+--
+-- Name: uidx_unit_2; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_unit_2 ON unit USING btree (ext_unit, ext_id, closing_dt);
+
+
+--
+-- Name: uidx_unit_rowid; Type: INDEX; Schema: apiis_admin; Owner: apiis_admin; Tablespace: 
+--
+
+CREATE UNIQUE INDEX uidx_unit_rowid ON unit USING btree (guid);
+
+
+--
+-- Name: heli; Type: ACL; Schema: -; Owner: apiis_admin
+--
+
+REVOKE ALL ON SCHEMA heli FROM PUBLIC;
+REVOKE ALL ON SCHEMA heli FROM apiis_admin;
+GRANT ALL ON SCHEMA heli TO apiis_admin;
+GRANT ALL ON SCHEMA heli TO heli;
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+SET search_path = heli, pg_catalog;
+
+--
+-- Name: animal; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE animal FROM PUBLIC;
+REVOKE ALL ON TABLE animal FROM apiis_admin;
+GRANT ALL ON TABLE animal TO apiis_admin;
+GRANT SELECT ON TABLE animal TO heli;
+
+
+--
+-- Name: ar_constraints; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_constraints FROM PUBLIC;
+REVOKE ALL ON TABLE ar_constraints FROM apiis_admin;
+GRANT ALL ON TABLE ar_constraints TO apiis_admin;
+GRANT SELECT ON TABLE ar_constraints TO heli;
+
+
+--
+-- Name: ar_dbtdescriptors; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_dbtdescriptors FROM PUBLIC;
+REVOKE ALL ON TABLE ar_dbtdescriptors FROM apiis_admin;
+GRANT ALL ON TABLE ar_dbtdescriptors TO apiis_admin;
+GRANT SELECT ON TABLE ar_dbtdescriptors TO heli;
+
+
+--
+-- Name: ar_dbtpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_dbtpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE ar_dbtpolicies FROM apiis_admin;
+GRANT ALL ON TABLE ar_dbtpolicies TO apiis_admin;
+GRANT SELECT ON TABLE ar_dbtpolicies TO heli;
+
+
+--
+-- Name: ar_dbttables; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_dbttables FROM PUBLIC;
+REVOKE ALL ON TABLE ar_dbttables FROM apiis_admin;
+GRANT ALL ON TABLE ar_dbttables TO apiis_admin;
+GRANT SELECT ON TABLE ar_dbttables TO heli;
+
+
+--
+-- Name: ar_role_constraints; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_role_constraints FROM PUBLIC;
+REVOKE ALL ON TABLE ar_role_constraints FROM apiis_admin;
+GRANT ALL ON TABLE ar_role_constraints TO apiis_admin;
+GRANT SELECT ON TABLE ar_role_constraints TO heli;
+
+
+--
+-- Name: ar_role_dbtpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_role_dbtpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE ar_role_dbtpolicies FROM apiis_admin;
+GRANT ALL ON TABLE ar_role_dbtpolicies TO apiis_admin;
+GRANT SELECT ON TABLE ar_role_dbtpolicies TO heli;
+
+
+--
+-- Name: ar_role_stpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_role_stpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE ar_role_stpolicies FROM apiis_admin;
+GRANT ALL ON TABLE ar_role_stpolicies TO apiis_admin;
+GRANT SELECT ON TABLE ar_role_stpolicies TO heli;
+
+
+--
+-- Name: ar_roles; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_roles FROM PUBLIC;
+REVOKE ALL ON TABLE ar_roles FROM apiis_admin;
+GRANT ALL ON TABLE ar_roles TO apiis_admin;
+GRANT SELECT ON TABLE ar_roles TO heli;
+
+
+--
+-- Name: ar_stpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_stpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE ar_stpolicies FROM apiis_admin;
+GRANT ALL ON TABLE ar_stpolicies TO apiis_admin;
+GRANT SELECT ON TABLE ar_stpolicies TO heli;
+
+
+--
+-- Name: ar_user_roles; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_user_roles FROM PUBLIC;
+REVOKE ALL ON TABLE ar_user_roles FROM apiis_admin;
+GRANT ALL ON TABLE ar_user_roles TO apiis_admin;
+GRANT SELECT ON TABLE ar_user_roles TO heli;
+
+
+--
+-- Name: ar_users; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_users FROM PUBLIC;
+REVOKE ALL ON TABLE ar_users FROM apiis_admin;
+GRANT ALL ON TABLE ar_users TO apiis_admin;
+GRANT SELECT ON TABLE ar_users TO heli;
+
+
+--
+-- Name: ar_users_data; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE ar_users_data FROM PUBLIC;
+REVOKE ALL ON TABLE ar_users_data FROM apiis_admin;
+GRANT ALL ON TABLE ar_users_data TO apiis_admin;
+GRANT SELECT ON TABLE ar_users_data TO heli;
+
+
+--
+-- Name: blobs; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE blobs FROM PUBLIC;
+REVOKE ALL ON TABLE blobs FROM apiis_admin;
+GRANT ALL ON TABLE blobs TO apiis_admin;
+GRANT SELECT ON TABLE blobs TO heli;
+
+
+--
+-- Name: codes; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE codes FROM PUBLIC;
+REVOKE ALL ON TABLE codes FROM apiis_admin;
+GRANT ALL ON TABLE codes TO apiis_admin;
+GRANT SELECT ON TABLE codes TO heli;
+
+
+--
+-- Name: contacts; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE contacts FROM PUBLIC;
+REVOKE ALL ON TABLE contacts FROM apiis_admin;
+GRANT ALL ON TABLE contacts TO apiis_admin;
+GRANT SELECT ON TABLE contacts TO heli;
+
+
+--
+-- Name: entry_codes; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE entry_codes FROM PUBLIC;
+REVOKE ALL ON TABLE entry_codes FROM apiis_admin;
+GRANT ALL ON TABLE entry_codes TO apiis_admin;
+GRANT SELECT ON TABLE entry_codes TO heli;
+
+
+--
+-- Name: transfer; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE transfer FROM PUBLIC;
+REVOKE ALL ON TABLE transfer FROM apiis_admin;
+GRANT ALL ON TABLE transfer TO apiis_admin;
+GRANT SELECT ON TABLE transfer TO heli;
+
+
+--
+-- Name: entry_transfer; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE entry_transfer FROM PUBLIC;
+REVOKE ALL ON TABLE entry_transfer FROM apiis_admin;
+GRANT ALL ON TABLE entry_transfer TO apiis_admin;
+GRANT SELECT ON TABLE entry_transfer TO heli;
+
+
+--
+-- Name: unit; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE unit FROM PUBLIC;
+REVOKE ALL ON TABLE unit FROM apiis_admin;
+GRANT ALL ON TABLE unit TO apiis_admin;
+GRANT SELECT ON TABLE unit TO heli;
+
+
+--
+-- Name: entry_unit; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE entry_unit FROM PUBLIC;
+REVOKE ALL ON TABLE entry_unit FROM apiis_admin;
+GRANT ALL ON TABLE entry_unit TO apiis_admin;
+GRANT SELECT ON TABLE entry_unit TO heli;
+
+
+--
+-- Name: event; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE event FROM PUBLIC;
+REVOKE ALL ON TABLE event FROM apiis_admin;
+GRANT ALL ON TABLE event TO apiis_admin;
+GRANT SELECT ON TABLE event TO heli;
+
+
+--
+-- Name: inspool; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE inspool FROM PUBLIC;
+REVOKE ALL ON TABLE inspool FROM apiis_admin;
+GRANT ALL ON TABLE inspool TO apiis_admin;
+GRANT SELECT ON TABLE inspool TO heli;
+
+
+--
+-- Name: inspool_err; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE inspool_err FROM PUBLIC;
+REVOKE ALL ON TABLE inspool_err FROM apiis_admin;
+GRANT ALL ON TABLE inspool_err TO apiis_admin;
+GRANT SELECT ON TABLE inspool_err TO heli;
+
+
+--
+-- Name: languages; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE languages FROM PUBLIC;
+REVOKE ALL ON TABLE languages FROM apiis_admin;
+GRANT ALL ON TABLE languages TO apiis_admin;
+GRANT SELECT ON TABLE languages TO heli;
+
+
+--
+-- Name: load_stat; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE load_stat FROM PUBLIC;
+REVOKE ALL ON TABLE load_stat FROM apiis_admin;
+GRANT ALL ON TABLE load_stat TO apiis_admin;
+GRANT SELECT ON TABLE load_stat TO heli;
+
+
+--
+-- Name: locations; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE locations FROM PUBLIC;
+REVOKE ALL ON TABLE locations FROM apiis_admin;
+GRANT ALL ON TABLE locations TO apiis_admin;
+GRANT SELECT ON TABLE locations TO heli;
+
+
+--
+-- Name: new_pest; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE new_pest FROM PUBLIC;
+REVOKE ALL ON TABLE new_pest FROM apiis_admin;
+GRANT ALL ON TABLE new_pest TO apiis_admin;
+GRANT SELECT ON TABLE new_pest TO heli;
+
+
+--
+-- Name: nodes; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE nodes FROM PUBLIC;
+REVOKE ALL ON TABLE nodes FROM apiis_admin;
+GRANT ALL ON TABLE nodes TO apiis_admin;
+GRANT SELECT ON TABLE nodes TO heli;
+
+
+--
+-- Name: sources; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE sources FROM PUBLIC;
+REVOKE ALL ON TABLE sources FROM apiis_admin;
+GRANT ALL ON TABLE sources TO apiis_admin;
+GRANT SELECT ON TABLE sources TO heli;
+
+
+--
+-- Name: targets; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE targets FROM PUBLIC;
+REVOKE ALL ON TABLE targets FROM apiis_admin;
+GRANT ALL ON TABLE targets TO apiis_admin;
+GRANT SELECT ON TABLE targets TO heli;
+
+
+--
+-- Name: v_animal; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_animal FROM PUBLIC;
+REVOKE ALL ON TABLE v_animal FROM apiis_admin;
+GRANT ALL ON TABLE v_animal TO apiis_admin;
+GRANT SELECT ON TABLE v_animal TO heli;
+
+
+--
+-- Name: v_ar_constraints; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_constraints FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_constraints FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_constraints TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_constraints TO heli;
+
+
+--
+-- Name: v_ar_dbtdescriptors; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_dbtdescriptors FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_dbtdescriptors FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_dbtdescriptors TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_dbtdescriptors TO heli;
+
+
+--
+-- Name: v_ar_dbtpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_dbtpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_dbtpolicies FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_dbtpolicies TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_dbtpolicies TO heli;
+
+
+--
+-- Name: v_ar_dbttables; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_dbttables FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_dbttables FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_dbttables TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_dbttables TO heli;
+
+
+--
+-- Name: v_ar_role_constraints; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_role_constraints FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_role_constraints FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_role_constraints TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_role_constraints TO heli;
+
+
+--
+-- Name: v_ar_role_dbtpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_role_dbtpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_role_dbtpolicies FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_role_dbtpolicies TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_role_dbtpolicies TO heli;
+
+
+--
+-- Name: v_ar_role_stpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_role_stpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_role_stpolicies FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_role_stpolicies TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_role_stpolicies TO heli;
+
+
+--
+-- Name: v_ar_roles; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_roles FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_roles FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_roles TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_roles TO heli;
+
+
+--
+-- Name: v_ar_stpolicies; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_stpolicies FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_stpolicies FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_stpolicies TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_stpolicies TO heli;
+
+
+--
+-- Name: v_ar_user_roles; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_user_roles FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_user_roles FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_user_roles TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_user_roles TO heli;
+
+
+--
+-- Name: v_ar_users; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_users FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_users FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_users TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_users TO heli;
+
+
+--
+-- Name: v_ar_users_data; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_ar_users_data FROM PUBLIC;
+REVOKE ALL ON TABLE v_ar_users_data FROM apiis_admin;
+GRANT ALL ON TABLE v_ar_users_data TO apiis_admin;
+GRANT SELECT ON TABLE v_ar_users_data TO heli;
+
+
+--
+-- Name: v_blobs; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_blobs FROM PUBLIC;
+REVOKE ALL ON TABLE v_blobs FROM apiis_admin;
+GRANT ALL ON TABLE v_blobs TO apiis_admin;
+GRANT SELECT ON TABLE v_blobs TO heli;
+
+
+--
+-- Name: v_codes; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_codes FROM PUBLIC;
+REVOKE ALL ON TABLE v_codes FROM apiis_admin;
+GRANT ALL ON TABLE v_codes TO apiis_admin;
+GRANT SELECT ON TABLE v_codes TO heli;
+
+
+--
+-- Name: v_contacts; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_contacts FROM PUBLIC;
+REVOKE ALL ON TABLE v_contacts FROM apiis_admin;
+GRANT ALL ON TABLE v_contacts TO apiis_admin;
+GRANT SELECT ON TABLE v_contacts TO heli;
+
+
+--
+-- Name: v_event; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_event FROM PUBLIC;
+REVOKE ALL ON TABLE v_event FROM apiis_admin;
+GRANT ALL ON TABLE v_event TO apiis_admin;
+GRANT SELECT ON TABLE v_event TO heli;
+
+
+--
+-- Name: v_inspool; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_inspool FROM PUBLIC;
+REVOKE ALL ON TABLE v_inspool FROM apiis_admin;
+GRANT ALL ON TABLE v_inspool TO apiis_admin;
+GRANT SELECT ON TABLE v_inspool TO heli;
+
+
+--
+-- Name: v_inspool_err; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_inspool_err FROM PUBLIC;
+REVOKE ALL ON TABLE v_inspool_err FROM apiis_admin;
+GRANT ALL ON TABLE v_inspool_err TO apiis_admin;
+GRANT SELECT ON TABLE v_inspool_err TO heli;
+
+
+--
+-- Name: v_languages; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_languages FROM PUBLIC;
+REVOKE ALL ON TABLE v_languages FROM apiis_admin;
+GRANT ALL ON TABLE v_languages TO apiis_admin;
+GRANT SELECT ON TABLE v_languages TO heli;
+
+
+--
+-- Name: v_load_stat; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_load_stat FROM PUBLIC;
+REVOKE ALL ON TABLE v_load_stat FROM apiis_admin;
+GRANT ALL ON TABLE v_load_stat TO apiis_admin;
+GRANT SELECT ON TABLE v_load_stat TO heli;
+
+
+--
+-- Name: v_locations; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_locations FROM PUBLIC;
+REVOKE ALL ON TABLE v_locations FROM apiis_admin;
+GRANT ALL ON TABLE v_locations TO apiis_admin;
+GRANT SELECT ON TABLE v_locations TO heli;
+
+
+--
+-- Name: v_new_pest; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_new_pest FROM PUBLIC;
+REVOKE ALL ON TABLE v_new_pest FROM apiis_admin;
+GRANT ALL ON TABLE v_new_pest TO apiis_admin;
+GRANT SELECT ON TABLE v_new_pest TO heli;
+
+
+--
+-- Name: v_nodes; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_nodes FROM PUBLIC;
+REVOKE ALL ON TABLE v_nodes FROM apiis_admin;
+GRANT ALL ON TABLE v_nodes TO apiis_admin;
+GRANT SELECT ON TABLE v_nodes TO heli;
+
+
+--
+-- Name: v_sources; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_sources FROM PUBLIC;
+REVOKE ALL ON TABLE v_sources FROM apiis_admin;
+GRANT ALL ON TABLE v_sources TO apiis_admin;
+GRANT SELECT ON TABLE v_sources TO heli;
+
+
+--
+-- Name: v_targets; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_targets FROM PUBLIC;
+REVOKE ALL ON TABLE v_targets FROM apiis_admin;
+GRANT ALL ON TABLE v_targets TO apiis_admin;
+GRANT SELECT ON TABLE v_targets TO heli;
+
+
+--
+-- Name: v_transfer; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_transfer FROM PUBLIC;
+REVOKE ALL ON TABLE v_transfer FROM apiis_admin;
+GRANT ALL ON TABLE v_transfer TO apiis_admin;
+GRANT SELECT ON TABLE v_transfer TO heli;
+
+
+--
+-- Name: v_unit; Type: ACL; Schema: heli; Owner: apiis_admin
+--
+
+REVOKE ALL ON TABLE v_unit FROM PUBLIC;
+REVOKE ALL ON TABLE v_unit FROM apiis_admin;
+GRANT ALL ON TABLE v_unit TO apiis_admin;
+GRANT SELECT ON TABLE v_unit TO heli;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

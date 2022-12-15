@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Specifying constraints for the grouping</TITLE>
+<META NAME="description" CONTENT="Specifying constraints for the grouping">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node33.html">
+<LINK REL="previous" HREF="node29.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node33.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html530"
+  HREF="node33.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html526"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html520"
+  HREF="node31.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html528"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html531"
+  HREF="node33.html">Further developing</A>
+<B> Up:</B> <A NAME="tex2html527"
+  HREF="node2.html">The Access Control</A>
+<B> Previous:</B> <A NAME="tex2html521"
+  HREF="node31.html">Grouping groups</A>
+ &nbsp; <B>  <A NAME="tex2html529"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00290000000000000000"></A><A NAME="definingconstraints"></A>
+<BR>
+Specifying constraints for the grouping
+</H1> 
+In the previous sections we specified the three types of constraints which are use in the grouping:
+
+<OL>
+<LI>user-groups-constraints - checking if the user can be ascribed to the new group with his current aggregation of groups
+</LI>
+<LI>group-groups-constraints - checking if the group can be defined as a part of other group.
+</LI>
+<LI>role-constraints - checking if the role can be added to the group
+</LI>
+</OL>
+The manner of adding new constraints for each of this category is very similar. At the beginning we have to check that the new constraints will be valid for the current definitions allocated for the user and groups (f.e. one of the user is assigned to two groups which we want to exclude). Thus the one of the following statements have to be executed:
+<BR>
+<DIV ALIGN="CENTER">
+<I>SELECT user_id FROM ar_user_groups WHERE
+group_id='</I><B><I>first group id</I></B><I>' or group_id='</I><B><I>second group id</I></B>
+
+</DIV>
+This SELECT is executed for the first type of constraints. In the WHERE clause we put these group ids for which the new constraint will be defined. As a result we get a users which are attributed for these groups.
+<BR>
+<P>
+<DIV ALIGN="CENTER">
+<I>SELECT hl_group_id FROM ar_group_groups WHERE
+ll_group_id='</I><B><I>first group id</I></B><I>' or ll_group_id='</I><B><I>second group id</I></B>
+
+</DIV>
+The SELECT is executed for second type of constraints. In the WHERE clause we put these group ids for which we want to define new constraint. SELECT returns these parent groups which have such child groups defined.
+<BR>
+<P>
+<DIV ALIGN="CENTER">
+<I>SELECT group_id FROM ar_role_groups WHERE
+role_id='</I><B><I>first role id</I></B><I>' or role_id='</I><B><I>second role id</I></B>
+
+</DIV>
+The last SELECT is executed for the third type of constraints. In the WHERE we put the role_id for which we want to define new constraint. Returned results give the information about groups to which these roles are assigned.
+<BR>
+<P>
+After this when the SELECT is executed, the algorithm checks if there are any duplicates in the returned results (two the same user, two the same groups). If the duplicates are presented  for one of this SELECT then they are returned as an one conflicts list. In such case the new constraints can not be added because it causes a contradiction in the current definitions. The administrator first has to change these conflict definitions and then this constraints can be introduced.
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html530"
+  HREF="node33.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html526"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html520"
+  HREF="node31.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html528"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html531"
+  HREF="node33.html">Further developing</A>
+<B> Up:</B> <A NAME="tex2html527"
+  HREF="node2.html">The Access Control</A>
+<B> Previous:</B> <A NAME="tex2html521"
+  HREF="node31.html">Grouping groups</A>
+ &nbsp; <B>  <A NAME="tex2html529"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

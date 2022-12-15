@@ -1,0 +1,16 @@
+
+     <!-- Projects form (projects.tmpl) -->
+     <form id="set_project" name="set_project" class="menuForm menuFormLang" action="<tmpl_var name=action>" method="post" title="Choose your project">
+      <label class="title"><TMPL_VAR NAME=l_project default="Project"></label>
+      <div>
+       <select name="projects" class="set_lang_class" tabindex="1">
+        <option value=""></option><TMPL_LOOP NAME=projects_loop>
+        <option value="<TMPL_VAR NAME=project_name>" <TMPL_VAR NAME=selected>><TMPL_VAR NAME=project_name></option></TMPL_LOOP>
+       </select>
+      </div>
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>" />
+      <div>
+       <input type="submit" name="set_project" value="<TMPL_VAR NAME=l_set_project default="Choose project">" tabindex="2" class="buttons" />
+      </div>
+     </form>
+     <!-- Project form end -->

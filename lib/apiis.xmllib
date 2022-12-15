@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library PUBLIC "-//MerlotXML.org//Library 1.0//EN" "jar:file:/opt/Xerlin-1.2_1/Xerlin-1.2_1.jar!/org/merlotxml/merlot/resource/library.dtd">
+<library bounds="0,0,160,532" name="lib2">
+  <libshelf name="columns">
+    <libitem name="guid">
+      <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+        CHECK5="" DATA="" DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT=""
+        DESCRIPTION="global identifier" ERROR="" LENGTH="20" MODIFY="" name="guid"/>
+    </libitem>
+    <libitem name="owner">
+      <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+        DATA="" DATATYPE="CHAR" DB_LEVEL="FAO" DEFAULT=""
+        DESCRIPTION="record class" ERROR="" LENGTH="3" MODIFY="" name="owner"/>
+    </libitem>
+    <libitem name="version">
+      <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+        DATA="" DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT="1"
+        DESCRIPTION="version" ERROR="" LENGTH="3" MODIFY="" name="version"/>
+    </libitem>
+    <libitem name="synch">
+      <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+        DATA="" DATATYPE="BOOL" DB_LEVEL="FAO" DEFAULT="FALSE"
+        DESCRIPTION="is record targeted for synchronization" ERROR=""
+        LENGTH="1" MODIFY="" name="synch"/>
+    </libitem>
+    <libitem name="chk_lvl">
+      <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+        DATA="" DATATYPE="SMALLINT" DB_LEVEL="FAO" DEFAULT="1"
+        DESCRIPTION="check level" ERROR="" LENGTH="3" MODIFY="" name="chk_lvl"/>
+    </libitem>
+    <libitem name="dirty">
+      <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+        DATA="0" DATATYPE="BOOL" DB_LEVEL="FAO" DEFAULT="FALSE"
+        DESCRIPTION="report errors from check_integrity" ERROR=""
+        LENGTH="1" MODIFY="" name="dirty"/>
+    </libitem>
+    <libitem name="last_change_dt">
+      <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+        CHECK5="" DATA="$now" DATATYPE="TIMESTAMP" DB_LEVEL="FAO"
+        DEFAULT="" DESCRIPTION="Timestamp of last change" ERROR=""
+        LENGTH="22" MODIFY="SetNow" name="last_change_dt"/>
+    </libitem>
+    <libitem name="last_change_user">
+      <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+        CHECK5="" DATA="$user" DATATYPE="CHAR" DB_LEVEL="FAO" DEFAULT=""
+        DESCRIPTION="Who did the last change" ERROR="" LENGTH="20"
+        MODIFY="SetUser" name="last_change_user"/>
+    </libitem>
+  </libshelf>
+  <libshelf name="tables">
+    <libitem name="transfer">
+      <table DB_LEVEL="FAO" name="transfer">
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Internal database ID" ERROR="" LENGTH="20"
+          MODIFY="" name="db_animal"/>
+        <column CHECK="ReservedStrings" CHECK1="" CHECK2="" CHECK3=""
+          CHECK4="" CHECK5="" DATA="" DATATYPE="CHAR" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="external ID of the animal" ERROR=""
+          LENGTH="20" MODIFY="" name="ext_animal"/>
+        <column CHECK="NotNull,ForeignKey unit db_unit,ReservedStrings"
+          CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5="" DATA=""
+          DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Internal ID of reporting unit" ERROR=""
+          LENGTH="20" MODIFY="" name="db_unit"/>
+        <column CHECK="ForeignKey unit db_unit,ReservedStrings"
+          CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5="" DATA=""
+          DATATYPE="SMALLINT" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Farm" ERROR="" LENGTH="20" MODIFY="" name="db_farm"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="DATE" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Date when this channel is opened for new data"
+          ERROR="" LENGTH="10" MODIFY="" name="opening_dt"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="DATE" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Date when the animal enters the herd" ERROR=""
+          LENGTH="10" MODIFY="" name="entry_dt"/>
+        <column CHECK="DateDiff entry_dt 0 5000" CHECK1="" CHECK2=""
+          CHECK3="" CHECK4="" CHECK5="" DATA="" DATATYPE="DATE"
+          DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Date when the animal leaves the herd" ERROR=""
+          LENGTH="10" MODIFY="" name="exit_dt"/>
+        <column CHECK="DateDiff opening_dt 0 5000" CHECK1="" CHECK2=""
+          CHECK3="" CHECK4="" CHECK5="" DATA="" DATATYPE="DATE"
+          DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Date when this data channel is closed" ERROR=""
+          LENGTH="10" MODIFY="" name="closing_dt"/>
+        <column CHECK="ForeignKey codes db_code" CHECK1="" CHECK2=""
+          CHECK3="" CHECK4="" CHECK5="" DATA="" DATATYPE="BIGINT"
+          DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Action while entering the herd" ERROR=""
+          LENGTH="10" MODIFY="" name="db_entry_action"/>
+        <column CHECK="ForeignKey codes db_code" CHECK1="" CHECK2=""
+          CHECK3="" CHECK4="" CHECK5="" DATA="" DATATYPE="BIGINT"
+          DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Action while leaving the herd" ERROR=""
+          LENGTH="10" MODIFY="" name="db_exit_action"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="$now" DATATYPE="TIMESTAMP" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="Timestamp of last change" ERROR=""
+          LENGTH="22" MODIFY="SetNow" name="last_change_dt"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="$user" DATATYPE="CHAR" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="Who did the last change" ERROR=""
+          LENGTH="20" MODIFY="SetUser" name="last_change_user"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="$now" DATATYPE="TIMESTAMP" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="Timestamp of creation" ERROR=""
+          LENGTH="22" MODIFY="SetNow" name="creation_dt"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="CHAR" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="Who did the creation" ERROR="" LENGTH="20"
+          MODIFY="SetUser" name="creation_user"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="TIMESTAMP" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="Timestamp of end using" ERROR=""
+          LENGTH="22" MODIFY="" name="end_dt"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="$user" DATATYPE="CHAR" DB_LEVEL="FAO"
+          DEFAULT="" DESCRIPTION="Who did the end status" ERROR=""
+          LENGTH="20" MODIFY="" name="end_user"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="0" DATATYPE="BOOL" DB_LEVEL="FAO"
+          DEFAULT="FALSE"
+          DESCRIPTION="report errors from check_integrity" ERROR=""
+          LENGTH="1" MODIFY="" name="dirty"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="SMALLINT" DB_LEVEL="FAO"
+          DEFAULT="1" DESCRIPTION="check level" ERROR="" LENGTH="3"
+          MODIFY="" name="chk_lvl"/>
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="global identifier" ERROR="" LENGTH="20" MODIFY="" name="guid"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="CHAR" DB_LEVEL="FAO" DEFAULT=""
+          DESCRIPTION="record class" ERROR="" LENGTH="3" MODIFY="" name="owner"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="BIGINT" DB_LEVEL="FAO" DEFAULT="1"
+          DESCRIPTION="version" ERROR="" LENGTH="3" MODIFY="" name="version"/>
+        <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+          CHECK5="" DATA="" DATATYPE="BOOL" DB_LEVEL="FAO"
+          DEFAULT="FALSE"
+          DESCRIPTION="is record targeted for synchronization" ERROR=""
+          LENGTH="1" MODIFY="" name="synch"/>
+        <TABLE>
+          <TRIGGER POSTDELETE="" POSTINSERT="" POSTUPDATE=""
+            PREDELETE=""
+            PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+          <CONSTRAINTS INDEX="db_animal,ext_animal db_unit, unique guid"
+            PRIMARYKEY="REF_COL:db_animal;CONCAT:db_unit,ext_animal;VIEW:entry_transfer;WHERE:closing_dt is NULL;" SEQUENCE="seq_transfer__db_animal"/>
+        </TABLE>
+      </table>
+    </libitem>
+  </libshelf>
+</library>

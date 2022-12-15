@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Checking the login time and the current status of the users</TITLE>
+<META NAME="description" CONTENT="Checking the login time and the current status of the users">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="previous" HREF="node33.html">
+<LINK REL="up" HREF="node33.html">
+<LINK REL="next" HREF="node35.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html553"
+  HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html549"
+  HREF="node33.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html545"
+  HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html551"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html554"
+  HREF="node35.html">Remarks</A>
+<B> Up:</B> <A NAME="tex2html550"
+  HREF="node33.html">Further developing</A>
+<B> Previous:</B> <A NAME="tex2html546"
+  HREF="node33.html">Further developing</A>
+ &nbsp; <B>  <A NAME="tex2html552"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION002101000000000000000"></A><A NAME="furtherdevchecking"></A>
+<BR>
+Checking the login time and the current status of the users
+</H2>
+The method of checking the login time for the user is needed to prevent system before unclosed session. There are three columns in the users table which are used by this method: session_status column which is fill in during the logging (the flag of this column is set as ACTIVE), last_login column which is fill in by the logging timestamp and last_activ_time column which is updated during the user session. The last column is updated by the actual timestamp everytime when the user executes some action on the database. In the same time algorithm checks also the activation time for the all others users and compares it with the actual time. If the difference for some user is greater then defined timeout then the user session is closed. The timeout should be defined as a global value in the configuration file.
+
+<P>
+<BR><HR>
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

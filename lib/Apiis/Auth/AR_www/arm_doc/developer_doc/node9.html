@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>System architecture</TITLE>
+<META NAME="description" CONTENT="System architecture">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node10.html">
+<LINK REL="previous" HREF="node8.html">
+<LINK REL="up" HREF="node8.html">
+<LINK REL="next" HREF="node10.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html245"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html241"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html235"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html243"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html246"
+  HREF="node10.html">APIIS core</A>
+<B> Up:</B> <A NAME="tex2html242"
+  HREF="node8.html">The basic foundations -</A>
+<B> Previous:</B> <A NAME="tex2html236"
+  HREF="node8.html">The basic foundations -</A>
+ &nbsp; <B>  <A NAME="tex2html244"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00231000000000000000"></A><A NAME="systemarchitecture"></A>
+<BR>
+System architecture
+</H2>
+There are three logical machines in an APIIS database setup: 
+
+<UL>
+<LI>client machine - the machine at which users operate
+</LI>
+<LI>APIIS server - the machine that all users connect to
+</LI>
+<LI>Database server - the machine that runs the backend database
+</LI>
+</UL> 
+Clearly, all three logical machines can reside on one or more physical computers.
+<BR>
+The client machine is the computer from where user fire up the web browser or just connect to the APIIS Server via SSH protocol<A NAME="tex2html2"
+  HREF="footnode.html#foot89"><SUP>1.2</SUP></A>.
+<BR>
+The APIIS Server takes care of the authentication of the users, connections to the database server and presenting data back to the users. Thus, to work directly on the APIIS server (via SSH), user must have an account on operating system level (see section <A HREF="node13.html#registeringuseronOSL">1.4.1</A>) and also account on the APIIS system level (see section <A HREF="node14.html#registeringuseronAPIISL">1.4.2</A>). The work with the web browser required only this second type of account.
+<BR>
+The database server is the place where the database is stored. The connections into the database are supported by the APIIS Server. The connections to the database are distinguished on two groups: modifications on data and reading data. The modifications are executed only through the meta_user connection (see <A HREF="node11.html#apiisprojects">1.3.3</A>). Reading data is handled by the direct user connection.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html245"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html241"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html235"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html243"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html246"
+  HREF="node10.html">APIIS core</A>
+<B> Up:</B> <A NAME="tex2html242"
+  HREF="node8.html">The basic foundations -</A>
+<B> Previous:</B> <A NAME="tex2html236"
+  HREF="node8.html">The basic foundations -</A>
+ &nbsp; <B>  <A NAME="tex2html244"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

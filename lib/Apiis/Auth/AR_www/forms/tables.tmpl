@@ -1,0 +1,74 @@
+
+  <tmpl_var name=div>
+   <a name="top"></a>
+   <form name="tables" id="tables" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT> class="pageForm">
+    <table id="policy_tab" cellpadding="5" cellspacing="1" border="0" >
+     <tbody>
+      <tr>
+       <td colspan="7">
+        <a href="#bottom" onClick="addRow_table();"><TMPL_VAR NAME=l_arm_add_new_table></a> &nbsp;&nbsp;&nbsp;
+        <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armdbt_policies"><TMPL_VAR NAME=l_arm_back_button></a> &nbsp;&nbsp;&nbsp;
+       </td>
+      </tr>
+      <tr><td colspan="7"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="6">
+         <a href="#bottom"><TMPL_VAR NAME=l_arm_bottom></a>
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+      <TMPL_IF NAME=tables_loop>
+        <tr> 
+         <td class="label"><TMPL_VAR NAME=l_arm_table_name></td>
+         <td></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_table_col_current></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_table_col_update></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_table_desc></td>
+         <td></td>
+         <td></td>
+        </tr>
+        <TMPL_LOOP NAME=tables_loop>
+        <a href="#id<TMPL_VAR NAME=table_id>">
+        <tr class="loop_row"> 
+         <td class="value">
+           <select name="table_name_<TMPL_VAR NAME=table_id>" id="table_name_<TMPL_VAR NAME=table_id>" <tmpl_var name=js_change>>
+             <option value="">&nbsp;</option><TMPL_LOOP NAME=table_name>
+             <option value="<TMPL_VAR NAME=value>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=name></option></TMPL_LOOP>
+           </select>
+         </td>
+         <td>
+           <img src="../images/colorbullet.png" width="12" height="12" border="0" name="select_columns" title="<TMPL_VAR NAME=l_img_title>" 
+                onclick="select_columns_for_table('<TMPL_VAR NAME=table_id>');">
+         </td>
+         </td>
+         <td class="value">
+           <input name="table_columns_all<TMPL_VAR NAME=table_id>" id="table_columns_all<TMPL_VAR NAME=table_id>" size="50" value="<TMPL_VAR NAME=all_table_columns>" <TMPL_VAR NAME=JS_CHANGE>>
+         </td>
+         <td class="value">
+           <input name="table_columns_<TMPL_VAR NAME=table_id>" size="50" value="<TMPL_VAR NAME=table_columns>" <TMPL_VAR NAME=JS_CHANGE>>
+         </td>
+         <td class="value">
+           <input name="table_desc_<TMPL_VAR NAME=table_id>" size="30" value="<TMPL_VAR NAME=table_desc>" <TMPL_VAR NAME=JS_CHANGE>>
+         </td>
+         <td class="buttons"><a href="javascript:show_apply('<TMPL_VAR NAME=table_id>');" title="<TMPL_VAR NAME=l_apply_title>"><TMPL_VAR NAME=l_apply></a></td>
+         <td class="buttons"><a href="javascript:remove('<TMPL_VAR NAME=table_id>');" title="<TMPL_VAR NAME=l_delete_title>"><TMPL_VAR NAME=l_delete></a></td>
+        </tr>
+        </TMPL_LOOP>
+      </TMPL_IF>
+     </tbody>
+      <tr><td colspan="7"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="6">
+        <a href="#top"><TMPL_VAR NAME=l_arm_top></a>
+	<input id="sid" type="hidden" name="sid" value="<tmpl_var name=session_id>">
+	<input type="hidden" name="show_apply" value="">
+        <input type=hidden name="remove" value="">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="change_my_policies" value="1">
+        <input type="hidden" name="action" value="armtables">
+       </td>
+      </tr>
+      <tr><td colspan="7"><hr></td><tr>
+    </table>
+   </form>
+   <a name="bottom"></a>

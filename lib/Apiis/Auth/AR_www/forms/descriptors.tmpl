@@ -1,0 +1,77 @@
+
+  <tmpl_var name=div>
+   <a name="top"></a>
+   <form name="descriptors" id="descriptors" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT> class="pageForm">
+    <table id="policy_tab" cellpadding="5" cellspacing="1" border="0" >
+     <tbody>
+      <tr>
+       <td colspan="6">
+        <a href="#bottom" onClick="addRow_descriptor();"><TMPL_VAR NAME=l_arm_add_new_descriptor></a>&nbsp;&nbsp;&nbsp;
+        <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armdbt_policies"><TMPL_VAR NAME=l_arm_back_button></a> &nbsp;&nbsp;&nbsp;
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="6">
+         <a href="#bottom"><TMPL_VAR NAME=l_arm_bottom></a>
+       </td>
+      </tr>
+      <tr>
+       <td class="value" colspan="6">
+         <TMPL_VAR NAME=l_arm_descriptor_info>
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+      <TMPL_IF NAME=descriptor_loop>
+        <tr> 
+         <td class="label"><TMPL_VAR NAME=l_arm_descriptor_name></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_descriptor_value></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_descriptor_desc></td>
+         <td></td>
+         <td></td>
+         <td></td>
+        </tr>
+        <TMPL_LOOP NAME=descriptor_loop>
+        <a href="#id<TMPL_VAR NAME=descriptor_id>">
+        <tr class="loop_row" > 
+         <td valign="top">
+           <select name="descriptor_name_<TMPL_VAR NAME=descriptor_id>" id="descriptor_name_<TMPL_VAR NAME=descriptor_id>" <tmpl_var name=js_change>>
+             <option value="">&nbsp;</option><TMPL_LOOP NAME=descriptor_name>
+             <option value="<TMPL_VAR NAME=value>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=name></option></TMPL_LOOP>
+           </select>
+         </td>
+         <td class="value">
+<!--            <input name="descriptor_value_<TMPL_VAR NAME=descriptor_id>" size="50" value="<TMPL_VAR NAME=descriptor_value>" <TMPL_VAR NAME=JS_CHANGE>> -->
+           <textarea name="descriptor_value_<TMPL_VAR NAME=descriptor_id>" cols="70" rows="1" <TMPL_VAR NAME=JS_CHANGE>><TMPL_VAR NAME=descriptor_value></textarea>
+         </td>
+         <td class="value">
+<!--            <input name="descriptor_desc_<TMPL_VAR NAME=descriptor_id>" size="50" value="<TMPL_VAR NAME=descriptor_desc>" <TMPL_VAR NAME=JS_CHANGE>> -->
+           <textarea name="descriptor_desc_<TMPL_VAR NAME=descriptor_id>" cols="35" rows="1" <TMPL_VAR NAME=JS_CHANGE>><TMPL_VAR NAME=descriptor_desc></textarea>
+         </td>
+         <td class="buttons"><a href="javascript:show_apply('<TMPL_VAR NAME=descriptor_id>');" title="<TMPL_VAR NAME=l_apply_title>"><TMPL_VAR NAME=l_apply></a></td>
+         <td class="buttons"><a href="javascript:remove('<TMPL_VAR NAME=descriptor_id>');" title="<TMPL_VAR NAME=l_delete_title>"><TMPL_VAR NAME=l_delete></a></td>
+         <td class="buttons">
+           <a href="#id<TMPL_VAR NAME=id>" title="<TMPL_VAR NAME=l_sql_title>" 
+            onClick="define_sql('<TMPL_VAR NAME=form_action>','<TMPL_VAR NAME=descriptor_id>','<TMPL_VAR NAME=session_id>');">
+           <TMPL_VAR NAME=l_sql></a>
+         </td>
+        </tr>
+        </TMPL_LOOP>
+      </TMPL_IF>
+     </tbody>
+      <tr><td colspan="6"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="6">
+        <a href="#top"><TMPL_VAR NAME=l_arm_top></a>
+	<input id="sid" type="hidden" name="sid" value="<tmpl_var name=session_id>">
+	<input type="hidden" name="show_apply" value="">
+        <input type=hidden name="remove" value="">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="change_my_policies" value="1">
+        <input type="hidden" name="action" value="armdescriptors">
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+    </table>
+   </form>
+   <a name="bottom"></a>

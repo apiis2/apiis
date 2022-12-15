@@ -1,0 +1,48 @@
+
+  <tmpl_var name=div>
+   <form name="user_roles" id="user_roles" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT> class="pageForm">
+    <table cellpadding="4" cellspacing="4" border="0" class="fullWidth">
+     <tbody>
+      <tr>
+       <td colspan="3" class="label"><TMPL_VAR NAME=l_arm_user>: <h3><TMPL_VAR NAME=user_name> (<TMPL_VAR NAME=user_login>)</h3></td>
+      </tr>
+      <tr>
+       <td></td>
+       <td class="label"><TMPL_VAR NAME=l_arm_st_roles>:</td>
+       <td class="label"><TMPL_VAR NAME=l_arm_dbt_roles>:</td>
+      </tr>
+      <tr>
+       <td></td>
+       <td class="value">
+        <select name="st_roles" multiple="multiple" size="10"  style="width: 300px;" <TMPL_VAR NAME=JS_CHANGE>><TMPL_LOOP NAME=stroles_loop>
+         <option value="<TMPL_VAR NAME=ROLE_NAME>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=ROLE_NAME></option></TMPL_LOOP>
+        </select>
+       </td>
+       <td class="value">
+        <select name="dbt_roles" multiple="multiple" size="10"  style="width: 300px;" <TMPL_VAR NAME=JS_CHANGE>><TMPL_LOOP NAME=dbtroles_loop>
+         <option value="<TMPL_VAR NAME=ROLE_NAME>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=ROLE_NAME></option></TMPL_LOOP>
+        </select>
+       </td>
+      </tr>
+      <tr>
+       <td colspan="3"></td>
+      </tr>
+      <tr>
+       <td colspan="3"></td>
+      </tr>
+      <tr>
+       <td class="control buttons" colspan="3">
+	<input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+        <input type="hidden" name="form_status" value="insert">
+        <input type="hidden" name="action" value="armuser_roles">
+        <input type="hidden" name="show_apply" value="<TMPL_VAR NAME=show_apply>">
+        <input type="hidden" name="user_name" value="<TMPL_VAR NAME=user_name>">
+        <input type="hidden" name="user_login" value="<TMPL_VAR NAME=user_login>">
+        <input type="hidden" name="current_roles" value="<TMPL_VAR NAME=current_roles>">
+        <input type="submit" name="user_roles" value="<TMPL_VAR NAME=l_arm_submit>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>>
+       </td>
+      </tr>
+     </tbody>
+    </table>
+   </form>
+

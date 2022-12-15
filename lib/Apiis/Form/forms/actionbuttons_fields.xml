@@ -1,0 +1,32 @@
+    <Field Description="Leave without saving" Name="Field_exit">
+      <Button ButtonLabel="Quit" Command="do_exit"/>
+      <Position Column="0" Position="absolute" Row="45"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color BackGround="red"/>
+      <Format/>
+    </Field>
+    <Field Description="Insert record into database" Name="Field_insert">
+      <Button ButtonLabel="Insert" Command="do_insert_block"/>
+      <Position Column="1" Position="absolute" Row="45"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="Update record in database" Name="Field_update">
+      <Button ButtonLabel="Update" Command="do_update_block"/>
+      <Position Column="2" Position="absolute" Row="45"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="Clear all fields" Name="Field_clear">
+      <Button ButtonLabel="Clear Form" Command="do_clear_form"/>
+      <Position Column="3" Position="absolute" Row="45"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>

@@ -1,0 +1,11 @@
+[LOGGING]
+use_filelog = 0
+filelog_priority = notice
+filelog_filename = $APIIS_LOCAL/var/log/dummy.log
+use_syslog = 0
+use_sql_logging = 0
+sql_logfile     = $APIIS_LOCAL/var/log/sql.log
+sql_log_dml_only = 0
+profiling=0
+[COMPATIBILITY]
+access_rights = none

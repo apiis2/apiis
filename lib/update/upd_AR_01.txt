@@ -1,0 +1,12 @@
+##############################################################################
+# $Id: upd_AR_01.txt,v 1.1 2006/06/28 07:44:36 heli Exp $
+# The Access Rights system must get rebuilt to reflect the structural change
+# of adding column transfer.id_set.
+##############################################################################
+
+# Run these two commands to rebuild the whole Access Rights system:
+
+access_rights_ar_batch.pl -p <project>
+access_rights_update.pl   -p <project>
+
+# This currently works only for the standard users!

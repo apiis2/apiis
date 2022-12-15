@@ -1,0 +1,16 @@
+
+     <!-- Session lang form (session_lang.tmpl) -->
+     <form id="set_lang" name="set_lang" class="menuForm menuFormLang" action="<tmpl_var name=action>" method="post" title="Choose session languages">
+      <label class="title"><TMPL_VAR NAME=l_Language_of default="Language"></label>
+      <div>
+       <select name="gui_lang" class="set_lang_class" tabindex="1">
+        <option value=""></option><TMPL_LOOP NAME=gui_lang_loop>
+        <option value="<TMPL_VAR NAME=lang_iso>" <TMPL_VAR NAME=selected>><TMPL_VAR NAME=lang_name></option></TMPL_LOOP>
+       </select>
+      </div>
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>" />
+      <div>
+       <input type="submit" name="set_lang" value="<TMPL_VAR NAME=l_set_lang default="Choose language">" tabindex="2" class="buttons" />
+      </div>
+     </form>
+     <!-- Session lang form end -->

@@ -1,0 +1,40 @@
+    <Field Description="Query" Name="Field_query">
+      <Button ButtonLabel="Query" Command="do_query_block"/>
+      <Position Column="0" Position="absolute" Row="40"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="First record" Name="Field_first">
+      <Button ButtonLabel="First" Command="do_first_block"/>
+      <Position Column="1" Position="absolute" Row="40"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="Previous Record" Name="Field_previous">
+      <Button ButtonLabel="Previous" Command="do_prev_block"/>
+      <Position Column="2" Position="absolute" Row="40"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="Next Record" Name="Field_next">
+      <Button ButtonLabel="Next" Command="do_next_block"/>
+      <Position Column="3" Position="absolute" Row="40"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Description="Last Record" Name="Field_last">
+      <Button ButtonLabel="Last" Command="do_last_block"/>
+      <Position Column="4" Position="absolute" Row="40"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>

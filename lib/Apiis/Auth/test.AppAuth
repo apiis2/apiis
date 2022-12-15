@@ -1,0 +1,70 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.AppAuth,v 1.3 2004/10/13 15:04:39 marek Exp $
+##############################################################################
+
+BEGIN {    # execute some initialization before compilation
+   use Env qw( APIIS_HOME );
+   # $Exporter::Verbose=1;
+   die "APIIS_HOME is not set!\n" unless $APIIS_HOME;
+   use lib "$APIIS_HOME/lib";
+   require apiis_init;
+   initialize_apiis( VERSION => '$Revision: 1.3 $' );
+}
+
+use strict;
+use warnings;
+
+$apiis->join_model('efabis');
+$apiis->check_status;
+my $user=$apiis->os_user;
+#print Dumper($apiis);
+### creates Auth object for the user which is curently log-in and join it to the $apiis structure ###
+$apiis->join_auth($user);
+#die Dumper($apiis->Auth);
+
+#####################################################################################################
+#### PUBLIC METHODS ####
+
+### METHOD: print_policies ### 
+##method print applications list to which user has access rights 
+$apiis->Auth->print_os_actions;
+
+### METHOD: action_types ### 
+##returns all type of actions which are curently allowed for the user. 
+printf "\nYour type of actions: %s\n", join(', ',$apiis->Auth->types_of_actions);
+
+### METHOD: os_actions ### 
+##method return list of all actions which are allowed for the user if you run it without any parameter;
+##if you run it with parameter "action type" then you get the list of allowed actions for this specified action type 
+##(programs,forms,reports,admin_action,...) 
+printf "\nAll actions which you can execut: %s\n", join(', ',$apiis->Auth->os_actions); 
+printf "\nAction which you can execut in specified class: %s\n", join(', ',$apiis->Auth->os_actions('program')); 
+
+### METHOD: check_os_action ###
+##check that user can executs action. 
+$apiis->Auth->check_os_action('runall_ar.pl','program');
+
+#### PUBLIC METHODS - END ####
+#####################################################################################################
+print "\n";
+
+
+### If you want to test this now you have to add some records to your tables ##
+### I put here some example records  ###
+
+#INSERT INTO ROLES (role_id,role) values(11,'app_test');
+#INSERT INTO ROLES (role_id,role) values(12,'app_other');
+
+#INSERT INTO USER_ROLES (user_id,role_id) values(1,11);
+#INSERT INTO USER_ROLES (user_id,role_id) values(1,12);
+
+#INSERT INTO POLICIES_APP (app_policy_id,app_name,app_class) values(1,'test.AppAuth','program');
+#INSERT INTO POLICIES_APP (app_policy_id,app_name,app_class) values(2,'runall_ar.pl','program');
+#INSERT INTO POLICIES_APP (app_policy_id,app_name,app_class) values(3,'new user','action');
+#INSERT INTO POLICIES_APP (app_policy_id,app_name,app_class) values(4,'add breed','form');
+
+#INSERT INTO ROLE_POLICIES_APP (role_id,app_policy_id) values(11,1);
+#INSERT INTO ROLE_POLICIES_APP (role_id,app_policy_id) values(11,2);
+#INSERT INTO ROLE_POLICIES_APP (role_id,app_policy_id) values(12,3);
+#INSERT INTO ROLE_POLICIES_APP (role_id,app_policy_id) values(12,4);

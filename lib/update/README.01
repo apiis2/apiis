@@ -1,0 +1,86 @@
+##############################################################################
+# $Id $
+##############################################################################
+
+This is some documentation about how to implement the changes named 01 to the
+core and the running projects.
+
+The 01-updates address the problem to have several ID sets (german: Nummernkreise)
+in table transfer.
+
+Example: You have an animal in transfer with the following records:
+
+db_animal | db_unit | ext_animal
+--------------------------------
+123       | 77      | Paul
+123       | 79      | Fred
+
+Until now, decode_record looked for all records with db_animal = 123 and took the
+first one to display the external identification. This was not always the
+desired one.
+
+To eliminate this problem, we introduced another mandatory column in transfer,
+called id_set, which is commonly a foreign key to table codes.
+
+If we assume the external value of id_set (from codes) we now get for example:
+
+db_animal | db_unit | ext_animal | id_set
+-----------------------------------------
+123       | 77      | Paul       | Piglet
+123       | 79      | Fred       | Herdbook
+
+Now you can define a form with the Herdbook representation in the animal
+field:
+   <DataSource Name="DataSource_0">
+         <Record TableName="animal"/>
+         <Column DBName="db_animal" Name="Column_0" Type="DB">
+             <IdSet Name="idset_Column_0a" SetName="Herdbook"/>
+         </Column>
+   </DataSource>
+
+On the code level, id_set() became another method of the Record-object columns
+to reflect the settings on application level (e.g. forms) and to allow setting
+it from within the code (e.g. load object).
+Example:
+
+   $record_obj->column('db_animal')->id_set('Herdbook');
+
+For further details study the inline documentation (POD) of the modules.
+
+
+The 01-changes have to be applied in the following order:
+
+1.) upd_core_01.pl
+    This changes the model file. It is non-destructive in case of errors and
+    keeps a backup (which you have anyway :^) of your model file.
+    Run
+       ./upd_core_01.pl -m
+    for the built-in man page.
+
+2.) ins_codes_01.pl
+    This inserts the values into table codes. There is a configuration part at
+    the beginning of the file. Watch out for the tags 'configuration_start'
+    and 'configuration_end'.
+    Run
+       ./ins_codes_01.pl -m
+    for the built-in man page.
+
+3.) upd_transfer_01.txt
+    Table transfer cannot be updated by a generic script. Read the examples
+    and apply them to your database.
+
+4.) upd_AR_01.txt
+    If you use Marek's AR access rights system, read the file and run these
+    commands. This will recreate the access rights tables and views for the
+    default users.
+    If you have defined other users, please contact Marek <marek@tzv.fal.de>.
+
+All 4 steps have to be run agains each project.
+
+Note:
+This procedure is aimed to be a first step to get a smooth way of updating
+parts of the core and the database without always destroying everything and
+beginning from scratch. Please report your experiences.
+
+Enjoy
+Helmut

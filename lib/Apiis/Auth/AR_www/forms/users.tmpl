@@ -1,0 +1,49 @@
+
+  <tmpl_var name=div>
+  <form name="users" id="users" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT>>
+  <table cellpadding="6" cellspacing="1" border="0" >
+   <thead>
+    <tr>
+     <td>
+      <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armuser"><TMPL_VAR NAME=l_arm_add_new_user></a>
+     </td>
+     <td colspan="6"></td>
+    </tr>
+    <tr>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_LOGIN></h4></td>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_USER></h4></td>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_LANG></h4></td>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_MARKER></h4></td>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_DISABLED></h4></td>
+     <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWUSERS_ROLES></h4></td>
+     <td></td>
+    </tr>
+   </thead>
+   <tbody>
+    <TMPL_LOOP NAME="USERS_LIST_SUBLOOP">
+    <tr  class="<TMPL_VAR NAME=TR_STYLE>">
+     <td class="value"><h4><TMPL_VAR NAME=LOGIN></h4></td>
+     <td class="value"><a href="mailto:<TMPL_VAR NAME=EMAIL>" class="email"><TMPL_VAR NAME="FIRSTNAME"> <TMPL_VAR NAME="SECONDNAME"></a></td>
+     <td class="value"><TMPL_VAR NAME=LANG></td>
+     <td class="value"><TMPL_VAR NAME=MARKER></td>
+     <td class="value"><TMPL_VAR NAME=DISABLED></td>
+     <td class="value"><TMPL_VAR NAME=ROLES></td>
+     <td class="buttons"><a href="javascript:show_apply('<TMPL_VAR NAME=user_id>');" title="<TMPL_VAR NAME=l_show_user_title>"><TMPL_VAR NAME=l_show_user></a></td>
+     <td class="buttons"><a href="javascript:remove('<TMPL_VAR NAME=login>');" title="<TMPL_VAR NAME=l_delete_user_title>"><TMPL_VAR NAME=l_delete_user></a></td>
+    </tr>
+    </TMPL_LOOP>
+    <tr>
+     <td colspan="7"></td>
+    </tr>
+    <tr>
+     <td colspan="7" >
+      <input type="hidden" name="show_apply" value="">
+      <input type="hidden" name="remove" value="">
+      <input type="hidden" name="form_status" value="list">
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+      <input type="hidden" name="action" value="armusers">
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  </form>

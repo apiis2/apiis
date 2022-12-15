@@ -1,0 +1,85 @@
+#!/usr/bin/env perl
+
+BEGIN {    # execute some initialization before compilation
+   # $Exporter::Verbose=1;
+   use Env qw( APIIS_HOME );
+   die "APIIS_HOME is not set!\n" unless $APIIS_HOME;
+   use lib "$APIIS_HOME/lib";
+   require apiis_init;
+   initialize_apiis( VERSION => '$Revision: 1.1 $' );
+}
+
+$apiis->join_model('breedprg');
+$apiis->check_status( die => 'CRIT' );
+
+
+
+use Apiis::DataBase::SQL::PseudoStatement;
+
+
+$pseudosql[0]='INSERT into litter ( db_animal
+ , dam2,comment 
+ )
+		     VALUES ( $dam_hb_nr,  concat("society|sex", $dam_society ."|2", $piglet["start_notch_no, born_alive_no"]),
+ $comments )';
+
+$pseudosql[1]= ' UPdate litter set dam2=concat("society|sex", $dam_society ."|2", $piglet["start_notch_no, born_alive_no"]) ,comment ="towa e prosto komment\'s",parity=13.89 where db_animal=concat("society|.sex", $dam_society ."|2", $piglet["start_notch_no, born_alive_no"]) ';
+
+$pseudosql[2]=' SELECT $db_animal from animal where db_sire=concat("society|sex", $dam_society ."|2", $piglet["start_notch_no, born_alive_no"]) ';
+
+$pseudosql[3]=' SELECT $db_animal from animal';
+
+$pseudosql[4]=' DELETE from animal where db_sire=concat("society|sex", $dam_society ."|2", $piglet["start_notch_no, born_alive_no"]) AND comment="delme" ';
+
+
+$data_hash{dam_hb_nr}=123;
+$data_hash{dam_society}="society1";
+$data_hash{start_notch_no}=6;
+$data_hash{born_alive_no}=5;
+$data_hash{piglet}=7;
+$data_hash{comments}="this is a comment";
+
+$sqltext=$pseudosql[4];
+
+
+my  $statement = Apiis::DataBase::SQL::PseudoStatement->new(
+						      pseudosql     => $sqltext,
+                                                      data_hash => \%data_hash
+						     );
+if ($statement->status) {
+  foreach ($statement->errors) {
+    $_->print;
+  }
+  die "cannot create obj";
+};
+
+print "The original statement: $sqltext\n";
+
+
+print "Action is ",$statement->actionname(),"\n";
+
+print "Table name  is ",$statement->tablename(),"\n";
+
+my @columns=$statement->columns();
+print "Column names: @columns\n";
+
+my %columns_hash;
+
+foreach (@columns) {
+  $columns_hash{$_}=$statement->value($_);
+}
+
+
+foreach (sort keys %columns_hash) {
+print "$_:$columns_hash{$_}\n";
+};
+
+print "Statement where clause: ",$statement->whereclause,"\n";
+
+
+
+
+
+
+
+

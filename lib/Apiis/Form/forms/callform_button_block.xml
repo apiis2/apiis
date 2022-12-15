@@ -1,0 +1,19 @@
+  <Block Description="Call another Form" Name="callform_block_button">
+    <DataSource Name="DataSource_callform_block_button">
+      <none/>
+    </DataSource>
+    <Field Description="Call another Form" Name="CallForm_Field_0">
+      <Button ButtonLabel="CallForm" Command="do_runevents"/>
+      <Position Column="4" Row="69"/>
+      <Text/>
+      <Color BackGround="green"/>
+      <Format/>
+      <Event Name="Event_callform" Type="CallForm" Action="CallForm">
+         <Parameter Name="Parameter_cf1" Key="formname" Value="test1.frm"/>
+         <Parameter Name="Parameter_cf2" Key="master_sourcefield" Value="Field_5"/>
+         <Parameter Name="Parameter_cf3" Key="client_targetfield" Value="Field_0"/>
+         <Parameter Name="Parameter_cf4" Key="client_sourcefield" Value="Field_0"/>
+         <Parameter Name="Parameter_cf5" Key="master_targetfield" Value="Field_5"/>
+      </Event>
+    </Field>
+  </Block>

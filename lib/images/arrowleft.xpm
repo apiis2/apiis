@@ -1,0 +1,20 @@
+/* XPM */
+static char *arrowleft[] = {
+/* width height num_colors chars_per_pixel */
+"    16    9        4            1",
+/* colors */
+". c #808080",
+"# c #000000",
+"+ c #e0e0e0",
+"a c none",
+/* pixels */
+"aaaaaaaaaa##aaaa",
+"aaaaaaaa##..aaaa",
+"aaaaaa##....aaaa",
+"aaaa##......aaaa",
+"aaaa........aaaa",
+"aaaa++......aaaa",
+"aaaaaa++....aaaa",
+"aaaaaaaa++..aaaa",
+"aaaaaaaaaa++aaaa"
+};

@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Granting access rights to the user </TITLE>
+<META NAME="description" CONTENT="Granting access rights to the user ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node16.html">
+<LINK REL="previous" HREF="node12.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node16.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html315"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html311"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html305"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html313"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html316"
+  HREF="node16.html">Access rights for the</A>
+<B> Up:</B> <A NAME="tex2html312"
+  HREF="node2.html">The Access Control</A>
+<B> Previous:</B> <A NAME="tex2html306"
+  HREF="node14.html">Registering user on the</A>
+ &nbsp; <B>  <A NAME="tex2html314"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00250000000000000000"></A><A NAME="garntingartu"></A>
+<BR>
+Granting access rights to the user 
+</H1>
+The access rights are granted to the user by the role groups. Each registered user should be assigned at least to the one group (f.e. own which is created during the registration process). The information about groups assigned to the users is stored in the database table (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:users-groups-roles">1.5</A>: AR_User_Groups):
+<BR>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="147"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.2:</STRONG>
+Relations beetwen users and groups</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">user_id</TD>
+<TD ALIGN="CENTER">group_id
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="usersgroupsrel"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<BR>
+group_id is a foreign key to the group's table where the group definitions are stored (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:users-groups-roles">1.5</A>: AR_Groups table).
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="158"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.3:</STRONG>
+Groups</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">group_id</TD>
+<TD ALIGN="CENTER">group_name</TD>
+<TD ALIGN="CENTER">group_type</TD>
+<TD ALIGN="CENTER">group_content</TD>
+<TD ALIGN="CENTER">group_desc
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="grantinggroups"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+The user is allocated for the group by the administrator. If the administrator wants to add the user to the group, first he has to check that the user can be really assigned to this group - checking that the group can cooperate with the groups which are currently defined for this user. This process is done automatically on the basis of the group constraints. The group constraints qualify which groups can not be used in the same time by the one user. They are stored in the separate table in the database (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:constraints">1.8</A>: AR_Group_Constraints).
+<BR>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="169"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.4:</STRONG>
+Group constraints</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">group_cons_id</TD>
+<TD ALIGN="CENTER">group1_id</TD>
+<TD ALIGN="CENTER">group2_id</TD>
+<TD ALIGN="CENTER">group_cons_type
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="groupconstraints"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+The fields group1_id and group2_id in the table are foreign keys to the table groups (Table <A HREF="#grantinggroups">1.3</A>).
+The algorithm, which veryfies the groups, takes from the user the current list of his groups (from table <A HREF="#usersgroupsrel">1.2</A>). The values from the list are set together one by one with the id of the new group which we want to add. Each couple of values is used as a condition for the WHERE clause in the following SQL statement:
+<DIV ALIGN="CENTER">
+<I>SELECT group_cons_id FROM ar_group_constraints WHERE
+((group1_cons_id='</I><B><I>user_defined_group</I></B><I>' and group2_cons_id='</I><B><I>new_group</I></B><I>') or (group1_cons_id='</I><B><I>new_group</I></B><I>' and group2_cons_id='</I><B><I>user_defined_group</I></B><I>'))</I> and (group_cons_type='<B>user-group-cons</B>')
+</DIV>
+
+<P>
+For each couple of groups one SELECT is executed. When all combination of groups are positively verified (no results for each combination) then the user can be appraised to the group. If there is a result then this means that the constraints are defined for this combination and the new role group can not be added to the current set of groups defined for the user. The algorithm is not stooped in this point and it just go through the all combinations. All results are collected and then they are showed to the administrator. The administrator has clear picture which groups are in the conflict with the new group.
+<BR>
+The constraints for the groups are optional and it should be defined only if they are needful (the decision stay with the administrator). In the section <A HREF="node32.html#definingconstraints">1.9</A> you can read how the constraints are defined.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html315"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html311"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html305"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html313"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html316"
+  HREF="node16.html">Access rights for the</A>
+<B> Up:</B> <A NAME="tex2html312"
+  HREF="node2.html">The Access Control</A>
+<B> Previous:</B> <A NAME="tex2html306"
+  HREF="node14.html">Registering user on the</A>
+ &nbsp; <B>  <A NAME="tex2html314"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

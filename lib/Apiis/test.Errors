@@ -1,0 +1,125 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Errors,v 1.12 2005/03/24 11:01:04 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Error object.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.12 $' );
+
+mysub();    # run some code
+
+$apiis->error(1)->ext_fields( [qw/ 2455 98 /] ); # overwrite old error object
+# $apiis->error('a')->print;  # should raise an error
+# $apiis->error()->print;   # dito
+$apiis->check_status;
+print "\ndeleting error with id 3:\n";
+$apiis->del_error(3);
+$apiis->check_status;
+# $apiis->check_status( die => 'CRIT', ignore => 'INFO' );
+
+##############################################################################
+# severity values are:
+#   DEBUG INFO NOTICE WARNING ERR CRIT ALERT EMERG
+# error types:
+#   DATA DB OS PARSE CODE PARAM CONFIG UNKNOWN
+# reported actions:
+#   INSERT UPDATE DELETE SELECT DECODE ENCODE UNKNOWN
+##############################################################################
+
+sub mysub {
+   my @all_errors;
+
+   # first error:
+   push @all_errors,
+     Apiis::Errors->new(
+      type      => 'CONFIG',
+      severity  => 'INFO',
+      ext_fields=> [qw/ hij klö /],
+      from      => 'test.Errors',
+      msg_short => "No date format defined",
+   );
+
+     # second error:
+   push @all_errors,
+     Apiis::Errors->new(
+      type      => 'PARAM',
+      severity  => 'WARNING',
+      from      => 'test.Errors',
+      msg_short => "Not enough parameters",
+   );
+
+   # third error:
+   push @all_errors,
+     Apiis::Errors->new(
+      type      => 'DATA',
+      severity  => 'WARNING',
+      action    => 'ENCODE',
+      from      => 'test.Errors',
+      msg_short => "No encoding found",
+   );
+
+   # fourth error:
+   push @all_errors,
+     Apiis::Errors->new(
+      type      => 'DB',
+      severity  => 'CRIT',
+      from      => 'test.Errors',
+      msg_short => "Database connection is broken",
+   );
+
+   $apiis->status(1);
+   $apiis->errors( \@all_errors );
+}
+
+__END__
+
+##############################################################################
+# standalone usage of Errors.pm, without central handling by $apiis:
+my ($status, $err_ref) = mysub2();
+
+# # Error post processing
+for my $thiserror ( @$err_ref ){
+   print join(', ', $thiserror->type),"\n";
+   print join(', ', $thiserror->severity),"\n";
+   print join(', ', $thiserror->action),"\n";
+   if ( $thiserror->type eq 'DATA' ){
+      print "Error of type ", $thiserror->type, ", with severity ",
+         $thiserror->severity, " related to table ", $thiserror->db_table, "\n";
+      print "ext_fields: ", join(', ', @{$thiserror->ext_fields}), "\n";
+   }
+   if ( $thiserror->type eq 'OS' ){
+      print $thiserror->type .' - '. $thiserror->severity .' - '.
+         $thiserror->msg_short, "\n";
+   }
+}
+##############################################################################
+# some kind of standalone usage of module Errors.pm:
+sub mysub2 {
+   use Apiis::Errors;
+   my @all_errors;
+   my @arr = qw/111 222 333/;
+
+   my $a = Errors->new( type=>'DATA' );
+   $a->severity('WARN');
+   $a->db_table('animal');
+   $a->ext_fields( \@arr );
+   # $a->ext_fields( ['aaa','bbb','ccc'] );
+   push @all_errors, $a;
+
+   my $b = Errors->new( type=>'OS' );
+   $b->severity('FATAL');
+   $b->msg_short('Pladde is foll');
+   push @all_errors, $b;
+
+   return ( scalar @all_errors, \@all_errors );
+}

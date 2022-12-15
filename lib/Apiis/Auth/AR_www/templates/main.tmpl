@@ -1,0 +1,12 @@
+<!-- main.tmpl -->
+<tmpl_if name=show_news>
+  <table id="news_table" cellpadding="0" cellspacing="0" border="0">
+   <tr>
+    <td class="contentBody"><tmpl_var name=news_main></td>
+    <td class="topics"><tmpl_var name=topics_main></td>
+   </tr>
+  </table>
+  <tmpl_else>
+</tmpl_if>
+<!-- main.tmpl end -->
+

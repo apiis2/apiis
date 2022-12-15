@@ -1,0 +1,148 @@
+
+  <tmpl_var name=div>
+   <a name="top"></a>
+   <form name="role" id="role" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT_ROLE> class="pageForm">
+    <table cellpadding="5" cellspacing="1" border="0">
+     <tbody>
+      <tr>
+       <td class="label"><TMPL_VAR NAME=l_arm_role_name>:</td>
+       <td class="value">
+	<input <tmpl_var name="readonly"> name="ar_roles__role_name" class="<tmpl_var name=class_role_name>" size="25" tabindex="1" value="<TMPL_VAR NAME=role_name>" <TMPL_VAR NAME=JS_CHANGE>>
+       </td>      
+      </tr>
+      <tr>
+       <td class="label"><TMPL_VAR NAME=l_arm_role_type>:</td>
+       <td class="value">
+        <input readonly name="ar_roles__role_type" class="<tmpl_var name=class_role_type>" size="3" tabindex="3" value="<TMPL_VAR NAME=role_type>">
+       </td>
+      </tr>
+      <tr>
+       <td class="label"><TMPL_VAR NAME=l_arm_role_lname>:</td>
+       <td class="value">
+	<input name="ar_roles__role_long_name" class="<tmpl_var name=class_role_long_name>" size="40" tabindex="2" value="<TMPL_VAR NAME=role_long_name>" <TMPL_VAR NAME=JS_CHANGE>>
+       </td>
+      </tr>
+      <tr>
+       <td colspan="2" class="label"><TMPL_VAR NAME=l_arm_role_subset>:</td>
+      </tr>
+      <tr>
+       <td colspan="2" class="value">
+        <select name="ar_role__role_subset" multiple="multiple" size="10"  style="width: 700px;" tabindex="4" <TMPL_VAR NAME=JS_CHANGE>><TMPL_LOOP NAME=subroles_loop>
+         <option value="<TMPL_VAR NAME=NAME>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=NAME> (<TMPL_VAR NAME=SUBSET>) </option></TMPL_LOOP>
+        </select>
+       </td>
+      </tr>
+      <tr>
+       <td colspan="2" class="label"><TMPL_VAR NAME=l_arm_role_descr>:</td>
+      </tr>
+      <tr>
+       <td colspan="2" class="value">
+	<textarea name="ar_roles__role_descr" class="<tmpl_var name=class_role_descr>"  tabindex="5" rows="2" <TMPL_VAR NAME=JS_CHANGE>><TMPL_VAR NAME=role_descr></textarea>
+       </td>
+      </tr>
+      <tr><td colspan="2"><hr></td><tr>
+      <tr>
+       <td colspan="2" class="control buttons">
+	<input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+	<input type=hidden name="show_apply" value="<TMPL_VAR NAME=role_id>">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="current_subroles" value="<TMPL_VAR NAME=current_subroles>">
+        <input type="hidden" name="action" value="armrole">
+        <input type="submit" name="user" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_role>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>>
+       </td>
+      </tr>
+      <tr><td colspan="2"><hr></td><tr>
+     </tbody>
+    </table>
+   </form>
+
+   <form name="role_policies" id="role_policies" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT> class="pageForm">
+    <table cellpadding="5" cellspacing="1" border="0" >
+     <tbody>
+      <tr>
+       <td colspan="6" class="label"><TMPL_VAR NAME=l_arm_role_policies>:</td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+      <tr>
+       <td class="control buttons">
+         <input type="checkbox"  name="check_all" value="<TMPL_VAR NAME=id>" onClick="this.value=check_role_policies(this.form.policy_id)">
+       <td class="label">
+        <TMPL_VAR NAME=l_arm_checkall>
+       </td>
+       <td colspan="2"></td>
+       <td class="control buttons">
+         <a href="#bottom"><TMPL_VAR NAME=l_arm_bottom></a>
+       </td>
+       <td class="control buttons">
+        <input type="submit" name="marked_policies" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_marked_policies>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>>
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+      <TMPL_IF NAME=stpolicies_loop>
+        <tr> 
+         <td></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_stpolicy_name></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_stpolicy_type></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_stpolicy_descr></td>
+         <td></td>
+         <td></td>
+        </tr>
+        <TMPL_LOOP NAME=stpolicies_loop>
+        <tr class="fillline"> 
+         <td class="value"><input type="checkbox" <TMPL_VAR NAME=checked> name="policy_id" value="<TMPL_VAR NAME=id>"></td>
+         <td class="value"><TMPL_VAR NAME=name></td>
+         <td class="value"><TMPL_VAR NAME=type></td>
+         <td class="value" colspan="3"><TMPL_VAR NAME=descr></td>
+        </tr>
+        </TMPL_LOOP>
+      </TMPL_IF>
+      <TMPL_IF NAME=dbtpolicies_loop>
+        <tr> 
+         <td></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_dbtpolicy_action></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_dbtpolicy_table></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_dbtpolicy_columns></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_dbtpolicy_descriptor_n></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_role_dbtpolicy_descriptor_v></td>
+        </tr>
+        <TMPL_LOOP NAME=dbtpolicies_loop>
+        <tr class="fillline"> 
+         <td class="value"><input type="checkbox" <TMPL_VAR NAME=checked> name="policy_id" value="<TMPL_VAR NAME=id>"></td>
+         <td class="value"><TMPL_VAR NAME=action></td>
+         <td class="value"><TMPL_VAR NAME=table_name></td>
+         <td class="value">
+           <input name="table_columns" size="60" value="<TMPL_VAR NAME=table_columns>">
+         </td>
+         <td class="value"><TMPL_VAR NAME=descriptor_name></td>
+         <td class="value"><TMPL_VAR NAME=descriptor_value></td>
+        </tr>
+        </TMPL_LOOP>
+      </TMPL_IF>
+      <tr><td colspan="6"><hr></td><tr>
+      <tr>
+       <td class="control buttons">
+         <input type="checkbox"  name="check_all" value="<TMPL_VAR NAME=id>" onClick="this.value=check_role_policies(this.form.policy_id)">
+       </td>
+       <td class="label">
+         <TMPL_VAR NAME=l_arm_checkall>
+       </td>
+       <td colspan="2"></td>
+       <td class="control buttons">
+         <a href="#top"><TMPL_VAR NAME=l_arm_top></a>
+       </td>
+       <td class="control buttons">
+	<input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+	<input type=hidden name="show_apply" value="<TMPL_VAR NAME=role_id>">
+        <input type=hidden name="show_role_name" value="<TMPL_VAR NAME=role_name>">
+        <input type=hidden name="show_role_type" value="<TMPL_VAR NAME=role_type>">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="change_my_policies" value="1">
+        <input type="hidden" name="action" value="armrole">
+        <input type="submit" name="marked_policies" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_marked_policies>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>>
+       </td>
+      </tr>
+      <tr><td colspan="6"><hr></td><tr>
+     </tbody>
+    </table>
+   </form>
+   <a name="bottom"></a>

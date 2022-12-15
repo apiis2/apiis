@@ -1,0 +1,44 @@
+
+  <tmpl_var name=div>
+  <form name="choose_table" id="choose_table" action="<TMPL_VAR NAME=form_action>" method="post" class="pageForm">
+  <table cellpadding="6" cellspacing="1" border="0" >
+   <thead>
+    <tr>
+     <td colspan="3">
+      <input type="submit" name="close" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_close>" onclick="self.close();">
+     </td>
+    </tr>
+    <tr><td colspan="3"><hr></td><tr>
+    <tr>
+     <td></td>
+     <td class="label"><TMPL_VAR NAME=l_arm_table_name></td>
+     <td class="label"><TMPL_VAR NAME=l_arm_table_columns></td>
+    </tr>
+   </thead>
+   <tbody>
+    <TMPL_LOOP NAME=tables_loop>
+    <tr class="fillline"> 
+      <td class="value">
+        <input type="radio" <TMPL_VAR NAME=selected> name="table_id" value="<TMPL_VAR NAME=table_id>" 
+          onclick="window.opener.document.dbt_policies.dbtpolicy_table_name_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=table_name>';
+                   window.opener.document.dbt_policies.dbtpolicy_table_columns_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=table_columns>';
+                   window.opener.document.dbt_policies.table_id_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=table_id>';"
+        >
+      </td>
+      <td class="value"><TMPL_VAR NAME=table_name></td>
+      <td class="value"><TMPL_VAR NAME=table_columns></td>
+    </tr>
+    </TMPL_LOOP>
+    <tr><td colspan="3"><hr></td><tr>
+    <tr>
+     <td colspan="3" >
+      <input type="hidden" name="delete_user" value="">
+      <input type="hidden" name="form_status" value="list">
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+      <input type="hidden" name="action" value="armchoose_table">
+      <input type="submit" name="close" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_close>" onclick="self.close();">
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  </form>

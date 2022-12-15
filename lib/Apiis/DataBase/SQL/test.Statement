@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use warnings;
+use strict;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.2 $' );
+$apiis->check_status( die => 'CRIT' );
+
+
+use Apiis::DataBase::SQL::Statement;
+
+
+my $sqltext="update foo SET money=34.22,days=2 Where rate>2.3 and (payday<'01-02-2003' or salary=2)";
+
+
+my  $statement = Apiis::DataBase::SQL::Statement->new(
+						      sql     => $sqltext
+						     );
+if ($statement->status) {
+  foreach ($statement->errors) {
+    $_->print;
+  }
+  exit;
+};
+
+print "The original statement: $sqltext\n";
+
+
+print "Action is ",$statement->actionname(),"\n";
+
+print "Table name  is ",$statement->tablename(),"\n";
+
+my @columns=$statement->columns();
+print "Column names: @columns\n";
+
+my %columns_hash;
+
+foreach (@columns) {
+  $columns_hash{$_}=$statement->value($_);
+}
+
+
+foreach (sort keys %columns_hash) {
+print "$_:$columns_hash{$_}\n";
+};
+
+print "Statement where clause: ",$statement->whereclause,"\n";
+
+print "The value of money is:",$statement->value('money'),"\n";
+
+
+
+
+
+

@@ -1,0 +1,1620 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE model SYSTEM "model.dtd">
+
+<model
+>
+   <general dbdriver="Pg" dbname="xxdummyxx" dbhost="localhost" dbport="5432" dbuser="apiis_admin" dbencoding="unicode" dbpassword=""
+></general
+>
+   <table name="unit" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="BIGINT" name="db_unit" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Internal sequence for this record" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="ext_unit" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="External Name of this unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="6" DATATYPE="CHAR" name="ext_id" CHECK="NotNull,ReservedStrings" struct_type="mandatory" DESCRIPTION="External ID within this unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Contact" DATATYPE="BIGINT" name="db_contact" CHECK="ForeignKey contacts db_contact" struct_type="mandatory" DESCRIPTION="Contacts" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Member of" DATATYPE="BIGINT" name="db_member" CHECK="ForeignKey unit db_unit" struct_type="mandatory" DESCRIPTION="Member of a hierarchy" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="opening_dt" struct_type="recommended" DESCRIPTION="Starting date for this unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="closing_dt" struct_type="recommended" DESCRIPTION="Closing date for this unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Timestamp of last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="mandatory" DESCRIPTION="report errors from check_integrity" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="mandatory" DESCRIPTION="check level" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="global identifier" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="record class" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="version" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="mandatory" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetColumn db_unit seq_unit__db_unit,SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="VIEW:entry_unit;CONCAT:ext_unit,ext_id;WHERE:closing_dt is NULL;REF_COL:db_unit" SEQUENCE="seq_unit__db_unit" INDEX="unique db_unit,unique ext_unit ext_id closing_dt"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="inspool" struct_type="mandatory"
+>
+      <column LENGTH="5" DATATYPE="CHAR" name="ds" CHECK="List DS01 DS02 DS03 DS04 DS05 DS06" struct_type="optional" DESCRIPTION="datastream (dataset) name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="12" DATATYPE="BIGINT" name="record_seq" struct_type="optional" DESCRIPTION="unique ID of record(sequence)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" DEFAULT="$today" name="in_date" struct_type="optional" DESCRIPTION="Time stamp for initial entry" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="8" DATATYPE="BIGINT" name="ext_unit" CHECK="NotNull" struct_type="optional" DESCRIPTION="Reporting Unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="proc_dt" struct_type="optional" DESCRIPTION="time stamp for processing" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="CHAR" DEFAULT="New" name="status" CHECK="List NEW OK ERR" struct_type="optional" DESCRIPTION="Status column" form_type="editable" ar_check="1" MODIFY="UpperCase"
+></column
+>
+      <column LENGTH="80" DATATYPE="CHAR" name="record" struct_type="optional" DESCRIPTION="the data record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_inspool__record_seq" INDEX="unique record_seq"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="inspool_err" struct_type="mandatory"
+>
+      <column LENGTH="12" DATATYPE="BIGINT" name="record_seq" CHECK="ForeignKey inspool record_seq" struct_type="optional" DESCRIPTION="unique ID of record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="err_type" struct_type="optional" DESCRIPTION="Error type ( DB OS DATA...)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="action" struct_type="optional" DESCRIPTION="Error action" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="dbtable" struct_type="optional" DESCRIPTION="Error point to table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="dbcol" struct_type="optional" DESCRIPTION="Error point to column (inside table)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="err_source" struct_type="optional" DESCRIPTION="Location where error occurred" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="short_msg" struct_type="optional" DESCRIPTION="Error short message" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="long_msg" struct_type="optional" DESCRIPTION="Error long message" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="ext_col" struct_type="optional" DESCRIPTION="which external cols are involved" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="ext_val" struct_type="optional" DESCRIPTION="external (incoming) value" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="mod_val" struct_type="optional" DESCRIPTION="modified value" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="comp_val" struct_type="optional" DESCRIPTION="compare values (2 in case of la)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="target_col" struct_type="optional" DESCRIPTION="Main/primary column of this record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="6" DATATYPE="CHAR" name="ds" struct_type="optional" DESCRIPTION="data stream" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="ext_unit" struct_type="optional" DESCRIPTION="external unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="CHAR" name="status" CHECK="List A H" struct_type="optional" DESCRIPTION="Active of historic?" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="TIMESTAMP" DEFAULT="$today" name="err_dt" struct_type="optional" DESCRIPTION="timestamp for setting status" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="record_seq"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="load_stat" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="ds" CHECK="ForeignKey inspool ds" struct_type="optional" DESCRIPTION="Program name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="TIMESTAMP" name="job_start" struct_type="optional" DESCRIPTION="timestamp start of job" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="TIMESTAMP" name="job_end" struct_type="optional" DESCRIPTION="timestamp end of job" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="BIGINT" name="status" struct_type="optional" DESCRIPTION="completion code" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="SMALLINT" name="rec_tot_no" struct_type="optional" DESCRIPTION="Number of Records processed" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="SMALLINT" name="rec_err_no" struct_type="optional" DESCRIPTION="Number of erroneous records" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="SMALLINT" name="rec_ok_no" struct_type="optional" DESCRIPTION="Number of correct records - inserted" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX=""
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="new_pest" struct_type="mandatory"
+>
+      <column LENGTH="12" DATATYPE="CHAR" name="class" struct_type="optional" DESCRIPTION="group/class (animal, perm_u, fix...)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="key" struct_type="optional" DESCRIPTION="db_animal..." form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="trait" struct_type="optional" DESCRIPTION="which estimator" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="BIGFLOAT" name="estimator" struct_type="optional" DESCRIPTION="predictor / estimator" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="BIGFLOAT" name="pev" struct_type="optional" DESCRIPTION="predicted error variance" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique class key trait"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="sources" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="source" CHECK="NotNull" struct_type="optional" DESCRIPTION="source node" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="tablename" struct_type="optional" DESCRIPTION="table name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="class" struct_type="optional" DESCRIPTION="owner node" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="columnnames" struct_type="optional" DESCRIPTION="columns" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="targets" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="target" CHECK="NotNull" struct_type="optional" DESCRIPTION="target node" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="tablename" struct_type="optional" DESCRIPTION="table name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="class" struct_type="optional" DESCRIPTION="owner node" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="columnnames" struct_type="optional" DESCRIPTION="columns" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="nodes" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="nodename" CHECK="NotNull" struct_type="optional" DESCRIPTION="node name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="address" CHECK="NoCheck" struct_type="optional" DESCRIPTION="node ip address" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_database__guid" INDEX="unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="blobs" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="blob_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="number of blob" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="BLOB" name="blob" struct_type="optional" DESCRIPTION="binary large objects" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="db_mimetype" CHECK="ForeignKey codes db_code class=MIMETYPE" struct_type="optional" DESCRIPTION="Mime_type of the file" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_blobs__blob_id" INDEX=""
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="languages" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="lang_id" struct_type="optional" DESCRIPTION="language id" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="2" DATATYPE="CHAR" name="iso_lang" struct_type="optional" DESCRIPTION="ISO 639-1" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="lang" struct_type="optional" DESCRIPTION="language" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1" MODIFY="SetNow"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1" MODIFY="SetUser"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="creation_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of creation" form_type="editable" ar_check="1" MODIFY="SetNow"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="creation_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the creation" form_type="editable" ar_check="1" MODIFY="SetUser"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="end_dt" struct_type="optional" DESCRIPTION="Timestamp of end using" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="end_user" struct_type="optional" DESCRIPTION="Who did the end status" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_languages__lang_id" INDEX="unique lang_id,unique iso_lang,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_users" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="user_id" CHECK="NoCheck" struct_type="optional" DESCRIPTION="unique user number - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="user_login" CHECK="NotNull" struct_type="optional" DESCRIPTION="login name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="user_password" CHECK="NotNull" struct_type="optional" DESCRIPTION="user password" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="user_language_id" CHECK="NotNull,ForeignKey languages lang_id" struct_type="optional" DESCRIPTION="default language of the user" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="user_marker" CHECK="NoCheck" struct_type="optional" DESCRIPTION="private user identifier which is insert into the owner column" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="user_disabled" CHECK="NotNull" struct_type="optional" DESCRIPTION="checking if the user can login to the system" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="user_status" CHECK="NotNull" struct_type="optional" DESCRIPTION="current login status of the user (is logged or not)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="user_last_login" CHECK="NoCheck" struct_type="optional" DESCRIPTION="date of the last login to the system" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIME" name="user_last_activ_time" CHECK="NoCheck" struct_type="optional" DESCRIPTION="the time which is updated during the user session after each opertion" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="80" DATATYPE="CHAR" name="user_session_id" CHECK="NoCheck" struct_type="optional" DESCRIPTION="session_id  for the interface" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_users__user_id" INDEX="unique user_id,unique user_login,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_users_data" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="user_id" CHECK="NotNull,ForeignKey ar_users user_id" struct_type="optional" DESCRIPTION="Foreign Key to the user table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="15" DATATYPE="CHAR" name="user_first_name" struct_type="optional" DESCRIPTION="First name/Department" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="user_second_name" struct_type="optional" DESCRIPTION="Family/company name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="user_institution" struct_type="optional" DESCRIPTION="company name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="40" DATATYPE="CHAR" name="user_email" struct_type="optional" DESCRIPTION="Email address" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="user_country" struct_type="optional" DESCRIPTION="country of the user" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="40" DATATYPE="CHAR" name="user_street" struct_type="optional" DESCRIPTION="Name of Street + Nr." form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="40" DATATYPE="CHAR" name="user_town" struct_type="optional" DESCRIPTION="Town name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="user_zip" struct_type="optional" DESCRIPTION="Postal zip code" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="100" DATATYPE="CHAR" name="user_other_info" struct_type="optional" DESCRIPTION="Comments" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="opening_dt" struct_type="optional" DESCRIPTION="Date of opening this record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="closing_dt" struct_type="optional" DESCRIPTION="Date of closing this record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of last change" form_type="editable" ar_check="1" MODIFY="SetNow"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1" MODIFY="SetUser"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="creation_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Timestamp of creation" form_type="editable" ar_check="1" MODIFY="SetNow"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="creation_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="Who did the creation" form_type="editable" ar_check="1" MODIFY="SetUser"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="end_dt" struct_type="optional" DESCRIPTION="Timestamp of end using" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="end_user" struct_type="optional" DESCRIPTION="Who did the end status" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique user_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_roles" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="role_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique role number - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="role_name" struct_type="optional" DESCRIPTION="unique name of the role" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="role_long_name" CHECK="NoCheck" struct_type="optional" DESCRIPTION="long role name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="role_type" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="the role type which can be specified as ST (System Task) or DBT (Database Task)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="200" DATATYPE="CHAR" name="role_subset" struct_type="mandatory" DESCRIPTION="Names of the roles which are defined as a subset of role" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="role_descr" CHECK="NoCheck" struct_type="optional" DESCRIPTION="description of the role" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_roles__role_id" INDEX="unique role_id,unique role_name role_type,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_user_roles" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="user_id" CHECK="NotNull,ForeignKey ar_users user_id" struct_type="optional" DESCRIPTION="Foreign Key to the user table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="role_id" CHECK="ForeignKey ar_roles role_id" struct_type="optional" DESCRIPTION="Foreign Key to the role table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique user_id role_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_dbtpolicies" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="dbtpolicy_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique policy number for the database tasks - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="action_id" CHECK="NotNull,ForeignKey codes db_code class=SQLACTION" struct_type="optional" DESCRIPTION="Foreign Key to the codes table - SQL action type" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="table_id" CHECK="NotNull,ForeignKey ar_dbttables table_id" struct_type="optional" DESCRIPTION="Foreign Key to the ar_dbttables" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="descriptor_id" CHECK="NotNull,ForeignKey ar_dbtdescriptors descriptor_id" struct_type="optional" DESCRIPTION="Foreign Key to the descriptor table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_dbtpolicies__dbtpolicy_id" INDEX="unique dbtpolicy_id,unique action_id table_id descriptor_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_role_dbtpolicies" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="role_id" CHECK="ForeignKey ar_roles role_id" struct_type="optional" DESCRIPTION="Foreign Key to the role table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="dbtpolicy_id" CHECK="ForeignKey ar_dbtpolicies dbtpolicy_id" struct_type="optional" DESCRIPTION="Foreign Key to the database policies table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique role_id dbtpolicy_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_dbttables" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="table_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique number - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="40" DATATYPE="CHAR" name="table_name" CHECK="NotNull" struct_type="optional" DESCRIPTION="table name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1000" DATATYPE="CHAR" name="table_columns" CHECK="NotNull" struct_type="optional" DESCRIPTION="the columns of defined table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="table_desc" CHECK="NoCheck" struct_type="optional" DESCRIPTION="description of the table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_dbttabels__table_id" INDEX="unique table_id,unique table_name table_columns,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_dbtdescriptors" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="descriptor_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique descriptor number - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="descriptor_name" CHECK="NotNull" struct_type="optional" DESCRIPTION="descriptor name is a column name which is used as a one of the filter for the access rights" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="2000" DATATYPE="CHAR" name="descriptor_value" CHECK="NotNull" struct_type="optional" DESCRIPTION="the values for defined descriptor (column)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="descriptor_desc" CHECK="NoCheck" struct_type="optional" DESCRIPTION="description of the descriptor" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_dbtdescriptor__descriptor_id" INDEX="unique descriptor_id,unique descriptor_name descriptor_value,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_stpolicies" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="stpolicy_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique policy number for the system tasks - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="100" DATATYPE="CHAR" name="stpolicy_name" CHECK="NotNull" struct_type="optional" DESCRIPTION="name of the application or form or report or some other action" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="40" DATATYPE="CHAR" name="stpolicy_type" CHECK="NotNull" struct_type="optional" DESCRIPTION="type of system task policy (www, report, form, action, subroutine)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="stpolicy_desc" struct_type="optional" DESCRIPTION="system policy description" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_stpolicies__stpolicy_id" INDEX="unique stpolicy_id,unique stpolicy_name stpolicy_type,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_role_stpolicies" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="role_id" CHECK="ForeignKey ar_roles role_id" struct_type="optional" DESCRIPTION="Foreign Key to the role table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="stpolicy_id" CHECK="ForeignKey ar_stpolicies stpolicy_id" struct_type="optional" DESCRIPTION="Foreign Key to the system policies table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique role_id stpolicy_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_constraints" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="cons_id" CHECK="NotNull" struct_type="optional" DESCRIPTION="unique constraints number - internal sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" DATATYPE="CHAR" name="cons_name" CHECK="NotNull" struct_type="optional" DESCRIPTION="constraints name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="15" DATATYPE="CHAR" name="cons_type" CHECK="NotNull" struct_type="optional" DESCRIPTION="constraints type which can be defined as: user-group, group-group, role-group" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="cons_desc" struct_type="optional" DESCRIPTION="constraint description" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_ar_constraints__cons_id" INDEX="unique cons_id,unique cons_name cons_type,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="ar_role_constraints" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="cons_id" CHECK="NotNull,ForeignKey ar_constraints cons_id" struct_type="optional" DESCRIPTION="Foreign Key to the constraints table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="first_role_id" CHECK="NotNull,ForeignKey ar_roles role_id" struct_type="optional" DESCRIPTION="Foreign Key to the roles table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="second_role_id" CHECK="NotNull,ForeignKey ar_roles role_id" struct_type="optional" DESCRIPTION="Foreign Key to the roles table" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="optional" DESCRIPTION="Date of last change, automatic timestamp" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="optional" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" CHECK="NoCheck" struct_type="optional" DESCRIPTION="report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" CHECK="NoCheck" struct_type="optional" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="optional" DESCRIPTION="global identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="optional" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="optional" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="optional" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique cons_id first_role_id second_role_id,unique guid"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="codes" struct_type="mandatory"
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="ext_code" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="external code" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="class" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Class/group of codes like SEX, SPECIES, LANGUAGES." form_type="editable" ar_check="1" MODIFY="UpperCase"
+></column
+>
+      <column LENGTH="6" DATATYPE="BIGINT" name="db_code" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Numerical code, database sequence" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="short_name" struct_type="recommended" DESCRIPTION="Short name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="50" DATATYPE="CHAR" name="long_name" struct_type="recommended" DESCRIPTION="Long name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="100" DATATYPE="TEXTBLOCK" name="description" struct_type="recommended" DESCRIPTION="Description" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="opening_dt" struct_type="mandatory" DESCRIPTION="Date when this code is defined" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="closing_dt" struct_type="mandatory" DESCRIPTION="Date when this code definition is revoked" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" struct_type="mandatory" DESCRIPTION="Timestamp of last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="mandatory" DESCRIPTION="report errors from check_integrity" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="mandatory" DESCRIPTION="check level" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="global identifier" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" struct_type="mandatory" DESCRIPTION="record class" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" struct_type="mandatory" DESCRIPTION="version" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="mandatory" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetColumn db_code seq_codes__db_code,SetGuid guid" POSTINSERT="" PREUPDATE="" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="VIEW:entry_codes;CONCAT:class,ext_code;WHERE:closing_dt is NULL;REF_COL:db_code" SEQUENCE="seq_codes__db_code" INDEX="unique db_code,unique class ext_code closing_dt"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="transfer" struct_type="mandatory"
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="db_animal" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Internal database ID" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="ext_animal" CHECK="NotNull,ReservedStrings" struct_type="mandatory" DESCRIPTION="external ID of the animal" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="db_unit" CHECK="NotNull,ForeignKey unit db_unit,ReservedStrings" struct_type="mandatory" DESCRIPTION="Internal ID of reporting unit" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="id_set" CHECK="ForeignKey codes db_code class=ID_SET" struct_type="mandatory" DESCRIPTION="Set of categories for the numbering scheme" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="opening_dt" struct_type="mandatory" DESCRIPTION="Date when this channel is opened for new data" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="closing_dt" CHECK="DateDiff 0 5000 opening_dt" struct_type="mandatory" DESCRIPTION="Date when this data channel is closed" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" struct_type="mandatory" DESCRIPTION="Timestamp of last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="mandatory" DESCRIPTION="report errors from check_integrity" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="mandatory" DESCRIPTION="check level" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="global identifier" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" struct_type="mandatory" DESCRIPTION="record class" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" struct_type="mandatory" DESCRIPTION="version" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="mandatory" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetGuid guid" POSTINSERT="" PREUPDATE="" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="VIEW:entry_transfer;CONCAT:db_unit,ext_animal;REF_COL:db_animal;WHERE:closing_dt is NULL" SEQUENCE="seq_transfer__db_animal" INDEX="db_animal,ext_animal db_unit"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="animal" struct_type="mandatory"
+>
+      <column LENGTH="20" LABEL="Animal number" DATATYPE="BIGINT" name="db_animal" CHECK="" struct_type="mandatory" DESCRIPTION="Animal Number" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="5" LABEL="Sex" DATATYPE="BIGINT" name="db_sex" CHECK="" struct_type="mandatory" CHECK1="" DESCRIPTION="The sex of the animal" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Breed" DATATYPE="BIGINT" name="db_breed" CHECK="ForeignKey codes db_code class=BREED" struct_type="mandatory" DESCRIPTION="Animal breed or species" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Birth date" DATATYPE="DATE" name="birth_dt" struct_type="mandatory" DESCRIPTION="Birthday of the animal" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Sire" DATATYPE="BIGINT" name="db_sire" CHECK="" struct_type="mandatory" DESCRIPTION="Sire number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Dam" DATATYPE="BIGINT" name="db_dam" CHECK="" struct_type="mandatory" DESCRIPTION="Dam number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="CHAR" name="la_rep" CHECK="List NEW SELECTION SERVICE FARROW WEANING EXIT" struct_type="mandatory" DESCRIPTION="last_action in reproduction" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="la_rep_dt" struct_type="mandatory" DESCRIPTION="last_action in reproduction DATE" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="22" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="" struct_type="mandatory" DESCRIPTION="Timestamp of last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" CHECK="" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="mandatory" DESCRIPTION="report errors from check_integrity" form_type="readonly" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="mandatory" DESCRIPTION="check level" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="global identifier" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="" struct_type="mandatory" DESCRIPTION="record class" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="" struct_type="mandatory" DESCRIPTION="version" form_type="hidden" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="mandatory" DESCRIPTION="is record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Hybrid" DATATYPE="BIGINT" name="db_hybrid" CHECK="ForeignKey codes db_code class=HYBRID" struct_type="recommended" DESCRIPTION="Purebred or hybrid" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" LABEL="Comments" DATATYPE="TEXTBLOCK" name="comment" struct_type="optional" DESCRIPTION="Comments" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetGuid guid" POSTINSERT="" PREUPDATE="" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX="unique db_animal"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="locations" struct_type="mandatory"
+>
+      <column LENGTH="20" LABEL="Database animal id" DATATYPE="BIGINT" name="db_animal" CHECK="NotNull,ForeignKey transfer db_animal" struct_type="mandatory" DESCRIPTION="Animal number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Location" DATATYPE="BIGINT" name="db_location" CHECK="ForeignKey unit db_unit,ReservedStrings,NotNull" struct_type="recommended" DESCRIPTION="Animal location - it can be farm or enclosure or even field" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="entry_dt" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Date when the animal enters this location" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="BIGINT" name="db_entry_action" CHECK="ForeignKey codes db_code class=ENTRY_ACTION" struct_type="recommended" DESCRIPTION="Action while entering the location" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="exit_dt" CHECK="DateDiff 0 5000 entry_dt" struct_type="mandatory" DESCRIPTION="Date when the animal leaves the location" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="BIGINT" name="db_exit_action" CHECK="ForeignKey codes db_code class=EXIT_ACTION" struct_type="recommended" DESCRIPTION="Action while leaving the location" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" name="chk_lvl" struct_type="mandatory" DESCRIPTION="Check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" struct_type="mandatory" DESCRIPTION="Report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="HUGEINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Global unique identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" LABEL="Last change date" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Timestamp of the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Last change user" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="synch" struct_type="mandatory" DESCRIPTION="Is the record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="SMALLINT" name="version" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Record version" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="" INDEX=""
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="event" struct_type="mandatory"
+>
+      <column LENGTH="20" LABEL="Event Nr" DATATYPE="BIGINT" name="event_id" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Internal ID of the event" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Event type" DATATYPE="BIGINT" name="db_event_type" CHECK="ForeignKey codes db_code class=EVENT" struct_type="mandatory" DESCRIPTION="Internal ID of the event type" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Tester" DATATYPE="BIGINT" name="db_sampler" CHECK="NotNull,ForeignKey unit db_unit" struct_type="mandatory" DESCRIPTION="Internal ID of the tester" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Event date" DATATYPE="DATE" name="event_dt" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Test date" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Location" DATATYPE="BIGINT" name="db_location" CHECK="NotNull,ForeignKey unit db_unit" struct_type="mandatory" DESCRIPTION="Internal ID of the location" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="TIMESTAMP" name="last_change_dt" struct_type="mandatory" DESCRIPTION="Date of last change,  automatic timestamp" form_type="editable" ar_check="1" MODIFY="SetNow"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="last_change_user" struct_type="mandatory" DESCRIPTION="User who did the last change" form_type="editable" ar_check="1" MODIFY="SetUser"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="dirty" struct_type="mandatory" DESCRIPTION="report errors from  check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" DEFAULT="1" name="chk_lvl" struct_type="mandatory" DESCRIPTION="check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="BIGINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="global  identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="BIGINT" DEFAULT="1" name="version" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="version" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" DEFAULT="FALSE" name="synch" struct_type="mandatory" DESCRIPTION="is record targeted for  synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetColumn event_id seq_event__event_id" POSTINSERT="" PREUPDATE="" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="CONCAT: event_id db_event_type db_location event_dt" SEQUENCE="seq_event__event_id" INDEX="unique event_id  db_event_type db_location event_dt"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+   <table name="contacts" struct_type="mandatory"
+>
+      <column LENGTH="6" DATATYPE="BIGINT" name="db_contact" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Internal ID of the contact" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Title" DATATYPE="CHAR" name="title" struct_type="optional" DESCRIPTION="Professional title: Dr. Prof. PhD" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Salutation" DATATYPE="CHAR" name="salutation" struct_type="optional" DESCRIPTION="Salutation: Mr. Mrs." form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="15" LABEL="First name" DATATYPE="CHAR" name="first_name" struct_type="optional" DESCRIPTION="First name/Department" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Surname" DATATYPE="CHAR" name="second_name" struct_type="optional" DESCRIPTION="Family/Company name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Additional names" DATATYPE="CHAR" name="third_name" struct_type="optional" DESCRIPTION="Additional names" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Birth date" DATATYPE="DATE" name="birth_dt" struct_type="optional" DESCRIPTION="Birth date" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="15" LABEL="Language" DATATYPE="BIGINT" name="db_language" CHECK="ForeignKey languages lang_id" struct_type="optional" DESCRIPTION="Preferred language" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Street" DATATYPE="CHAR" name="street" struct_type="optional" DESCRIPTION="Name of street + Nr." form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Postal code" DATATYPE="CHAR" name="zip" struct_type="optional" DESCRIPTION="Postal zip code" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Town" DATATYPE="CHAR" name="town" struct_type="optional" DESCRIPTION="Town/City/village" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Country" DATATYPE="BIGINT" name="db_country" CHECK="ForeignKey codes db_code class=COUNTRY" struct_type="optional" DESCRIPTION="Country code" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="30" LABEL="Formatted address" DATATYPE="TEXTBLOCK" name="label" struct_type="optional" DESCRIPTION="Formatted adress for label printing" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Phone" DATATYPE="CHAR" name="phone" struct_type="optional" DESCRIPTION="Phone number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Phone2" DATATYPE="CHAR" name="phone2" struct_type="optional" DESCRIPTION="Alternativ phone number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Fax" DATATYPE="CHAR" name="fax" struct_type="optional" DESCRIPTION="Fax number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Email" DATATYPE="CHAR" name="email" struct_type="optional" DESCRIPTION="Email address" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Bank" DATATYPE="CHAR" name="bank_name" struct_type="optional" DESCRIPTION="Bank name" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Bank code" DATATYPE="CHAR" name="bank_zip" struct_type="optional" DESCRIPTION="Bank code (IBAN, SWIFT)" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Account nr." DATATYPE="CHAR" name="account" struct_type="optional" DESCRIPTION="Bank account number" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="opening_dt" struct_type="optional" DESCRIPTION="Date of opening this record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" DATATYPE="DATE" name="closing_dt" struct_type="optional" DESCRIPTION="Date of closing this record" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="10" LABEL="Comment" DATATYPE="CHAR" name="comment" struct_type="optional" DESCRIPTION="Comment" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="3" DATATYPE="SMALLINT" name="chk_lvl" struct_type="mandatory" DESCRIPTION="Check level" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="dirty" struct_type="mandatory" DESCRIPTION="Report errors from check_integrity" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="HUGEINT" name="guid" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Global unique identifier" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="22" LABEL="Last change date" DATATYPE="TIMESTAMP" name="last_change_dt" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Timestamp of the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" LABEL="Last change user" DATATYPE="CHAR" name="last_change_user" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Who did the last change" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="20" DATATYPE="CHAR" name="owner" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Record class" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="1" DATATYPE="BOOL" name="synch" struct_type="mandatory" DESCRIPTION="Is the record targeted for synchronization" form_type="editable" ar_check="1"
+></column
+>
+      <column LENGTH="5" DATATYPE="SMALLINT" name="version" CHECK="NotNull" struct_type="mandatory" DESCRIPTION="Record version" form_type="editable" ar_check="1"
+></column
+>
+      <TABLE
+>
+         <TRIGGER PREINSERT="SetColumn db_contact seq_contacts__db_contact,SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" POSTINSERT="" PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" POSTUPDATE="" PREDELETE="" POSTDELETE=""
+></TRIGGER
+>
+         <CONSTRAINTS PRIMARYKEY="" SEQUENCE="seq_contacts__db_contact" INDEX="unique db_contact"
+></CONSTRAINTS
+>
+      </TABLE
+>
+   </table
+>
+</model
+>

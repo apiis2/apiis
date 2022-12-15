@@ -1,0 +1,34 @@
+##############################################################################
+# $Id: upd_transfer_01.txt,v 1.2 2006/07/03 13:09:25 heli Exp $
+# Some updates have to be done manually as they are database specific.
+# These are the main tasks you have to run in sql (psql in this case):
+# They have to be done *after* you ran ins_codes_01.pl!
+##############################################################################
+
+# Add the column id_set to table transfer:
+ALTER TABLE transfer ADD COLUMN id_set INTEGER;
+
+# Get the db_code entries from codes:
+select db_code,short_name from codes where class='ID_SET';
+    db_code | short_name
+   ---------+------------
+        915 | HB-Nr
+        916 | Lebens-Nr
+        917 | Lamm-Nr
+
+# Depending on you database, you have to qualify the records in transfer, to
+# which ID_SET they belong to.
+#
+# If you abused unit.ext_unit to get ID sets (Ulf's scrapie DB), you maybe
+# have to run commands like these:
+
+UPDATE transfer SET id_set = 915 WHERE db_unit IN
+   (SELECT db_unit FROM unit WHERE ext_unit = '20-herdbuchnummer');
+
+UPDATE transfer SET id_set = 916 WHERE db_unit IN
+   (SELECT db_unit FROM unit WHERE ext_unit = '10-lebensnummer');
+
+UPDATE transfer SET id_set = 917 WHERE db_unit IN
+   (SELECT db_unit FROM unit WHERE ext_unit = '30-lammnummer');
+
+# Are there any other changes to your database required?

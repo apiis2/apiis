@@ -1,0 +1,236 @@
+%%% $Id: Formdevelopment.tex,v 1.3 2005/12/29 08:16:49 heli Exp $
+\documentclass[a4paper,11pt]{scrartcl}
+\usepackage[T1]{fontenc}
+\title{Hints for the development of \\ \apiis XML Forms} 
+\author{Helmut Lichtenberg}
+\date{CVS $Revision: 1.3 $}
+\parindent0pt \setlength{\parskip}{.8ex plus .1em minus .1em}
+\tolerance=5000
+\newcommand{\apiis}{\mbox{\textsc{Apiis} }}
+
+\begin{document}
+\maketitle
+% \tableofcontents
+\thispagestyle{empty}
+
+The configuration in the new \apiis forms development is done with the
+eXtended Markup Language (XML). The main rules for these XML-files are
+defined in \$APIIS\_HOME/etc/form.dtd.
+
+General guidelines are:
+\begin{itemize}
+   \item All important elements of the XML file must have a unique Name.
+         This is enforced by the dtd-entry:
+
+         \verb+   Name     ID      #REQUIRED+
+
+         This unique Name is the base of accessing the element values.
+
+   \item XML elements without a Name attribute are broken down into their
+         parent elements. Their attributes become attributes of the parent
+         element. This setup is chosen to hide complex definitions (e.g.
+         for color and text attributes).
+\end{itemize}
+
+After parsing the form configuration file through Perl's libxml module, an
+own datastructure is built.
+
+All attributes and auxiliary data for a block with the name \verb+Block_0+
+can be accessed via its name. The main method for this is
+
+\verb+   $form_object->GetValue( <element name>, <attribute name> );+
+
+Example:
+
+\verb+   my $description = $form_object->GetValue( 'Block_0', 'Description' );+
+
+This will give you the describing text about this block.
+
+In addition to the XML attributes, some auxiliary data structures for
+development purposes are created. Some of these structures, which are often
+used, got their own methods to access them (e.g. \verb+$self->top+), but
+most of them are made accessible via the method \verb+GetValue+.
+
+For the method names see the POD docs.
+The structural elements, you get via \verb+GetValue+ are described here:
+
+
+\begin{itemize}
+   \item Global Items
+      \begin{description}
+         \item[Type] Some pseudo elements (pseudo, because they have no Name
+            attribute and become flatted into their parent element)
+            determine the \verb+Type+ of the element.
+            
+            DataSource can be of Type \verb+Record+, \verb+Sql+,
+            \verb+Function+, \verb+none+.
+
+            Column can be of Type \verb+DB+, \verb+Related+,
+            \verb+HashRef+, \verb+ArrayRef+.
+            
+            Field can be of Type \verb+FileField+, \verb+Button+,
+            \verb+Link+, \verb+ScrollingList+, \verb+BrowseEntry+,
+            \verb+PopupMenue+, \verb+TextField+, \verb+TextBlock+,
+            \verb+RadioGroup+, \verb+CheckBoxGroup+, \verb+CheckBox+,
+            \verb+Calendar+.
+
+            They can be accessed by
+
+            \verb+my $type = $self->GetValue( $element, 'Type');+
+
+            All other element are of the Type, how this element is named.
+            A Block is of Type \verb+Block+, a Frame of
+            Type \verb+Frame+, etc.
+         \item[\_parent]
+            You can get the parent of each element (except the root
+            element) with:
+
+            \verb+my $datasource = $self->GetValue( $column, '_parent');+
+
+      \end{description}
+
+   \item Block Element
+      \begin{description}
+         \item[\_datasource\_list]
+            As there could be only one \verb+DataSource+ on block level,
+            you only need the first element of this list of block datasources.
+
+            \verb+my ($ds_name) =+ \\
+            \verb+   @{ $self->GetValue( $blockname, '_datasource_list') };+
+
+         \item[\_field\_list]
+            Get all \verb+Field+ elements of this block:
+
+            \verb+my @fields = @{ $self->GetValue( $blockname, '_field_list') };+
+
+         \item[\_misc\_blockelement\_list]
+            Other non-\verb+Field+ elements of this block (like
+            \verb+Label+, \verb+Tabular+, etc.) can be retrieved by:
+
+            \verb+my @misc_fields =+ \\
+            \verb+   @{ $self->GetValue( $blockname, '_misc_blockelement_list') };+
+
+         \item[\_all\_field\_list]
+            \_field\_list and \_misc\_blockelement\_list entries are summed
+            up together in:
+
+            \verb+my @all_fields =+ \\
+            \verb+   @{ $self->GetValue( $blockname, '_all_field_list') };+
+
+            \_all\_field\_list also contains those fields and elements,
+            which aren't directly on the block level, but deeper down in
+            the hierarchy like in a \verb+Tabular+ or \verb+Frame+ element.
+
+            XML Example:
+            \begin{verbatim}
+            <Block Name=``Block_0''>
+               <Field Name=``Field_0'' />
+               <Tabular Name=``Tabular_0''>
+                  <Field Name=``Field_1'' />
+                  <Field Name=``Field_2'' />
+               <Tabular />
+            <Block />
+            \end{verbatim}
+
+            \verb+$self->GetValue( 'Block_0', '_field_list' )+ will
+            return only \verb+Field_0+, whilst
+            \verb+$self->GetValue( 'Block_0', '_all_field_list' )+
+            returns \\
+            \verb+Field_0 Field_1 Field_2+.
+
+
+         \item[\_frame\_list]
+            Retrieve the defined \verb+Frame+ elements of this block.
+         \item[\_tabular\_list]
+            Retrieve the defined \verb+Tabular+ elements of this block.
+         \item[\_is\_detailblock]
+            This boolean switch is set to true, if this block is a
+            detailblock:
+
+            \verb+if ( $self->GetValue( $blockname, '_is_detailblock') ){+ \\
+            \verb+   ...+ \\
+            \verb+}+
+
+         \item[\_is\_masterblock]
+            dito for a masterblock
+         \item[\_detailblocks]
+            Get all the detail blocks of a master block:
+
+            \verb+my @detail_blocks =+ \\
+            \verb+   @{ $self->GetValue( $blockname, '_detailblocks' ) };+
+
+      \end{description}
+
+   \item DataSource Element
+      \begin{description}
+         \item[\_column\_list]
+            List of columns, belonging to this datasource.
+         \item[\_\_curr\_index]
+            Stores and returns the index of the current row/record within a
+            query.
+         \item[\_\_max\_index]
+            Stores and returns the index of the last row/record within a
+            query. 
+         \item[\_\_query\_records]
+            \_\_query\_records is a bucket to store (references to) the Record objects
+            of a query.
+
+            Example:
+
+            \verb+my @rec_objs =+ \\
+            \verb+   @{ $self->GetValue( $datasource, '__query_records') };+
+
+         \item[\_\_rowid]
+            Stores and returns the rowid (guid) of the current row/record within a
+            query.
+      \end{description}
+
+   \item Column Element
+      \begin{description}
+         \item[\_field]
+            Contains the name of the Field, that is bound to this Column
+            (via DSColumn).
+         \item[\_related\_from]
+            If a e.g. Column\_1 is related to Column\_2 (via RelatedColumn),
+            this relation is also stored in Column\_2 as \_related\_from
+            (Column\_1).
+      \end{description}
+
+   \item Field Element
+      \begin{description}
+         \item[\_my\_block]
+            As Fields could be hidden deeper in the hierarchy of a block
+            (like as part of a Frame or Tabular), you cannot get the Block
+            name easily with \_parent. \_my\_block stores the name of the
+            surrounding Block of this Field.
+         \item[\_my\_datasource]
+            The same like \_my\_block, but for the DataSource of the
+            surrounding Block.
+         \item[\_my\_own\_datasource]
+            As a Field may have its own DataSource for filling the
+            \_list\_ref with non-standard values, this field-specific
+            datasource must be separated from the block-level DataSource:
+
+            \verb+my $block_ds = $self->GetValue( $field, '_my_datasource');+ \\
+            \verb+my $field_ds = $self->GetValue( $field, '_my_field_datasource' );+
+
+         \item[\_data\_ref]
+            This is a reference to the variable, that contains the data of
+            this Field.
+         \item[\_data\_refs]
+            If a query for instance results in 4 records, the data for a
+            certain field is stored in \_data\_refs[0] to \_data\_refs[3].
+            For the current record, the entry for the appropriate index is
+            linked to \_data\_ref.
+         \item[\_list\_ref]
+            This is a reference to a an array to provide list fields (like a
+            scrolling list) with the allowed values.
+         \item[\_displays\_intdata]
+            If some field exceptionally displays internal data instead of
+            external one, it is flagged with this boolean switch.
+
+      \end{description}
+
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,25 @@
+##############################################################################
+# $Id: README.Pg83,v 1.1 2009-10-07 05:58:30 molabis Exp $
+##############################################################################
+
+http://petereisentraut.blogspot.com/2008/03/readding-implicit-casts-in-postgresql.html:
+
+"Wednesday, March 5, 2008
+ 
+Readding implicit casts in PostgreSQL 8.3
+
+Obviously, a lot of people are having trouble with the removal of many
+implicit casts in PostgreSQL 8.3. While this will lead to more robust
+applications in the future, it will prevent many people from moving to 8.3
+altogether at the moment. The problem why you can't simply make the casts
+implicit again is that in a somewhat unrelated development, 8.3 will generate
+a cast from and to text automatically (well, implicitly) for any data type,
+which is why most of the casts in question have been removed from the pg_cast
+catalog altogether and you can't simply run an UPDATE command to put them back
+the way you want.
+
+I have used a shell script to regenerate the removed casts including the
+required cast functions. The result is pg83-implicit-casts.sql. I have tested
+this against some of the recent "bug reports" I found on the mailing lists, so
+it should work for some people at least. If someone wants to use this, I
+suggest you only add the casts you really need, not the whole file."

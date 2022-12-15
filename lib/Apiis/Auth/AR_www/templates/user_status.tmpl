@@ -1,0 +1,17 @@
+
+     <!-- status info (user_status.tmpl) -->
+     <div id="user_status"><TMPL_LOOP NAME=status_info>
+      <div class="statusSection statusLoginString">
+       <div class="label"><tmpl_var name=login_string>:</div>
+       <div class="value"><TMPL_VAR NAME=LOGIN></div>
+       <div class="info"><TMPL_VAR NAME=NODE></div>
+      </div>
+      <div class="statusSection statusWebmaster">
+       <div class="label"><tmpl_var name=Webmaster>:</div>
+       <div class="value"><a href="mailto:<tmpl_var name=e_mail_address>" class="statusEmail"><tmpl_var name=e_mail></a></div>
+      </div>
+      <div class="statusSection statusCopy">
+       <div class="info"><tmpl_var name=copyright_info></div>
+      </div></TMPL_LOOP>
+     </div>
+     <!-- status info end -->

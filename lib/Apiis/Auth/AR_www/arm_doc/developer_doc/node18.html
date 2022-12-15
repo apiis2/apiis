@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Checking of the access rights - logging to the system </TITLE>
+<META NAME="description" CONTENT="Checking of the access rights - logging to the system ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="previous" HREF="node17.html">
+<LINK REL="up" HREF="node16.html">
+<LINK REL="next" HREF="node19.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html351"
+  HREF="node19.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html347"
+  HREF="node16.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html343"
+  HREF="node17.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html349"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html352"
+  HREF="node19.html">Access rights for the</A>
+<B> Up:</B> <A NAME="tex2html348"
+  HREF="node16.html">Access rights for the</A>
+<B> Previous:</B> <A NAME="tex2html344"
+  HREF="node17.html">Definitions of the access</A>
+ &nbsp; <B>  <A NAME="tex2html350"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00262000000000000000"></A><A NAME="checkingARST"></A>
+<BR>
+Checking of the access rights - logging to the system 
+</H2>
+There are two ways to work with the APIIS system:
+
+<UL>
+<LI>directly on the APIIS server (APIIS Shell, batch jobs)
+</LI>
+<LI>through the web browser (WWW service). 
+</LI>
+</UL>
+
+<P>
+If user wants to work directly on the APIIS server first he has to connect via ssh to the server (OS login and password - see section <A HREF="node13.html#registeringuseronOSL">1.4.1</A>). After log-in to the server, special APIIS Shell is activated for the user. In the APIIS Shell user has to choose a project name (to which he want to login) and enters his APIIS login and the password (see section <A HREF="node14.html#registeringuseronAPIISL">1.4.2</A>). If the data are consistent then the meta_user has to check the user access rights for the system task. The meta_user log-in to the database (the internal system connection) and checks which tasks user can execute. The result of this checking are returned as a list of the allowed jobs. This list is loaded in to the APIIS Shell. Finally user has only these actions in the Shell to which he is in the right. 
+The symbolic schema is shown on Figure <A HREF="#fig:serverloging">1.2</A>.
+<BR>
+There are users which can have possibility to run batch jobs from the command line. In such case after log-in to the APIIS Server via ssh APIIS Shell is not activated automatically. The procedure of checking access rights for the programs which are run directly from the command line is exactly the same like during log-in via APIIS Shell. Difference here is that the meta_user checks access right only for the currently executed task.
+<BR>
+Second variant to work with the APIIS is the web browser. Here instead of connection to the server user has to specify in his web browser the correct address to the APIIS internet page. Login procedure is exactly the same like for the APIIS Shell.
+<BR>
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:serverloging"></A><A NAME="223"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1.2:</STRONG>
+Logging to the APIIS system (red fields are not allowed)</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="615" HEIGHT="279" ALIGN="BOTTOM" BORDER="0"
+ SRC="img3.png"
+ ALT="\includegraphics[scale=1]{serverloging.eps}">
+   
+</DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html351"
+  HREF="node19.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html347"
+  HREF="node16.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html343"
+  HREF="node17.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html349"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html352"
+  HREF="node19.html">Access rights for the</A>
+<B> Up:</B> <A NAME="tex2html348"
+  HREF="node16.html">Access rights for the</A>
+<B> Previous:</B> <A NAME="tex2html344"
+  HREF="node17.html">Definitions of the access</A>
+ &nbsp; <B>  <A NAME="tex2html350"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

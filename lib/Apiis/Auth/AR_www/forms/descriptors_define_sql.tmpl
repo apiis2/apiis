@@ -1,0 +1,32 @@
+
+  <tmpl_var name=div>
+   <form name="descriptors_define_sql" id="descriptors_define_sql" action="<TMPL_VAR NAME=form_action>" method="post"  class="pageForm">
+    <table cellpadding="5" cellspacing="1" border="0" class="fullWidth">
+      <tr><td colspan="3"><hr></td><tr>
+      <tr>
+       <td colspan="3">
+         <textarea name="sql" id="sql"  rows="4" tabindex="1" <TMPL_VAR NAME=JS_CHANGE> onblur="execute_sql();">SELECT <TMPL_VAR NAME=descriptor_name> FROM <TMPL_VAR NAME=descriptor_tables></textarea>
+       </td>
+      </tr>
+      <tr>
+       <td colspan="3">
+         <textarea name="sql_result" id="sql_result"  rows="6" tabindex="2" <TMPL_VAR NAME=JS_CHANGE>><TMPL_VAR NAME=result></textarea>
+       </td>
+      </tr>
+     
+      <tr><td colspan="3"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="3">
+	<input id="sid" type="hidden" name="sid" value="<tmpl_var name=session_id>">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="descriptor_id" id="descriptor_id" value="<TMPL_VAR NAME=descriptor_id>">
+        <input type="hidden" name="action" id="action" value="descriptors_define_sql">
+        <input type="submit" name="user" value="<TMPL_VAR NAME=l_arm_submit_button>" 
+           onclick="var values = document.getElementById('sql_result').value;
+           window.opener.document.descriptors.descriptor_value_<TMPL_VAR NAME=descriptor_id>.value = values;
+           self.close();">
+        <input type="submit" name="user" value="<TMPL_VAR NAME=l_arm_submit_close>" onclick="self.close();">
+       </td>
+      </tr>
+    </table>
+   </form>

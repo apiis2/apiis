@@ -1,0 +1,102 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Date,v 1.6 2005/05/10 09:52:48 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the methods of the base $apiis structure after initialization.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.6 $' );
+use Data::Dumper;
+
+my $basetest    = 1;
+my $date_test   = 1;
+my $time_tests  = 1;
+my $array_tests = 1;
+
+if ($basetest) {
+   print "\n*** Basic tests:\n";
+   $apiis->check_status;  # to check for configuration errors
+   print "date_order\t", $apiis->date_order, "\t";
+   print "Date order accords to ISO 8601, :^)" if $apiis->isodate;
+   print "\n";
+   print "time_order\t", $apiis->time_order, "\t";
+   print "Time order accords to ISO 8601, :^)" if $apiis->isotime;
+   print "\n";
+
+   print "today:\t\t", $apiis->today, "\n";
+   print "now:\t\t",   $apiis->now,   "\n\n";
+}
+
+if ($date_test) {
+   print "\n*** Date tests:\n";
+   $apiis->date_order( order => 'DD.MM.YYYY', sep => '.' ); # typical german date format
+   $apiis->time_order( order => 'ss.mm.hh', sep => '.' );   # not very typical
+   my @ext_dates = ( '30.2.2003', '1.0001.1', '15.13.1001', '4.2.2005', '4.3.1999 05.32.23' );
+
+   # $apiis->date_order( order => 'DD.YYYY.MM', sep => '.' );
+   # my @ext_dates = ( qw/ 30.2003.2 2.1911.20 02.2002.03 5.2003.1.2004 1.1.0801 35.1999.10 / );
+
+   # my @ext_dates = ( qw/ 30200320 1|0001|1 15|13|1001 / );
+   # $apiis->date_order( order => 'DD|YYYY.MM', sep => '|' );
+
+   # my @ext_dates = ( qw/ 03022005 30220003 21121983 021203 20035124 / );
+   # $apiis->date_order( order => 'DDMMYYYY', sep => '' );
+
+   # my @ext_dates = ( '2003-5-24 23:17' );
+   # $apiis->date_order( order => 'YYYY-MM-DD', sep => '-' );
+
+   print "date format:\t", $apiis->date_order, "\n";
+   print "time format:\t", $apiis->time_order, "\n";
+   foreach my $ext_date (@ext_dates) {
+      my $isodate = $apiis->extdate2iso($ext_date);
+      print "\t$ext_date\t==>\t", ($isodate||'Error     '), " ==>\t" , ($apiis->iso2extdate($isodate)||'Error'), "\n";
+   }
+   $apiis->check_status;
+   $apiis->del_errors;
+}
+
+if ($time_tests){
+   print "\n*** Time tests:\n";
+   $apiis->time_order( order => 'hh:mm:ss', sep => ':' );   # ISO
+   my @ext_times = ( '05:32:23', '23:59:59', '24:0:0', '0:0:0', '1999-12-4 7:5:00' );
+
+   print "date format:\t", $apiis->date_order, "\n";
+   print "time format:\t", $apiis->time_order, "\n";
+   foreach my $ext_time (@ext_times) {
+      my $isotime = $apiis->exttime2iso($ext_time);
+      print "\t$ext_time\t==>\t", ($isotime||'Error     '), " ==>\t" , ($apiis->iso2exttime($isotime)||'Error'), "\n";
+   }
+   $apiis->check_status;
+   $apiis->del_errors;
+}
+
+if ($array_tests){
+   print "\n*** Array tests:\n";
+   $apiis->date_order( order => 'YYYY-MM-DD', sep => '-' );
+   $apiis->time_order( order => 'hh:mm:ss', sep => ':' );   # ISO
+
+   my @ext_dates = ( '2003-5-24 23:17:8' );
+   my @ext_times = ( '05:32:23', '23:59:59', '24:0:0', '0:0:0', '1999-12-4 7:5:00' );
+
+   print "date format:\t", $apiis->date_order, "\n";
+   foreach my $ext_date (@ext_dates) {
+      my @isodate = $apiis->extdate2iso($ext_date);
+      print "$ext_date:\n", Dumper(\@isodate);
+   }
+   print "\ntime format:\t", $apiis->time_order, "\n";
+   foreach my $ext_time (@ext_times) {
+      my @isotime = $apiis->exttime2iso($ext_time);
+      print "$ext_time:\n", Dumper(\@isotime);
+   }
+   $apiis->check_status;
+   $apiis->del_errors;
+}

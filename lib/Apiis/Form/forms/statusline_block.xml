@@ -1,0 +1,13 @@
+  <Block Description="Statusline" Name="Block_statusline">
+    <DataSource Name="DataSource_statusline">
+      <none/>
+    </DataSource>
+    <Field Description="Form Status" Name="__form_status_msg">
+      <TextBlock Size="30"/>
+      <Position Column="0" Columnspan="100" Sticky="ew" Position="absolute" Row="50"/>
+      <Miscellaneous Enabled="no"/>
+      <Text/>
+      <Color BackGround="lightyellow"/>
+      <Format/>
+    </Field>
+  </Block>

@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Creating views:</TITLE>
+<META NAME="description" CONTENT="Creating views:">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="previous" HREF="node27.html">
+<LINK REL="up" HREF="node26.html">
+<LINK REL="next" HREF="node29.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html482"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html478"
+  HREF="node26.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html474"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html480"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html483"
+  HREF="node29.html">Grouping access rights</A>
+<B> Up:</B> <A NAME="tex2html479"
+  HREF="node26.html">Method for the public</A>
+<B> Previous:</B> <A NAME="tex2html475"
+  HREF="node27.html">Definition of the access</A>
+ &nbsp; <B>  <A NAME="tex2html481"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00272200000000000000">
+Creating views:</A>
+</H3>
+
+<P>
+Each user view is created separately. Always for each table one view is created. At the beginning list of all allowed
+table names is taken from the user access rights view (only these table
+names on which user can execute SELECT statement).
+
+<P>
+<DIV ALIGN="LEFT">
+Then the following steps have to be accomplished to create view for each table from the list:
+</DIV>
+
+<P>
+
+<OL>
+<LI>Creating list of basic columns for the view.
+<BR>
+The algorithm takes from the user access view all column names for the table which is currently treated. The column names are taken from the each policy definition and then they are merged together in to the one list (duplicates of columns are removed). This list is needed to create basic view structure.
+
+<P>
+</LI>
+<LI>Creating basic SQL statement needed to produce view.
+<BR>
+This first part of the SQL statement is defined on the basis of the columns which we got in the previous step. 
+
+<P>
+<DIV ALIGN="CENTER">
+<I>CREATE VIEW</I> <B><I>user_schema.treated_table</I></B>
+<I>AS SELECT</I> <B><I>list of basic columns</I></B>
+<I>FROM meta_user_schema.treated_table WHERE oid=NULL ......</I>
+</DIV>
+The ''where clause'' is needed here to create empty view structure.
+Now we have to add the filtration for the columns and the records according to the descriptor definitions. 
+
+<P>
+</LI>
+<LI>Defining filtering extensions for the basic SQL statement.
+<BR>
+The records are filtered by the additionall SELECT statements which have to be defined separately for the each unique set of columns.  SELECTS are created one by one and for each of them the following actions are effected:
+
+<UL>
+<LI>At first the column for the SELECT are prepared. Treated set of columns is compared to the basic list from step 1. If some column is missing in the treated set then NULL expresion is placed instead of column. The order of column for this query has to be exactly the same like the order of basic column.
+</LI>
+<LI>When the columns are ready then the WHERE clause is fixed. Thus all descriptors assigned for considered collection of columns have to be included. Each of the descriptors is joined to the WHERE clause by the AND operator. If descriptor has more than one value defined then the one condition from these values is created. In this case value are link by the OR operator<A NAME="tex2html22"
+  HREF="footnode.html#foot337"><SUP>1.8</SUP></A> and then they are added to the WHERE clause. It can be also that the value of descriptor is related to the view and then the information are taken by the additional subquery (construction: descriptor IN (SELECT) ).
+<BR>
+If descriptor name is defined with the NOT prefix, the NOT expression is added to the WHERE before this element<A NAME="tex2html23"
+  HREF="footnode.html#foot338"><SUP>1.9</SUP></A>.
+</LI>
+<LI>The complete SELECT is added to the basic SQL statement (from step 2) by the UNION expression. After this the next set of columns is taken into the process.
+</LI>
+<LI>After last SELECT finall SQL is executed and the view for the table is created.
+</LI>
+</UL>
+
+<P>
+Example:
+<PRE>
+CREATE VIEW user\_schema.breeds as 
+    SELECT breed\_id, mcname, country\_id, tax\_id, dailygain FROM breeds
+  UNION
+    SELECT breed\_id, mcname, country\_id, tax\_id, NULL FROM breeds
+      WHERE (tax\_id=1 or tax\_id=2) 
+              and (carcassweight&gt;=300 and carcassweight&lt;=400)
+                and (owner='PL' or owner='DE') 
+  UNION
+    SELECT breed\_id, mcname, NULL, NULL, NULL FROM breeds
+      WHERE (owner='FR') and (tax\_id=3)
+  UNION
+    SELECT breed\_id, mcname, NULL, tax\_id, dailygain FROM breeds
+      WHERE (dailygain&gt;=24 and dailygain&lt;=56) and not((tax\_id=1 and so on ...);
+</PRE>
+In result we get a following view:
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="349"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.12:</STRONG>
+View for the breeds table</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">breed_id</TD>
+<TD ALIGN="CENTER">mcname</TD>
+<TD ALIGN="CENTER">country_id</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">dailygain</TD>
+</TR>
+<TR><TD ALIGN="CENTER">33</TD>
+<TD ALIGN="CENTER">Polish Red</TD>
+<TD ALIGN="CENTER">50000091</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">NULL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">45</TD>
+<TD ALIGN="CENTER">Angler</TD>
+<TD ALIGN="CENTER">50000009</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">NULL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">67</TD>
+<TD ALIGN="CENTER">Wollschwein</TD>
+<TD ALIGN="CENTER">50000009</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">NULL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">56</TD>
+<TD ALIGN="CENTER">Pulawska</TD>
+<TD ALIGN="CENTER">50000091</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">NULL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">23</TD>
+<TD ALIGN="CENTER">Duck de la France</TD>
+<TD ALIGN="CENTER">NULL</TD>
+<TD ALIGN="CENTER">NULL</TD>
+<TD ALIGN="CENTER">NULL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">78</TD>
+<TD ALIGN="CENTER">Lanka</TD>
+<TD ALIGN="CENTER">NULL</TD>
+<TD ALIGN="CENTER">5</TD>
+<TD ALIGN="CENTER">350</TD>
+</TR>
+<TR><TD ALIGN="CENTER">24</TD>
+<TD ALIGN="CENTER">Florina</TD>
+<TD ALIGN="CENTER">NULL</TD>
+<TD ALIGN="CENTER">6</TD>
+<TD ALIGN="CENTER">315</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="breedviewexample"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+The symbolic schema of reading data is shown on Figure <A HREF="#fig:readingdata">1.4</A>.
+
+<DIV ALIGN="CENTER"><A NAME="fig:readingdata"></A><A NAME="357"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1.4:</STRONG>
+Reading data from the database</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="607" HEIGHT="433" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.png"
+ ALT="\includegraphics[scale=1]{readingdata.eps}">
+   
+</DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+</LI>
+</OL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html482"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html478"
+  HREF="node26.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html474"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html480"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html483"
+  HREF="node29.html">Grouping access rights</A>
+<B> Up:</B> <A NAME="tex2html479"
+  HREF="node26.html">Method for the public</A>
+<B> Previous:</B> <A NAME="tex2html475"
+  HREF="node27.html">Definition of the access</A>
+ &nbsp; <B>  <A NAME="tex2html481"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

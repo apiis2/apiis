@@ -1,0 +1,117 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Init,v 1.14 2006/09/22 08:59:51 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the methods of the base $apiis structure after initialization.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.14 $' );
+
+use Apiis::DataBase::User;
+my $demo = Apiis::DataBase::User->new(
+    id       => 'demo',
+    password => 'Demo',
+);
+
+$apiis->join_model( 'breedprg',
+    userobj  => $demo,
+);
+$apiis->check_status;
+
+# some environment variables:
+print "APIIS_HOME:\t",  $apiis->APIIS_HOME,  "\n";
+if ( $apiis->exists_model ){
+   print "APIIS_LOCAL:\t", $apiis->APIIS_LOCAL, "\n";
+} else {
+   print "APIIS_LOCAL:\tNo APIIS_LOCAL as long as you didn't join in a model file!\n";
+}
+print "version:\t",     $apiis->version,     "\n";
+print "programname:\t", $apiis->programname, "\n";
+
+print "defined projects:\n";
+foreach my $thisproject ( $apiis->projects ){
+   printf "\t%s => %s\n", $thisproject, $apiis->project($thisproject);
+}
+
+# the settings from $APIIS_HOME/apiisrc:
+print "codes_table:\t",  $apiis->codes_table,  "\n";
+print "language:\t",     $apiis->language,     "\n";
+
+# date and time:
+print "date_format:\t",  $apiis->date_format,  "\n";
+print "date_order\t",  $apiis->date_order,  "\t";
+if ( $apiis->isodate ){
+   print "Date order accords to ISO 8601, :^)\n";
+} else {
+   print "Date order violates ISO 8601, :^(\n";
+}
+print "time_order\t",  $apiis->time_order,  "\t";
+if ( $apiis->isotime ){
+   print "Time order accords to ISO 8601, :^)\n";
+} else {
+   print "Time order violates ISO 8601, :^(\n";
+}
+
+if ( $apiis->exists_user ){
+   print "user:\t\t",       $apiis->User->id,     "\n";
+} else {
+   print "user:\t\tNo user as long as you didn't join in a model file!\n";
+}
+print "today:\t\t",      $apiis->today,        "\n";
+print "now:\t\t",        $apiis->now,          "\n";
+print "fileselector:\t", $apiis->fileselector, "\n";
+print "browser:\t",      $apiis->browser,      "\n";
+
+# entry_views and reserved_strings are a reference to a hash!:
+print "entry_views:\n";
+foreach ( keys %{ $apiis->entry_views } ) {
+   print "\t$_ => ", ${ $apiis->entry_views }{$_}, "\n";
+}
+# to access one value:
+print "entry_view for codes: ", $apiis->entry_views->{codes},"\n";
+
+print "reserved_strings:\n";
+foreach ( keys %{ $apiis->reserved_strings } ) {
+   print "\t$_ => ", ${ $apiis->reserved_strings }{$_}, "\n";
+}
+
+printf "If we want to synchronize, we are node %s\n", $apiis->node_name;
+# error status handling:
+if ( $apiis->status ) {
+   print ":^(\n";
+} else {
+   print ":^)\n";
+}
+
+# for more advanced error handling see test.Error:
+# $apiis->check_status( die => 'WARN' );
+
+##### How to produce syslog/filelog messages:
+$apiis->log('info', 'Apiis initialized successfully');
+# produce an error:
+my $errfile;
+open( $errfile, 'this_file_does_not_exist' )
+  or $apiis->log( 'err', "Cannot open file 'this_file_does_not_exist': $!" );
+
+# switch to priority 'debug' ...:
+print "syslog priority (orig): ", $apiis->syslog_priority, "\n";
+# log_priority sets syslog and filelog:
+my $old_priority = $apiis->log_priority('debug');
+print "syslog priority (changed): ", $apiis->syslog_priority, "\n";
+use Data::Dumper;
+$apiis->log('debug', 'Dumping in test.Init: ' . Dumper($apiis));
+# ... and back:
+# you only can restore them separately!:
+$apiis->syslog_priority($old_priority);
+$apiis->filelog_priority($old_priority);
+print "syslog priority (restored): ", $apiis->syslog_priority, "\n";
+##### end syslog/filelog

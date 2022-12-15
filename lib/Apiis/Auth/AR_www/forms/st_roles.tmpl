@@ -1,0 +1,44 @@
+
+  <tmpl_var name=div>
+   <form name="st_roles" id="st_roles" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT>>
+    <table cellpadding="5" cellspacing="1" border="0" >
+     <thead>
+      <tr>
+       <td>
+        <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armrole&type=ST"><TMPL_VAR NAME=l_arm_add_new_role></a>
+       </td>
+       <td colspan="5"></td>
+      </tr>
+      <tr>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_NAME></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_TYPE></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_SUBSET></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_DESCR></h4></td>
+       <td></td>
+       <td></td>
+      </tr>
+     </thead>
+     <tbody>
+      <TMPL_LOOP NAME="STROLES_LIST_SUBLOOP"> 
+      <tr class="<TMPL_VAR NAME=TR_STYLE>">
+       <td class="value"><TMPL_VAR NAME=ROLE_NAME></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_TYPE></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_SUBSET></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_DESC></td>
+       <td class="buttons"><a href="javascript:show_apply('<TMPL_VAR NAME=role_id>');" title="<TMPL_VAR NAME=l_show_role_title>"><TMPL_VAR NAME=l_show_role></a></td>
+       <td class="buttons"><a href="javascript:remove('<TMPL_VAR NAME=ROLE_NAME>');" title="<TMPL_VAR NAME=l_delete_role_title>"><TMPL_VAR NAME=l_delete_role></a></td>
+      </tr>
+      </TMPL_LOOP>
+     </tbody>
+      <tr>
+       <td colspan="6" >
+        <input type="hidden" name="form_status" value="list">
+        <input type="hidden" name="remove" value="">
+        <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+        <input type="hidden" name="action" value="armroles">
+        <input type="hidden" name="show_apply" value="">
+       </td>
+      </tr>
+    </table>
+   </form>
+

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Checking update statement</TITLE>
+<META NAME="description" CONTENT="Checking update statement">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node25.html">
+<LINK REL="previous" HREF="node23.html">
+<LINK REL="up" HREF="node22.html">
+<LINK REL="next" HREF="node25.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html438"
+  HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html434"
+  HREF="node22.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html428"
+  HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html436"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html439"
+  HREF="node25.html">Checking delete statement</A>
+<B> Up:</B> <A NAME="tex2html435"
+  HREF="node22.html">Checking of the access</A>
+<B> Previous:</B> <A NAME="tex2html429"
+  HREF="node23.html">Checking insert statement</A>
+ &nbsp; <B>  <A NAME="tex2html437"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H4><A NAME="SECTION00271220000000000000">
+<B>Checking update statement</B></A>
+</H4>
+
+<P>
+The procedure of checking access rights for update is exactly the same like this defined for the insert. The differences are only in steps 2 and 4. In step 2, the parameter action for the WHERE caluse is defined as UPDATE. In step 4 descriptors are compared with the values of record which will be updated by the user (in the INSERT they are compared with the values which are introduced by the user).
+<BR>
+<P>
+Examples:
+<DIV ALIGN="CENTER">
+</DIV><PRE>
+(1) UPDATE breeds SET breed_id='50000045',mcname='new mcname'
+      WHERE breed_id=444446;
+(2) UPDATE animal SET birth_dt='2000-09-02', db_sex=73
+      WHERE db_animal=444556;
+(3) UPDATE animal SET birth_dt='2000-09-02', name='some name' 
+      WHERE db_animal&gt;1 and db_animal&lt;10 and db_sex=73;
+</PRE>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+In our examples the first update can be executed if the tax_id of existing record is defined as 5 or 6 or 7. The second update can not be executed because db_animal is out of the range. The third record can be also not executed because action is allowed only for the records where db_sex has 72 value (in this case db_animal is correct). 
+
+<P>
+<BR><HR>
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

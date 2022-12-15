@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.User,v 1.5 2005/12/14 12:19:00 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the methods of the base $apiis structure after initialization.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.5 $' );
+
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new(
+   id       => 'demo',
+   password => 'Demo',
+);
+
+$apiis->join_model('breedprg', userobj => $thisobj);
+$apiis->check_status;
+$apiis->User->print;
+
+printf "session_id: %s\n", $apiis->User->session_id || 'undef';
+printf "lang_id: %s\n", $apiis->User->lang_id || 'undef';
+printf "language: %s\n", $apiis->User->language || 'undef';
+

@@ -1,0 +1,85 @@
+INSTALLATION AND CONFIGURATION ACCESS RIGHTS MANAGER
+
+1. Configuration virtual host for Apache  
+
+NameVirtualHost 127.0.0.1:80
+
+<VirtualHost 127.0.0.1:80>
+      ServerName ar_www
+      ErrorLog /tmp/ar_www_apache_error.log
+      DocumentRoot /home/seven/devel/apiis-cvs/lib/Apiis/Auth/AR_www/
+      ScriptAlias /cgi-bin/ "/home/seven/devel/apiis-cvs/lib/Apiis/Auth/AR_www/cgi-bin/"
+      SetEnv APIIS_HOME /home/seven/devel/apiis-cvs
+      LogLevel notice
+      <Directory /home/seven/devel/apiis-cvs/lib/Apiis/Auth/AR_www/cgi-bin>
+        Options ExecCGI
+        Order Deny,Allow
+        Allow from All
+      </Directory>
+      ServerAdmin admin@tzv.fal.de
+</VirtualHost>
+
+2.Setting host name in /etc/hosts
+  Just add the following line:
+  127.0.0.1       ar_www
+
+3.Running Access Rights Manager with the new project
+  Access Rights Manager can work with each new project which is based on the reference database or which was created by
+  the rapidapiis. The administrator of database has to have a special roles to work with the ARM which are created during the "runall"
+  process. This role are called "arm_admin" and "administrator_dbt" and they are automatically assigned to the administrator account.
+
+4.Running Access Rights Manager with the existing projects  
+  
+  If you want to use the Access Rights Manager for the existing project then you have to assign a special role "arm_admin" to 
+  administrator. The role can be assigned to the user by the following command:
+ 
+  access_rights_manager.pl -p <project_name> -u <administrator_login> -r arm_admin
+
+  If you will get the error message that the user or role is not defined than you have to add it first in to the database.
+  The users or roles can be added in to the database by the same access_rights_manager.pl script but first you should update 
+  your configuration file:
+  
+  Updating configuration file (it  replaces the old configuration file):
+  access_rights_ar_batch.pl -p <project_name>
+  
+  Adding user:
+  access_rights_manager.pl -p <project_name> -u <administrator_login>
+  (default administrator_login for reference database is demo; if you will have the query about user marker then enter the same name 
+  which is currently defined in your project appisrc file as a node_name)
+  
+  Adding role:
+  access_rights_manager.pl -p <project_name> -r arm_admin 
+
+  Assigning roles to the user: 
+  access_rights_manager.pl -p <project_name> -u <administrator_login> -r arm_admin,administrator_dbt
+  (the second role administrator_dbt gives accees to all record in the databse) 
+   
+5.Language of the interface
+  The Access Rights Manager interface can be translated in to the all local languages. When you open the  
+  interface then you can see the long list of languages but only English is available as default. If you you want to add new language, 
+  for example Polish (pl) the you have to execute the following steps:
+
+  - go to the APIIS_HOME/lib/Apiis/I18N and open L10N.pm in your editor. Now add the following line with your language definition:
+    pl         => [ 'Gettext' => 'Apiis/I18N/L10N/pl.mo', 'Auto' ],
+  - run script "mkl10n" from APIIS_HOME/bin and put your ISO language name as a parameter: 
+      mkl10n pl
+  - go to APIIS_HOME/lib/Apiis/I18N/L10N, open language file (pl.mo) in your editor and enter your translations.
+
+  After this you have to choose your language from drop-down list and click button "Choose language". Interface will be available
+  in your language after your logging. 
+
+6.Changing log file privileges 
+  Go to the APIIS_HOME/var/log and change  the rights for your log file 
+  chmod a+rw apiis.log
+  The same operation has to be done for your project log files.
+ 
+7.Other issues
+  All apache errors from the access rights manager are written in to the /tmp/ar_www_apache_error.log file.
+ 
+   
+  
+
+  
+  
+  
+    

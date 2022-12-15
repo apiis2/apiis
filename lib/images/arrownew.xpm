@@ -1,0 +1,20 @@
+/* XPM */
+static char *arrowmax[] = {
+/* width height num_colors chars_per_pixel */
+"    16    9        4            1",
+/* colors */
+". c #808080",
+"# c #000000",
+"+ c #e0e0e0",
+"a c none",
+/* pixels */
+"a##aaaaa##aaaaaa",
+"a..##aaa..##aaaa",
+"a....##a....##aa",
+"a......#......##",
+"a...............",
+"a......+......++",
+"a....++a....++aa",
+"a..++aaa..++aaaa",
+"a++aaaaa++aaaaaa"
+};

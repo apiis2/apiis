@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ 
+ <head>
+  <title><TMPL_VAR NAME=mid_header><TMPL_VAR NAME=l_mcname></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="robots" content="index, follow"/>
+  <meta name="generator" content="Quanta Plus" />
+  <meta name="author" content="<tmpl_var name=l_page_author>" />
+  <meta name="keywords" content="<tmpl_var name=l_page_keywords>" />
+  <meta name="description" content="<tmpl_var name=l_page_description>" />
+  <link href="<TMPL_VAR NAME=my_style>" rel="stylesheet" type="text/css" />
+  <link href="<TMPL_VAR NAME=print_style>" rel="stylesheet" type="text/css" media="print" />
+  <script type="text/javascript"><tmpl_var name=js_head></script>
+  <tmpl_var name=java_script>
+ </head>
+ 
+ <body <TMPL_VAR NAME=on_load_script> <TMPL_VAR NAME=on_unload_script>>
+ <div id="top_header" <tmpl_var name="top_header">>
+  <div id="headerHeader">
+   <!-- insert a system-driven value instead of this one, if needed -->
+   Apiis Application - Access Rights Manager
+  </div>
+  <table cellpadding="0" cellspacing="0" border="0">
+   <tbody>
+    <tr>
+     <td id="headerImage">&nbsp;</td>
+     <td colspan="4" id="headerBanner">&nbsp;</td>
+     <td id="headerLogo4" class="headerLink" onclick="window.open('http://apiis.tzv.fal.de/')" title="http://apiis.tzv.fal.de/">&nbsp;</td>
+    </tr>
+   </tbody>
+  </table>
+ </div>
+ <!-- <tmpl_var name=current_status> -->
+ <table cellspacing="0" cellpadding="0" id="main_table" border="0">
+  <tbody>
+   <tr>
+    <td id="menu_table"><!--rowspan="2" -->
+     <div id="mainMenu">
+      <TMPL_VAR NAME=menu>
+      <tmpl_if name=status_info>
+      <TMPL_INCLUDE NAME="user_status.tmpl">
+      </tmpl_if>
+     </div>
+    </td>
+    <td id="main_content">
+     <div id="headerText"><TMPL_IF NAME=l_mcname_header>
+      <TMPL_VAR NAME=l_mcname_header></TMPL_IF><TMPL_UNLESS NAME=hide_title_in_body>
+      <TMPL_VAR NAME=mid_header></TMPL_UNLESS>
+     </div>
+     <tmpl_var name=menuform>
+      <!-- forms -->
+      <div id="my_form">
+       <tmpl_var name=form>
+      </div>
+      <!-- forms end -->
+      <TMPL_VAR NAME=main>
+     <!-- <TMPL_VAR NAME=BACK_BUTTON> -->
+    </td>
+   </tr>
+  </tbody>
+ </table>
+ <div id="footer">
+  <TMPL_VAR NAME=footer>
+ </div>
+ </body>
+ 
+</html>
+ 

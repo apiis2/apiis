@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Grouping roles </TITLE>
+<META NAME="description" CONTENT="Grouping roles ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node31.html">
+<LINK REL="previous" HREF="node29.html">
+<LINK REL="up" HREF="node29.html">
+<LINK REL="next" HREF="node31.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html508"
+  HREF="node31.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html504"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html498"
+  HREF="node29.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html506"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html509"
+  HREF="node31.html">Grouping groups</A>
+<B> Up:</B> <A NAME="tex2html505"
+  HREF="node29.html">Grouping access rights</A>
+<B> Previous:</B> <A NAME="tex2html499"
+  HREF="node29.html">Grouping access rights</A>
+ &nbsp; <B>  <A NAME="tex2html507"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00281000000000000000"></A><A NAME="groupingroles"></A>
+<BR>
+Grouping roles 
+</H2> 
+Each role is allocated at list in the one group. The relations beetwen the the roles and role groups are kept in the separate table (AR_Role_Groups). The role is allocated for the group by the administrator. If we want to add the role to some group, first we have to check the group type (the type of the role has to be the same type like the type of the group) and the group content (role can be added to the group which contains roles definition - not other groups). If these two requirements are agreed then we have to investigate that the new role can cooperate with the other roles which are currently defined in this group. This process is done automatically on the basis of the role constraints defined for the roles. These constraints qualify which roles can not be used in the same time in the one role group. The constraints for the roles are stored in the different table (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:constraints">1.8</A>): AR_Role_Constraints) than the constraints for the groups (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:constraints">1.8</A>): AR_Group_Constraints).
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="384"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.14:</STRONG>
+Constraints for the roles</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">role_cons_id</TD>
+<TD ALIGN="CENTER">role1_cons_id</TD>
+<TD ALIGN="CENTER">role2_cons_id
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+<A NAME="brr"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+The fields role1_id and role2_id are foreign keys to the roles table (AR_Roles table). 
+The algorithm, which veryfies the roles, takes from the group (to which we want to add the role) the current list of its roles. The values from the list are set together one by one with the id of the new role. Each couple of values is used as a condition for the WHERE clause in the following SQL statement:
+<DIV ALIGN="CENTER">
+<I>SELECT role_cons_id FROM ar_role_constraints WHERE
+(role1_cons_id='</I><B><I>existing_role</I></B><I>' and role2_cons_id='</I><B><I>new_role</I></B><I>') or (role1_cons_id='</I><B><I>new_role</I></B><I>' and role2_cons_id='</I><B><I>existing_role</I></B><I>')</I>
+</DIV>
+
+<P>
+For each couple of roles one SELECT is executed. When all combination of roles are positively verified (no results for each combination) then the role can be appraised to the group. If there is a result for some union then this means that there are some constraints and role can not be added to the group. The algorithm is not stooped in this point and it just go through the all combinations. All results are collected and then they are showed to the administrator. The administrator has clear picture which roles are in the conflict with the new role.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html508"
+  HREF="node31.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html504"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html498"
+  HREF="node29.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html506"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html509"
+  HREF="node31.html">Grouping groups</A>
+<B> Up:</B> <A NAME="tex2html505"
+  HREF="node29.html">Grouping access rights</A>
+<B> Previous:</B> <A NAME="tex2html499"
+  HREF="node29.html">Grouping access rights</A>
+ &nbsp; <B>  <A NAME="tex2html507"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

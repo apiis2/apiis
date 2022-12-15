@@ -1,0 +1,54 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.l10n,v 1.2 2006/03/31 11:17:15 heli Exp $
+##############################################################################
+# This is only a test file to help during development.
+#
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Data::Dumper;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.2 $' );
+
+my $note = '*** Note:
+*** If your terminal window cannot display the bulgarian unicode
+*** characters, try to run test.l10n in a uxterm.';
+
+my $i = 1;
+
+$apiis->language('en_test');
+printf "\n*** test%s: Hello everybody (en_test) ***\n", $i++;
+print __('Hello World!'),"\n";
+
+printf "\n*** test%s: Hallöle (de_test) ***\n", $i++;
+$apiis->language('de_test');
+print __('Hello World!'),"\n";
+print __('Some bulgarian unicode chars should be shown instead'),"\n";
+
+# loading project to add local lexicon files:
+use Apiis::DataBase::User;
+my $user = Apiis::DataBase::User->new(
+   id       => 'demo',
+   password => 'Demo',
+);
+$user->check_status( die => 'CRIT' );
+$apiis->join_model('breedprg', userobj => $user);
+$apiis->check_status( die => 'CRIT' );
+
+$apiis->language('en_test');
+printf "\n*** test%s: Hello again (en_test, project specific) ***\n", $i++;
+print __('Hello World!'),"\n";
+
+$apiis->language('de_test');
+printf "\n*** test%s: Wieder in deutsch (de_test, project specific) ***\n", $i++;
+print __('Hello World!'),"\n";
+print __('Some bulgarian unicode chars should be shown instead'),"\n";
+
+printf "\n%s\n", $note;

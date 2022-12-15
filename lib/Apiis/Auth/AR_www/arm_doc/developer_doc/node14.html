@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Registering user on the APIIS system level </TITLE>
+<META NAME="description" CONTENT="Registering user on the APIIS system level ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="node12.html">
+<LINK REL="next" HREF="node15.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html303"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html299"
+  HREF="node12.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html295"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html301"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html304"
+  HREF="node15.html">Granting access rights to</A>
+<B> Up:</B> <A NAME="tex2html300"
+  HREF="node12.html">Defining users</A>
+<B> Previous:</B> <A NAME="tex2html296"
+  HREF="node13.html">Registering user on the</A>
+ &nbsp; <B>  <A NAME="tex2html302"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00242000000000000000"></A><A NAME="registeringuseronAPIISL"></A>
+<BR>
+Registering user on the APIIS system level 
+</H2>
+General APIIS account which is created on this level is required to work with the APIIS System. On the basis of this account the access rights for the user are created and then checked. The data about user are stored in the database (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:users-groups-roles">1.5</A>: AR_Users). The following information about each user is collected:
+
+<UL>
+<LI>login
+</LI>
+<LI>password
+</LI>
+<LI>db_unit - foreign key to the unit table where the personal information about user is stored
+</LI>
+<LI>country
+</LI>
+<LI>language
+</LI>
+<LI>marker - the information about the ownerschip of the data
+</LI>
+<LI>disabled - this column is used to the locking of the user account. The flag of this column is always checked during the logging process and it can be set as YES (user can not login to the system) or NO (user can login to the system). There is also possibility to lock more then one user in the same time. This can be done by the lock of the user group to which the users are assigned
+</LI>
+<LI>status, last_login, last_activ_time - these three columns are used to controlling the user login time and to checking the user current status (see section <A HREF="node34.html#furtherdevchecking">1.10.1</A>).
+</LI>
+</UL>
+
+<P>
+As an example of the user data, you can see Table <A HREF="#usertable">1.1</A>.
+<BR>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="133"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.1:</STRONG>
+Users table</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">user_id</TD>
+<TD ALIGN="CENTER">login</TD>
+<TD ALIGN="CENTER">password</TD>
+<TD ALIGN="CENTER">db_unit</TD>
+<TD ALIGN="CENTER">country</TD>
+<TD ALIGN="CENTER">language</TD>
+<TD ALIGN="CENTER">marker
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">disables</TD>
+<TD ALIGN="CENTER">status</TD>
+<TD ALIGN="CENTER">last_login</TD>
+<TD ALIGN="CENTER">last_activ_time
+
+NO</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="usertable"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+The APIIS system is based on the PostgreSQL database and to work with it user needs also database account. PostgreSQL account is created automatically during the creation of APIIS account. The login and the password are exactly the same like these defined for the APIIS account.
+This database account is needed for log-in to the system and also to give user the possibility of executing SQL SELECTs. These SELECT statements are executed on the views<A NAME="tex2html7"
+  HREF="footnode.html#foot136"><SUP>1.5</SUP></A> which are created in the user schema on the basis of user access rights.
+The actions like insert, update, delete are effected by the meta_user (<A HREF="node11.html#apiisprojects">1.3.3</A>). The meta_user is responsible for all modifications in the database and nobody else can do this. When the user executes a DML, the connection to the database is established from the meta_user. Real user name is used to check user access rights. Then the meta_user run all processes if the user has authorisation for this action. Real user name is sent as a normal data for the meta fields (last_change_user).
+<BR>
+All other actions like creating, dropping and altering some objects are revoked from the user (even after log-in in to database from the command line). The user can not also create new users and databases.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html303"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html299"
+  HREF="node12.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html295"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html301"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html304"
+  HREF="node15.html">Granting access rights to</A>
+<B> Up:</B> <A NAME="tex2html300"
+  HREF="node12.html">Defining users</A>
+<B> Previous:</B> <A NAME="tex2html296"
+  HREF="node13.html">Registering user on the</A>
+ &nbsp; <B>  <A NAME="tex2html302"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

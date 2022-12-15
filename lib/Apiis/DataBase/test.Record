@@ -1,0 +1,371 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Record,v 1.27 2014/12/08 08:56:55 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Record and Column objects.
+
+BEGIN {
+    use Env qw( APIIS_HOME );
+    die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+    push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Data::Dumper;
+use Text::Wrap qw( wrap );
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.27 $' );
+
+##### configuration section ##################################################
+# some login data:
+my $project = 'breedprg';
+my $user    = 'demo';
+my $passwd  = 'Demo';
+# my $user    = 'anonymous';
+# my $project = 'ovicap_st';
+
+# what do you want to test:
+my $base_usage      = 1;    # basic usage
+my $encode_external = 0;    # encode external values
+my $decode_internal = 0;    # decode internal values
+my $test_insert     = 0;    # insert a record object
+my $test_update     = 0;    # update a record object
+my $test_fetch      = 0;    # fetch record(s) from the database
+my $test_id_set     = 0;    # define the id_set for decoding
+##### configuration section (end) ############################################
+
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new(
+    id       => $user,
+    password => $passwd,
+);
+$thisobj->check_status( die => 'ERR' );
+
+$apiis->join_model( $project, userobj => $thisobj );
+$apiis->check_status( die => 'CRIT' );
+
+##############################################################################
+# base usage of record/column objects:
+if ($base_usage) {
+    my $thisrecord = Apiis::DataBase::Record->new( tablename => 'codes', );
+    $thisrecord->check_status( die => 'ERR' );
+
+    # some nice printing:
+    $Text::Wrap::columns = 70;
+    my $initial_tab = q{};    # Tab before first line
+    my $len         = 17;
+
+    ##### public methods on the record level:
+    print "***** Record/Table *****\n";
+    my @r_methods = qw{
+        name type columns
+        sequences indexes pk_ref_col pk_ext_cols
+        check_level max_check_level
+    };
+    for my $method (@r_methods) {
+        my $result         = $thisrecord->$method;
+        my $subsequent_tab = ' ' x ($len +1);
+        if ( defined $result ) {
+            printf "%s%s\n", $method . ':' . q{ } x ( $len - length($method) ),
+                ref $result eq 'ARRAY'
+                ? wrap( $initial_tab, $subsequent_tab, join( q{ }, @$result ) )
+                : $result;
+        }
+    }
+
+    ##### public methods on the column level:
+    print "\n***** Column *****\n";
+    # method 'column' returns a column object by column name.
+    my $thisobj = $thisrecord->column('class');
+
+    printf "name:             %s\n", $thisobj->name,        "\n";
+    printf "description:      %s\n", $thisobj->description, "\n";
+    printf "length:           %s\n", $thisobj->length,      "\n";
+
+    # insert some external data:
+    # Note: extdata expects an array! This is useful to assign multipart
+    # data like in ext_animal, which consists of 3 independant parts.
+    # extdata also happily accepts only one data element (as an array with
+    # only one element). A problem occurs, when you want to assign floats
+    # with a comma as the decimal separator, e.g. 27,5
+    # This is treated by extdata as an array with the two elements 27 and 5.
+    # In this case you should quote the float!
+    $thisobj->extdata(4711);
+    printf "extdata(Array!):  %s\n", join( q{, }, $thisobj->extdata );
+    printf "intdata:          %s\n", $thisobj->intdata    || 'undef';
+    printf "foreignkey:       %s\n", $thisobj->foreignkey || 'undef';
+    printf "modify:           %s\n", join( q{, }, $thisobj->modify ) || 'undef';
+    printf "check:            %s\n", join( q{, }, $thisobj->check )  || 'undef';
+    printf "default:          %s\n", $thisobj->default   || 'undef';
+    printf "db_column:        %s\n", $thisobj->db_column || 'undef';
+    printf "datatype:         %s\n", $thisobj->datatype  || 'undef';
+
+    # define some external fields for a column:
+    $thisrecord->column('db_code')->ext_fields(qw/ ext_code ext_base /);
+    printf "ext_fields:       %s\n",
+        join( q{, }, $thisrecord->column('db_code')->ext_fields ), "\n";
+}
+##############################################################################
+
+# create a record object from external data and encode it:
+if ($encode_external) {
+    # create a record that reflects a database table:
+    my $record = Apiis::DataBase::Record->new(
+        tablename => 'animal',
+    );
+    $record->check_status( die => 'WARNING' );
+
+    # apply external data to some columns:
+    $record->column('db_sex')->extdata(undef);
+    $record->column('db_breed')->extdata('DL');
+    $record->column('db_animal')->extdata( 'soc32breeder', '194', '123560' );
+    $apiis->date_order( order => 'DD.MM.YYYY', sep => '.' );
+    $record->column('culling_dt')->extdata('4.2.2005');
+    # or:
+    # my @in_array = qw/ society|sex 32|2 101539 /;
+    # $record->column('db_animal')->extdata( @in_array );
+    # or even:
+    # $record->column('db_animal')->extdata( \@in_array );
+
+    # encode all data in this record
+    $record->encode_record;
+    $record->check_status;
+
+    # print the result:
+    $record->print;
+}
+
+##############################################################################
+# create a record object from a database record and decode:
+if ($decode_internal) {
+    my $tablename = 'animal';
+
+    # get some records from the database:
+    my $oidname = $apiis->DataBase->rowid;
+    my $sql     = sprintf "SELECT %s FROM %s limit 2",
+        join( q{,}, $apiis->Model->table('animal')->columns ), $tablename;
+    my $sql_ref =
+        $apiis->DataBase->sql( { statement => $sql, user => 'system' } );
+    $sql_ref->check_status;
+    my $affected_rows = $sql_ref->rows;
+    print "Found $affected_rows records.\n";
+
+    while ( my $arr_ref = $sql_ref->handle->fetch ) {
+        my @data_array = @{$arr_ref};
+
+        # create a record object ...
+        my $record = Apiis::DataBase::Record->new( tablename => $tablename, );
+
+        # ... and fill the columns with the retrieved data:
+        foreach my $thiscolumn ( $record->columns ) {
+            $record->column($thiscolumn)->intdata( shift @data_array );
+        }
+        # decode all database values to the external representation:
+        $record->decode_record;
+        $record->check_status;
+        $record->print;
+    }
+}
+
+##############################################################################
+if ($test_insert) {
+    my $with_delete = 0;    # delete new records or not
+    my $record = Apiis::DataBase::Record->new( tablename => 'inspool_err', );
+    $record->check_status;
+
+    # apply external data to some columns:
+    $record->column('err_type')->extdata('TESTERROR');
+    $record->column('err_dt')->extdata('2005-12-2');
+    $record->column('action')->extdata('and action ...');
+    $record->column('short_msg')->extdata('This is a short message');
+    $record->column('long_msg')->extdata(
+        'This is a shorter message, but it gets longer');
+    $record->insert();
+    $record->check_status;
+
+    unless ( $record->status ) {
+        $apiis->DataBase->commit;
+        $apiis->check_status;
+        print $record->rows, " records inserted.\n";
+    }
+
+    if ($with_delete) {
+        my $oidname = $apiis->DataBase->rowid;
+        my $sql     =
+            "SELECT $oidname FROM inspool_err where err_type = 'TESTERROR'";
+        my $sql_ref = $apiis->DataBase->user_sql($sql);
+        $sql_ref->check_status;
+        my $affected_rows = $sql_ref->rows;
+
+        my @rowids;
+        while ( my $arr_ref = $sql_ref->handle->fetch ) {
+            push @rowids, @{$arr_ref}[0];
+        }
+
+        # scalar @rowids and $affected_rows should be the same:
+        print scalar @rowids, " records to delete ($affected_rows).\n";
+
+        my $rows;
+        my ( $localstatus, @errors );
+        foreach my $thisrowid (@rowids) {
+            # create a record object ...
+            my $del_record =
+                Apiis::DataBase::Record->new( tablename => 'inspool_err', );
+
+            # create an error with a wrong rowid:
+            # $thisrowid += 200;
+
+            # fill the record object (column rowid/intdata) with the current rowid:
+            $del_record->column( $apiis->DataBase->rowid )->intdata($thisrowid);
+            print "Deleting rowid $thisrowid ...\n";
+            $del_record->delete();
+            if ( $del_record->status ) {
+                $localstatus++;
+                push @errors, $del_record->errors;
+            }
+            else {
+                $rows += $del_record->rows;
+            }
+        }
+        if ($localstatus) {
+            $apiis->DataBase->rollback;
+            $_->print for @errors;
+            print "No records deleted due to errors.\n";
+        }
+        else {
+            $apiis->DataBase->commit;
+            print "$rows records deleted.\n";
+        }
+    }
+}
+##############################################################################
+
+if ($test_update) {
+    # Fetch some records from the database:
+    my $upd_record =
+        Apiis::DataBase::Record->new( tablename => 'inspool_err', );
+    $upd_record->column('err_type')->extdata('TESTERROR');
+
+    my @records_to_update = $upd_record->fetch;
+    print scalar @records_to_update, " records checking for update.\n";
+
+    my $rows;
+    my $rowid_name = $apiis->DataBase->rowid;
+    foreach my $thisrecord (@records_to_update) {
+        # change some data:
+        $thisrecord->column('err_dt')->extdata( $apiis->now() );
+        $thisrecord->column('ds')->extdata('DS1');
+        $thisrecord->column('short_msg')->extdata('yet another short message');
+
+        # set the long_msg to NULL by assigning undef:
+        $thisrecord->column('long_msg')->extdata(undef);
+
+        $thisrecord->update();
+        $thisrecord->check_status;
+        if ( !$thisrecord->status ) {
+            $apiis->DataBase->commit;
+            $apiis->check_status;
+            $rows += $thisrecord->rows;
+        }
+    }
+    printf "%s records updated.\n", $rows || 0;
+}
+##############################################################################
+
+if ($test_fetch) {
+    my $example_many_rows = 1;
+    my $example_one_row   = 0;
+
+    if ($example_many_rows) {
+        my $record =
+            Apiis::DataBase::Record->new( tablename => $apiis->codes_table, );
+        $record->check_status;
+
+        # apply external data to some columns:
+        $record->column('class')->extdata('SEX');
+        $record->expect_rows('many');    # default
+        # $record->expect_columns( 'db_code', 'ext_code' );
+        my @query_records = $record->fetch;
+        $record->check_status( die => 'ERR' );
+        foreach (@query_records) { $_->decode_record; $_->print }
+    }
+
+    if ($example_one_row) {
+        # another query:
+        my $record = Apiis::DataBase::Record->new( tablename => 'animal', );
+        $record->check_status;
+        my @animal_id = qw{ soc32breeder 194 400723|16 };
+        $record->column('db_animal')->extdata( \@animal_id );
+        my @query_records = $record->fetch(
+            expect_rows    => 'one',
+            expect_columns => [qw( db_animal db_sex db_breed )],
+        );
+        $record->check_status( die => 'ERR' );
+
+        for my $rec (@query_records) {
+            $rec->decode_record;
+            $rec->print;
+        }
+    }
+}
+##############################################################################
+# Note:
+# To test the handling of different ID sets (german: Nummernkreise), you have
+# to have your database set up correctly with ID sets. See
+# $APIIS_HOME/lib/update/*01* for details.
+# The reference database (ref_breedprg) is (currently) not set up this way.
+if ($test_id_set) {
+    my $table = 'animal';
+    my @ext_animal = ( '20-herdbuchnummer', '2-st05006', '12195' );
+    my @id_sets = (qw/ HB LBN LMN /);
+
+    my $rec = Apiis::DataBase::Record->new( tablename => $table );
+    $rec->check_status( die => 'ERR' );
+
+    # select animal:
+    $rec->column('db_animal')->extdata( \@ext_animal );
+    $rec->column('db_animal')->id_set( \@id_sets );
+    $rec->column('db_dam')->id_set( \@id_sets );
+    $rec->column('db_sire')->id_set( \@id_sets );
+
+    # also possible:
+    # $rec->column('db_animal')->id_set('HB','LBN','LMN');
+    # $rec->column('db_animal')->id_set('HB');
+
+    $rec->encode_record;
+    $rec->check_status( die => 'ERR' );
+
+    # what and how to print:
+    my %print_pars = (
+        id_set  => 1,
+        columns => [qw/ db_animal guid /],
+    );
+
+    print "***** Record for query:\n";
+    $rec->print( \%print_pars );
+
+    # fetch records to decode:
+    my @q_records = $rec->fetch;
+    $rec->check_status( die => 'ERR' );
+
+    print "\n***** Record results of query:\n";
+    for my $q_rec (@q_records) {
+        # first take id_set definition from above:
+        # $apiis->debug(1);
+        $q_rec->decode_record;
+        $q_rec->check_status( die => 'ERR' );
+        $q_rec->print( \%print_pars );
+
+        # # we could also re-decode it with a different id_set:
+        # $q_rec->decoded(0);                            # reset record flag
+        # $q_rec->column('db_animal')->decoded(0);       # reset column flag
+        # $q_rec->column('db_animal')->id_set('LMN');    # change id_set
+        # $q_rec->decode_record;                         # re-decode again
+        # $q_rec->check_status( die => 'ERR' );
+        # $q_rec->print( \%print_pars );
+        # $apiis->debug(0);
+    }
+}
+##############################################################################

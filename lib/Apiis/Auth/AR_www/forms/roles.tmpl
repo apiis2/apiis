@@ -1,0 +1,64 @@
+
+  <tmpl_var name=div>
+   <form name="roles" id="roles" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT>>
+    <table cellpadding="5" cellspacing="1" border="0" >
+     <thead>
+      <tr>
+       <td colspan="5" class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_DBTR_HEADER></h4></td>
+      </tr>
+      <tr>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_NAME></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_TYPE></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_SUBSET></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_DESCR></h4></td>
+       <td></td>
+      </tr> 
+     </thead>
+     <tbody>
+      <TMPL_LOOP NAME="DBTROLES_LIST_SUBLOOP"> 
+      <tr class="<TMPL_VAR NAME=TR_STYLE>">
+       <td class="value"><TMPL_VAR NAME=ROLE_NAME></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_TYPE></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_SUBSET></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_DESC></td>
+       <td class="buttons"><a href="javascript:show_role('<TMPL_VAR NAME=role_id>');" title="<TMPL_VAR NAME=l_show_role_title>"><TMPL_VAR NAME=l_show_role></a></td>
+      </tr>
+      </TMPL_LOOP>
+      <tr><td colspan="5">&nbsp;</td></tr>
+     </tbody>
+    </table>
+    <table cellpadding="5" cellspacing="1" border="0" >
+     <thead>
+      <tr>
+       <td colspan="5" class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_STR_HEADER></h4></td>
+      </tr>
+      <tr>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_NAME></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_TYPE></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_SUBSET></h4></td>
+       <td class="label"><h4><TMPL_VAR NAME=L_ARM_SHOWROLES_DESCR></h4></td>
+       <td></td>
+      </tr>
+     </thead>
+     <tbody>
+      <TMPL_LOOP NAME="STROLES_LIST_SUBLOOP"> 
+      <tr class="<TMPL_VAR NAME=TR_STYLE>">
+       <td class="value"><TMPL_VAR NAME=ROLE_NAME></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_TYPE></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_SUBSET></td>
+       <td class="value"><TMPL_VAR NAME=ROLE_DESC></td>
+       <td class="buttons"><a href="javascript:show_role('<TMPL_VAR NAME=role_id>');" title="<TMPL_VAR NAME=l_show_role_title>"><TMPL_VAR NAME=l_show_role></a></td>
+      </tr>
+      </TMPL_LOOP>
+     </tbody>
+      <tr>
+       <td colspan="5" >
+        <input type="hidden" name="form_status" value="list">
+        <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+        <input type="hidden" name="action" value="armroles">
+        <input type="hidden" name="show_role" value="">
+       </td>
+      </tr>
+    </table>
+   </form>
+

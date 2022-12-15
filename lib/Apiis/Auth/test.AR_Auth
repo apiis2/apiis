@@ -1,0 +1,320 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.AR_Auth,v 1.3 2006/04/18 13:03:46 marek Exp $
+##############################################################################
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.3 $ ');
+use Apiis::Init;
+use Data::Dumper;
+our $apiis;
+
+#############################################################################
+my $project_name  = parameters();
+my $proj_apiis_local = $apiis->project($project_name);
+   $apiis->APIIS_LOCAL($proj_apiis_local);
+my $model_file = $apiis->APIIS_LOCAL."/etc/".$project_name.'.model';
+   $apiis->join_model($project_name);
+my $login_user=$apiis->User->id;
+my $check_sql;
+#############################################################################
+
+#############################################################################
+#### CREATING AUTH OBJECT ###################################################
+#############################################################################
+
+#my $obj_type = "STandDBT"; #creating Auth Object for the system and database tasks 
+#my $obj_type = "ST";       #creating Auth Object for the system tasks 
+my $obj_type = "DBT";      #creating Auth Object for the database tasks 
+
+if ($obj_type eq "STandDBT"){
+  $apiis->join_auth($login_user)
+}else{
+  $apiis->join_auth($login_user,$obj_type)
+}
+
+EXIT:{
+
+#############################################################################
+#### PUBLIC METHODS FOR THE SYSTEM TASKS ####################################
+#############################################################################
+
+if ($obj_type eq "ST" or $obj_type eq "STandDBT"){
+
+#### METHOD: CHECK_SYSTEM_TASKS ####
+## execution: 
+##            1: $apiis->Auth->check_system_tasks
+##            2: $apiis->Auth->check_system_tasks('system_task_type')
+##            3: $apiis->Auth->check_system_tasks('system_task_type','system_task_name')
+
+  print "\n#########################";
+  print "\nMETHOD: CHECK_SYSTEM_TASK";
+  print "\n#########################\n";
+
+  #1:
+  printf "\nAll system tasks which user is allowed to execute:\n";
+  my @temp_tab1 = $apiis->Auth->check_system_tasks;
+  foreach (@temp_tab1){print "$_\n";}
+
+  #2:
+  printf "\nAll system tasks which user is allowed to execute for defined type:\n";
+  my @temp_tab2 = $apiis->Auth->check_system_tasks('action');
+  foreach (@temp_tab2){print "$_\n";} 
+
+  #3;
+  printf "\nChecking the access rights for 'access_control.pl' script:\n";
+  my @temp_tab3 = $apiis->Auth->check_system_tasks('program','access_control.pl');
+  foreach (@temp_tab3){print "Access rights successfully verified, returned status: $_\n";} 
+}
+#############################################################################
+#### END - PUBLIC METHODS FOR THE SYSTEM TASKS - END ########################
+#############################################################################
+
+#############################################################################
+#### PUBLIC METHODS FOR THE DATABASE TASKS ##################################
+#############################################################################
+
+if ($obj_type eq "DBT" or $obj_type eq "STandDBT"){
+
+#### METHOD: CHECK_TABLES ####
+## execution: 
+##            1: $apiis->Auth->check_tables
+##            2: $apiis->Auth->check_tables('sql_action_name')
+##            3: $apiis->Auth->check_tables('sql_action_name','table_name')
+
+  print "\n####################";
+  print "\nMETHOD: CHECK_TABLES";
+  print "\n####################\n";
+
+  #1:
+  printf "\nPRINT ALL TABLES ALLOWED FOR THE USER AND THE ACTIONS WHICH CAN BE EXECUTED ON THEM BY THIS USER:\n";
+  my $temp_tab1 = $apiis->Auth->check_tables;
+  my $ret_hash = @{$temp_tab1}[0];
+  foreach my $table (keys %$ret_hash){
+     print "\n$table -> ".join(',',@{$ret_hash->{$table}}); 
+  }
+  last EXIT if $apiis->Auth->status;
+
+  #2:
+  printf "\n\nCHECK TABLES ON WHICH USER CAN EXECUTE DEFINED ACTION:\n\n";
+  my $temp_tab2 = $apiis->Auth->check_tables('insert');
+  print join (', ',@$temp_tab2)."\n";
+  last EXIT if $apiis->Auth->status;
+
+  #3:
+  printf "\nCHECK IF THE USER CAN EXECUTE ACTION ON THE TABLE:\nreturned status: ";
+  my $temp_tab3 = $apiis->Auth->check_tables('insert','animal');
+  if ($apiis->Auth->status){
+    print @$temp_tab3[0]." (NO)\n";
+    last EXIT;
+  }else{
+    print @$temp_tab3[0]." (YES)\n";
+  }
+
+#### METHOD: CHECK_COLUMNS ####
+## execution: 
+##            1: $apiis->Auth->check_columns('sql_action_name','table_name')
+##            2: $apiis->Auth->check_columns('sql_action_name','table_name','column_name')
+
+  print "\n#####################";
+  print "\nMETHOD: CHECK_COLUMNS";
+  print "\n#####################\n";
+
+  #1:
+  printf "\nPRINT ALL SET OF COLUMNS ALLOWED FOR DEFINED TABLE AND ACTION:\n";
+  my $temp_tab4 = $apiis->Auth->check_columns('insert','animal');
+  foreach my $setofcolumns (@$temp_tab4){
+    print "Set of columns: $setofcolumns\n"; 
+  }
+  last EXIT if $apiis->Auth->status;
+
+  #2
+  printf "\nCHECK IF THE USER CAN EXECUTE ACTION ON THE COLUMNS:\nreturned status: ";
+  my @check_columns = qw (db_breeder db_animal);
+  my $temp_tab5 = $apiis->Auth->check_columns('insert','animal',\@check_columns); 
+  if ($apiis->Auth->status){
+    print @$temp_tab5[0]." (NO)\n";
+    last EXIT;
+  }else{
+    print @$temp_tab5[0]." (YES)\n";
+  }
+
+#### METHOD: CHECK_DESCRIPTORS ####
+## execution: 
+##            1: $apiis->Auth->check_descriptors('sql_action_name','table_name','columns_set')
+
+  print "\n#########################";
+  print "\nMETHOD: CHECK_DESCRIPTORS";
+  print "\n#########################\n";
+
+  #1:
+  printf "\nPRINT DESCRIPTORS FOR DEFINED SET OF COLUMNS:\n";
+  my $mycolumns = "record_seq,err_type,action,dbtable,dbcol,err_source,short_msg,long_msg,ext_col,ext_val,mod_val,comp_val,target_col,ds,ext_unit,status,err_dt,synch";
+  my $temp_tab6 = $apiis->Auth->check_descriptors('insert','inspool_err',$mycolumns);
+  if ($apiis->Auth->status or $temp_tab6==0){
+    last EXIT;
+  }else{
+    foreach (keys %$temp_tab6){
+      print "\nDescriptors: ".$_."-> ";
+      foreach my $element (@{$temp_tab6->{$_}}){
+        print $element.",";
+      }
+    }
+    print "\n";
+  }
+  last EXIT if $apiis->Auth->status;
+  
+
+#### METHOD: CHECK_SQL_STATEMENT ####
+## execution: 
+##            1: $apiis->Auth->check_sql_statement('Record Object')
+
+  print "\n###########################";
+  print "\nMETHOD: CHECK_SQL_STATEMENT";
+  print "\n###########################\n";
+
+  #1:
+  printf "\nCHECK IF THE INSERT CAN BE EXECUTED BY THE USER:\n";
+   my $record = Apiis::DataBase::Record->new( tablename => 'inspool_err',);
+   $record->check_status;
+   #$record->column('record_seq')->extdata('11');
+   $record->column('err_type')->extdata('TESTERROR');
+   #$record->column('err_dt')->extdata('18.2.2005');
+   $record->column('action')->extdata('ERROR');
+   $record->column('short_msg')->extdata( 'This is a short message' );
+   $record->column('long_msg')->extdata( 'This is a shorter message, but it gets longer' );
+   #$record->column('last_change_user')->extdata( 'longer' ); 
+   $record->action('insert');
+   $record->insert();
+   $record->check_status;
+   unless ( $record->status ) {
+     $apiis->DataBase->commit;
+   }
+   if ($apiis->Auth->status){
+     $check_sql=1;
+     last EXIT;
+   }else{
+     print "The access rights for the SQL statement successfully verified\n"; 
+   }
+#   my $temp_tab7 = $apiis->Auth->check_sql_statement($record);
+#   if ($apiis->status or $temp_tab7==0){
+#     print $temp_tab7." (NO)\n";
+#     last EXIT;
+#   }else{
+#     print $temp_tab7." (YES)\n";  
+#   }
+
+
+  printf "\nCHECK IF THE UPDATE CAN BE EXECUTED BY THE USER:\n";
+   my $upd_record = Apiis::DataBase::Record->new( tablename => 'inspool_err',);
+   $upd_record->column('err_type')->extdata('TESTERROR');
+   my @records_to_update = $upd_record->fetch;
+   my $rows;
+   foreach my $thisrecord (@records_to_update) {
+     $thisrecord->column('ds')->extdata( 'DS2' );
+     #$thisrecord->column('ds')->updated(1); # mark column as updated
+     $thisrecord->column('short_msg')->extdata('yet another short message');
+     #$thisrecord->column('short_msg')->updated(1); # mark column as updated
+     $thisrecord->update();
+    $thisrecord->check_status;
+    unless ( $thisrecord->status ) {
+      $apiis->DataBase->commit;
+      $apiis->check_status;
+    }
+    if ($apiis->Auth->status){
+      $check_sql=1;
+      last EXIT;
+    }
+     #my $temp_tab8 = $apiis->Auth->check_sql_statement($thisrecord);
+     #if ($apiis->status or $temp_tab8==0){
+     #  print $temp_tab8." (NO)\n";
+     #  last EXIT;
+     #}else{
+     #  print $temp_tab8." (YES)\n";
+     #}  
+   }
+   if (!$apiis->Auth->status){
+      print "The access rights for the SQL statement successfully verified\n"; 
+    }
+
+
+}
+$apiis->Auth->check_status unless ($check_sql);
+#############################################################################
+#### END - PUBLIC METHODS FOR THE DATABASE TASKS - END ######################
+#############################################################################
+
+#############################################################################
+#### GENERAL PUBLIC METHODS #################################################
+#############################################################################
+
+#### METHOD: USER_DISABLED ####
+## execution: 
+##            1: $apiis->Auth->user_disabled
+## This method check if the user is locked for logging to the system. It returns
+## True or False value which is taken from the column 'user_disabled' from 
+## table ar_users. 
+
+if ($apiis->Auth->user_disabled){
+  print "\n User is locked and can not login to the system: flag is set as TRUE";
+} else {
+  print "\n User can login to the system: flag is set as FALSE";
+}
+
+#### METHOD: USER_ID ####
+## execution: 
+##            1: $apiis->Auth->user_id
+## This method returns user_id
+
+print "\nYour user id is: ".$apiis->Auth->user_id."\n";
+
+
+}#EXIT
+
+#############################################################################
+### SCRIPT PARAMETERS #######################################################
+#############################################################################
+
+sub parameters{
+  use vars qw( $opt_p $opt_h );
+  my $project_name;
+  use Getopt::Std;
+  getopts('p:h'); # option -h  => Help
+
+  if ($opt_h) {
+    system ("clear");
+    #die __('access_control_USAGE_MESSAGE');
+  }
+  if ($opt_p){
+    $project_name = $opt_p;
+  }
+  else{ 
+    my $msg1 = __("Missing parameter");
+    my $msg2 = __("You have to specify project name");
+    my $msg3 = __("Try -p <project_name>");
+    print "\n!!! $msg1 !!!"; 
+    print "\n$msg2\n"; 
+    die "$msg3\n\n"; 
+  }
+
+  return $project_name;
+}
+
+#############################################################################
+### SCRIPT PARAMETERS END ###################################################
+#############################################################################
+
+=head1 AUTHOR
+
+Marek Imialek <marek@tzv.fal.de or imialekm@o2.pl>
+
+=cut
+
+__END__

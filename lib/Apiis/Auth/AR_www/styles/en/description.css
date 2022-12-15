@@ -1,0 +1,8 @@
+body { background-color: #feffd5; color: #000; font-family: Verdana,sans-serif; margin: 0px; padding: 5px; text-align: left; }
+/* style for long description and example */
+#description { background-color: #feffd5; font-size: 11px; padding: 0px 5px; text-align: justify; }
+.desc_head { display: block; font-size: 14px; font-weight: bold; padding-right: 70px; text-align: left; text-transform: uppercase; }
+h4 { background-color: #ff9; border: 1px solid #960; margin: 10px -5px 5px -5px; padding: 3px; }
+p[align="center"] { margin: 0px; padding: 0px; position: absolute; right: 1px; top: 1px; }
+p[align="center"] a, p[align="center"] a:link, p[align="center"] a:visited { background-color: #900; border: outset 1px #900; color: #fff; display: block; padding: 1px 8px; text-decoration: none; }
+p[align="center"] a:hover, p[align="center"] a:active { color: #ff0; }

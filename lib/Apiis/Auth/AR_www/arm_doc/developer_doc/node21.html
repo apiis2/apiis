@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Definition of the access rights</TITLE>
+<META NAME="description" CONTENT="Definition of the access rights">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node22.html">
+<LINK REL="previous" HREF="node20.html">
+<LINK REL="up" HREF="node20.html">
+<LINK REL="next" HREF="node22.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html401"
+  HREF="node22.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html397"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html391"
+  HREF="node20.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html399"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html402"
+  HREF="node22.html">Checking of the access</A>
+<B> Up:</B> <A NAME="tex2html398"
+  HREF="node20.html">Method for the insert,</A>
+<B> Previous:</B> <A NAME="tex2html392"
+  HREF="node20.html">Method for the insert,</A>
+ &nbsp; <B>  <A NAME="tex2html400"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00271100000000000000"></A><A NAME="definitionarDB"></A>
+<BR>
+Definition of the access rights
+</H3>
+
+<P>
+Definition of the access rights for the database tasks is based on the same structure like the definition of system tasks (<A HREF="node17.html#definitionarST">1.6.1</A>). In this case access rights are also ordered by the roles where the role defines access rights to the group of tables, columns, records. The roles are assigned to the role groups. Each role consists of one or more policy. The policy consists of action (INSERT/UPDATE/DELETE), table name, column names for this table and the descriptor, where the descriptor specifies the sets of data on which user can operate. The information about access rights for the database tasks is also stored in the database (see section <A HREF="node37.html#erddiagrams">1.13</A>, figure <A HREF="node37.html#fig:dbt_policies">1.6</A>). In this case the same roles table which was defined for the system tasks is used (Table <A HREF="node17.html#rolestable">1.5</A>). The difference is only in the role type definition because here the role is defined as a DBT (Database Task). Besides, there are three additional tables and the view:
+
+<UL>
+<LI>tables (AR_DbtTables) - keeps information about the tables defined in the modelfile and their columns.
+
+<P>
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="246"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.7:</STRONG>
+Tables</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">table_id</TD>
+<TD ALIGN="CENTER">table_name</TD>
+<TD ALIGN="CENTER">table_columns
+
+ 1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|tax_id|mcname</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|lang_id|intname</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+</TR>
+<TR><TD ALIGN="CENTER">5</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|country_id|tax_id</TD>
+</TR>
+<TR><TD ALIGN="CENTER">6</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname</TD>
+</TR>
+<TR><TD ALIGN="CENTER">7</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|tax_id|dailygain</TD>
+</TR>
+<TR><TD ALIGN="CENTER">8</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">-</TD>
+</TR>
+<TR><TD ALIGN="CENTER">9</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">-</TD>
+</TR>
+</TABLE>
+</DIV>
+ <A NAME="tables"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+</LI>
+<LI>descriptor (AR_DbtDescriptors) - table holds the definitions of filters for the reords. Descriptor can be defined as any column from the database. Each descriptor consist of the column name and the value for this column, where this last can be defined as a single value, list or range (range can be defined only for the numerical values). In case of list, there is a limitation related to the number of elements. If the list has more then 2000 elements then the special view in the user schema is created which will return values for this list. The name of this view is put in to the descriptor definition.
+<BR>
+If the descriptor is based on the foreign key than the interanal representation of foreign key numbers is used as a values.
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="257"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.8:</STRONG>
+Descriptors</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">descriptor_id</TD>
+<TD ALIGN="CENTER">descriptor_name</TD>
+<TD ALIGN="CENTER">descriptor_value</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">lean_meat_avg</TD>
+<TD ALIGN="CENTER">60-74</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">5,6,7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-50</TD>
+</TR>
+<TR><TD ALIGN="CENTER">5</TD>
+<TD ALIGN="CENTER">db_sex</TD>
+<TD ALIGN="CENTER">72</TD>
+</TR>
+<TR><TD ALIGN="CENTER">6</TD>
+<TD ALIGN="CENTER">lean_meat_avg</TD>
+<TD ALIGN="CENTER">60-74</TD>
+</TR>
+<TR><TD ALIGN="CENTER">7</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">5,6,7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">8</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">DE</TD>
+</TR>
+<TR><TD ALIGN="CENTER">9</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-10</TD>
+</TR>
+<TR><TD ALIGN="CENTER">10</TD>
+<TD ALIGN="CENTER">db_sex</TD>
+<TD ALIGN="CENTER">72</TD>
+</TR>
+<TR><TD ALIGN="CENTER">11</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">1,2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">12</TD>
+<TD ALIGN="CENTER">carcassweight</TD>
+<TD ALIGN="CENTER">300-400</TD>
+</TR>
+<TR><TD ALIGN="CENTER">13</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL,DE,FR,IT, ...</TD>
+</TR>
+<TR><TD ALIGN="CENTER">13</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL,DE</TD>
+</TR>
+<TR><TD ALIGN="CENTER">14</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">FR</TD>
+</TR>
+<TR><TD ALIGN="CENTER">15</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">3</TD>
+</TR>
+<TR><TD ALIGN="CENTER">16</TD>
+<TD ALIGN="CENTER">dailygain</TD>
+<TD ALIGN="CENTER">24-56</TD>
+</TR>
+<TR><TD ALIGN="CENTER">17</TD>
+<TD ALIGN="CENTER">NOT tax_id</TD>
+<TD ALIGN="CENTER">1,2,3</TD>
+</TR>
+</TABLE>
+</DIV>    
+<A NAME="descriptors"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+ 
+</LI>
+<LI>database task policies - this table stores policy definitions which are a joins of records from tables: descriptor, table and codes. Table codes stores the SQL action names (1-INSERT, 2-UPDATE, 3-DELETE, 4-SELECT). The important thing is that the descriptor has to be always specified as a column of table which is used in the policy definition.
+
+<P>
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="268"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.9:</STRONG>
+Database task policies table</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">policy_id</TD>
+<TD ALIGN="CENTER">action_id</TD>
+<TD ALIGN="CENTER">table_id</TD>
+<TD ALIGN="CENTER">descriptor_id
+
+1</TD>
+</TR>
+</TABLE>
+</DIV>
+<A NAME="dbpolicies"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+</LI>
+<LI>user access view - the view is created in the user schema and keeps individual access rights of the user. The name of the view is derived from the user name.
+
+<P>
+
+<DIV ALIGN="CENTER">
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="279"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1.10:</STRONG>
+User access rights view</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">action</TD>
+<TD ALIGN="CENTER">tablename</TD>
+<TD ALIGN="CENTER">columnames</TD>
+<TD ALIGN="CENTER">descriptor_name</TD>
+<TD ALIGN="CENTER">descriptor_value
+
+ insert</TD>
+</TR>
+<TR><TD ALIGN="CENTER">insert</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|tax_id|mcname</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">5,6,7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">insert</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|lang_id|intname</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">insert</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-10</TD>
+</TR>
+<TR><TD ALIGN="CENTER">insert</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_sex</TD>
+<TD ALIGN="CENTER">72</TD>
+</TR>
+<TR><TD ALIGN="CENTER">update</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|country_id|lean_meat_avg</TD>
+<TD ALIGN="CENTER">lean_meat_avg</TD>
+<TD ALIGN="CENTER">60-74</TD>
+</TR>
+<TR><TD ALIGN="CENTER">update</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|tax_id|mcname</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">5,6,7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">update</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|lang_id|intname</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL</TD>
+</TR>
+<TR><TD ALIGN="CENTER">update</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-10</TD>
+</TR>
+<TR><TD ALIGN="CENTER">update</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_sex</TD>
+<TD ALIGN="CENTER">72</TD>
+</TR>
+<TR><TD ALIGN="CENTER">delete</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">-</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">5,6,7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">delete</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">-</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-50</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|country_id|tax_id</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">1,2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|country_id|tax_id</TD>
+<TD ALIGN="CENTER">carcassweight</TD>
+<TD ALIGN="CENTER">300-400</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|country_id|tax_id</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">PL,DE</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname</TD>
+<TD ALIGN="CENTER">owner</TD>
+<TD ALIGN="CENTER">FR</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname</TD>
+<TD ALIGN="CENTER">tax_id</TD>
+<TD ALIGN="CENTER">3</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|tax_id|dailygain</TD>
+<TD ALIGN="CENTER">dailygain</TD>
+<TD ALIGN="CENTER">24-56</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">breeds</TD>
+<TD ALIGN="CENTER">breed_id|mcname|tax_id|dailygain</TD>
+<TD ALIGN="CENTER">NOT tax_id</TD>
+<TD ALIGN="CENTER">1,2,3</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_animal</TD>
+<TD ALIGN="CENTER">1-50</TD>
+</TR>
+<TR><TD ALIGN="CENTER">select</TD>
+<TD ALIGN="CENTER">animal</TD>
+<TD ALIGN="CENTER">db_animal|birth_dt|db_sex|name</TD>
+<TD ALIGN="CENTER">db_sex</TD>
+<TD ALIGN="CENTER">72</TD>
+</TR>
+</TABLE>
+</DIV>
+<A NAME="userarview"></A></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+<DIV ALIGN="CENTER">
+</DIV>
+</LI>
+</UL> 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html401"
+  HREF="node22.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html397"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html391"
+  HREF="node20.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html399"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html402"
+  HREF="node22.html">Checking of the access</A>
+<B> Up:</B> <A NAME="tex2html398"
+  HREF="node20.html">Method for the insert,</A>
+<B> Previous:</B> <A NAME="tex2html392"
+  HREF="node20.html">Method for the insert,</A>
+ &nbsp; <B>  <A NAME="tex2html400"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

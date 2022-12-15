@@ -1,0 +1,67 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Model,v 1.15 2006/09/22 09:00:00 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Model object.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.15 $' );
+
+use Apiis::DataBase::User;
+my $demo = Apiis::DataBase::User->new(
+    id       => 'demo',
+    password => 'Demo',
+);
+
+$apiis->join_model('breedprg', userobj => $demo );
+$apiis->check_status( die => 'ERR' );
+
+print "tables: ", join('-', $apiis->Model->tables), "\n";
+print "views: ", join('-', $apiis->Model->views), "\n";
+print "fullname: ", $apiis->Model->fullname, "\n";
+my $animal = $apiis->Model->table( 'animal' );
+
+print "cols: ", join(' ', $animal->cols), "\n";
+print "tablename: ", $animal->name, "\n";
+print "datatype: ", $animal->column('last_change_dt')->datatype, "\n";
+print "description: ", $animal->column('last_change_dt')->description, "\n";
+print "default: ", $animal->column('last_change_dt')->default, "\n" if $animal->column('last_change_dt')->default;
+print "length: ", $animal->column('last_change_dt')->length, "\n";
+print "check_level: ", $apiis->Model->check_level, "\n";;
+print "check: ", join(', ', $animal->column('db_sex')->check), "\n";
+my $old_level = $apiis->Model->check_level( 1 );
+print "check_level curr: ", $apiis->Model->check_level, " old: $old_level\n";;
+print "check: ", join(', ', $animal->column('db_sex')->check), "\n";
+
+eval { $old_level = $apiis->Model->check_level( 2 ); };
+print "Error: $@\n" if $@;
+print "check_level curr: ", $apiis->Model->check_level, " old: $old_level\n";;
+print "check: ", join(', ', @{ $animal->column('db_sex')->check }), "\n";
+
+print "modify: ", join(', ', $animal->column('db_animal')->modify), "\n";
+if ( $animal->column('db_sex')->foreignkey ){
+   print "ForeignKey db_sex: ", join(', ', $animal->column('db_sex')->foreignkey), "\n";
+}
+$apiis->Model->check_level( 0 );
+if ( $animal->column('db_animal')->foreignkey ){
+   print "ForeignKey db_animal: ", join(', ', $animal->column('db_animal')->foreignkey), "\n";
+}
+my $transfer = $apiis->Model->table( 'transfer' );
+print "Primary Key(ref_col): ", $transfer->primarykey('ref_col'), "\n";
+print "Primary Key(concat): ", join(', ', $transfer->primarykey('concat')), "\n";
+
+# Triggers:
+my @pre_insert_triggers = $transfer->triggers('preinsert');
+print "Pre-Insert-Triggers transfer: \n\t",
+  join ( "\n\t", @pre_insert_triggers ), "\n";
+
+$transfer->check_status;

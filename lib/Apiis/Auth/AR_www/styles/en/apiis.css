@@ -1,0 +1,347 @@
+/* $Id: apiis.css,v 1.6 2009-03-03 16:41:02 duchev Exp $ Stylesheet file for EFABIS web intarface. */
+/* direction of text right to left for i.e arabic language */
+/* direction:rtl; */
+body { background-color: #ddd; color: #000; font-family: Verdana,sans-serif; font-size: 12px; margin: 0px; padding: 0px; text-align: center; }
+table, tr, td { border: none; }
+table#main_table { background-color: #fff; border-bottom: solid 4px #600; margin: 0px auto; overflow: auto; padding: 0px; text-align: left; width: 100%; }
+#my_form { margin: 0px; padding: 0px 10px 0px 0px; }
+#my_form .field_name { font-weight: bold; }
+#my_form td.synch_flag { text-align: left; }
+div.checkFlags { margin-top: 10px; }
+div.checkFlags input { vertical-align: middle; }
+/* main parts of web page */
+#top_header { margin: 0px; padding: 0px; }
+#headerHeader { background-color: #c63; color: #fff;  font-size: 10px; font-weight: bold; margin: 0px; padding: 0px 4px; text-align: right; text-transform: uppercase; word-spacing: 8px; }
+#top_header table { he\ight: 56px; height: 56px; margin: 0px; overflow: hidden; padding: 0px; w\idth: 100%; width: 100%; }
+#headerImage { background-color: #600; background-image: url("../../images/banner/toplogo1.png"); border-left: solid 1px #600; border-right: solid 1px #600; w\idth: 150px; width: 160px; }
+#headerBanner { background-image: url("../../images/banner/maintile.png"); height: 56px; padding: 0px; }
+#headerText { color: #600;  font-size: 14px; font-weight: bold; margin: -10px 0px 0px 0px; padding: 0px 10px 8px 0px; text-align: right; }
+#headerText span { color: #c63; }/* text-transform: uppercase; */
+#headerText span.l_species {text-transform: lowercase; }
+#top_header .headerLink { cursor: pointer; }
+#headerLogo4 { background-image: url("../../images/banner/apiis-pure1.jpg");  width: 160px; w\idth: 160px; height: 56px; he\ight: 56px;}
+#current_status { border-bottom: solid 2px olive; border-top: solid 2px olive; font-family: Verdana, sans-serif; font-size: small; margin: 1px; padding: 1px 5px 1px 5px; visibility: hidden; }
+td#menu_table { background-color: #ddd; border-left: solid 1px #999; border-right: solid 1px #999; padding: 0px; vertical-align: top; w\idth: 160px; width: 160px; }
+div#mainMenu { background-color: transparent; color: #000; padding: 0px; w\idth: 160px; width: 160px; }
+div#mainMenuMenu { margin: 0px; overflow: auto; padding: 0px; }
+div#mainMenu a { text-decoration: none; }
+/* rotate left and right margin for right to left text direction */
+#main_content { color: #000; margin: 0px; padding: 10px 0px 10px 10px; text-align: justify; vertical-align: top; }
+/* Main column/boduy specific styles */
+.contentBody { padding: 0px 10px 20px 10px; vertical-align: top; }
+.contentLine { padding: 0px 10px; }
+.contentBody ul, .contentLine ul, .report ul { list-style-type: none; margin: 2px 0px; padding: 0px; }
+.contentBody ul li, .contentLine ul li, .report ul li { background-color: transparent; background-image: url("../../images/colorbullet.png"); background-position: 0% 0%; background-repeat: no-repeat; display: block; list-style-type: none; margin: 0px 0px 2px 8px; padding-left: 14px; }
+h1, h2, h3, h4 { color: #600; font-family: Verdana, sans-serif; font-weight: bold; padding: 0px; }
+h1 { border-bottom: solid 1px #999; font-size: 21px; margin: 8px 0px; padding-bottom: 8px; }
+h2 { font-size: 18px; margin: 6px 0px; }
+h3 { font-size: 14px; margin: 4px 0px; }
+h4 { font-size: 12px; margin: 2px 0px; }
+/* rotate left and right margin for right to left text direction */
+#footer { font-size: x-small; text-align: center; }
+/* for bubbles - bubble is not visible */
+.hideClass { background-color: #ff9; border: solid 1px #cc0; color: #330; opacity: .85; padding: 2px 10px; position: absolute; visibility: hidden; z-index: 5; }
+/* for bubbles - bubble is visible */
+.showClass { position: absolute; visibility: visible; }
+/* form elements */
+form { font-size: 10px; font-style: normal; }
+input { font-size: 10px; }
+/* news and topics */
+table#news_table { margin: 0px; padding: 0px; width: 100%; }
+td.topics { background-color: transparent; color: #000; margin: 0px; padding: 0px; vertical-align: top; w\idth: 200px; width: 200px; }
+td.topics .topicsList { background-color: #eee; font-family: Verdana, sans-serif; margin: 0px; padding: 0px; text-align: left; w\idth: 170px; width: 170px; }
+td.topics .topicsListTitle { background-color: #aaa; color: #fff; font-size: 12px; font-weight: bold; padding: 5px 10px; }
+td.topics .topicsListList { font-size: 11px; font-weight: bold; }
+td.topics .topicsListList { margin: 0px; padding: 0px; }
+td.topics .topicsListList ul { list-style-type: none; margin: 0px; padding: 0px; }
+td.topics .topicsListList ul li { border-bottom: solid 1px #000; margin: 0px; padding: 10px; }
+td.topics .topicsListList ul li .date { color: #666; display: block; font-weight: normal; margin-bottom: 2px; }
+/* news and topics END */
+.dates div { margin-bottom: 10px; }
+.email { font-style: italic; font-weight: bold; }
+a, a:link, a:visited { color: #c63; text-decoration: none; }
+a:hover, a:active, a:focus { color: #c63; text-decoration: underline; }
+.menutext { color: #186791; font-family: Verdana, sans-serif; }
+.tb_menu_top { border: solid 1px gray; vertical-align: top; }
+.publication_data { background-color: #efc; }
+#publications_tab { border: solid 1px #999; padding: 0px; }
+#publications_tab thead td { font-weight: bold; padding: 0px 0px 5px 0px; }
+#publications_tab thead td:first-child { padding-left: 5px; }
+#publications_tab tbody tr:hover { background-color: #ffc; }
+#publications_tab tbody td { border-top: solid 1px #999; margin: 0px; padding: 1px 5px; vertical-align: middle; }
+.pubcat_main {font-weight: bold;}
+.pubcat_sub1 {padding-left: 10px;}
+.pubcat_sub2 {padding-left: 20px;}
+.breed_data { background-color: #80cb26; }
+.menu_selected { background-color: green; }
+/* div-s in init menu */
+div#breed_data,
+div#contact_data,
+div#publication_data { border: solid 1px #999; margin: 0px 0px 10px 5px; padding: 0px 0px 10px 0px; }
+.menu_title { background-color: #999; color: #fff; font-family: Verdana, sans-serif; font-size: 14px; font-weight: bold; margin: 0px 0px 10px 0px; padding: 0px 5px 2px 5px; }
+.tb_menu_list { overflow: auto; padding: 0px 0px 5px 0px; }
+.tb_menu_listLabel { float: left; line-height: 15px; margin: 0px 5px 0px 0px; padding: 0px; text-align: right; width: 150px; }
+.tb_menu_listValue { float: left; line-height: 15px; margin: 0px; padding: 0px; }
+.tb_menu_opt { padding: 0px 0px 0px 155px; clear: left; }
+.tb_menu_opt div { line-height: 20px; }
+.option_text { font-size: small; }
+/* end of init menu styles */
+/* EFABIS main menu */
+#mainMenuMenu ul { background-color: transparent; border-top: solid 1px #999; display: block; list-style-type: none; margin: 5px 0px; padding: 0px; }
+#mainMenuMenu ul li { background-color: #600; border-bottom: solid 1px #999; border-collapse: collapse; color: #fff; display: block; font-family: Verdana, sans-serif; font-size: 12px; font-weight: normal; list-style-type: none; margin: 0px; overflow: hidden; padding: 0px; }
+#mainMenuMenu ul li.cmenu { background-image: url("../../images/level1selected.png"); background-position: 100% 0%; background-repeat: no-repeat; }
+#mainMenuMenu ul li a, #mainMenuMenu ul li a:link, #mainMenuMenu ul li a:visited { background-color: transparent; border-collapse: collapse; color: #fff; display: block; font-weight: normal; height: 20px; margin: 0px; padding: 6px 4px; text-decoration: none; vertical-align: middle; }
+#mainMenuMenu ul li a:focus, #mainMenuMenu ul li a:hover, #mainMenuMenu ul li a:active { color: #ff0; }
+/* EFABIS main menu END */
+/* EFABIS left forms common */
+form.menuForm { background-color: #c63; border-bottom: solid 1px #999; border-top: solid 1px #999; display: block; font-family: Verdana, sans-serif; font-size: 11px; margin: 0px 0px 5px 0px; overflow: auto; padding: 0px; }
+form.menuForm div { clear: both; display: block; float: none; overflow: auto; padding: 2px; text-align: center; }
+form.menuForm label { color: #fff; float: left; font-size: 10px; font-weight: normal; }
+form.menuForm label.title { background-color: #600; color: #c63; display: block; float: none; font-size: 11px; font-weight: bold; margin-bottom: 4px; padding: 3px 0px; text-align: center; }
+form.menuForm input[type="text"], form.menuForm input[type="password"], form.menuForm select { background-color: #fec; border: solid 1px #000; float: right; font-family: Verdana, sans-serif; font-size: 10px; }
+form.menuForm input[type="submit"], form.menuForm .buttons { float: none; font-family: Verdana, sans-serif; font-size: 10px; margin-bottom: 4px; margin-top: 4px; }
+/* login form */
+#login { color: #000; }
+#login .text { w\idth: 100px; width: 100px; }
+label#login { text-align: left; }
+/* login form END */
+/* set_lang form */
+#set_lang { color: #000; }
+#set_lang .set_lang_class { margin-bottom: 2px; }
+/* set_lang form END */
+/* user status area */
+#user_status { border-top: solid 1px #999; font-family: Verdana, sans-serif; font-size: 11px; margin: 0px 0px 5px 0px; padding: 0px; }
+#user_status .statusSection { background-color: #c63; border-bottom: solid 1px #999; padding: 6px 4px; text-align: center; }
+#user_status .statusSection .value { font-style: italic; font-weight: bold; }
+#user_status a, #user_status a:link, #user_status a:visited { color: #600; }
+#user_status a:focus, #user_status a:hover, #user_status a:active { color: #600; text-decoration: underline; }
+/* user status area END */
+/* tab menu for all */
+.tabbedMenu { background-color: transparent; border-top: solid 2px #fff; margin: -5px 0px 10px -10px; padding: 0px; text-align: left; white-space: nowrap; }
+.tabbedMenu a, .tabbedMenu a:link, .tabbedMenu a:hover, .tabbedMenu a:active, .tabbedMenu a:visited { text-decoration: none; }
+/* first level of tabs */
+.tabbedMenu1 { background-color: #fff; border: none; margin: 0px; padding: 1px 0px 0px 10px; }
+.tabbedMenu1 .non_active a, .tabbedMenu1 .non_active a:link, .tabbedMenu1 .non_active a:visited { background-color: #fff; background-image: url("../../images/topTab1Side0.png"); color: #600; padding: 0px 2px; }
+.tabbedMenu1 .non_active a:hover, .tabbedMenu1 .non_active a:focus, .tabbedMenu1 .non_active a:active { color: #000; }
+.tabbedMenu1 .non_active .leftTab1Side { background-color: #fff; background-image: url("../../images/leftTab1Side0.png"); background-position: 0% 0%; background-repeat: no-repeat; padding: 0px 0px 0px 8px; }
+.tabbedMenu1 .non_active .rightTab1Side { background-color: #fff; background-image: url("../../images/rightTab1Side0.png"); background-position: 100% 0%; background-repeat: no-repeat; padding: 0px 8px 0px 0px; }
+.tabbedMenu1 .active .leftTab1Side { background-color: #600; background-image: url("../../images/leftTab1Side.png"); background-position: 0% 0%; background-repeat: no-repeat; padding: 0px 0px 0px 8px; }
+.tabbedMenu1 .active .rightTab1Side { background-color: #600; background-image: url("../../images/rightTab1Side.png"); background-position: 100% 0%; background-repeat: no-repeat; padding: 0px 8px 0px 0px; }
+.tabbedMenu1 .active a, .tabbedMenu1 .active a:link, .tabbedMenu1 .active a:visited { background-color: #600; color: #fff; padding: 0px 2px; }
+.tabbedMenu1 .active a:hover, .tabbedMenu1 .active a:focus, .tabbedMenu1 .active a:active { color: #ff0; }
+/* second level of tabs */
+.tabbedMenu2 { background-color: #600; margin: 0px; padding: 1px 0px 1px 10px; }
+.tabbedMenu2 a, .tabbedMenu2 a:link, .tabbedMenu2 a:visited { color: #fff; padding: 0px 12px; text-decoration: none; }
+.tabbedMenu2 a:hover, .tabbedMenu2 a:focus, .tabbedMenu2 a:active { color: #ff0; }
+/* tab menu for forms END */
+h5.names { border-bottom: solid 1px #000; font-size: small; font-weight: bold; padding: 2px; }
+/* help icon */
+.help_img { border: 0px; height: 12px; margin: 0px 5px 0px 0px; vertical-align: -1px; width: 12px; cursor: help; }
+/* sections list */
+.availableSectionsList { margin-bottom: 20px; }
+.availableSectionsList li { font-weight: bold; }
+/* page navigation */
+.pageNavigation { border: none; margin: 0px; width: 100%; }
+#topPageNavigation td, #bottomPageNavigation td { border: none; color: #999; font-size: 10px; text-align: center; }
+#topPageNavigation { border: none; border-bottom: solid 1px #ccc; margin-bottom: 5px; }
+#bottomPageNavigation { border: none; border-top: solid 1px #ccc; margin-top: 5px; }
+/* reports */
+.report { font-size: 12px; margin: 0px; padding: 0px 10px 0px 0px; }
+.reportTable { background-color : #fff; }
+.reportSection { border-bottom: solid 1px #ccc; margin: 0px 0px 20px 0px; padding: 0px 10px 10px 10px; }
+.reportSection .reportSection { border: none; margin: 0px; padding: 0px; }
+.reportSection h3 { color: #c63; margin: 5px 0px 10px 0px; padding: 0px; }
+.reportSection h4 { margin: 8px 10px 2px 20px; }
+.reportSection p { margin: 2px 0px 2px 40px; padding: 0px; }
+.report p, .report li { font-size: 12px; }
+.report table { border: solid 1px #ccc; margin : 5px; }
+.report table td { padding: 2px 5px; border-top: solid .5px #ccc; border-left: solid .5px #ccc; vertical-align: top; }
+.report .label { font-weight: bold; }
+.report table tr:first-child td { border-top: none; }
+.report table td:first-child { border-left: none; }
+.report thead td { background-color: #ddd; color: #600; text-align: center; vertical-align: middle; }
+.notes4user { color: #666; font-size: 10px; margin: 10px; padding: 0px; }
+/* breed summary report */
+#breed_summary .field_name_c { font-weight: bold; text-align: center; }
+.report #main_use_tab thead { display: none; }
+/* header of report section */
+/* title for descriptive parts */
+/* Breeds report images */
+#breeds_images #images_tab { margin: 5px auto; }
+#breeds_images #images_tab td { padding: 5px; }
+#breeds_images .imageName { margin-top: 4px; }
+#breeds_images td.image { text-align: center !important; width: 200px; }
+#breed_population_data table, #breed_population_data td { border: 0px; }
+table#breed_pop_data_tab { border: solid 1px #ccc; padding: 0px; }
+table#breed_pop_data_tab table { margin: 0px; }
+table#breed_pop_data_tab thead td { text-align: center; }
+table#breed_pop_data_tab td { padding: 0px; border-left: solid 1px #ccc; }
+table#breed_pop_data_tab td:first-child { border-left: none; }
+table#breed_pop_data_tab td td { border-left: none; padding: 1px 5px; }
+#breed_pop_data_tab .popDataYear tbody td { text-align: right; }
+#popStructureMultTable td.yearFirstCell { border-left: solid 1px #600; }
+#imagesPerBreedsTable tbody td { border-top: none; }
+/* Population structure in multiple years Report */
+div.breeds_pop_years { height: 250px; width: 80%; overflow: auto;border: none #ccc;padding: 5px;}
+#pop_years_per_breed_tab thead td {border: solid 1px #ccc; background-color: #ddd; color: #600; text-align: center; vertical-align: middle; padding: 1px;} 
+#pop_years_per_breed_tab tbody td {border: solid 1px #ccc; text-align: left; padding-left: 2px; }
+#pop_years_per_breed_tab tbody td+td {border-top: solid 1px #ccc; text-align: center; padding-left: 2px; }
+
+/* Degree of fill population records Report */
+#dcprTable tbody td { border-top: none; }
+#dcprTable tbody tr.fillheadline td { border-left: none; border-top: dotted 1px #ccc; }
+#dcprTable tbody tr.fillheadline td:first-child + td { text-align: center; }
+#dcprTable tbody td[colspan] + td, #dcprTable tbody td[colspan] + td + td { text-align: right; padding-left: 20px; }
+/* Quality of population records Report */
+#popqTable tbody td { border-top: none; }
+#popqTable tbody tr.fillheadline td { border-left: none; border-top: dotted 1px #ccc; }
+#popqTable tbody tr.fillheadline td:first-child + td { text-align: center; }
+#popqTable tbody td[colspan] + td { text-align: right; padding-left: 20px; }
+#popqTable tbody td[colspan] + td + td { text-align: center; padding-left: 10px; padding-right: 10px; }
+/* Missing Population records report */
+#mispopTable tbody td { border-top: none; }
+#mispopTable tbody td + td { text-align: center; }
+#mispopTable tbody td + td + td { text-align: left; }
+#mispopTable tbody td + td + td + td { text-align: right; }
+/* breed summary report END */
+/* Image Browser */
+div.reportSections {height: 100px; width: 800px; overflow: auto;border: 1px solid #ccc;padding: 5px;}
+div.tabIframeWrapper {height: 320px; width: 800px;}
+iframe.imageContent {height: 100%; width: 100%;}
+/* Image Browser END*/
+/* Species per country */
+#species_per_country { width: 500px; }
+#species_per_country tbody tr td:first-child { width: 50px; }
+#species_per_country tbody tr td { border-left: none; border-top: none; }
+#species_per_country tbody tr td[colspan] { border-top: solid 1px #ccc; font-weight: bold; }
+/* system data managment */
+#sys_data_tabs { border-bottom: solid 4px #600; }
+#sysdata { vertical-align: top; }
+#sysdata table {
+}
+#sysdata .buttons { font-family: Verdana, sans-serif; font-size: 1em; margin-right: 6px; text-align: right; }
+#sysdata input { margin: 3px; }
+#sysdata td.label { color: #030; font-size: 14px; font-weight: bold; w\idth: 70px; width: 70px; }
+#sysdata input[type="text"] { font-size: 10px; }
+#sysdata select { font-size: x-small; }
+#sys_data_taxonomies { margin-right: 20px; margin-top: 2.8em; position: absolute; top: 135px; vertical-align: top; visibility: visible; }
+#sys_data_pubcat { height: 0px; margin-right: 20px; margin-top: 2.8em; position: absolute; top: 135px; vertical-align: top; visibility: hidden; }
+#sys_data_countries { height: 0px; margin-right: 20px; margin-top: 2.8em; position: absolute; top: 135px; vertical-align: top; visibility: hidden; }
+#sys_data_codes { height: 0px; margin-right: 20px; margin-top: 2.8em; position: absolute; top: 135px; vertical-align: top; visibility: hidden; }
+/* system data managment END */
+/* my lang form styles */
+/* tables can be identified by ID */
+table#trans_lang_tab { width: 100%; }
+table#fleecefibre_tab, table#milk_tab, table#litter_tab, table#eggs_tab { margin: 40px; }
+table#litter_tab tbody tr:first-child td { padding-bottom: 10px; }
+td.buttons { text-align: right; }
+div.buttons { text-align: right; }
+/* my lang forms style END */
+/* style for long description and example */
+div#description { background-color: #feffd5; font-family: Verdana, sans-serif; font-size: 12px; text-align: justify; }
+.desc_head { font-size: 14px; font-weight: bold; text-transform: uppercase; }
+/* style for long description and example END */
+/* list of codes */
+#codes_tab .field_label { color: #006; font-weight: bold; }
+#codes_tab td { margin: 0px; }
+#codes_tab tr.data:hover { background-color: #c63; color: #fff; }
+#codes_tab a { color: #000; font-size: small; font-weight: normal; text-decoration: none; }
+#codes_tab td.buttons a:hover { font-weight: bold; text-decoration: underline; }
+#codes_tab td.buttons a { color: #600; font-size: small; font-weight: bold; }
+#codes_tab td.retranslate a { color: #600; font-weight: bold; text-decoration: underline;}
+/*Styles for managing translations */
+.translationForm .master { color: #c00; empty-cells: hide; font-weight: bold; text-align: center; width: 300px; }
+.translationForm .translation { margin: 0px; padding: 0px; }
+.translationForm textarea, td.translation textarea { margin: 0px !important; padding: 1px; width: 400px; }
+.translationForm td.trans_label { background-color: #eee; border-top: solid 4px #fff; font-weight: bold; margin: 0px; padding: 2px; }
+td.trans_check { background-color: #faa; text-align: center; }
+.translationForm tr.trans_check td.trans_label, .translationForm tr.trans_check td.trans_check { border-bottom: solid 4px #fff; border-top: solid 4px #fff; }
+td.translation { padding: 0px !important; }
+#ref_list { width: 600px; }
+/* style for management reports */
+span.warncol { color: #ff2104; }
+span.cautioncol { color: #a05f3c; }
+.textintablehead { font-size: 10px; font-weight: normal; }
+.textintable1 { color: #030; font-size: 11px; font-style: normal; font-weight: normal; text-align: left; }
+.textintable2 { color: #030; font-size: 11px; font-style: normal; font-weight: normal; text-align: center; }
+.textintablefilled { background-color: #ffecbf; color: #030; font-size: 12px; font-style: normal; font-weight: normal; text-align: center; }
+tr.fillline td { background-color: #fed; }
+tr.filltotalline td { background-color: #fc9; }
+tr.fillheadline { background-color: #fed; text-align: left; }
+tr.emptyline { text-align: left; }
+td.fillcell { background-color: #ffecbf; text-align: left; }
+td.emptycell { text-align: left; }
+td.rfillcell { background-color: #ffecbf; text-align: left; }
+td.fillcentercell { background-color: #ffecbf; text-align: center; }
+td.emptycentercell { text-align: center; }
+td.fillheadcell { background-color: #efddb3; text-align: left; }
+td.rightaligncell { text-align: right; }
+/* style for management reports END */
+/* style for library */
+span.quoted { color: #c63; font-weight: bold; }
+/* style for library END */
+/* identify breeds form */
+#identify_breeds_tab { margin-left: 15px; }
+#longIdentifyColumn { padding: 0px 0px 0px 20px; }
+/* identify breeds form END */
+/* brd_publications */
+.assigned_breeds { background-color: #feffd5; border-bottom: solid 0.1em #000; color: black; font-size: small; font-weight: bold; padding-left: 5em; }
+/* Generic Form rules */
+form { margin: 0px; padding: 0px; }
+select { font-size: 11px; margin-bottom: 1px; padding: 0px; }
+select option { margin: 0px; padding: 0px 2px; }
+select[size="10"] { height: 188px; }
+select[size="20"] { height: 400px; }
+textarea { background-color: transparent; font-family: Verdana, sans-serif; padding: 0px 2px; width: 98%; }
+input[type="text"], input[type="password"] { margin-bottom: 1px; padding: 0px 2px; }
+td.numeric, tr.numeric td.value { text-align: right; }
+input.numeric { text-align: right; width: 40px; }
+input.bigNumeric { width: 80px; }
+td.novalue { empty-cells: show; background-image: url("../../images/novalue.png"); }
+/* Generic pageForm */
+.pageForm { margin: 0px; padding: 0px 10px 0px 0px; }
+.pageForm table { margin-bottom: 10px; }
+.pageForm table table { margin-bottom: 0px; }
+table.fullWidth { width: 100%; }
+table.fullWidth tbody tr td[colspan].label:first-child { padding-top: 5px; }
+.pageForm .label { font-weight: bold; padding-left: 10px; padding-right: 5px; vertical-align: baseline; }
+.pageForm .labelTop { vertical-align: top; }
+.pageForm td.label:first-child { padding-left: 0px; }
+.pageForm thead td.label { background-color: #ddd; border-right: solid 1px #fff; padding-left: 5px; padding-right: 5px; text-align: center; }
+.pageForm thead td:first-child + td.label, .pageForm thead td.label:first-child { border-left: solid 1px #fff; }
+.pageForm thead td[colspan].label { border-bottom: solid 1px #fff; }
+.pageForm .value { vertical-align: baseline; }
+.pageForm .value input[type="radio"] { vertical-align: middle; }
+.pageForm .control { border-top: solid 2px #fff; background-color: #eee; margin: 0px; padding: 5px; text-align: center; }
+.pageForm td { vertical-align: top; }
+.pageForm select { background-color: #ffe; border: solid 1px #ccc; color: #000; }
+.pageForm select option { background-color: #ffe; }
+.pageForm select:focus, .pageForm select option:focus, .pageForm select option:hover { background-color: #ff9; }
+.pageForm select[size]:focus { background-color: #ffe; }
+.pageForm .mediumSelect { width: 300px; }
+.fieldTitle { padding: 5px 0px 2px 0px; }
+.pageForm input[type="password"], .pageForm input[type="text"], .pageForm textarea { background-color: #ffe; border: solid 1px #ccc; color: #000; }
+.pageForm textarea { font-size: 11px; width: 100%; }
+.pageForm input[type="text"]:focus, .pageForm input[type="password"]:focus, .pageForm textarea:focus { background-color: #ff9; border: solid 1px #999; }
+.pageForm tbody td.value input[type="text"], .pageForm tbody td.value select { margin-left: 2px; }
+.pageForm thead + tbody tr:first-child td { padding-top: 1px; }
+/* Form specific exceptions */
+form#names select { height: 200px; width: 300px; }
+#img_table td.breedImage img { border-bottom: dotted 1px #000; padding: 5px 0px 5px 0px; vertical-align: top; }
+#img_table td.breedImageCaption { border-bottom: dotted 1px #000; padding: 5px 5px 0px 5px; }
+#img_table form, #img_table td.breedImageCaption .label { margin: 0px; padding: 0px; }
+/* for fields whose value is wrong */
+input[type="text"].err { color: #f00; border-color: red; }
+option[class~="err"].err, option.err { color: #f00; }
+.err { color: #f00; border-color: red; }
+textarea[class~="err"].err  { color: #f00; border-color: red; }
+
+/* ARM styles */
+#policy_tab tbody tr.loop_row { background-color: #F4D0AA; color: #F4D0AA; font-weight: bold;}
+#policy_tab tbody tr.loop_header { font-weight: bold;}
+#policy_tab input { font-size: 10px; background-color: #fed;}
+#policy_tab select { font-size: 10px; background-color: #fed; font-weight: bold;}
+#policy_tab select option { font-size: 10px; background-color: #fed; }
+#home_big {font-size: 32px; font-weight: bold; text-align: center;}
+#home {font-size: 23px; font-weight: bold; text-align: center;}
+#home_small {font-size: 16px; font-weight: bold; text-align: center;}

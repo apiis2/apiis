@@ -1,0 +1,15 @@
+
+    <!-- submit.tmpl -->
+    <!-- SUBMIT PARAMETERS -->
+    <input type="hidden" name="user_country" value="<tmpl_var name=user_country>" />
+    <input type="hidden" name="breed_id" value="<TMPL_VAR NAME=BREED_ID>" />
+    <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>" />
+    <input type="hidden" name="sid" value="<tmpl_var name=session_id>" />
+    <input type="hidden" name="guid" value="<tmpl_var name=guid>" />
+    <input type="hidden" name="tax_id" value="<tmpl_var name=tax_id>" /><!-- breeds__ -->
+    <input type="hidden" name="action" value="<TMPL_VAR NAME=action>" />
+    <!-- SUBMIT PARAMETERS END -->
+    <!-- SUBMIT -->
+    <input type="submit" name="<tmpl_var name=submit_name>" value="<TMPL_VAR NAME=L_SUBMIT>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON> />
+    <!-- SUBMIT END -->
+    <!-- submit.tmpl end -->

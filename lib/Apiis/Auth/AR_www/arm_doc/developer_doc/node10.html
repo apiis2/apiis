@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>APIIS core</TITLE>
+<META NAME="description" CONTENT="APIIS core">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node8.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html257"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html253"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html247"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html255"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html258"
+  HREF="node11.html">APIIS projects</A>
+<B> Up:</B> <A NAME="tex2html254"
+  HREF="node8.html">The basic foundations -</A>
+<B> Previous:</B> <A NAME="tex2html248"
+  HREF="node9.html">System architecture</A>
+ &nbsp; <B>  <A NAME="tex2html256"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00232000000000000000"></A><A NAME="apiiscore"></A>
+<BR>
+APIIS core
+</H2>
+
+<P>
+APIIS core software resides on the APIIS Server and is used by the all users. This means that programs are executed on the server and all users use the same libraries and modules.
+<BR>
+Definition of security for the APIIS software is based on the usage some secure space on the server and also on the operating system features<A NAME="tex2html3"
+  HREF="footnode.html#foot94"><SUP>1.3</SUP></A>. Secure space is received by creating a special administrator account (OS account). Administrator is the owner of the files and this means that he has full rights to reading, writing and executing. Access to these files for the other users is handled by the special groups (see description of Linux groups). Each file has defined group to which belong and a special rights for this group (reading, writing and executing). In this case all files are defined in the administrator group (group is created with the administrator user account). This group can be ascribed to each operating system user and with this group user should have rights only to reading. If some of the files have to be fully restricted for the users (some administrator modules) than this can be done by removing all rights from the group and from the other users. In such case only administrator has access to these files.
+<BR>
+There is also possibility to install separate copy of APIIS software for each user. In such case users must have operating system account because the software is installed in his home directory.
+
+<P><P>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html257"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html253"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html247"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html255"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html258"
+  HREF="node11.html">APIIS projects</A>
+<B> Up:</B> <A NAME="tex2html254"
+  HREF="node8.html">The basic foundations -</A>
+<B> Previous:</B> <A NAME="tex2html248"
+  HREF="node9.html">System architecture</A>
+ &nbsp; <B>  <A NAME="tex2html256"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,89 @@
+
+  <tmpl_var name=div>
+   <a name="top"></a>
+   <form name="dbt_policies" id="dbt_policies" action="<TMPL_VAR NAME=form_action>" method="post" <TMPL_VAR NAME=JS_SUBMIT> class="pageForm">
+    <table id="policy_tab" cellpadding="5" cellspacing="1" border="0" >
+     <tbody>
+      <tr>
+       <td colspan="9">
+        <a href="#bottom" onClick="addRow_dbtpolicy();"><TMPL_VAR NAME=l_arm_add_new_policy></a> &nbsp;&nbsp;&nbsp;
+        <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armtables"><TMPL_VAR NAME=l_arm_add_new_table></a> &nbsp;&nbsp;&nbsp;
+        <a href="<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armdescriptors"><TMPL_VAR NAME=l_arm_add_new_descriptor></a> &nbsp;&nbsp;&nbsp;
+       </td>
+      </tr>
+      <tr><td colspan="9"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="9">
+         <a href="#bottom"><TMPL_VAR NAME=l_arm_bottom></a>
+       </td>
+      </tr>
+      <tr><td colspan="9"><hr></td><tr>
+      <TMPL_IF NAME=policies_loop>
+        <tr> 
+         <td class="label"><TMPL_VAR NAME=l_arm_policy_dbtpolicy_action></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_policy_dbtpolicy_table></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_policy_dbtpolicy_columns></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_policy_dbtpolicy_descriptor_n></td>
+         <td class="label"><TMPL_VAR NAME=l_arm_policy_dbtpolicy_descriptor_v></td>
+         <td></td>
+         <td></td>
+         <td></td>
+         <td></td>
+        </tr>
+        <TMPL_LOOP NAME=policies_loop>
+        <a href="#id<TMPL_VAR NAME=id>">
+        <tr class="loop_row"> 
+         <td class="value">
+           <select name="dbtpolicy_action_<TMPL_VAR NAME=id>" <tmpl_var name=js_change>>
+             <option value="">&nbsp;</option><TMPL_LOOP NAME=action>
+             <option value="<TMPL_VAR NAME=value>" <TMPL_VAR NAME=SELECT>><TMPL_VAR NAME=name></option></TMPL_LOOP>
+           </select>
+         </td>
+         <td class="value">
+           <input name="dbtpolicy_table_name_<TMPL_VAR NAME=id>" id="dbtpolicy_table_name_<TMPL_VAR NAME=id>" size="20" value="<TMPL_VAR NAME=table_name>" <TMPL_VAR NAME=JS_CHANGE>>
+           <input type="hidden" name="table_id_<TMPL_VAR NAME=id>" value="<TMPL_VAR NAME=table_id>">
+         </td>
+         <td class="value">
+           <input name="dbtpolicy_table_columns_<TMPL_VAR NAME=id>" size="50" value="<TMPL_VAR NAME=table_columns>" <TMPL_VAR NAME=JS_CHANGE>>
+         </td>
+         <td class="value">
+           <input name="dbtpolicy_descriptor_name_<TMPL_VAR NAME=id>" size="30" value="<TMPL_VAR NAME=descriptor_name>" <TMPL_VAR NAME=JS_CHANGE>>
+           <input type="hidden" name="descriptor_id_<TMPL_VAR NAME=id>" value="<TMPL_VAR NAME=descriptor_id>">
+         </td>
+         <td class="value">
+           <input name="dbtpolicy_descriptor_value_<TMPL_VAR NAME=id>" size="30" value="<TMPL_VAR NAME=descriptor_value>" <TMPL_VAR NAME=JS_CHANGE>>
+         </td>
+         <td class="buttons">
+           <a href="#id<TMPL_VAR NAME=id>" title="<TMPL_VAR NAME=l_change_table_title>" 
+            onClick="var aWin=window.open('<TMPL_VAR NAME=form_action>?sid=<TMPL_VAR NAME=session_id>&action=armchoose_table&table_id=<TMPL_VAR NAME=table_id>&choosen_policy_id=<TMPL_VAR NAME=id>',
+                     'popup','height=400,top=0,left=0,resizable=no,scrollbars=yes'); aWin.focus();">
+           <TMPL_VAR NAME=l_change_table></a>
+         </td>
+         <td class="buttons">
+           <a href="#id<TMPL_VAR NAME=id>" title="<TMPL_VAR NAME=l_change_descriptor_title>" 
+            onClick="choose_descriptor('<TMPL_VAR NAME=form_action>','<TMPL_VAR NAME=id>','<TMPL_VAR NAME=descriptor_id>','<TMPL_VAR NAME=session_id>');">
+           <TMPL_VAR NAME=l_change_descriptor></a>
+         </td>
+         <td class="buttons"><a href="javascript:show_apply('<TMPL_VAR NAME=id>');" title="<TMPL_VAR NAME=l_show_policy_title>"><TMPL_VAR NAME=l_show_policy></a></td>
+         <td class="buttons"><a href="javascript:remove('<TMPL_VAR NAME=id>');" title="<TMPL_VAR NAME=l_delete_policy_title>"><TMPL_VAR NAME=l_delete_policy></a></td>
+        </tr>
+        </TMPL_LOOP>
+      </TMPL_IF>
+     </tbody>
+      <tr><td colspan="9"><hr></td><tr>
+      <tr>
+       <td class="control buttons" colspan="9">
+        <a href="#top"><TMPL_VAR NAME=l_arm_top></a>
+	<input id="sid" type="hidden" name="sid" value="<tmpl_var name=session_id>">
+	<input type="hidden" name="show_apply" value="">
+        <input type=hidden name="remove" value="">
+        <input type="hidden" name="form_status" value="<TMPL_VAR NAME=FORM_STATUS>">
+        <input type="hidden" name="change_my_policies" value="1">
+        <input type="hidden" name="action" value="armrole">
+<!--         <input type="submit" name="marked_policies" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_marked_policies>" <TMPL_VAR NAME=JS_SUBMIT_BUTTON>> -->
+       </td>
+      </tr>
+      <tr><td colspan="9"><hr></td><tr>
+    </table>
+   </form>
+   <a name="bottom"></a>

@@ -1,0 +1,122 @@
+#!/usr/bin/perl -w
+##############################################################################
+# $Id: test.Form,v 1.22 2014/12/08 08:56:55 heli Exp $
+##############################################################################
+# This is a test file to run xml forms
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use CGI;
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.22 $' );
+use Apiis::DataBase::User;
+
+###### Configuration #########################################################
+
+my $scrapie = 1;
+my $breedprg = 0;
+my $none = 0;
+my $formpath;
+my $query;
+
+my $variante='Tk';
+#my $variante='HTML';
+
+my ( $model, $user, $passwd, $testform );
+if ($scrapie) {
+    $model    = 'ovicap_st';
+    $user     = 'b08mueul';
+    $passwd   = 'st06nsrg';
+    # $user     = 'anonymous';
+    # $passwd   = 'Demo';
+    # $testform = 'Units_Adresse.frm';
+    # $testform = 'codes.frm';
+    # $testform = 'test9-scrapie.frm';
+    # $testform = 'Ablammung.frm';
+    $testform = 'Codes.frm';
+    $formpath = '/home/b08mueul/apiis/ovicap/etc/forms';
+}
+elsif ($breedprg) {
+    $model    = 'breedprg';
+    $user     = 'demo';
+    $passwd   = 'Demo';
+    $testform = 'test9.frm';
+    # $testform = 'animal.frm';
+    # $formpath = './forms';
+}
+elsif ($none){
+    $testform = 'login.frm';
+    $formpath = $apiis->APIIS_HOME . '/etc/forms';
+}
+else {
+    die "???";
+}
+
+###### Configuration end #####################################################
+
+if ( !$none ) {
+    # create a user object to save repeated user/pw typing during tests:
+    my $testuser = Apiis::DataBase::User->new(
+        id       => $user,
+        password => $passwd,
+    );
+    $testuser->check_status;
+    $apiis->join_model( $model, userobj => $testuser );
+    $apiis->check_status( die => 'ERR' );
+}
+
+$apiis->formpath($formpath);
+
+my $module = 'Apiis::Form::' . $variante;
+eval "require $module";
+die $@ if $@;
+
+my $f_obj = $module->new( xmlfile => 'forms/CF1.frm' );
+
+if ($variante eq 'HTML') {
+  $query=CGI->new('user=b08mueul&pw_user=st06nsrg&m=ovicap_st&o=htm2htm&g=/home/b08mueul/apiis/lib/Apiis/Form/forms/CF2.frm&animal_ext_unit=15-herdbuchnummer&animal_ext_id=2-st05003');
+  $f_obj->{_query}=$query;
+}
+
+$f_obj->run;
+
+
+if ($variante eq 'HTML') {
+          goto ERR if ($f_obj->status);
+	  $f_obj->{_table} = '<form id="F" method="GET" method="GET" action="/cgi-bin/GUI"
+	                           enctype="multipart/form-data" target="_blank">'. $f_obj->{_table} .  '</form>';
+	#		    <input type="hidden" name="sid" value="'.$opt_s.'"  />
+	#		    <input type="hidden" name="m" value="'.$opt_m.'"  />
+	#		    <input type="hidden" name="o" value="'.$opt_o.'"  />
+	#		    <input type="hidden" name="g" value="'. $f_obj->{_query}->param('g') .'"  />
+	#		    <input type="hidden" name="f" value="1"  />
+	#		    <input type="hidden" name="user" value="'.$opt_u.'" />'.
+	#                   $f_obj->{_table} .  '</form>';
+          $f_obj->PrintHeader;
+          goto ERR if ($f_obj->status);
+          $f_obj->PrintForm;
+          goto ERR if ($f_obj->status);
+}
+
+
+
+$f_obj->check_status;
+
+if ($none) {
+    my $data_ref_name = $f_obj->GetValue( 'Field_0', '_data_ref' );
+    my $data_ref_pwd  = $f_obj->GetValue( 'Field_1', '_data_ref' );
+    my $loginname     = $$data_ref_name;
+    my $password      = $$data_ref_pwd;
+    if ( $loginname or $password ) {
+        print "You selected: $loginname -> $password\n";
+    }
+    else {
+        print "You cancelled!\n";
+    }
+}

@@ -1,0 +1,15 @@
+
+   <!-- form menu (form_menu.tmpl) -->
+   <div id="tabs" class="tabbedMenu">
+    <div id="tabs1" class="tabbedMenu1"><TMPL_LOOP NAME=menu_level1>
+     <span class="<TMPL_VAR NAME=class>">
+      <span class="leftTab1Side"><span class="rightTab1Side"><a href="<TMPL_VAR NAME=action>"<TMPL_IF NAME=on_click_action> onclick="<TMPL_VAR NAME=on_click_action>"</TMPL_IF>><TMPL_VAR NAME=label></a></span></span>
+     </span></TMPL_LOOP>
+    </div>
+    <div id="tabs2" class="tabbedMenu2"><TMPL_LOOP NAME=menu_level2>
+     <span class="<TMPL_VAR NAME=class>">
+      <a href="<TMPL_VAR NAME=action>"<TMPL_IF NAME=on_click_action> onclick="<TMPL_VAR NAME=on_click_action>"</TMPL_IF>><TMPL_VAR NAME=label></a>
+     </span></TMPL_LOOP>
+    </div>
+   </div>
+   <!-- form menu end -->

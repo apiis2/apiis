@@ -1,0 +1,598 @@
+#######################################################################
+# $Id: Errors.pm,v 1.47 2022/02/25 22:18:25 ulf Exp $
+##############################################################################
+package Apiis::Errors;
+
+=head1 NAME
+
+Apiis::Errors -- Provide error objects for generic error handling in APIIS
+
+=head1 SYNOPSIS
+
+   my $err_obj = Apiis::Errors->new(
+      type      => 'CONFIG',
+      severity  => 'INFO',
+      from      => 'test.Errors',
+      msg_short => "No date format defined",
+   );
+
+Apiis::Errors->new() creates an error object, that describes an error
+comprehensively to enable further adequate processing.
+
+=head1 DESCRIPTION
+
+Apiis::Errors provides an error object with the following traits:
+
+=over 4
+
+=cut
+
+use strict;
+use warnings;
+our $VERSION = '$Revision: 1.47 $';
+
+use Carp qw(longmess croak);
+use Data::Dumper;
+use Apiis::Init;
+use JSON;
+
+=item * Error B<type>, currently:
+
+=over 2
+
+=item * B<DATA>    the passed data is not ok (usually in CheckRules)
+
+=item * B<DB>      errors from the database (e.g. unique index violation)
+
+=item * B<OS>      errors from the operation system (e.g. full hard disk)
+
+=item * B<AUTH>    errors concerning access rights
+
+=item * B<PARSE>   errors in ParsePseudoSQL with parsing pseudo SQL code
+
+=item * B<CODE>    programming errors, e.g. from applications like load objects
+
+=item * B<PARAM>   passed parameter is wrong or missing
+
+=item * B<CONFIG>  one of the configuration files is wrong or has missing entries
+
+=item * B<INSTALL> there is an error in the Apiis/Perl installation
+
+=item * B<UNKNOWN> is unknown.
+
+=back
+
+=cut
+
+my @type_values = qw/ DATA DB OS AUTH PARSE CODE PARAM CONFIG INSTALL UNKNOWN /;
+
+=item * Error B<severity>, currently B<DEBUG INFO NOTICE WARNING ERR CRIT
+ALERT EMERG>. These severity values are the same as the unix syslog
+priorities. See also 'man syslog.conf' under Unix/Linux.
+
+=over 2
+
+=item * B<DEBUG>   debugging messages for bug hunting
+
+=item * B<INFO>    informational notice
+
+=item * B<NOTICE>  more than information, somebody should notice it
+
+=item * B<WARNING> influences further processing but is not so severe
+
+=item * B<WARN>    deprecated, use WARNING
+
+=item * B<ERR>     error, handled in the normal flow control
+
+=item * B<ERROR>   deprecated, use ERR
+
+=item * B<CRIT>    critical error, but can be handled under certain circumstances
+
+=item * B<ALERT>   alarm, immediate intervention necessary
+
+=item * B<EMERG>   no further processing possible (e.g. disk full)
+
+=item * B<PANIC>   deprecated, use EMERG
+
+=back
+
+=cut
+
+my @severity_values = qw/
+    DEBUG INFO NOTICE WARN WARNING ERR ERROR CRIT CRITICAL ALERT EMERG PANIC /;
+# for compatibility with older severity values:
+my %compat = (
+   WARN     => 'WARNING',
+   ERROR    => 'ERR',
+   CRITICAL => 'CRIT',
+   PANIC    => 'EMERG',
+);
+
+=item * Error B<action>, currently:
+
+=over 2
+
+=item * B<INSERT>  the error occurred during a database insert
+
+=item * B<UPDATE>  the error occurred during a database update
+
+=item * B<DELETE>  the error occurred during a database delete
+
+=item * B<SELECT>  the error occurred during a database select
+
+=item * B<FETCH>   like SELECT
+
+=item * B<DECODE>  the error occurred during an attempt to decode the data
+
+=item * B<ENCODE>  the error occurred during an attempt to encode the data
+
+=item * B<UNKNOWN> the action is unknown
+
+=back
+
+=back
+
+=cut
+
+my @action_values   = qw/ INSERT UPDATE DELETE SELECT FETCH DECODE ENCODE UNKNOWN /;
+
+=pod
+
+The internal structure provides the following fields to describe a
+certain error:
+
+ %struct = (
+    type           => undef,    # predefined values above
+    id             => undef,    # error id
+    severity       => undef,    # predefined values above
+    action         => undef,    # predefined values above
+    from           => undef,    # location where this error comes from
+                                # (e.g. sub, rule)
+    record_id      => undef,    # id of this record, e.g. record_seq
+                                # from inspool
+    unit           => undef,    # unit that provides this data
+    db_table       => undef,    # database table concerned
+    db_column      => undef,    # database column concerned
+    data           => undef,    # just handled incorrect data
+    ext_fields     => undef,    # involved external fields (array)
+    ext_fields_idx => undef,    # index of these external fields (for tabulars)
+    ds             => undef,    # data stream name
+    err_code       => undef,    # coded error message
+    msg_short      => undef,    # main error message for end users
+    msg_long       => undef,    # detailed error message
+    misc1          => undef,    # user defined scalar
+    misc2          => undef,    # user defined scalar
+    misc_arr1      => undef,    # user defined array
+    misc_arr2      => undef,    # user defined array
+    backtrace      => undef,    # backtrace in Carp::longmess style
+ );
+
+=cut
+
+# structure of error messages, an array to keep the order, a hash for easy
+# handling:
+my ( %struct, @struct );
+@struct = qw( id type severity action from line record_id unit
+  db_table db_column data ext_fields ext_fields_idx ds err_code msg_short
+  msg_long misc1 misc2 misc_arr1 misc_arr2 backtrace 
+);
+%struct = (
+    id             => undef, # error id
+    type           => undef, # predefined values above
+    severity       => undef, # predefined values above
+    action         => undef, # predefined values above
+    from           => undef, # location where this error comes from (e.g. sub, rule)
+    line           => undef, # line number in this file
+    record_id      => undef, # id of this record, e.g. record_seq from inspool
+    unit           => undef, # unit that provides this data
+    db_table       => undef, # database table concerned
+    db_column      => undef, # database column concerned
+    data           => undef, # just handled incorrect data
+    ext_fields     => [],    # involved external fields (array)
+    ext_fields_idx => undef, # index of external fields (for tabulars)
+    ds             => undef, # data stream name
+    err_code       => undef, # coded error message
+    msg_short      => undef, # main error message for end users
+    msg_long       => undef, # detailed error message
+    misc1          => undef, # user defined scalar
+    misc2          => undef, # user defined scalar
+    misc_arr1      => [],    # user defined array
+    misc_arr2      => [],    # user defined array
+    backtrace      => undef, # backtrace in Carp::longmess style
+);
+
+##############################################################################
+# generate an err_id within a closure:
+{
+   my $err_id = 0;
+   sub get_err_id { return $err_id }
+   sub inc_err_id { return ++$err_id }
+}
+
+=pod
+
+Public and internal methods are:
+
+=head1 INTERNAL METHODS
+
+=head2 new (mostly internal)
+
+new creates the object and checks access rights to the object structure.
+
+=cut
+
+sub new {
+   my ($self, %args) = @_;
+   my ( $package, $filename, $line ) = caller;
+   my @errors;
+
+   # checking of input keys/values when a new object is created:
+   for my $thiskey (keys %args){
+      die __("Wrong attribute '[_1]'", $thiskey) unless exists $struct{$thiskey};
+
+      if ( ref $struct{$thiskey} eq 'ARRAY' ){
+         if ( scalar @{$struct{$thiskey}} ){ # if values are predefined
+            if ( ref $args{$thiskey} eq 'ARRAY' ) {
+               map {
+                  my $val = $_;
+                  die __("Wrong value '[_1]' for method '[_2]' (allowed: ", $val, $thiskey )
+                    . join ( ' ', @{ $struct{$thiskey} } ) . ')'
+                    unless grep /^${val}$/, @{ $struct{$thiskey} };
+               } @{ $args{$thiskey} };
+            } else {
+               die __("Wrong value '[_1]' for method '[_2]' (allowed: ", $args{$thiskey}, $thiskey )
+                 . join ( ' ', @{ $struct{$thiskey} } ) . ')'
+                 unless grep /^$args{$thiskey}$/, @{ $struct{$thiskey} };
+            }
+         }
+      } else {
+         my $predef_values = $thiskey . '_values';
+         no strict 'refs'; ## no critic
+         if ( defined &$predef_values ){
+            my $newval = uc $args{$thiskey};
+            unless ( grep /^${newval}$/, $self->$predef_values ){
+               warn __("Wrong value '[_1]' for method '[_2]' (allowed: [_3]),\ncalled in [_4], line [_5]\n",
+                  $newval, $thiskey, join(' ', $self->$predef_values),
+                  $filename, $line );
+               if ( exists $compat{$newval} ){
+                  # rewrite former used values with correct one:
+                  $args{$thiskey} = $compat{$newval};
+               } else {
+                  $args{$thiskey} = '???';
+               }
+            }
+         }
+      }
+   }
+   $args{'id'} = inc_err_id();
+
+   # checks passed successfully:
+   my $accessor =
+      sub {
+         my ($cmd, $attr, $newval) = @_;
+         return $args{$attr} if $cmd eq 'get';
+         return $args{$attr} = $newval if $cmd eq 'set';
+         return $args{$attr};
+      };
+   bless $accessor, ref $self || $self;
+}
+
+##############################################################################
+
+=head2 $error_obj->[ type_values | severity_values | action_values ] (all external)
+
+These public methods provide read only access to the preconfigured values.
+
+=cut
+
+sub type_values {
+   my ( $self, $newval ) = @_;
+   croak __("You cannot assign values to [_1], readonly.", 'type_values' )
+     if defined $newval;
+   return (@type_values);
+}
+##############################################################################
+sub severity_values {
+   my ($self, $newval) = @_;
+   croak __("You cannot assign values to [_1], readonly.", 'severity_values' )
+     if defined $newval;
+   return ( @severity_values );
+}
+##############################################################################
+sub action_values {
+   my ($self, $newval) = @_;
+   croak __("You cannot assign values to [_1], readonly.", 'action_values' )
+     if defined $newval;
+   return ( @action_values );
+}
+##############################################################################
+
+=head2 $error_obj->[ from | line | backtrace | record_id | unit
+            | db_table | db_column | data | ext_fields | ext_fields_idx
+            | ds | err_code | msg_short | msg_long | misc1 | misc2
+            | misc_arr1 | misc_arr2 ] (all external)
+
+These public methods provide read/write access to the structur elements.
+
+=cut
+
+# methods to access the attributes:
+
+# anonymous methods:
+foreach my $elem (  @struct ){
+   no strict 'refs'; ## no critic
+   next if defined &$elem;
+   if ( ref $struct{$elem} eq 'ARRAY' ){
+      *{$elem} = sub {
+         my ($self, $newval) = @_;
+         if ( ref $newval eq 'ARRAY' ){
+            # an array-ref passed, at least an empty one:
+            if ( scalar @{$struct{$elem}} ){ # if values are predefined in the hash
+               map {
+                  my $val = $_;
+                  die __("Wrong value '[_1]' for method '[_2]' (allowed: ", $val, $elem )
+                     . join ( ' ', @{ $struct{$elem} } ) . ')'
+                    unless grep /^${val}$/, @{ $struct{$elem} };
+               } @{$newval};
+            }
+            $self->('set', $elem, $newval);
+         } else {
+            if ( defined $newval ){
+               if ( scalar @{ $struct{$elem} } ) {    # if values are predefined in the hash
+                  die __("Wrong value '[_1]' for method '[_2]' (allowed: ", $newval, $elem )
+                     . join ( ' ', @{ $struct{$elem} } ) . ')'
+                     unless grep /^${newval}$/, @{ $struct{$elem} };
+               }
+               $self->('set', $elem, [ $newval ]);
+            } else {
+               $self->('get', $elem);
+            }
+         }
+      }
+   } else {
+      *{$elem} = sub {
+         my ($self, $newval) = @_;
+         my $predef_values = $elem . '_values';
+         if ( defined $newval ){
+            if ( defined &$predef_values ) {
+               die __("Wrong value '[_1]' for method '[_2]' (allowed: ", $newval, $elem )
+                  . join ( ' ', $self->$predef_values ) . ")"
+                  unless grep /^${newval}$/, $self->$predef_values;
+            }
+            $self->('set', $elem, $newval)
+         }
+         $self->('get', $elem);
+      }
+   }
+}
+
+##############################################################################
+
+=head2 print (external)
+
+Print the defined elements of this error object in the order of the
+hash %struct (actually the @struct array). This is mainly used for debugging.
+
+Second input parameter can be a hash with the key:
+
+=over 4
+
+=item * B<filehandle> -- the output then goes to this filehandle instead of
+        STDOUT (default)
+        note: the filehandle has to be passed as a typeglob
+
+=back
+
+Example:
+
+   $err_obj->print(
+      filehandle => *ERR_FILE,
+   );
+
+=cut
+
+sub print {
+    my ( $self, %args ) = @_;
+    my $handle;
+    if ( exists $args{'filehandle'} ) {
+        # dereference the IO-part of the typeglob:
+        $handle = *{ $args{'filehandle'} }{IO};
+    }
+    else {
+        $handle = 'STDOUT';
+    }
+    no strict 'refs';
+    print $handle $self->sprint;
+    return;
+}
+
+##############################################################################
+
+=head2 sprint (external)
+
+Return the formatted error message as a string (used by B<print>).
+
+=cut
+
+sub sprint {
+   my $self   = shift;
+   my $maxlen = 15;
+
+   use Text::Wrap qw/ fill wrap /;
+   $Text::Wrap::columns = 80;
+   $Text::Wrap::break = qr/[\s,']/;
+
+   my $string = __("Error") . ":\n";
+   for my $elem (@struct) {
+      if ( defined $self->$elem ) {
+         # only blanks are destroyed by fill(), so I took '_':
+         my $l = ' ' . '_' x ( $maxlen - length($elem) ) . ' ';
+         if ( ref $self->$elem eq 'ARRAY' ) {
+            $string .= "   $elem:" . fill( $l, "\t", @{ $self->$elem } ) . "\n";
+         } else {
+            # backtrace gives several lines, separated with \n:
+            my @lines = split /\n/, $self->$elem;
+            my @final_arr;
+            for ( my $i = 0 ; $i <= $#lines ; $i++ ) {
+               chomp $lines[$i];
+               $lines[$i] =~ s/^\s*//;
+               $lines[$i] =~ s/\s*$//;
+               # and these lines might be long, so wrap them up:
+               my @sublines = wrap( '                  __ ',
+                                    '                  __    ', $lines[$i]);
+               if ( $i > 0 ) {
+                  $_ .= "\n" for @sublines;
+                  push @final_arr, @sublines;
+               } else {
+                  # long lines could also be wrapped around:
+                  push @final_arr, "   $elem:" . fill( $l, '                  __    ', $lines[$i] ) . "\n";
+               }
+            }
+            $string .= join ( '', @final_arr );
+         }
+      }
+   }
+   return $string;
+}
+##############################################################################
+
+=head2 sprint_html (external)
+
+Return the formatted error message as a string (used by B<print>).
+
+=cut
+
+sub sprint_html {
+   my $self   = shift;
+   my $maxlen = 15;
+
+   use Text::Wrap qw/ fill wrap /;
+   $Text::Wrap::columns = 80;
+   $Text::Wrap::break = qr/[\s,']/;
+
+   my $string = __("Error") . ":<br>";
+   for my $elem (@struct) {
+      if ( defined $self->$elem ) {
+         # only blanks are destroyed by fill(), so I took '_':
+         my $l = ' ' . '_' x ( $maxlen - length($elem) ) . ' ';
+         if ( ref $self->$elem eq 'ARRAY' ) {
+            $string .= "   $elem:" . fill( $l, "\t", @{ $self->$elem } ) . "<br>";
+         } else {
+            # backtrace gives several lines, separated with \n:
+            my @lines = split /<br>/, $self->$elem;
+            my @final_arr;
+            for ( my $i = 0 ; $i <= $#lines ; $i++ ) {
+               chomp $lines[$i];
+               $lines[$i] =~ s/^\s*//;
+               $lines[$i] =~ s/\s*$//;
+               # and these lines might be long, so wrap them up:
+               my @sublines = wrap( '                  __ ',
+                                    '                  __    ', $lines[$i]);
+               if ( $i > 0 ) {
+                  $_ .= "<br>" for @sublines;
+                  push @final_arr, @sublines;
+               } else {
+                  # long lines could also be wrapped around:
+                  push @final_arr, "   $elem:" . fill( $l, '                  __    ', $lines[$i] ) . "<br>";
+               }
+            }
+            $string .= join ( '', @final_arr );
+         }
+      }
+   }
+   return $string;
+}
+##############################################################################
+
+=head2 syslog_print (external)
+
+The error message is formatted for unix syslog (used by $apiis->log).
+
+=cut
+
+sub syslog_print {
+    my $self = shift;
+
+    my @result;
+    push @result, 'Errorobject: ';
+    for my $key (@struct) {
+        my $err_entry = $self->$key;
+        if ( defined $err_entry ) {
+            if ( ref $err_entry eq 'ARRAY' ) {
+                my @tmp_result;
+                for (@$err_entry) {
+                    defined $_
+                        ? ( push @tmp_result, $_ )
+                        : ( push @tmp_result, q{'undef'} );
+                }
+                push @result, sprintf '%s=>%s', $key, join( ', ', @tmp_result );
+            }
+            else {
+                push @result, sprintf '%s=>%s', $key, $err_entry;
+            }
+        }
+    }
+    for (@result) {
+        tr/\n/ /;    # remove newlines
+        tr/\t/ /;    # remove tabs
+        tr/ //s;     # change multiple blanks to only one
+        s/^\s*//;    # remove leading blanks
+        s/\s*$//;    # remove trailing blanks
+    }
+    return join( q{; }, @result );
+}
+
+sub json_print {
+    my $self = shift;
+
+    my @result;
+    my $json={};
+
+    for my $key (@struct) {
+        my $err_entry = $self->$key;
+        if ( defined $err_entry ) {
+            if ( ref $err_entry eq 'ARRAY' ) {
+                my @tmp_result;
+                for (@$err_entry) {
+                    defined $_
+                        ? ( push @tmp_result, $_ )
+                        : ( push @tmp_result, q{'undef'} );
+                }
+                $json->{$key}=join( ', ', @tmp_result );
+            }
+            else {
+                $json->{$key}=$err_entry;
+            }
+        }
+    }
+
+    return JSON::to_json( $json );
+}
+
+sub hash_print {
+    my $self = shift;
+
+    my @result;
+    my $hash={};
+
+    for my $key (@struct) {
+        my $err_entry = $self->$key;
+        if ( defined $err_entry ) {
+            if ( ref $err_entry eq 'ARRAY' ) {
+                my @tmp_result;
+                for (@$err_entry) {
+                    defined $_
+                        ? ( push @tmp_result, $_ )
+                        : ( push @tmp_result, q{'undef'} );
+                }
+                $hash->{$key}=join( ', ', @tmp_result );
+            }
+            else {
+                $hash->{$key}=$err_entry;
+            }
+        }
+    }
+
+    return $hash;
+}
+1;

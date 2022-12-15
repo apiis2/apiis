@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Init,v 1.6 2006/09/25 12:55:05 duchev Exp $
+##############################################################################
+# This is only a test file to help during development.
+
+BEGIN {
+   use Env qw( APIIS_HOME );
+   die "\n\tAPIIS_HOME is not set!\n\n" unless $APIIS_HOME;
+   push @INC, "$APIIS_HOME/lib";
+}
+
+use strict;
+use warnings;
+use Apiis;
+Apiis->initialize( VERSION => '$Revision: 1.6 $' );
+
+use Apiis::DataBase::User;
+my $thisobj = Apiis::DataBase::User->new( id => 'demo' );
+$thisobj->password( 'Demo' );
+
+my $connect_later = 0;
+
+if ( $connect_later ){
+   print "Running with delayed connection to database.\n";
+   $apiis->join_model('breedprg', userobj => $thisobj,database => 0);
+   $apiis->DataBase->connect;
+   $apiis->DataBase->connect( user => 'application', userobj => $thisobj);
+} else {
+   print "Running with immediate connection to database.\n";
+   $apiis->join_model('breedprg', userobj => $thisobj );
+   # $apiis->join_model('efabis');
+   # $apiis->join_model('breedprg');
+}
+
+$apiis->DataBase->check_status( die => 'ERR' );
+$apiis->check_status( die => 'ERR' );
+
+print "Apiis Database Users: ", join(', ', $apiis->DataBase->users),"\n";
+$apiis->User->print;
+
+print "Bindtypes:\n";
+foreach my $thisbindtype ( $apiis->DataBase->bindtypes ) {
+   print "\t$thisbindtype",
+     ' ' x ( 10 - length $thisbindtype ),
+     ' => ',
+     $apiis->DataBase->bindtypes($thisbindtype),
+     "\n";
+}
+
+print "Datytypes:\n";
+foreach my $thisdatatype ( $apiis->DataBase->datatypes ) {
+   print "\t$thisdatatype",
+     ' ' x ( 10 - length $thisdatatype ),
+     ' => ',
+     $apiis->DataBase->datatypes($thisdatatype),
+     "\n";
+}

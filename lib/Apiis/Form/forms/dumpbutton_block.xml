@@ -1,0 +1,13 @@
+  <Block Description="Block for Dump Button" Name="Block_button_dump">
+    <DataSource Name="DataSource_button_dump">
+      <none/>
+    </DataSource>
+    <Field Description="Dump the inserted values on the screen" Name="Field_dump">
+      <Button ButtonLabel="Dump" Command="do_dump"/>
+      <Position Column="4" Position="absolute" Row="49"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+  </Block>

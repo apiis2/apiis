@@ -1,0 +1,43 @@
+
+  <tmpl_var name=div>
+  <form name="choose_descriptor" id="choose_descriptor" action="<TMPL_VAR NAME=form_action>" method="post" class="pageForm">
+  <table cellpadding="6" cellspacing="1" border="0" >
+   <thead>
+    <tr>
+     <td colspan="3">
+      <input type="submit" name="close" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_close>" onclick="self.close();";>
+     </td>
+    </tr>
+    <tr><td colspan="3"><hr></td><tr>
+    <tr>
+     <td></td>
+     <td class="label"><TMPL_VAR NAME=l_arm_descriptor_name></td>
+     <td class="label"><TMPL_VAR NAME=l_arm_descriptor_value></td>
+    </tr>
+   </thead>
+   <tbody>
+    <TMPL_LOOP NAME=descriptor_loop>
+    <tr class="fillline"> 
+      <td class="value">
+        <input type="radio" <TMPL_VAR NAME=selected> name="descriptor_id" value="<TMPL_VAR NAME=descriptor_id>" 
+          onclick="window.opener.document.dbt_policies.dbtpolicy_descriptor_name_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=descriptor_name>';
+                   window.opener.document.dbt_policies.dbtpolicy_descriptor_value_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=descriptor_value>';
+                   window.opener.document.dbt_policies.descriptor_id_<TMPL_VAR NAME=policy_id>.value ='<TMPL_VAR NAME=descriptor_id>';"
+        >
+      </td>
+      <td class="value"><TMPL_VAR NAME=descriptor_name></td>
+      <td class="value"><TMPL_VAR NAME=descriptor_value></td>
+    </tr>
+    </TMPL_LOOP>
+    <tr><td colspan="3"><hr></td><tr>
+    <tr>
+     <td colspan="3" >
+      <input type="hidden" name="form_status" value="list">
+      <input type="hidden" name="sid" value="<tmpl_var name=session_id>">
+      <input type="hidden" name="action" value="armchoose_descriptor">
+      <input type="submit" name="close" tabindex="6" value="<TMPL_VAR NAME=l_arm_submit_close>" onclick="self.close();">
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  </form>

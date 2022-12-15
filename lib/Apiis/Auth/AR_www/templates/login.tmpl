@@ -1,0 +1,26 @@
+
+     <!-- login form (login.tmpl) -->
+     <form  id="login" name="login" class="menuForm menuFormLogin" action="<tmpl_var name=action>" method="post" title="Login form" onsubmit="return set_languages();" <tmpl_var name=js_on_submit_login>>
+      <label class="title"><TMPL_VAR NAME=l_project default="Project"></label>
+      <div>
+       <select name="selected_project" class="set_lang_class" tabindex="1">
+        <option value=""></option><TMPL_LOOP NAME=projects_loop>
+        <option value="<TMPL_VAR NAME=project_name>" <TMPL_VAR NAME=selected>><TMPL_VAR NAME=project_name></option></TMPL_LOOP>
+       </select>
+      </div>
+      <label class="title"><TMPL_VAR NAME=l_log_in default="Log-in"></label>
+      <div>
+       <label><TMPL_VAR NAME=l_User_name default="User name">:</label>
+       <input type="text" name="lg_name" size="12" class="text" tabindex="4" />
+      </div>
+      <div>
+       <label><TMPL_VAR NAME=l_Password default="Password">:</label>
+       <input type="password" name="lg_pass" size="12" class="text" tabindex="5" />
+      </div>
+      <input type="hidden" name="gui_lang" />
+      <input type="hidden" name="content_lang" />
+      <div>
+       <input type="submit" name="login" value="<TMPL_VAR NAME=l_log_in default="Log-in">" tabindex="6" class="buttons" />
+      </div>
+     </form>
+     <!-- login form end-->

@@ -1,0 +1,104 @@
+#!/usr/bin/env perl
+##############################################################################
+# $Id: test.Report,v 1.3 2004/11/18 10:01:06 heli Exp $
+##############################################################################
+# This is only a test file to help during development. You can see how to
+# use the different methods of the Report object.
+
+BEGIN { # execute some initialization before compilation
+   use Env qw( APIIS_HOME );
+   die "APIIS_HOME is not set!\n" unless $APIIS_HOME;
+   use lib "$APIIS_HOME/lib";
+   require apiis_init;
+   initialize_apiis( VERSION => '$Revision: 1.3 $' );
+}
+use strict;
+use Apiis::Report::InitXML;
+
+# create a user object to save repeated user/pw typing during tests:
+my $testuser = Apiis::DataBase::User->new(
+   id       => '<username>',
+   password => '<password>',
+);
+
+$apiis->join_model('breedprg', userobj => $testuser );
+$apiis->check_status;
+
+my %args;
+$args{'dtd'}=$apiis->APIIS_HOME . '/etc/report.dtd';
+$args{'xml'}=$apiis->APIIS_LOCAL . '/etc/reports/Codes.rpt';
+$args{'gui'}='Report';
+
+my $xml_obj=Apiis::Report::InitXML->new(%args);
+# print Dumper($xml_obj);
+
+__END__
+
+my $reportname = 'report.rpt';
+#my $reportname = '/home/b08mueul/apiis/scrapie/model/scrapie.model';
+my $f_basename = $reportname;
+$f_basename =~ s/\.rpt$//;
+# also possible:
+# $apiis->join_report('../../apiis/model/report/report.rpt');
+# die Dumper( $apiis ); # nice overview about the whole structure
+
+
+### get the attributes of the report file:
+print "fullname: ", $xml_obj->fullname, "\n";
+print "basename: ",  $xml_obj->basename, "\n";
+print "path: ",  $xml_obj->path, "\n";
+print "ext: ",  $xml_obj->ext, "\n";
+# geht nicht print "report: ",  $xml_obj->report_file, "\n";
+
+# alternate way to access the methods:
+#print "fullname: ", $apiis->Report->{$f_basename}->fullname, "\n";
+#print "basename: ",  $apiis->Report->{$f_basename}->basename, "\n";
+#print "path: ",  $apiis->Report->{$f_basename}->path, "\n";
+#print "ext: ",  $apiis->Report->{$f_basename}->ext, "\n";
+#print "model: ",  $apiis->Report->{$f_basename}->model_file, "\n";
+
+print "Name of all Elements in Section ReportHeader: "; 
+map { print $_ . ', '} @{$apiis->Report->ReportHeaderObjects}; print "\n";
+print "Name of all Elements in Section ReportFooter: "; 
+map { print $_ . ', '} @{$apiis->Report->ReportFooterObjects}; print "\n";
+print "Name of all Elements in Section PageHeader: "; 
+map { print $_ . ', '} @{$apiis->Report->PageHeaderObjects}; print "\n";
+print "Name of all Elements in Section PageFooter: "; 
+map { print $_ . ', '} @{$apiis->Report->PageFooterObjects}; print "\n";
+print "Name of all Elements in Section GroupHeader: "; 
+map { print $_ . ', '} @{$apiis->Report->GroupHeaderObjects}; print "\n";
+print "Name of all Elements in Section GroupFooter: "; 
+map { print $_ . ', '} @{$apiis->Report->GroupFooterObjects}; print "\n";
+print "Name of all Elements in Section Detail: "; 
+map { print $_ . ', '} @{$apiis->Report->DetailObjects}; print "\n";
+
+
+
+### Error handling:
+# The status is passed back by $xml_obj->status and the array with error
+# objects with $xml_obj->errors:
+# print "general keys: ", join(' ', $xml_obj->sectionkeys()), "\n"; # error
+# print "GENERAL, height: ", $xml_obj->height(),"\n"; # error
+# if ( $xml_obj->status ){
+#    foreach my $thiserror ( $xml_obj->errors ){
+#       $thiserror->print;
+#    }
+# }
+
+### example how to use it in some code:
+foreach my $element ( qw /ReportHeaderObjects ReportFooterObjects PageHeaderObjects PageFooterObjects
+                           GroupHeaderObjects GroupFooterObjects DetailObjects ReportHeader
+                           ReportFooter PageHeader PageFooter GroupHeader GroupFooter Detail General/){
+   print $element,"\n";
+   no strict 'subs';
+   foreach my $element1 ( @{$apiis->Report->$element} ) {
+     print "\t", $apiis->Report->$element1->ElementType, "\n";
+     foreach my $element2 ( @{$apiis->Report->$element1->Methods}) {
+       print "\t\t$element2 = " . $apiis->Report->$element1->$element2  ."\n";
+     }
+  }
+}
+
+# additional functions
+#print $apiis->Report->MaxColumn;
+### Enjoy! :^)

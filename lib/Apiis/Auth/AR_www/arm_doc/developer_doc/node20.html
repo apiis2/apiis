@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Method for the insert, update and delete statements </TITLE>
+<META NAME="description" CONTENT="Method for the insert, update and delete statements ">
+<META NAME="keywords" CONTENT="arc_master-tex">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="arc_master-tex.css">
+
+<LINK REL="next" HREF="node26.html">
+<LINK REL="previous" HREF="node19.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node21.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html384"
+  HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="next.png"></A> 
+<A NAME="tex2html380"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="up.png"></A> 
+<A NAME="tex2html374"
+  HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="prev.png"></A> 
+<A NAME="tex2html382"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html385"
+  HREF="node21.html">Definition of the access</A>
+<B> Up:</B> <A NAME="tex2html381"
+  HREF="node19.html">Access rights for the</A>
+<B> Previous:</B> <A NAME="tex2html375"
+  HREF="node19.html">Access rights for the</A>
+ &nbsp; <B>  <A NAME="tex2html383"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00271000000000000000"></A><A NAME="insertupdatedelete"></A>
+<BR>
+Method for the insert, update and delete statements 
+</H2>
+
+<P>
+This route is especially for the insert, update, delete statements and can be described by the following steps: 
+
+<OL>
+<LI>All actions go through the meta_layer where the action is checked for the user
+</LI>
+<LI>The arguments in the action (table/columns) are matched with the access
+rights defined for this user,
+</LI>
+<LI>If the user doesn't have required access rights for the table/columns
+set the action is aborted, else access the record is checked in the next point. 
+</LI>
+<LI>Algorithm checks if the statements will be executed on the set of data which are allowed for the user. If DML touches the record which is out of user area then the action is cancelled.
+</LI>
+</OL>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html386"
+  HREF="node21.html">Definition of the access rights</A>
+<LI><A NAME="tex2html387"
+  HREF="node22.html">Checking of the access rights</A>
+<UL>
+<LI><A NAME="tex2html388"
+  HREF="node23.html"><B>Checking insert statement</B></A>
+<LI><A NAME="tex2html389"
+  HREF="node24.html"><B>Checking update statement</B></A>
+<LI><A NAME="tex2html390"
+  HREF="node25.html"><B>Checking delete statement</B></A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+<ADDRESS>
+Marek Imialek
+2006-06-22
+</ADDRESS>
+</BODY>
+</HTML>
