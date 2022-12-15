@@ -1,0 +1,33 @@
+\clearpage
+
+\fancyhead[LE,LO]{Generation interval}
+\section{Generation interval}
+\begin{multicols}{2}
+Generation interval is one of the key factors affecting the rate of
+genetic progress and therefore the genetic structure of the population. 
+As a general rule, the shorter the generation interval the rapid is the 
+genetic change in the population holding other factors constant. Generation interval can be defined as 
+the average age of the parents at the \textit{ birth of their selected offspring} 
+(Falconer \& Mackay, 1996). In the calculation of generation interval, an
+offspring is considered selected if it has produced at least one progeny.
+Computation of the generation interval for a given year was carried
+out as follows: 
+\begin{enumerate}
+    \item All animals born in a given year were considered (subset 1) 
+    \item Animals in subset 1 that become parents in the later years were identified (subset 2)
+    \item The parents of animals in subset 2 were identified (subset 3)
+    \item The generation interval was calculated as the average age of the animals in subset 3 at birth of their offspring in subset 2.
+
+
+\end{enumerate}
+
+In livestock, transfer of genes from parents to offspring occurs through four selection 
+paths i.e. sires to sons, sires to daughters, dams to sons and dams to
+daughters. Thus, the generation interval were computed for the four selection
+paths and is expressed in \textit{ years}.
+Furthermore, generation interval was calculated separately for the males and
+females. The values in the body of the table are the average generation
+intervals for a given selection path followed by the number of animals within that path.
+The overall generation interval for the entire population is also provided in
+the table.
+\end{multicols}

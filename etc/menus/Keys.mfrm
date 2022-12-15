@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="Schluessel_m6">
+  <General Name="General_715a6" StyleSheet="/etc/apiis.css" Description="Form"/>
+
+  <Block Name="Block_674a6" Description="Update unit" NavigationBar="no">
+
+
+    <DataSource Name="DataSource_675a6" Connect="no">
+      <none/>
+    </DataSource>
+
+    <Label Name="Label_676a6" Content="Menü - Schlüssel">
+      <Position Column="0-3" Position="absolute" Row="0"/>
+      <Text FontSize="24px" TextDecoration="underline"/>
+    </Label>
+
+    <Image Name="Image_71ca6" Alt="Test" Src="/icons/blank1.gif">
+       <Position Column="0" Row="3" Width="1px"/>
+       <Color BackGround="transparent" />
+       <Format PaddingTop="10px"/>
+    </Image>
+    <Field Name="do_savea6">
+      <Button ButtonLabel="Schlüssel anlegen und korrigieren" URL="Codes.frm" Command="do_open_form"/>
+      <Position Row="4" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#ff6600"/>
+      <Format />
+    </Field>
+    <Image Name="Image_10a6" Alt="Test" Src="/icons/blank1.gif">
+       <Position  Column="2" Row="4" Width="20px"/>
+       <Color/>
+       <Format/>
+    </Image>
+    <Image Name="Image_00a6" Alt="Test" Src="/icons/strich_16s.png">
+       <Position Column="3" Row="4"/>
+       <Color BackGround="black" />
+       <Format />
+    </Image>
+    <Image Name="Image_01a6" Alt="Test" Src="/icons/blank1.gif">
+       <Position Column="4" Row="4" Width="20px"/>
+       <Color/>
+       <Format />
+    </Image>
+    <Field Name="do_save1a6">
+      <Button ButtonLabel="Schl&amp;uuml;ssel-&amp;Uuml;bersicht drucken" URL="/etc/reports/CodesPdf.rpt" Command="do_open_report"/>
+      <Position Row="4" Column="5"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#ff6600"/>
+      <Format BorderStyle="groove" BorderColor="lightgray" />
+    </Field>
+    
+    <Field Name="Field_85a6">
+      <Button ButtonLabel="Units anlegen und korrigieren" URL="Units.frm" Command="do_open_form"/>
+      <Position Row="7" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#ffff00"/>
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    <Image Name="Image_70a6" Alt="Test" Src="/icons/strich_16s.png">
+       <Position Column="3" Row="7"/>
+       <Color BackGround="black" />
+       <Format />
+    </Image>
+    <Field Name="Field_851a6">
+      <Button ButtonLabel="Units-&amp;Uuml;bersicht drucken" URL="/etc/reports/Units.rpt" Command="do_open_report"/>
+      <Position Row="7" Column="5"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#ffff00"/>
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    
+    <Field Name="Field_86a6">
+      <Button ButtonLabel="Units f&amp;uuml;r Nummern anlegen" URL="Numbersystems.frm" Command="do_open_form"/>
+      <Position Row="8" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#ffff00"/>
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    
+    <Field Name="Field_89a6">
+      <Button ButtonLabel="Events anlegen und korrigieren" URL="Events.frm" Command="do_open_form"/>
+      <Position Row="11" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#11ff00"/>
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+    <Image Name="Image_703a6" Alt="Test" Src="/icons/strich_16s.png">
+       <Position Column="3" Row="11"/>
+       <Color BackGround="black" />
+       <Format MarginBottom="10px"/>
+    </Image>
+    <Field Name="Field_891a6">
+      <Button ButtonLabel="Events-&amp;Uuml;bersicht drucken" URL="/etc/reports/Events.rpt" Command="do_open_report"/>
+      <Position Row="11" Column="5"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#11ff00"/>
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+    
+    <Field Name="Field_90a6">
+      <Button ButtonLabel="Adressen anlegen und korrigieren" URL="Addresses.frm" Command="do_open_form"/>
+      <Position Row="12" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#00ffff"/>
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+    <Image Name="Image_90a6" Alt="Test" Src="/icons/strich_16s.png">
+       <Position Column="3" Row="12"/>
+       <Color BackGround="black" />
+       <Format MarginBottom="10px"/>
+    </Image>
+    
+    <Field Name="Field_901a6">
+      <Button ButtonLabel="Adress-&amp;Uuml;bersicht drucken" URL="/etc/reports/Addresses.rpt" Command="do_open_report"/>
+      <Position Row="12" Column="5"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#00ffff"/>
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+    
+    <Field Name="Field_110a6">
+      <Button ButtonLabel="Tier anlegen (einzeln)" URL="Animals.frm" Command="do_open_form"/>
+      <Position Row="14" Column="1"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color BackGround="#00aaff"/>
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    
+    <Color BackGround="#f0f0f0"/>
+    <Format BorderStyle="ridge" BorderColor="#f0f0f0" Padding="10px"/>
+
+  </Block>
+</Form>

@@ -1,0 +1,61 @@
+\documentclass[a4paper,headtopline,11pt,DIV18]{scrartcl}
+\usepackage[T1]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage{makeidx,rotating,graphics,array,lscape}
+\usepackage{pdflscape}
+\tolerance=5000
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{multicol}
+
+\makeatletter
+\lhead{\rightmark}
+\chead{}
+\rhead{\pagemark}
+\cfoot[\copyright{} Copyright: Institute of Farm Animal Genetics (FLI), 31535 Mariensee, Germany]
+      {\copyright{} Copyright: Institute of Farm Animal Genetics (FLI), 31535 Mariensee, Germany}
+\makeatother
+
+\begin{document}
+\pagenumbering{roman}
+
+\title{Population Structure Report\\
+   for Population: XX-BREED-XX
+}
+
+\author{\vspace{30mm}\\
+        Department of Animal Breeding and Genetics\\
+        Institute of Farm Animal Genetics (FLI)\\
+        Höltystr. 10\\
+        D--31535 Neustadt, Germany\\
+        Eildert.Groeneveld@gmx.de
+}
+
+\maketitle
+
+\newpage
+\vfill
+\begin{center}
+\Large{Developers}
+\begin{description}
+  \item {Frits Voordewind:} PERL/SQL/Report, SA Studbook, Bloemfontein, South Africa
+  \item {Bobbie van der Westhuizen:} PERL/SQL/Report, SA Studbook, Centurion, South Africa
+  \item {Azwihangwisi Maiwashe:} Report, ARC, Irene, South Africa
+  \item {Helmut Lichtenberg:} Integration and WEB service, FLI, Germany
+  \item {Eildert Groeneveld:} Project Leader, FLI, Germany
+\end{description}
+\end{center}
+\newpage
+\tableofcontents{}
+\listoftables
+\listoffigures
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\lhead{\leftmark}
+
+% vim: filetype=tex

@@ -1,0 +1,519 @@
+<!ENTITY NavigationButtons_Fields SYSTEM "/home/b08mueul/apiis/etc/navigationbuttons.xml">
+<!ENTITY ActionButtons_Fields     SYSTEM "http://federvieh.local/etc/actionbuttons.xml">
+<!ENTITY StatusLine_Block         SYSTEM "http://federvieh.local/etc/statusbar.xml">
+<!ENTITY DumpButton_Block         SYSTEM "http://federvieh.local/etc/dumpbutton_block.xml">
+<!ENTITY StatusLine2_Block        SYSTEM "http://federvieh.local/etc/statusbar.xml">
+<!ENTITY CallForm_Block           SYSTEM "http://federvieh.local/etc/callform_button_block.xml">
+
+<!-- #########################
+   Root element Form
+     ######################### -->
+
+<!ELEMENT Form (General, Block+, Event*) >
+<!ATTLIST Form
+          Name         ID      #REQUIRED
+          UseLib       (html|extjs) "html"
+>
+
+<!ELEMENT General EMPTY >
+<!ATTLIST General 
+          Name         ID      #REQUIRED
+          CharSet      CDATA   "UTF-8"   
+          StyleSheet   CDATA   ""
+          Target       CDATA   ""
+          Version      CDATA   "$Revision: 1.3 $"
+          Author       CDATA   "$Author: ulf $"
+    	  Width        CDATA   ""
+	      Height       CDATA   ""
+          Description  CDATA   ""
+          DefaultForm  CDATA   ""
+          MenuID       CDATA   ""    
+          AR           (admin|coord|user|anon) "user"
+          Content      CDATA   ""
+          ToolTip      CDATA   ""
+          Help         CDATA   ""
+          Difficulty   (basic|advanced)  "basic"
+          Cvs          CDATA   "$Id: form3.dtd,v 1.3 2022/01/19 10:40:41 ulf Exp $"
+>
+
+<!-- #########################
+   Block
+   A Block is a logical container to allow grouping of Field elements.
+   These fields can be related to the DataSource.
+   A DataSource is an element of a Block, a Block can only contain one DataSource.
+     ######################### -->
+
+<!ELEMENT Block (MasterDetail?, DataSource, Position?, Tabular?, Tabular2?,
+                 (Label | Line | Image | Field | Frame)*,
+                Color?, Format?, Event* )>
+<!ATTLIST Block
+                Name            ID                 #REQUIRED
+                BackgroundColor CDATA              ""
+                Description     CDATA              ""
+                NavigationBar   (no|full|update)   "no"
+                AutoCommit      (0|1)              "1"
+>
+
+<!ELEMENT MasterDetail EMPTY >
+<!ATTLIST MasterDetail
+   MasterBlock       CDATA          #REQUIRED
+   MasterColumn      CDATA          #REQUIRED
+   DetailColumn      CDATA          #REQUIRED
+>
+
+<!ELEMENT Tabular ( Position?, (Label | Line | Image | Field | Frame)*,
+                   (Color, Format)? ) >
+<!ATTLIST Tabular
+   Name          ID             #REQUIRED
+   Rows          CDATA          #REQUIRED
+   MaxRows       CDATA          #REQUIRED
+   ScrollBars    (n|e|s|w|ne|se|sw|nw)          "se"
+   FixedRows     CDATA          ""
+   FixedColumns  CDATA          ""
+   StripeRows    (yes|no)       "no"
+>
+
+<!ELEMENT Tabular2 ( Position?, (Label | Line | Image | Field | Frame)*,
+                   (Color, Format)? ) >
+<!ATTLIST Tabular2
+   Name          ID             #REQUIRED
+   Rows          CDATA          #REQUIRED
+   MaxRows       CDATA          #REQUIRED
+   ScrollBars    (n|e|s|w|ne|se|sw|nw)          "se"
+   FixedRows     CDATA          ""
+   FixedColumns  CDATA          ""
+>
+
+<!--
+#########################
+   DataSource
+   A DataSource is one of these types (Record|Sql|Function|none), which all
+   have their own attributes.
+   A DataSource conains Columns to access single data fields.
+######################### -->
+
+<!ELEMENT DataSource ( (Record | Sql | SqlFunction | Function | none), Column*, Parameter*) >
+<!ATTLIST DataSource
+   Name             ID            #REQUIRED
+   DataRef          CDATA         ""
+   DefaultFunction  CDATA         ""
+   Connect          (yes|no)      "yes"
+>
+
+<!ELEMENT Record EMPTY >
+<!ATTLIST Record
+   TableName       CDATA          #REQUIRED
+>
+
+<!ELEMENT Sql EMPTY >
+<!ATTLIST Sql
+   Statement       CDATA          #REQUIRED
+>
+
+<!ELEMENT SqlFunction EMPTY >
+<!ATTLIST SqlFunction
+   Action          CDATA          #REQUIRED
+   View            CDATA          ""
+>
+
+<!ELEMENT Function EMPTY >
+<!ATTLIST Function
+   FunctionName    CDATA          #REQUIRED
+   Module          CDATA          ""
+>
+
+<!ELEMENT none EMPTY >
+
+<!ELEMENT IdSet EMPTY >
+<!ATTLIST IdSet
+   Name          ID               #REQUIRED
+   SetName       CDATA            ""
+>
+
+<!ELEMENT Column (IdSet*) >
+<!ATTLIST Column
+   Name          ID                                  #REQUIRED
+   Type          (DB | Related | HashRef | ArrayRef) #REQUIRED
+   Content       CDATA                               ""
+   DBName        CDATA                               ""
+   TableName     CDATA                               ""
+   Order         CDATA                               #REQUIRED
+   RelatedColumn CDATA                               ""        
+   RelatedOrder  CDATA                               ""        
+   UseEntryView  (0|1)                               "0"
+>
+   <!-- Related:
+   This column could be related to another column, e.g. to
+   DataSource_3.DBAnimal, to several columns (concatenated), or could
+   contain arithmetic instructions like 'take the average of three other
+   columns'. The syntax is still undefined, maybe it is better to create
+   own xml-elements to normalize it instead of creating a new syntax
+   which must be parsed then.
+
+   TableName is only needed, if we use bind params for a SQL DataSource.
+   Especially in RelatedColumns, it's difficult to determine the tablename of
+   a certain column.
+   -->
+
+<!-- #########################
+   Field
+   Besides the general attributes of every Field, it can be a
+   ScrollingList, a RadioButton, etc. These are defined as separate 
+   elements as they have different attributes (which have to be added).
+   DSColumn refers to the according Column in DataSource.
+   FlowOrder defineds the flow control in the Form.
+     ######################### -->
+
+<!ELEMENT Field ( DataSource?, Connect?,
+                (FileField   | Button        | Link      | ScrollingList |
+                 BrowseEntry | PopupMenue    | TextField | TextBlock     |
+                 RadioGroup  | CheckBoxGroup | CheckBox  | Calendar      |
+                 Message ),
+                Position, Miscellaneous?, Text?, Color?, Format?, Event* ) >
+<!ATTLIST Field
+   Name         ID             #REQUIRED
+   DSColumn     CDATA          ""
+   Check        CDATA          ""
+   FlowOrder    CDATA          ""
+   InternalData (yes|no)       "no"
+   Description  CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+   LabelName    CDATA   ""
+   AR           (admin|coord|user|anon) "user"
+>
+
+<!ELEMENT FileField EMPTY >
+<!ATTLIST FileField
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   Override     (yes|no)       "no"
+   MaxLength    CDATA          ""
+   Size         CDATA          ""
+   ButtonLabel  CDATA          ""
+   Command      CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Link EMPTY >
+<!ATTLIST Link
+   URL          CDATA          ""
+   Src          CDATA          ""
+   LinkLabel    CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Button (Parameter*) >
+<!ATTLIST Button
+   Command      CDATA          ""
+   URL          CDATA          ""
+   Src          CDATA          ""
+   ButtonImage  CDATA          ""
+   ButtonImageOver  CDATA          ""
+   ButtonImageActive  CDATA          ""
+   Navigationbar (yes|no)      "no"
+   ButtonLabel  CDATA          #REQUIRED
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Parameter EMPTY >
+<!ATTLIST Parameter
+   Name         ID             #REQUIRED
+   Key          CDATA          #REQUIRED
+   Value        CDATA          ""
+   Link         CDATA          ""
+>
+
+<!ELEMENT ScrollingList EMPTY >
+<!ATTLIST ScrollingList
+   Default      CDATA             ""
+   DefaultField CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   StartCompareString (left|right) "left"
+   ReduceEntries (no|yes) "no"
+   OnlyListEntries (no|yes) "yes"
+   Size         CDATA             ""
+   Multiple     CDATA             ""
+   SelectMode   (single|multiple) "single"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT BrowseEntry EMPTY >
+<!ATTLIST BrowseEntry
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc|today) "none"
+   Size         CDATA          ""
+   ListWidth    CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT PopupMenue EMPTY >
+<!ATTLIST PopupMenue
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc|today) "none"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT TextField EMPTY >
+<!ATTLIST TextField
+   Password     (yes|no)   "no"
+   Override     (yes|no)       "no"
+   Default      CDATA          ""
+   DefaultField CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc|today) "none"
+   MaxLength    CDATA          ""
+   Size         CDATA          ""
+   InputType    (char|date|number) "char"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Message EMPTY >
+<!ATTLIST Message
+   Size     CDATA               ""
+   Justify  (left|right|center) "left"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT TextBlock EMPTY >
+<!ATTLIST TextBlock
+   Override     (yes|no)       "no"
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   Rows         CDATA          ""
+   Columns      CDATA          ""
+   MaxLength    CDATA          ""
+   Size         CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT CheckBoxGroup EMPTY >
+<!ATTLIST CheckBoxGroup
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   LineBreak    (yes|no)   "no"
+   Columns      CDATA          ""
+   ColumnHeader CDATA         ""
+   Rows         CDATA          ""
+   RowHeader   CDATA          ""
+   Checked      (yes|no)   "no"
+   Selected     CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT CheckBox EMPTY >
+<!ATTLIST CheckBox
+   Default      CDATA          ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   Checked      (yes|no)   "no"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT RadioGroup EMPTY >
+<!ATTLIST RadioGroup
+   Default      CDATA         ""
+   DefaultFunction (none|lastrecord|apiisrc) "none"
+   LineBreak    (yes|no)  "no"
+   Columns      CDATA         ""
+   ColumnHeader CDATA         ""
+   Rows         CDATA         ""
+   RowHeader    CDATA         ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Calendar EMPTY >
+<!ATTLIST Calendar
+   Dummy  CDATA          ""
+   Default      CDATA         ""
+   DefaultFunction (none|lastrecord|apiisrc|today) "none"
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+
+<!ELEMENT Miscellaneous EMPTY >
+<!ATTLIST Miscellaneous
+   Visibility   (visible|hidden)  "visible"
+   Enabled      (yes|no)          "yes"
+   AutoTab      (yes|no)          "no"
+   Sortable     (yes|no)          "no"
+   TabIndex     CDATA          ""
+   Label        CDATA          ""
+   IsHyperlink  CDATA          ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Position EMPTY >
+<!ATTLIST Position
+   Position     (static|absolute|relative)  "absolute"
+   Row          CDATA          #REQUIRED
+   Column       CDATA          #REQUIRED
+   Columnspan   CDATA          "1"
+   Rowspan      CDATA          "1"
+   Left         CDATA          ""
+   Top          CDATA          ""
+   Height       CDATA          ""
+   Width        CDATA          ""
+   Anchor       (n|ne|e|se|s|sw|w|nw|center)      "w"
+   Sticky       (n|ne|e|se|s|sw|w|nw|ns|ew|nsew) "ew"
+   Clip         CDATA          ""
+   Repeat       (0|1)          "0"
+>
+<!ELEMENT Text EMPTY >
+<!ATTLIST Text
+   FontFamily      (normal|fixed|times|helvetica|courier|lucida|arial) "normal"
+   FontSize        CDATA          ""
+   FontStyle       (normal|italic|oblique) "normal"
+   FontWeight      (normal|bold|bolder|lighter) "normal"
+   FontStretch     (normal|condensed|expanded) "normal"
+
+   WordSpacing     CDATA    "normal"
+   LetterSpacing   CDATA    "normal"
+   TextDecoration  (none|underline|overline|line-through|blink) "none"
+   VerticalAlign   (baseline|sub|super|top|text-top|text-bottom|bottom) "baseline"
+   TextTransform   (none|capitalize|uppercase|lowercase) "none"
+   TextAlign       (left|right|center|justify) "left"
+   TextIndent      CDATA    ""
+   LineHeight      CDATA    ""
+>
+   <!--
+   Font            CDATA          ""
+   FontFamily      (fixed|times|helvetica|courier|lucida) "times"
+   FontUnit        CDATA          "pt"
+   FontSize        CDATA          ""
+   FontStyle       (normal|italic|oblique) "normal"
+   FontWeight      (normal|bold|bolder|lighter) "normal"
+   FontVariant     (normal|smallcaps) "normal"
+   WordSpacing     CDATA    "normal"
+   LetterSpacing   CDATA    "normal"
+   TextDecoration  (none|underline|overline|line-through|blink) "none"
+   VerticalAlign   (baseline|sub|super|top|text-top|text-bottom|bottom) "baseline"
+   TextTransform   (none|capitalize|uppercase|lowercase) "none"
+   TextAlign       (left|right|center|justify) "left"
+   TextIndent      CDATA    ""
+   LineHeight      CDATA    ""
+   -->
+<!ELEMENT Color EMPTY >
+<!ATTLIST Color
+   BackGround              CDATA          ""
+   DisabledBackGround      CDATA          ""
+   DisabledForeGround      CDATA          "black"
+   ErrorBackGround         CDATA          "red"
+   ErrorForeGround         CDATA          "black"
+   ForeGround              CDATA          "black"
+   BackgroundImage         CDATA          ""
+   BackgroundRepeat        (repeat|repeat-x|repeat-y|no-repeat) "repeat"
+   BackgroundAttachment    (scroll|fixed) "scroll"
+   BackgroundPosition      CDATA ""
+>
+<!ELEMENT Format EMPTY >
+<!ATTLIST Format
+   VerticalAlign   (baseline|sub|super|top|text-top|text-bottom|bottom) "baseline"
+   DecimalPlaces   CDATA    ""
+   MarginTop      CDATA      ""
+   MarginRight     CDATA    ""
+   MarginBottom    CDATA    ""
+   MarginLeft      CDATA    ""
+   Margin          CDATA    ""
+   PaddingTop      CDATA    ""
+   IPaddingTop     CDATA    ""
+   PaddingRight    CDATA    ""
+   IPaddingRight   CDATA    ""
+   PaddingBottom   CDATA    ""
+   PaddingLeft     CDATA    ""
+   Padding         CDATA    ""
+   BorderTopWidth  CDATA    ""
+   BorderRightWidth CDATA   ""
+   BorderBottomWidth CDATA  ""
+   BorderLeftWidth CDATA    ""
+   BorderWidth     CDATA    ""
+   BorderStyle     (none|solid|double|inset|outset|groove|ridge|dooted|dashed) "none"
+   BorderColor     CDATA    "#000000"
+   BorderTop       CDATA    ""
+   BorderRight     CDATA    ""
+   BorderBottom    CDATA    ""
+   BorderLeft      CDATA    ""
+   Border          CDATA    ""
+   BlockWidth      CDATA    ""
+   BlockHeight     CDATA    ""
+   BlockFloat      CDATA    ""
+   Clear           (none|left|right|both)  "none"
+   Display         (block|inline|list-item|none) "none"
+   WhiteSpace      (normal|pre) "normal"
+   ListStyleType   (disc|circle|square|decimal|lower-roman|upper-roman|lower-alpha|upper-alpha|none) "disc"
+   ListStyleImage  CDATA   ""
+   ListStylePosition (inside|outside) "inside"
+   ListStyle       CDATA   ""
+>
+
+<!ELEMENT Event (Parameter*) >
+<!ATTLIST Event
+   Name   ID                             #REQUIRED
+   Type   (OnGetFocus  | OnLeaveFocus  |
+           OnClick     | OnDoubleClick |
+           OnOpenForm  | OnCloseForm   | PreUpdate   |
+           CallForm    | OnSelect      | PostUpdate  |
+           PreInsert   | PostInsert    |  FileSelect
+           )                             #REQUIRED
+   Module CDATA                          #REQUIRED
+   Action CDATA                          #REQUIRED
+>
+
+<!ELEMENT Connect (Parameter*) >
+<!ATTLIST Connect
+   Name   ID                             #REQUIRED
+   Description  CDATA          ""
+>
+
+<!--
+#########################
+   Misc elements
+######################### -->
+<!ELEMENT Label  (Position, Miscellaneous?, Text?, Color?, Format?) >
+<!ATTLIST Label
+   Name     ID                                #REQUIRED
+   Content  CDATA                             ""
+   Anchor   (n|ne|e|se|s|sw|w|nw|center)      "center"
+   Justify  (left|center|right)               "right"
+   Relief   (flat|groove|raised|ridge|sunken) "flat"
+>
+
+<!ELEMENT Image  (Position, Miscellaneous?, Color?, Format?) >
+<!ATTLIST Image
+   Name     ID    #REQUIRED
+   Src      CDATA ""
+   Alt      CDATA ""
+   ToolTip      CDATA   ""
+   Help         CDATA   ""
+>
+
+<!ELEMENT Line   (Position, Color?) >
+<!ATTLIST Line
+   Name      ID    #REQUIRED
+   LineWidth CDATA "2"
+   Unit      CDATA "pt"
+   LineType  (dotted|dashed|solid|double|groove|ridge|inset|outset) "solid"
+>
+
+<!ELEMENT Frame (Position, Format*, (Tabular|Tabular2|Field|Label|Line|Image)*, Color?) >
+<!ATTLIST Frame
+   Name          ID      #REQUIRED
+   Label         CDATA   ""
+   LabelPosition (left|right|top|bottom|acrosstop) "acrosstop"
+   LabelForeground CDATA ""
+   Relief        (flat|groove|raised|ridge|sunken) "raised"
+   BackGround    CDATA   ""
+>
+

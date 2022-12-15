@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="admin2">
+  <General Name="General_515" StyleSheet="/etc/apiis.css" Description="Administration-Tier"/>
+
+  <Block Name="Block_488" Description="Administration-Tier" NavigationBar="no">
+    <DataSource Name="DataSource_493a">
+      <none/>
+    </DataSource>
+
+    <Label Name="Label_490" Content="__('Administration: Delete record')">
+      <Position Column="0" Columnspan="4" Position="absolute" Row="0"/>
+      <Text FontSize="24px" TextDecoration="underline"/>
+      <Format PaddingBottom="10px"/>
+    </Label>
+
+    <Label Name="Label_4911" Content="__('Animal-ID'):">
+      <Position Column="0" Position="absolute" Row="1"/>
+    </Label>
+    <Field Name="ext_unit" FlowOrder="1">
+      <DataSource Name="DataSource_1015">
+       <Sql Statement="SELECT short_name,short_name FROM codes WHERE class='ID_SET'
+                       ORDER BY short_name"/>
+      </DataSource>
+      <ScrollingList Size="1"  DefaultFunction="apiisrc" Default="ext_unit" />  
+      <Position Column="1" Position="absolute" Row="1"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+
+    <Field Name="ext_id" FlowOrder="2">
+      <DataSource Name="DataSource_1015a1">
+        <Sql Statement="select distinct ext_id, ext_id from unit inner join codes on ext_unit=short_name where codes.class='ID_SET' order by ext_id"/>
+      </DataSource>
+      <ScrollingList Size="1"  DefaultFunction="apiisrc" Default="ext_id" StartCompareString="right" ReduceEntries="yes" />  
+      <Position Column="2" Position="absolute" Row="1"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/> 
+    </Field>
+    
+    <Field Name="ext_animal" FlowOrder="3" >
+     <TextField Override="no" Size="15"/>
+      <Position Column="3" Position="absolute" Row="1"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+      
+    </Field>
+   
+    <Label Name="Aktivieren_Label_49112z1" Content="__('Record-ID (guid)'): ">
+      <Position Column="0" Position="absolute" Row="4"/>
+    </Label>
+    <Field Name="guid" FlowOrder="5" Check="NotNull">
+      <TextField Size="10" />  
+      <Position Column="1" Columnspan="2" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="Field_514">
+      <Button ButtonLabel="__('Search record')" URL="/etc/reports/SearchRecord.rpt" Command="do_open_report"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color  BackGround="lightgreen"/>
+      <Format MarginTop="10px" MarginRight="20px"/>
+      
+    </Field>
+
+    <Field Name="Field_5141">
+      <Button ButtonLabel="__('Delete record')" URL="/etc/reports/DeleteRecord.rpt"
+      Command="do_open_report"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color BackGround="red"/>
+      <Format MarginTop="10px"/>
+    </Field>
+    <Color BackGround="#f0f0f0"/>
+    <Format BorderStyle="ridge" BorderColor="#f0f0f0" Padding="10px"/>
+
+  </Block>
+</Form>

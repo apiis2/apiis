@@ -1,0 +1,28 @@
+\clearpage
+\fancyhead[LE,LO]{Average Inbreeding }
+\subsection{Average inbreeding of offspring and parents by generation}
+\begin{multicols}{2}
+This section presents the average inbreeding of all animals born, 
+their sires and dams, and parents (or sires and dams together). The first 
+part of the table includes the average inbreeding for the offspring, 
+sire, dam, and parents while the second part provides the corresponding 
+numbers used to compute the averages. The columns in the table are:
+\begin{description}
+  \item[inbreeding of offspring :] average inbreeding of all animals born in a
+  given generation.
+  \item[inbreeding of sires :]     average inbreeding of sires with offspring
+  in a given generation.
+  \item[inbreeding of dams :]      average inbreeding of dams with
+      offspring in a given generation.
+  \item[inbreeding of parents :]   average inbreeding of parents (\textit{i.e.}
+          sires and dams together).
+  \item[number of offspring : ]     born in a given generation.
+  \item[number of sires : ]         with offspring in a given generation.
+  \item[number of dams : ]          with offspring in a given generation.
+\end{description}
+The last line in the table (denoted \textit{total}) are the
+corresponding statistics computed across generation.
+
+\end{multicols}
+
+

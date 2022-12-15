@@ -1,0 +1,54 @@
+\documentclass[a4paper,11pt,DIV18]{scrartcl}
+% \documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{longtable}
+\usepackage[english]{babel}
+% \usepackage{geometry}
+% \geometry{verbose,portrait,a4paper}
+\tolerance=5000
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{multicol}
+\usepackage{makeidx,rotating,graphics,array}
+\makeatletter
+\lhead{\rightmark}
+\chead{APIIS - Reference Database}
+\rhead{\today}
+\makeatother
+\begin{document}
+\pagenumbering{roman}
+\title{APIIS\\
+Additive Genetic Relationship Analysis Report}
+\author{\\ \\ \\ \\Eildert Groeneveld\\Institute for Animal Breeding \\
+31535 Neustadt Mariensee}
+
+\maketitle
+\vspace{1.5cm}
+\begin{center}
+  %\large{}\\
+\vspace{1.5cm}
+\Large{The APIIS\\
+reference database}
+\end{center}
+\newpage
+\vfill
+\begin{center}
+\Large{Developer}
+\begin{description}
+  \item {Frits Voordewind:} PERL/SQL/Report/Graphics, Bloenfontein, South Africa
+  \item {Bobbie van der Westhuizen:} SQL/calculation, Centurion, South Africa
+\end{description}
+\end{center}
+\newpage
+\tableofcontents{}
+\listoftables
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+%\lhead{\leftmark}
+%\begin{multicols}{2}
+%\section{General}
+%\end{multicols}

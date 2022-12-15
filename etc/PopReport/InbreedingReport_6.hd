@@ -1,0 +1,45 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Population Size}
+\subsection{Effective population size based on the number of parents}
+\begin{multicols}{2}
+This section presents the effective population size calculated based on the  
+number of parents. The following formula was used to calculate $Ne$
+(Falconer \& Mackay, 1996):
+\begin{displaymath}
+Ne=\frac{4{N_m}{N_f}}{N_m+N_f}*.7
+\end{displaymath}
+\textit{where} $N_m$ and $N_f$ are the number of male and female parents,
+respectively. 
+
+Accounting for mass selection as proposed by Caballero (1994) yields the
+added factor of .7 assuming that selection is on a trait with a heritability
+of .4 .
+
+The above formula refers to the number of breeding males and females in a
+population with discrete generations. Here, we identify a generation of
+animals as those animals born in the time span of one generation interval (GI
+window) which ends in the reporting year. The
+parents of animals born in this GI window are then entered in the above
+equation to compute the $Ne$ for each reporting year as listed in the
+table.
+
+Thus, a sliding window will run over the years counting all animals
+born in that window and their sires and dams.
+To obtain the number of years involved in that GI window go to the population
+report and find the total generation interval which is the last figure at the
+bottom of table 5.
+
+This setup implies that the number of parents in consecutive reporting years will
+include, in part, to the same animals.
+
+
+The columns in the table are: 
+\begin{description}
+  \item[Number of animals :] born in GI window ending in the reporting year
+  \item[Number of sires   :] of animals born in the GI window
+  \item[Number of dams    :] of animals born in the GI window
+  \item[Number of parents :] number of sires plus dams of animals born in
+  the GI window
+  \item[Ne                :] effective population size in the reporting year
+\end{description}
+\end{multicols}

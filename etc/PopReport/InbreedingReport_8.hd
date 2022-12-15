@@ -1,0 +1,19 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Number Parents}
+\subsection{Effective number of parents, sires and dam based on the rate of inbreeding}
+\begin{multicols}{2}
+This section presents effective population size (or number of parents), 
+effective number of sires and dams (\textit{per} year) calculated using the rate of inbreeding
+($\Delta F$). The columns in the table are:
+\begin{description}
+  \item[$\Delta F$ parents :] rate of inbreeding of the  parents.
+  \item[$\Delta F$ sires :]   rate of inbreeding of the sires.
+  \item[$\Delta F$ dams :]    rate of inbreeding of the dams.
+  \item[$Ne$ parents :]       effective population size or number of parents.
+  \item[$Ne$ sires :]         effective number of sires.
+  \item[$Ne$ dams :]          effective number of dams.
+\end{description}
+The null and negative rate(s) of inbreeding are not included in calculations and
+therefore some cells in the table may have missing values. The last line in
+the table gives the effective population size.   
+\end{multicols}

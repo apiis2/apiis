@@ -1,0 +1,53 @@
+      <column   name        = "last_change_dt"       
+                DATA        = "$now" 
+                DATATYPE    = "TIMESTAMP"            
+                LENGTH      = "22" 
+                DESCRIPTION = "Timestamp of last change" 
+                CHECK       = "NotNull" 
+                />
+
+      <column   name        = "last_change_user" 
+                DATA        = "$user" 
+                DATATYPE    = "CHAR" 
+                LENGTH      = "20" 
+                DESCRIPTION = "Who did the last change" 
+                CHECK       = "NotNull" 
+                />
+
+      <column   name        = "dirty"
+                DATA        = "0" 
+                DATATYPE    = "BOOL" 
+                DEFAULT     = "FALSE"
+                DESCRIPTION = "report errors from CHECK_integrity" 
+                LENGTH      = "1"/>
+
+      <column   name        = "chk_lvl"  
+                DATATYPE    = "SMALLINT" 
+                DEFAULT     = "1" 
+                DESCRIPTION = "CHECK level"
+                LENGTH      = "3"/>
+
+      <column   name        = "guid"
+                CHECK       = "NotNull" 
+                DATATYPE    = "BIGINT"
+	            DESCRIPTION = "global identifier" 
+                LENGTH      = "20"/>
+
+      <column   name        = "owner"    
+                CHECK       = "NotNull" 
+                DATATYPE    = "CHAR"
+                DESCRIPTION = "record class" 
+                LENGTH      = "3"/>
+
+      <column   name        = "version"
+                CHECK       = "NotNull" 
+                DATATYPE    = "BIGINT" 
+                DEFAULT     = "1"
+                DESCRIPTION = "version" 
+                LENGTH      = "3"/>
+
+      <column   name        = "synch"
+                DATATYPE    = "BOOL" 
+                DEFAULT     = "FALSE"
+                DESCRIPTION = "is record targeted for synchronization" 
+                LENGTH      = "1"/>

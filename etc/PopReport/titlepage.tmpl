@@ -1,0 +1,94 @@
+\documentclass[a4paper,foldmarks=off,12pt,DIV12]{scrlttr2}
+\usepackage[T1]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{scrpage2}
+\usepackage{longtable}
+\pagestyle{scrheadings}
+\thispagestyle{scrheadings}
+\usepackage{listings}
+
+\lstset{ breaklines=true, }
+% \lstset{
+%    breaklines=true,
+%    basicstyle=\ttfamily\color{black}\small,
+% }
+
+
+\parindent0pt \setlength{\parskip}{.8ex plus .1em minus .1em}
+\sloppy
+
+\cfoot[\copyright{} Copyright: Institute of Farm Animal Genetics (FLI), 31535 Mariensee, Germany]
+      {\copyright{} Copyright: Institute of Farm Animal Genetics (FLI), 31535 Mariensee, Germany}
+
+\date{}
+\title{}
+
+\begin{document}
+\begin{letter}{~}
+\firsthead{
+
+    \vspace{5mm}
+    \includegraphics[height=25mm,width=\textwidth]{popreport}
+}
+
+\opening{
+   \vspace{-50mm}
+   \begin{center}
+   \IfFileExists{coverpage.tex}
+       {\input coverpage.tex}
+       {   \textbf{\Huge PopReport \\[.1em]
+                   A Population Structure, \\[.2em]
+                   Pedigree Analysis, and \\[.2em]
+                   Monitoring Report
+           }
+       }
+
+\IfFileExists{tp_tabular.tex}{%
+   \input tp_tabular.tex
+}{}
+
+   \enlargethispage{40mm}
+   \vfill
+   \textit{\small \copyright{} Copyright: Institute of Farm Animal Genetics (FLI),
+   31535 Mariensee, Germany}
+   \end{center}
+}
+
+\newpage
+
+
+\noindent
+\textbf{\large Some Notes About Your PopReport Job:}
+
+\begin{itemize}
+\IfFileExists{tp_early_info.tex}{\input tp_early_info.tex}{}
+\IfFileExists{tp_baseinfo.tex}{\input tp_baseinfo.tex}{}
+\IfFileExists{maincontrol.tex}{\input maincontrol.tex}{}
+\end{itemize}
+
+\IfFileExists{early.tex}{%
+
+   \noindent
+   \textbf{\large Output Listings of the PopReport Programs:}
+
+   \begin{itemize}
+   \input early.tex
+   \end{itemize}
+}{}
+
+\IfFileExists{run_popreport.tex}{%
+
+   \noindent
+   \begin{itemize}
+   \input run_popreport.tex
+   \end{itemize}
+}{}
+\end{letter}
+
+\end{document}
+
+% vim: filetype=tex

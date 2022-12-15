@@ -1,0 +1,21 @@
+
+.tdaa  { background-color:#bbbbbb; border-left: solid black 0px; border-top:solid black 0px; border-right:solid black 0px; border-bottom:solid black 0px;}
+.tdab  { background-color:#bbbbbb; border-left: solid black 1px; border-top:solid black 0px; border-right:solid black 0px; border-bottom:solid black 0px;}
+.tdba  { background-color:#bbbbbb; border-left: solid black 0px; border-top:solid black 1px; border-right:solid black 0px; border-bottom:solid black 0px;}
+.tdbb  { background-color:#bbbbbb; border-left: solid black 0px; border-top:solid black 1px; border-right:solid black 0px; border-bottom:solid black 0px;}
+
+
+.aa {                                    border-top:solid black 1px; border-left:solid black 1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.ab {                                    border-top:solid black 1px; border-left:solid gray  1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.ba {                                    border-top:solid gray  1px; border-left:solid black 1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.bb {                                    border-top:solid gray  1px; border-left:solid gray  1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+
+.aaover {background-color:lightgray; border-top:solid black 1px; border-left:solid black 1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.abover {background-color:lightgray; border-top:solid black 1px; border-left:solid gray  1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.baover {background-color:lightgray; border-top:solid gray  1px; border-left:solid black 1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+.bbover {background-color:lightgray; border-top:solid gray  1px; border-left:solid gray  1px; border-right:solid gray 0px; border-bottom:solid gray 0px;}
+
+.blank {border:0px; padding:0px; margin:0px;}
+.blankt {background-color:#bbbbbb; border:solid black 1px; padding:0px; margin:0px;}
+.table {border:solid black 2px; padding:0px; margin:0px;}
+

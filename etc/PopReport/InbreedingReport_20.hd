@@ -1,0 +1,17 @@
+\clearpage
+\fancyhead[LE,LO]{Distribution of Inbreeding}
+\section{Inbreeding by Generation}
+\subsection{Distribution of inbreeding coefficient of offspring by generation}
+\begin{multicols}{2}
+The distribution of inbreeding coefficients provides an idea about
+the spread of inbreeding coefficients in the population. This section presents
+a distribution of inbreeding coefficients of offspring per generation. Ten intervals or
+classes of size 5\% were defined as shown in the table. The last class
+included all offspring with inbreeding coefficient >50\%. The number
+of animals within each inbreeding class per year are given in the table.
+Corresponding counts for the entire population are given in the last row of
+the table (denote \textit{total}).
+
+
+\end{multicols}
+

@@ -1,0 +1,20 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Population Size}
+\section{Effective Population Size by Generation}
+\subsection{Effective Population Size based on the rate of inbreeding}
+\begin{multicols}{2}
+
+This section presents the effective population size 
+calculated in the same manner as in section 3.1. The columns in the table are:
+\begin{description}
+  \item[inbreeding of offspring :] average inbreeding for all animals born in
+  a given generation.
+  \item[inbreeding of parents :]   average inbreeding of parents.
+  \item[${\Delta F}$ :]  rate of inbreeding per generation.
+  \item[$Ne$ :]    effective population size.
+\end{description}
+  
+The effective population size was not computed for ${\Delta F}=0$
+ since it is undefined or meaningless when the are of inbreeding is zero.
+\end{multicols}
+

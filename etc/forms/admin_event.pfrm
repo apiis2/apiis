@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="EventChange">
+  <General Name="General_515" StyleSheet="/etc/apiis.css" Description="EM-Event aendern"/>
+
+  <Block Name="Block_488" >
+    <DataSource Name="DataSource_493" >
+      <none/>
+    </DataSource>
+
+    <Label Name="Label_490" Content="Event fÃ¼r mehrere Tiere Ã¤ndern:">
+      <Position Column="0" Columnspan="3" Position="absolute" Row="0"/>
+      <Text FontSize="24px" TextDecoration="underline"/>
+      <Format PaddingBottom="10px"/>
+    </Label>
+
+    
+    <Label Name="Aktivieren_Label_4911z" Content="Event: ">
+      <Position Column="0" Position="absolute" Row="4"/>
+    </Label>
+    <Field Name="ext_event_type_alt" FlowOrder="1" Check="NotNull">
+      <DataSource Name="DataSource_1015aab">
+        <Sql Statement="select ext_code, user_get_ext_code(x.db_code) from codes x where class='EVENT' order by ext_code "/>
+      </DataSource>
+      <ScrollingList Size="1"/>  
+      <Position Column="1" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="event_dt_alt" FlowOrder="2" Check="NotNull">
+      <TextField Size="10" />  
+      <Position Column="2" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="ext_location_alt" FlowOrder="3" Check="NotNull">
+      <DataSource Name="DataSource_1015aac">
+        <Sql Statement="select ext_id, ext_id from unit  where ext_unit='pruefort' or ext_unit='slaughterhouse' order by ext_id "/>
+      </DataSource>
+      <ScrollingList Size="1"/>  
+      <Position Column="3" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Label Name="Aktivieren_Label_4911z1" Content="Event (neu): ">
+      <Position Column="0" Position="absolute" Row="5"/>
+    </Label>
+    <Field Name="ext_event_type" FlowOrder="4" >
+      <DataSource Name="DataSource_1015aab1">
+        <Sql Statement="select ext_code, user_get_ext_code(x.db_code) from codes x where class='EVENT' order by ext_code "/>
+      </DataSource>
+      <ScrollingList Size="1"/>  
+      <Position Column="1" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="event_dt" FlowOrder="5" >
+      <TextField Size="10" />  
+      <Position Column="2" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="ext_location" FlowOrder="6" >
+      <DataSource Name="DataSource_1015aac1">
+        <Sql Statement="select ext_id, ext_id from unit  where ext_unit='pruefort' or ext_unit='slaughterhouse' order by ext_id "/>
+      </DataSource>
+      <ScrollingList Size="1"/>  
+      <Position Column="3" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>    
+    </Field>
+     
+    <Field Name="Field_5140">
+      <Button ButtonLabel="Event suchen" URL="/etc/reports/Administration/EventSuchen.rpt" Command="do_open_report"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="6"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color  BackGround="lightgreen"/>
+      <Format MarginTop="10px" MarginRight="20px"/>
+    </Field>
+    
+    <Field Name="Field_51400">
+      <Button ButtonLabel="Event Ã¤ndern" URL="/etc/reports/Administration/EventAendern.rpt" Command="do_open_report"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="6"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color  BackGround="orange"/>
+      <Format MarginTop="10px"  MarginRight="20px"/>
+    </Field>
+    
+    <Field Name="Field_51401">
+      <Button ButtonLabel="Event lÃ¶schen" URL="/etc/reports/Administration/EventLoeschen.rpt" Command="do_open_report"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="6"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color BackGround="red"/>
+      <Format MarginTop="10px"/>
+    </Field>
+    
+    <Color BackGround="#f0f0f0"/>
+    <Format BorderStyle="ridge" BorderColor="#f0f0f0" Padding="10px"/>
+
+  </Block>
+</Form>

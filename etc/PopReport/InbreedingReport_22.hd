@@ -1,0 +1,23 @@
+\clearpage
+\fancyhead[LE,LO]{Descriptive Statistics}
+\subsection{Descriptive statistics of inbreeding coefficient of \textit{all}
+offspring by generation}
+\begin{multicols}{2}
+This section presents the summary statistics of inbreeding coefficients of
+\textit{\underline{all}}
+offspring born in a given generation. That is, the statistics are based on
+\textit{inbred} and \textit{non-inbred} offspring. The columns in the table are as
+follows:
+\begin{description}
+  \item[number of offspring :] all offspring born in a given generation.
+  \item[minimum :] the lowest inbreeding coefficient among all offspring.
+  \item[maximum :] the highest inbreeding coefficient among all offspring.
+  \item[average :] the mean inbreeding coefficient of all offspring.
+  \item[variance :] the spread of inbreeding coefficients around the
+        mean.
+\end{description}
+The last row in the table (\textit{i.e.} total) lists the corresponding values
+computed across generations.
+
+\end{multicols}
+

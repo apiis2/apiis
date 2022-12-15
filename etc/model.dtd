@@ -1,0 +1,63 @@
+<!ENTITY GlobalColumns SYSTEM "GlobalColumns.xml">
+<!ENTITY AccessRightsTables SYSTEM "AR.xml">
+<!ENTITY OldAuthTables SYSTEM "OldAuth.xml">
+
+<!ELEMENT model (general,table+)>
+<!ELEMENT general EMPTY>
+<!ATTLIST general
+   dbdriver   (Pg|Oracle|CSV|InterBase|Sybase) "Pg"
+   dbname     CDATA                            #REQUIRED
+   dbhost     CDATA                            "localhost"
+   dbport     CDATA                            "5432"
+   dbuser     CDATA                            ""
+   dbpassword CDATA                            ""
+   dbencoding (unicode|latin1)                 #REQUIRED
+   dbpg_enable_utf8 (0|1)                      "0"
+>
+
+<!ELEMENT table (column+,TABLE)>
+<!ATTLIST table
+   name         CDATA                            #REQUIRED
+   struct_type  (mandatory|recommended|optional) "recommended"
+   description  CDATA                           ""
+>
+
+<!ELEMENT column EMPTY>
+<!ATTLIST column
+   name        CDATA                            #REQUIRED
+   struct_type (mandatory|recommended|optional) "optional"
+   form_type   (editable|readonly|hidden)       "editable"
+   ar_check    (0|1)                            "1"
+   DATATYPE    (CHAR|HUGEINT|BIGINT|SMALLINT|DATE|TIME|TIMESTAMP|SMALLFLOAT|BIGFLOAT|BLOB|BOOL) "CHAR"
+   LENGTH      CDATA                            "20"
+   DATA        CDATA                            ""
+   DESCRIPTION CDATA                            #REQUIRED
+   DEFAULT     CDATA                            ""
+   LABEL       CDATA                            ""
+   CHECK       CDATA                            ""
+   CHECK1      CDATA                            ""
+   CHECK2      CDATA                            ""
+   CHECK3      CDATA                            ""
+   CHECK4      CDATA                            ""
+   CHECK5      CDATA                            ""
+   MODIFY      CDATA                            ""
+>
+
+<!ELEMENT TABLE (TRIGGER?,CONSTRAINTS?)> 
+
+<!ELEMENT TRIGGER EMPTY>
+<!ATTLIST TRIGGER
+   PREINSERT   CDATA       ""
+   POSTINSERT  CDATA       ""
+   PREUPDATE   CDATA       ""
+   POSTUPDATE  CDATA       ""
+   PREDELETE   CDATA       ""
+   POSTDELETE  CDATA       ""
+>
+
+<!ELEMENT CONSTRAINTS EMPTY>
+<!ATTLIST CONSTRAINTS
+   PRIMARYKEY  CDATA   ""
+   SEQUENCE    CDATA   ""
+   INDEX       CDATA   ""
+>

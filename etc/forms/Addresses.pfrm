@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="FP2">
+  <General Name="General_515" StyleSheet="/etc/apiis.css" Description="Adressen"/>
+
+  <Block Name="Block_488" Description="Adressen" NavigationBar="no">
+    <DataSource Name="DataSource_493" >
+      <Sql Statement="select ext_id from unit where ext_unit='society' group by ext_id order by ext_id"/>
+      <Column Name="Column_494" Order="0" Type="DB"/>
+    </DataSource>
+
+    <Label Name="Label_490" Content="__('Address')">
+      <Position Column="0-1" Position="absolute" Row="0"/>
+      <Text FontSize="24px" TextDecoration="underline"/>
+      <Format PaddingBottom="12px"/>
+    </Label>
+
+    <Label Name="Label_491" Content="__('Society'):">
+      <Position Column="0" Position="absolute" Row="1"/>
+    </Label>
+    <Field Name="Verband" DSColumn="Column_494" FlowOrder="0">
+      <ScrollingList Size="1"/>
+      <Position Column="1" Position="absolute" Row="1"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+      
+    </Field>
+
+    <Field Name="Field_514">
+      <Button ButtonLabel="__('Create Addresses')" URL="/etc/reports/Adressen.rpt" Command="do_exit"/>
+      <Position Column="0-1" Position="absolute" Row="3"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format MarginTop="12px"/>
+      
+    </Field>
+
+    <Color BackGround="#f0f0f0"/>
+    <Format BorderStyle="ridge" BorderColor="#f0f0f0" Padding="12px"/>
+
+  </Block>
+</Form>

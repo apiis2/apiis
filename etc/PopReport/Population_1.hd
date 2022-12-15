@@ -1,0 +1,59 @@
+\clearpage
+
+\fancyhead[LE,LO]{Number of breeding animals}
+\section{Number of breeding males and females by year}
+\begin{multicols}{2}
+The number of breeding animals at a given time determines
+the genetic structure of the population in subsequent generations. Under 
+simplified conditions (\textit{ e.g.} ratio of males to females is 1:1, 
+random selection, distribution of family size is Poisson, \textit{etc}), the 
+number of breeding males and females can be used to calculate the 
+effective population size (to be defined later). 
+In the
+context of this report, an animal only becomes a 'breeding' animal
+by either having a service record (if available) or show up as a parent
+in a birth record of an offspring. 
+This may constrast to a situation, where animals get
+'selected' with the intent to use them as parents but effectively
+are never put into service.
+
+The number of breeding males and females 
+used in the population in a given year is presented in this table. 
+The table is broken down by birth year with the last column (Number of
+animals born) giving the total number of animals born for the current breed
+for that particular year.
+
+It is the objective of this table to provide an overview about the genetic
+composition of each birth year's batch of new animals: giving the number 
+of sires and dams that produced the current year's crop of offspring.
+Thus, for 'services' and 'birth' we find under column 'sires' the number of 
+sires involved in the services and births. The same applies to the 
+column 'dams'. Thus, the ratio of 'number of animals born' and the counts
+in 'birth' gives the average number of offspring per sire/dam in that year.
+
+The column 'select' goes one step further: firstly, based on the set of
+animals born in the particular year, it is determined how many of those 
+offspring became parents in later years. Then, for this subset the number of sires 
+and dams are determined and printed under column 'select'.
+Clearly, this figure has to be less or equal to the corresponding figure
+under 'births'.
+Keeping this figure high will help avoid inbreeding.
+
+The description for each column is:
+
+\begin{description}
+  \item[Services:] The number of sires/dams that participated
+                   in services in a given year.
+  \item[Births:]   The number of sires/dams with offspring in a given year.
+  \item[Select:]   Those animals born in the given year which became
+                   parents later on determine the subset. "Select" 
+						 gives the number of sires and dams represented
+						 in this subset.
+\end{description}
+
+The total number of sires and dams is not the sum of the sire and dam
+columns but rather the total number of sires and dams occuring in all
+years. This figure will tend to be smaller than the sum from the years, as
+the same sire or dam may show up in multiple years.
+ 
+\end{multicols}

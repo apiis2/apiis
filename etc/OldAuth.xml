@@ -1,0 +1,217 @@
+  <table name="users">
+    <column CHECK="NoCheck" DATATYPE="BIGINT"
+      DESCRIPTION="unique user number" LENGTH="20" name="user_id"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR" DESCRIPTION="user name"
+      LENGTH="20" name="name"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="login name"
+      LENGTH="20" name="login"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR" DESCRIPTION="user password"
+      LENGTH="20" name="password"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR" DESCRIPTION="user node name"
+      LENGTH="50" name="user_node"/>
+    <column CHECK="ForeignKey languages lang_id" DATATYPE="BIGINT"
+      DESCRIPTION="language" LENGTH="20" name="lang_id"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="session_id for the interface" LENGTH="80" name="session_id"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique user_id,unique login, unique guid" SEQUENCE="seq_users__user_id"/>
+    </TABLE>
+  </table>
+  <table name="roles">
+    <column CHECK="NoCheck" DATATYPE="BIGINT" DESCRIPTION="role number"
+      LENGTH="20" name="role_id"/>
+    <column DATATYPE="CHAR" DESCRIPTION="role shortcut" LENGTH="20" name="role"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="role type - db, os" LENGTH="40" name="role_type"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="short role name" LENGTH="20" name="role_name_sh"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="long role name"
+      LENGTH="20" name="role_name_lng"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="role description" LENGTH="20" name="description"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique role_id,unique role, unique guid" SEQUENCE="seq_roles__role_id"/>
+    </TABLE>
+  </table>
+  <table name="user_roles">
+    <column CHECK="ForeignKey users user_id" DATATYPE="BIGINT"
+      DESCRIPTION="unique user number" LENGTH="20" name="user_id"/>
+    <column CHECK="ForeignKey roles role_id" DATATYPE="BIGINT"
+      DESCRIPTION="role number" LENGTH="20" name="role_id"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique guid"/>
+    </TABLE>
+  </table>
+  <table name="policies">
+    <column CHECK="NoCheck" DATATYPE="BIGINT"
+      DESCRIPTION="policy number" LENGTH="20" name="policy_id"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="allowed table name" LENGTH="20" name="tablename"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="allowed column names ( |column1|column2|column3|...| )"
+      LENGTH="20" name="columns"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="allowed class names" LENGTH="20" name="class"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="allowed action names (insert/update/select/delete )"
+      LENGTH="20" name="action"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique policy_id, unique guid"/>
+    </TABLE>
+  </table>
+  <table name="role_policies">
+    <column CHECK="ForeignKey roles role_id" DATATYPE="BIGINT"
+      DESCRIPTION="role number" LENGTH="20" name="role_id"/>
+    <column CHECK="ForeignKey policies policy_id" DATATYPE="BIGINT"
+      DESCRIPTION="policy number" LENGTH="20" name="policy_id"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique guid" PRIMARYKEY=""/>
+    </TABLE>
+  </table>
+  <table name="policies_app">
+    <column CHECK="NoCheck" DATATYPE="BIGINT"
+      DESCRIPTION="policy number" LENGTH="20" name="app_policy_id"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="name of: application or form or report or some action (add user)"
+      LENGTH="20" name="app_name"/>
+    <column CHECK="NoCheck" DATATYPE="CHAR"
+      DESCRIPTION="allowed class names" LENGTH="20" name="app_class"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique app_policy_id, unique guid" SEQUENCE="seq_policies_app__app_policy_id"/>
+    </TABLE>
+  </table>
+  <table name="role_policies_app">
+    <column CHECK="ForeignKey roles role_id" DATATYPE="BIGINT"
+      DESCRIPTION="role number" LENGTH="20" name="role_id"/>
+    <column CHECK="ForeignKey policies_app app_policy_id"
+      DATATYPE="BIGINT" DESCRIPTION="policy number" LENGTH="20" name="app_policy_id"/>
+    <column CHECK="NotNull" DATATYPE="TIMESTAMP"
+      DESCRIPTION="Date of last change, automatic timestamp" LENGTH="10" name="last_change_dt"/>
+    <column CHECK="NotNull" DATATYPE="CHAR"
+      DESCRIPTION="User who did the last change" LENGTH="20" name="last_change_user"/>
+    <column CHECK="NoCheck" DATA="0" DATATYPE="BOOL"
+      DESCRIPTION="report errors from check_integrity" LENGTH="1" name="dirty"/>
+    <column CHECK="NoCheck" DATATYPE="SMALLINT" DEFAULT="1"
+      DESCRIPTION="check level" LENGTH="3" name="chk_lvl"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT"
+      DESCRIPTION="global identifier" LENGTH="20" name="guid"/>
+    <column CHECK="NotNull" DATATYPE="CHAR" DESCRIPTION="record class"
+      LENGTH="3" name="owner"/>
+    <column CHECK="NotNull" DATATYPE="BIGINT" DEFAULT="1"
+      DESCRIPTION="version" LENGTH="3" name="version"/>
+    <column DATATYPE="BOOL" DEFAULT="FALSE"
+      DESCRIPTION="is record targeted for synchronization" LENGTH="1" name="synch"/>
+    <TABLE>
+      <TRIGGER
+        PREINSERT="&apos;SetVersion version&apos;,&apos;SetGuid guid&apos;,&apos;SetNode owner&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;" PREUPDATE="&apos;SetVersion version&apos;,&apos;SetNow last_change_dt&apos;,&apos;SetUser last_change_user&apos;"/>
+      <CONSTRAINTS INDEX="unique guid" PRIMARYKEY=""/>
+    </TABLE>
+  </table>

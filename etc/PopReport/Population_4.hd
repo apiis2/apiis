@@ -1,0 +1,15 @@
+\clearpage
+
+\fancyhead[LE,LO]{Distribution of parity}
+\section{Distribution of parity of dams at birth of offspring}
+\begin{multicols}{2}
+The rate of genetic progress in the population depends among other things
+on the turnover of breeding stock. In general, under artificial breeding, animals 
+that stay in the population longer tend to leave more offspring. Thus, the
+distribution of parity of dams over time may be informative about the rate of turnover 
+in the population. The distribution of breeding females in different parity 
+groups in a given year is presented in the Table. Dams with parity $\ge$ 16
+are often few in the population and they are conveniently placed
+together in one group i.e. $\ge$ 16 group. In this instance, the \textit{cohort
+is defined as the total number of animals born in a given year}. 
+\end{multicols}

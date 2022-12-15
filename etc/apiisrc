@@ -1,0 +1,160 @@
+##############################################################################
+# $Id: apiisrc,v 1.23 2019/09/25 08:08:41 ulf Exp $
+# Basic configuration file for the Adaptable Platform Independant
+# Information System -- APIIS
+# This file is for system wide configuration.
+# A project specific $apiis->APIIS_LOCAL . '/etc/apiisrc' file will be read
+# afterwards and thus can overrride the systemwide defaults.
+##############################################################################
+
+##############################################################################
+[PROJECTS]
+shc=/home/b08mueul/apiis/shc
+dagenbank=/home/b08mueul/apiis/dagenbank
+zws_landschafe = /home/b08mueul/apiis/zws_landschafe
+zws_schaf_raw = /home/b08mueul/apiis/zws_schaf_raw
+test = /home/b08mueul/apiis
+leineschafe = /home/b08mueul/apiis/leineschafe
+zws_schaf_pl = /home/b08mueul/apiis/zws_schaf_pl
+zws_schaf = /home/b08mueul/apiis/zws_schaf/
+mfs1 = /home/b08mueul/apiis/mfs1
+mfs = /home/b08mueul/apiis/mfs
+sszv = /home/b08mueul/apiis/sszv
+hszvno = /home/b08mueul/apiis/hszvno
+hszvno_zwq = /home/b08mueul/apiis/hszvno_zwq
+mszv = /home/b08mueul/apiis/mszv
+chick = /home/b08mueul/database_stuff/chick
+federvieh = /home/b08mueul/apiis/federvieh
+rabbit = /home/b08mueul/apiis/rabbit
+# Define the existing projects and provide the path to $APIIS_LOCAL. The
+# model file is expected to have the name <project_name>.model and must be
+# located in the etc-subdirectory of $APIIS_LOCAL.
+# If you have several projects, hosted on one server, the user will be queried
+# to choose one of them.
+#
+# Syntax:
+# <project_name> = </path/to/APIIS_LOCAL>
+#
+# Examples:
+# breedprg = /usr/local/apiis/ref_breedprg
+# efabis   = $APIIS_HOME/projects/efabis
+# cryom    = $APIIS_HOME/projects/cryom
+
+reference = $APIIS_HOME/reference
+example   = $QS_HOME/var/sessions/example
+##############################################################################
+[I18N]
+# Internationalization/Localisation
+# choose language (en, de):
+language = de
+
+# Date format:  (reference: Documentation of Date::Calc)
+# values: EU (european format day-month-year),
+#         US (US american format month-day-year)
+# old, deprecated:
+date_format = EU
+
+# new recommended form:
+date_sep    = .
+date_order  = DD.MM.YYYY
+time_sep    = :
+time_order  = hh:mm:ss
+
+##############################################################################
+[DB]
+# Name of main table for encoding:
+codes_table = codes
+
+##############################################################################
+[ENTRY_VIEWS]
+# Name of the views for handling incoming data streams. They assure
+# that only active channels (closing_dt is NULL) are accessed.
+# If you don't use this setup for keeping the history of changes
+# insert the real tables instead, e.g.
+codes    = entry_codes
+unit     = entry_unit
+transfer = entry_transfer
+
+##############################################################################
+[RESERVED_STRINGS]
+# Define reserved words/strings/chars that are not allowed as part of the data.
+# Please don't change unless you know what you are doing.
+
+# delimiter for concatenated values in automagically created views.
+V_CONCAT = :::
+
+##############################################################################
+[FORMS]
+# HTML-browser: netscape, mozilla, konqueror, explorer.exe ...
+browser = konqueror
+
+# fileselector: FBox or FileSelect
+fileselector = FileSelect
+
+# multilanguage: 0 or 1
+# indicates that forms should also contain part for translation of data
+multilanguage = 0
+
+##############################################################################
+[LOGGING]
+# Note: In this section, APIIS_HOME and APIIS_LOCAL (with $ char prepended
+# or not) are substituted by their values.
+# For the priorities and facilities refer to 'man syslog' or 'man syslog.conf'.
+
+# logging to a file:
+use_filelog = 1
+filelog_priority = info
+filelog_filename = $APIIS_HOME/var/log/apiis.log
+
+# logging to syslog:
+use_syslog = 0
+syslog_facility = local3
+syslog_priority = info
+
+# sql_logging for debugging and some kind of rudimentary database recovery:
+use_sql_logging = 1
+# if you set use_sql_logging to a true value, all sql statements, that pass
+# the internal structure will be logged into sql_logfile:
+sql_logfile     = $APIIS_HOME/var/log/sql.log
+# log only data manipulation statements (e.g. no SELECT):
+sql_log_dml_only = 0
+
+# If you want to investigate, where most of the time of your application is
+# consumed you can set this value to 1. This will additionally slow down
+# your program but will log timestamps in your syslog/filelog in seconds
+# and fraction of seconds since the start of the program.
+profiling = 0
+
+##############################################################################
+[SYNCHRONISATION]
+# To synchronize databases, each one must have a (unique) node name:
+node_name = Mariensee
+
+##############################################################################
+# This section is reserved for compatibility issues between different apiis
+# versions.
+[COMPATIBILITY]
+
+# access rights:
+# values: auth | AR | none
+#         auth - old authentication/authorisation scheme
+#         AR   - new scheme as from December 2005
+#         none - switch off every access rights control
+access_rights = none
+
+# version of GUI forms:
+# As development continues, we have different generations of forms. As these
+# generations are based on different configuration files, we have to define
+# one. Possible values are:
+#    Tk1  - forms of version 1 for the widget set Tk. They are based on
+#           ini-style config files and the yaform-library.
+#    Tk2  - forms of version 2 for the widget set Tk. They have XML-based
+#           config files and work in object oriented notation.
+# If neither of them is configured, Tk1 is assumed.
+gui_version = Tk2
+
+[RAPIDAPIIS]
+ra_home = $APIIS_HOME/rapidapiis
+
+[INITIALIZATION]
+qs_conf = ok

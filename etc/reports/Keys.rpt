@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--DOCTYPE report SYSTEM "report.dtd" -->
+<Report>
+  <General
+    DataSource="(Select ext_code as ext_code, short_name as short_name, long_name as long_name from codes where class='{Klasse}')"
+    StyleSheet="/etc/apiis.css"
+    UseForm="/etc/forms/Schluessel.pfrm"
+    Name="Liste Schlüssel" PageFooter="All_Pages" PageHeader="All_Pages"/>
+ <GUIHeader Name="GUIHeader_50">
+     <Text Column="1-3" Content="Liste der Schluessel" Name="Text_50" Row="1" FontSize="24px" PaddingTop="10px"/>
+ </GUIHeader>
+  <PageHeader Name="PageHeader_10">
+    <Lines Name="Line_1" Column="1-3" Row="1" LineType="solid"/> 
+    <Text Column="1" Content="Schluessel" Name="Text_12" Row="2" FontWeight="bold" PaddingRight="20px"/>
+    <Text Column="2" Content="Abkuerzung" Name="Text_13" Row="2" FontWeight="bold" PaddingRight="20px"/>
+    <Text Column="3" Content="Bezeichnung" Name="Text_14" Row="2" FontWeight="bold"/>
+    <Lines Name="Line_2" Column="1-3" Row="3" LineType="dashed"/> 
+  </PageHeader>
+  <Detail Name="Detail_10">
+    <Data Column="1" Content="[ext_code]" Name="Data_14" Row="1"   TextAlign="center"/>
+    <Data Column="2" Content="[short_name]" Name="Data_15" Row="1" TextAlign="center"/>
+    <Data Column="3" Content="[long_name]" Name="Data_16" Row="1"  TextAlign="left"/>
+  </Detail>
+ <GUIFooter Name="GUIFooter_50">
+    <Lines Name="Line_3" Column="1-3" Row="2" LineType="solid"/>
+ </GUIFooter>
+</Report>

@@ -1,0 +1,22 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Population Size}
+\subsection{Effective Population Size based on the number of parents}
+\begin{multicols}{2}
+This section presents effective population size per generation. The effective
+population size was calculated in the same manner as in section 3.2. 
+The columns in the table are:
+\begin{description}
+  \item[number of offspring :] all animals born in a given generation.
+  \item[number of sires :] the number of sires with offspring in a given
+    generation.
+  \item[number of dams :] the number of dams with offspring in a given
+      generation.
+  \item[number of parents :] all parents.
+  \item[$Ne$ :] effective population size.
+\end{description}
+
+Effective Population Size for the entire population is given in
+the last row of the table (denoted \textit{over generations}).
+
+\end{multicols}
+

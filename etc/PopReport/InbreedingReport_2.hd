@@ -1,0 +1,15 @@
+\clearpage
+\fancyhead[LE,LO]{Descriptive Statistics}
+\subsection{Descriptive statistics of inbreeding coefficients of \textit{all} animals by year}
+\begin{multicols}{2}
+This section presents the summary statistics of inbreeding coefficients of
+\textit{\underline{all}} animals born in a given year. The columns in the table are:
+\begin{description}
+  \item[No. of animals :] all animals born in a given year.
+  \item[Min :] the lowest inbreeding coefficient.
+  \item[Max :] the highest inbreeding coefficient.
+  \item[Avg \textit{F} :] the mean inbreeding coefficient.
+  \item[Std :] the standard deviation of inbreeding coefficients.
+\end{description}
+\end{multicols}
+

@@ -1,0 +1,34 @@
+\clearpage
+
+\fancyhead[LE,LO]{Family size}
+\section{Family size}
+\begin{multicols}{2}
+Family size refers to the number of offspring of an individual that become
+breeding individuals in the next generation (Falconer \& Mackay, 1996). Under
+\textit{ ideal conditions} as specified by Falconer \& Mackay (1996), parents have 
+an equal chance of contributing offspring to
+the next generation. In practice, particularly in production animals, genetic 
+contribution of the parents is not the same. Unequal contribution 
+leads to differences or variation in family size. 
+
+
+The consequence of increased variation in family size is an increase in the
+rate of inbreeding and the reduction in the effective population size 
+($\textit{ Ne}=1/2{\Delta F}$ \textit{ where} \textit{ Ne} is the effective population 
+size and ${\Delta F}$ is the rate of inbreeding per generation). 
+
+The variance of family size can be minimized, i.e. regressed to zero as the
+number of offspring become equal for all parents. The Table presents the 
+summary statistics for family size (i.e. the maximum and average) 
+for the male and female parents. Offspring have been categorized into four groups as follows:
+ \begin{description}
+   \item[All offspring:]      all offspring born in the population.
+   \item[Selected offspring:]   offspring that have a service record.
+   \item[Selected sons:]      male offspring that have a service record.
+   \item[Selected daughters:] female offspring that have a service record.
+ \end{description}
+In addition, the distribution of family size is also presented. The most
+influential individuals in the populaiton are also identified (Figures 1 to
+8). The information is presented separetly for sires and dams considering
+  \textit{ all} and \textit{ selected offspring}.
+\end{multicols}

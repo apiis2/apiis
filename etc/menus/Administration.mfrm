@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="Admin">
+  <General Description="Menu" Name="General_0a3" StyleSheet="/etc/apiis.css"/>
+  <Block Description="Menu for Litter" Name="Block_0a3" NavigationBar="no">
+    
+    <DataSource Name="DataSource_0a3">
+      <none/>
+    </DataSource>
+    
+    <Label Name="Label_0a3" Content="Administration">
+      <Position Row="1" Column="1" Columnspan="7"/>
+      <Text FontSize="34px" TextAlign="center"/>
+    </Label>
+ 
+    <Image Name="Image_915a3" Alt="Test" Src="/icons/blank1.gif">
+      <Position Row="2" Column="1" Width="1px"/>
+      <Format MarginTop="40px"/>
+    </Image>
+
+    <Field Name="admin1">
+      <Button ButtonLabel="Tier suchen/l&amp;ouml;schen" URL="admin_animal.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="3"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    
+    <Field Name="admin3">
+      <Button ButtonLabel="Event je Tier suchen/&amp;auml;ndern/l&amp;ouml;schen" URL="admin_event_tier.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="4"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray"/>
+    </Field>
+    
+    <Field Name="admin5">
+      <Button ButtonLabel="Event f&amp;uuml;r mehrere Tiere suchen/&amp;auml;ndern/l&amp;ouml;schen" URL="admin_event.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="5"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+
+    <Field Name="admin6">
+      <Button ButtonLabel="Datensatz l&amp;ouml;schen" URL="admin_delete_record.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="6"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray" />
+    </Field>
+    <Field Name="admin61">
+      <Button ButtonLabel="Wurf l&amp;ouml;schen" URL="admin_delete_litter.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="7"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+
+    <Field Name="admin9">
+      <Button ButtonLabel="Daten exportieren" URL="DatenExport.pfrm" Command="do_open_report"/>
+      <Position Column="2" Row="10"/>
+      <Miscellaneous/>
+      <Text FontSize="12px" TextAlign="center"/>
+      <Color />
+      <Format BorderStyle="groove" BorderColor="lightgray" MarginBottom="10px"/>
+    </Field>
+
+    <Color BackGround="#ffffdd"/>
+    <Format BorderStyle="ridge" BorderColor="#004ce4" MarginTop="10px"/>
+ 
+  </Block>
+</Form>

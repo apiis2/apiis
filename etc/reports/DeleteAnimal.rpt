@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+  <General
+    DataSource="GetData({ext_unit},{ext_id},{ext_animal},{db_animal})"
+    StyleSheet="/etc/apiis.css"
+    UseForm="/etc/forms/admin_animal.pfrm"
+    Name="General_0" PageFooter="All_Pages" PageHeader="All_Pages" CharSet="UTF-8"/>
+ <GUIHeader Name="GUIHeader_50">
+     <Text Column="1" Content="Liste aller Tabelleneintr&amp;auml;ge" Name="Text_50" Row="1" FontSize="24px"/>
+ </GUIHeader>
+  <PageHeader Name="PageHeader_10">
+    <Lines Name="Line_1" Column="1" Row="1" LineType="solid"/> 
+  </PageHeader>
+  <Detail Name="Detail_10">
+    <Data Column="1" Content="[field]" Name="Data_13" Row="1" FontFamily="Courier"/>
+  </Detail>
+ <GUIFooter Name="GUIFooter_50">
+     <Lines Name="Line_3" Column="1" Row="1" LineType="solid"/>
+ </GUIFooter>
+</Report>

@@ -1,0 +1,69 @@
+\clearpage
+\fancyhead[LE,LO]{Additive Genetic Relationships}
+\section{The Average and Rate of  Additive Genetic Relationships by year}
+\begin{multicols}{2}
+The coefficient of inbreeding ($F$) of an individual is equal to the additive genetic relationship 
+(AGR) between its parents or the coefficient of co-ancestry \textit{i.e.} $F_i = f_{sd}$
+where $i$ is the individual and $s$ and $d$ are its sire and dam respectively
+(Falconer \& Mackay , 1996).
+Under random mating, the rate of inbreeding ($\Delta F$) is equal to the rate of
+additive genetic relationships ($\Delta f$). Thus, the effective size ($Ne$)
+can be obtained from either $\frac{1}{{2}{\Delta F}}$ or $\frac{1}{{2}{\Delta
+f}}$. Therefore, the discrepancy between the two effective sizes indicates
+a deviation from a random mating system. 
+
+In this report, the additive genetic relationships were computed using the PEDIG Fortran
+Package of Boichard (2002) and specifically the \textit{ par3.f} program (\textit{ see} the
+PEDIG manual for details). Briefly, the average additive genetic relationship among
+individuals within a group (\textit{ e.g.} animals born in a given year) is computed as 
+the average inbreeding of the progeny of all possible matings among the individuals. 
+Two steps were followed to calculate the rate of
+AGR ($\Delta f$) per generation or for animals born in a given year and a generation earlier. 
+Firstly, the generation interval for animals born in a given year was calculated as the average age of
+their parents they were born. Secondly, the generation interval was
+subtracted from the year of birth of the current cohort to obtain the year of
+birth of the cohort born a generation earlier. Thus, the rate of additive genetic
+relationship is:
+
+\begin{displaymath}
+{\Delta f}=\frac{{f_t-f_{t-1}}}{1-f_{t-1}}
+\end{displaymath}
+
+where $f_t$ and $f_{t-1}$ are the average additive genetic relationship of the cohort born in
+generation $t$ (or the current year) and the cohort born  a generation earlier.  
+
+The number of animals born in 
+the cohort beginning with the reporting year
+year as well their average AGR and
+inbreeding and their rate is presented in the Table.
+Notice that the AGR value reported is the average of all possible 
+matings between males and females in the cohort. Thus, with 1000 males and
+2000 females in the cohort this average is based on $1000*2000=2000000$ 
+additive genetic relationships.
+The generation interval
+between this cohort and their parents is also presented. The average and rate
+of inbreeding and AGR are also presented in the Figures below. The effective
+population size based on the rate of AGR (computed as a regression of AGR on
+year) over the entire period is also presented.   
+
+\textbf{Note:} Due to computer hardware constraints,
+datasets with huge numbers of animals will be shortened
+preventing weeks of computation.
+The currently
+implemented algorithm is based on the number of acceptable computations in
+terms of CPU time:
+
+\begin{math}
+2000 male * 2000 female = 4000000 computations
+\end{math}
+
+This should give a sufficiently precise estimate of the average AGR.
+
+Operationally, from cohorts larger than 2000 males and 2000 females 
+2000 males and 2000 females as picked
+through a random number generator, thereby cutting the files to be
+processed down to a size which can computationally be handled.
+
+The affected years  will be documented in the coverpages of this report.
+Please refer to this information.
+\end{multicols}

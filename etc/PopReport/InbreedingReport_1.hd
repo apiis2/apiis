@@ -1,0 +1,13 @@
+\clearpage
+\fancyhead[LE,LO]{Number of Inbred Animals}
+\subsection{Number of \textit{all} and \textit{inbred} animals, sires and dams by year}
+\begin{multicols}{2}
+This section presents the number of \textit{\underline{all}} and \textit{\underline{inbred}} animals,
+sires and dams by year. The following information is given in the table for all animals, sires and dams: 
+\begin{description}
+  \item[Tot No. :] the number of animals / sires / dams  in a given year.
+  \item[Inbred No. :] the number of inbred animals / sires / dams in a given year.
+  \item[Avg \textit{F} :] the average inbreeding coefficient.
+\end{description}
+\end{multicols}
+

@@ -1,0 +1,101 @@
+
+    <Field Name="do_first_block">
+      <Button ButtonLabel="First" ButtonImage="/icons/do_first.png" ButtonImageOver="/icons/do_first2.png" 
+              ButtonImageActive="/icons/do_first3.png" Navigationbar="yes"
+              Command="do_first_block"/>
+      <Position Column="0" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_prev_block">
+      <Button ButtonLabel="Previous" ButtonImage="/icons/do_prev.png" ButtonImageOver="/icons/do_prev2.png" 
+              ButtonImageActive="/icons/do_prev3.png" Navigationbar="yes"
+              Command="do_prev_block"/>
+      <Position Column="0" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="__nav_r">
+      <TextField Size="5"/>
+      <Position Column="0" Position="absolute" Row="19"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="45px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_next_block">
+      <Button ButtonLabel="Next" ButtonImage="/icons/do_next.png" ButtonImageOver="/icons/do_next2.png" 
+              ButtonImageActive="/icons/do_next3.png" Navigationbar="yes"
+              Command="do_next_block"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_last_block">
+      <Button ButtonLabel="Last" ButtonImage="/icons/do_last.png" ButtonImageOver="/icons/do_last2.png" 
+              ButtonImageActive="/icons/do_last3.png" Navigationbar="yes"
+              Command="do_last_block"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_new_block">
+      <Button ButtonLabel="Last" ButtonImage="/icons/do_new.png" ButtonImageOver="/icons/do_new2.png" 
+              ButtonImageActive="/icons/do_new3.png" Navigationbar="yes"
+              Command="do_new_block"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_clear_form">
+      <Button ButtonLabel="Clear" ButtonImage="/icons/do_clear.png" ButtonImageOver="/icons/do_clear2.png" 
+              ButtonImageActive="/icons/do_clear3.png" Navigationbar="yes"
+              Command="do_clear_form"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    
+    <Field Name="do_delete">
+      <Button ButtonLabel="Submit" ButtonImage="/icons/do_delete.png" ButtonImageOver="/icons/do_delete2.png" 
+              ButtonImageActive="/icons/do_delete3.png" Navigationbar="yes"
+              Command="do_delete"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+
+    <Field Name="do_reset">
+      <Button ButtonLabel="Reset" ButtonImage="/icons/do_reset.png" ButtonImageOver="/icons/do_reset2.png"
+              ButtonImageActive="/icons/do_reset3.png" Navigationbar="yes"
+              Command="do_reset"/>
+      <Position Column="0"  Columnspan="3" Position="absolute" Row="19"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>
+    <Field Name="do_save">
+      <Button ButtonLabel="Submit" ButtonImage="/icons/do_save.png" ButtonImageOver="/icons/do_save2.png" 
+              ButtonImageActive="/icons/do_save3.png" Navigationbar="yes" 
+              Command="do_save"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format MarginLeft="10px" BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>

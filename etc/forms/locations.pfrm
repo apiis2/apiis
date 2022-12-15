@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="FP35">
+  <General Name="G612" StyleSheet="/etc/apiis.css" Description="EM-Standort"/>
+
+  <Block Name="B613" Description="Update weight">
+     
+    <DataSource Name="DS614" Connect="no">
+      <Record TableName="locations"/>
+      <Column DBName="db_animal" Name="C577" Order="0" Type="DB" UseEntryView="1">
+          <IdSet Name="idset_Column_7"  SetName="10-vvo-nummer"/>
+          <IdSet Name="idset_Column_7a" SetName="15-herdbuchnummer"/>
+          <IdSet Name="idset_Column_7b" SetName="20-lebensnummer"/>
+          <IdSet Name="idset_Column_7c" SetName="30-lammnummer"/>
+      </Column>
+         <Column DBName="ext_unit" Name="C581" Order="1" RelatedColumn="C577" RelatedOrder="0" Type="Related"/>
+         <Column DBName="ext_id" Name="C583" Order="2" RelatedColumn="C577" RelatedOrder="1" Type="Related"/>
+         <Column DBName="ext_animal" Name="C585" Order="3" RelatedColumn="C577" RelatedOrder="2" Type="Related"/>
+      <Column DBName="db_location" Name="C601" Order="4" Type="DB"/>
+      <Column DBName="entry_dt" Name="C602" Order="5" Type="DB"/>
+      <Column DBName="db_entry_action" Name="C603" Order="6" Type="DB"/>
+      <Column DBName="exit_dt" Name="C604" Order="7" Type="DB"/>
+      <Column DBName="db_exit_action" Name="C605" Order="8" Type="DB"/>
+      <Column DBName="guid" Name="C610" Order="9" Type="DB"/>
+    </DataSource>
+      
+
+    <Label Name="L694" Content="Korrektur - Standort">
+      <Position Column="0" Columnspan="3" Position="absolute" Row="0"/>
+      <Text FontSize="24px" TextDecoration="underline"/>
+      <Format PaddingBottom="10px"/>
+    </Label>
+
+    <Label Name="L695" Content="Tiernummer:">
+      <Position Column="0" Position="absolute" Row="2"/>
+    </Label>
+    
+    <Label Name="L695a" Content="Nummernkreis:">
+      <Position Column="1" Position="absolute" Row="1"/>
+      <Text FontSize="10px"/>
+    </Label>
+    <Label Name="L695b" Content="Unit:">
+      <Position Column="2" Position="absolute" Row="1"/>
+      <Text FontSize="10px"/>
+    </Label>
+    <Label Name="L695c" Content="Nummer:">
+      <Position Column="3" Position="absolute" Row="1"/>
+      <Text FontSize="10px"/>
+    </Label>
+    
+    <Field Name="F699" DSColumn="C577" >
+      <TextField Override="no" Size="20"/>
+      <Position Column="1" Position="absolute" Row="2"/>
+      <Miscellaneous Visibility="hidden" Enabled="no"/>
+      <Text/>
+      <Color />
+      <Format/>
+    </Field>
+    <Field Name="Fanimal_ext_unit" DSColumn="C581" FlowOrder="1" >
+      <DataSource Name="DataSource_101">
+        <Sql Statement="select '10-vvo-nummer' as a,'10-vvo-nummer' as b union select '20-lebensnummer','20-lebensnummer' union select '15-herdbuchnummer','15-herdbuchnummer' union select '30-lammnummer','30-lammnummer'"/>
+      </DataSource>
+      <ScrollingList Size="1" DefaultFunction="apiisrc" Default="ext_unit" />  
+      <Position Column="1" Position="absolute" Row="2"/>
+      <Miscellaneous />
+      <Text />
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Name="Fanimal_ext_id" DSColumn="C583"  FlowOrder="2">
+      <DataSource Name="DataSource_1015aa">
+        <Sql Statement="select unit.ext_id, ext_id from unit inner join transfer on unit.db_unit=transfer.db_unit where transfer.closing_dt isnull and (unit.ext_unit='10-vvo-nummer' or unit.ext_unit='20-lebensnummer' or unit.ext_unit='15-herdbuchnummer' ) group by unit.ext_id, unit.ext_unit,unit.db_unit order by unit.ext_id"/>
+      </DataSource>
+      <ScrollingList Size="1" DefaultFunction="apiisrc" Default="ext_id" StartCompareString="right" ReduceEntries="yes" />  
+      <Position Column="2" Position="absolute" Row="2"/>
+      <Miscellaneous />
+      <Text />
+      <Color/>
+      <Format/>
+    </Field>
+    <Field Name="Fanimal_ext_animal" DSColumn="C585" FlowOrder="3">
+      <TextField Override="no" Size="8"/>
+      <Position Column="3" Position="absolute" Row="2"/>
+      <Miscellaneous />
+      <Text />
+      <Color />
+      <Format/>
+    </Field>
+
+    <Label Name="L600" Content="Z&amp;uuml;chter/Besitzer:">
+      <Position Column="0" Position="absolute" Row="3"/>
+    </Label>
+    <Field Name="F601" DSColumn="C601" FlowOrder="4" InternalData="yes">
+      <DataSource Name="DataSource_1015aa3">
+        <Sql Statement="select distinct db_unit, ext_unit || ' - ' || ext_id from unit where ext_unit='zuechter' or ext_unit='besitzer'"/>
+      </DataSource>
+      <ScrollingList Size="1"  StartCompareString="right" ReduceEntries="yes"/>
+      <Position Column="1" Position="absolute" Row="3"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+
+    <Label Name="L6001" Content="Zugang:">
+      <Position Column="0" Position="absolute" Row="4"/>
+    </Label>
+    <Field Name="F602" DSColumn="C602" FlowOrder="5">
+      <TextField Override="no" Size="10" MaxLength="10" InputType="date"/>
+      <Position Column="1" Columnspan="2" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format MarginRight="5px"/>
+    </Field>
+    <Field Name="F603" DSColumn="C603" FlowOrder="6" InternalData="yes">
+      <DataSource Name="DataSource_1015aa31">
+        <Sql Statement="select db_code, case when long_name isnull then case when short_name isnull then ext_code else short_name end else long_name end from codes where class='ENTRY_ACTION' order by ext_code"/>
+      </DataSource>
+      <ScrollingList Size="1"/>
+      <Position Column="1" Columnspan="2" Position="absolute" Row="4"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+
+    <Label Name="L6002" Content="Abgang:">
+      <Position Column="0" Position="absolute" Row="5"/>
+    </Label>
+    <Field Name="F604" DSColumn="C604" FlowOrder="7" >
+      <TextField Override="no" Size="10" MaxLength="10" InputType="date"/>
+      <Position Column="1" Columnspan="2" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format MarginRight="5px"/>
+    </Field>
+    <Field Name="F605" DSColumn="C605" FlowOrder="8" InternalData="yes">
+      <DataSource Name="DataSource_1015aa32">
+        <Sql Statement="select db_code, case when long_name isnull then case when short_name isnull then ext_code else short_name end else long_name end from codes where class='EXIT_ACTION' order by ext_code"/>
+      </DataSource>
+      <ScrollingList Size="1"/>
+      <Position Column="1" Columnspan="2" Position="absolute" Row="5"/>
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format/>
+    </Field>
+
+
+
+    <Label Name="L609" Content="Interne Id:">
+      <Position Column="0" Position="absolute" Row="7"/>
+    </Label>
+
+    <Field Name="F611" DSColumn="C610" >
+      <TextField Override="no" Size="10" />
+      <Position Column="1" Position="absolute" Row="7"/>
+      <Miscellaneous Enabled="no"/>
+      <Text/>
+      <Color BackGround="transparent"/>
+      <Format BorderColor="transparent"/>
+    </Field>
+    
+    <Image Name="Image_311" Alt="Test" Src="/icons/blank1.gif">
+      <Position Column="0" Columnspan="3" Row="8"/>
+      <Format PaddingTop="20px"/>
+    </Image>
+    
+    &NavigationButtons_Fields;
+    &ActionButtons_Fields;
+    &StatusLine_Block;
+    
+    <Color BackGround="#f0f0f0"/>
+    <Format BorderStyle="ridge" BorderColor="#f0f0f0" Padding="10px"/>
+  </Block>
+
+</Form>

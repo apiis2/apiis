@@ -1,0 +1,14 @@
+\clearpage
+
+\fancyhead[LE,LO]{Age structure of parents}
+\section{Age structure of parents by birth year of offspring}
+\begin{multicols}{2}
+This section gives a quick overview of the age structure of breeding males
+and females by birth year of offspring as summarized in the Tables. The
+animals of interest or cohort is \textit{the total number of animals born in a given year}.
+The second row in the header of tables lists the different age groups (in \textit{years})
+for male and female parents. It should be noted that parents greater or equal to 16 years of age were grouped together i.e. age group $\ge$ 16 years. The values in
+the body of table are the number of male/female parents in a given age-year
+subgroup. A dash ({}``-{}'') in the table indicates that there were no animals
+of a particular age group in a given year. The last column presents the average age of all male/female parents.  
+\end{multicols}

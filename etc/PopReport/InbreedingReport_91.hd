@@ -1,0 +1,35 @@
+\clearpage
+\fancyhead[LE,LO]{Pedigree completeness}
+\section{Pedigree completeness per year}
+\begin{multicols}{2}
+An estimate of an individual's inbreeding coefficient depends on the
+extent to which its ancestry is known to some defined generation in the past.
+The more complete the knowledge of an individual's ancestry, the more
+reliable is its estimate of inbreeding coefficient relative to some defined
+base population. MacCluer \textit{et al}. (1983) proposed an index to measure pedigree
+completeness. This index summarizes the proportion of known ancestors in each
+ascending generation. It quantifies the chance of detecting inbreeding in the pedigree
+(S$\phi$renson \textit{et al}., 2005). The following formula was used to compute
+pedigree completeness (MacCluer \textit{et al}., 1983):
+
+\begin{displaymath}
+    I_d=\frac{4{I_{d_{pat}}}{I_{d_{mat}}}}{I_{d_{pat}}+I_{d_{mat}}}
+\end{displaymath}
+
+\textit{and}
+
+\begin{displaymath}
+     I_{d_k}={\frac{1}{d}}{\sum_{i=1}^d {a_i}}\qquad
+     k=pat,mat
+\end{displaymath}
+
+where $k$ represents the paternal ($pat$) or maternal line
+($mat$) of an individual, $a_i$ is the proportion of known ancestors in generation $i$.
+The $d$ is the number of generations considered in the calculation of
+the pedigree completeness. For example, if $d=5$ then five ancestral generations
+will be taken into account in the computations. The values for pedigree completeness 
+range from 0 to 1. If all  ancestors of an individual to some specified generation ($d$) are
+known, then $I_d=1$ or if one of the parent (\textit{i.e.} sire or dam) is
+unknown, $I_d=0$. The pedigree completeness values averaged per year are
+presented on the Table. 
+\end{multicols}

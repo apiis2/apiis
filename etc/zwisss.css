@@ -1,0 +1,232 @@
+@charset "utf-8";
+
+body { font-family:Arial, sans-serif ; font-size:14px }
+
+input { background-color:white; border: 0px solid black; }
+/*
+#option span {
+    font-weight:bold;
+    color:#444;    
+}
+*/
+.buttons {
+    background-color:#ff4500; border: 0px solid black;
+    font-weight: bold;
+    color:white; 
+    padding-right:15px; padding-left:15px; padding-bottom:4px; padding-top:3px; 
+    margin-right:30px;
+    cursor:pointer
+}
+.buttonsentry {
+    background-color:#ff4500; border: 0px solid black;
+    font-weight: bold;
+    color:white; 
+    padding-bottom:4px; padding-top:3px; 
+    cursor:pointer
+}
+
+select {background-color:white; border: 0px solid black;}
+
+select.pop {  background-color:white; border: 0px solid black;  }
+
+div.icon { width:21px; height:13px;border:1px solid black;font-size:11px;float:left;color:white; margin:1px;vertical-align:middle }
+div.cheader { padding-bottom:5px; padding-top:8px;border-bottom: 2px solid #ff4500 } 
+div.ctitle  { border-bottom: 2px solid black; margin-bottom:20px; width:600px } 
+div.cform   { padding-top:1px; background-color:lightgray ;} 
+div.centry  { padding-top:1px; background-color:lightgray ;width:300px; } 
+div.help    { padding:20px; background-color:lightgray ; color:gray; position:relative } 
+div.cparam  { background-color:lightgray;  position:relative ;width:600px; } 
+div.cparam2 { padding: 20px; margin-top:0px; background-color:lightgray; width:600px; } 
+div.cparam3 { font-weight:bold;padding-bottom:10px; border-bottom: 1px solid black; margin-bottom:10px; background-color:lightgray;  position:relative ;width:600px; } 
+div.cparam4 { padding-bottom:10px; border-bottom: 1px solid black; margin-bottom:10px; background-color:lightgray;  position:relative ;width:600px;display:none}
+
+span.ctitle { font-weight:bold; font-size:120% } 
+span.chelpbold  { font-weight:bold; color:gray } 
+span.chelp  { color:gray } 
+
+
+
+div.cmenu   {  padding-bottom:26px; border-bottom:1px solid #ff4500 } 
+div.cmenu2  {  padding-bottom:10px; padding-top:10px; border-bottom:1px solid #ff4500 } 
+a.cmenu2    {  padding-top:10px;padding-left:10px; padding-right:20px; cursor:pointer } 
+span.cmenu2 {  padding:10px; padding-left:10px; background-color:#ff4500;
+               color:white ; font-weight:bold;  font-size:120% } 
+
+div.ctablemenu   { padding: 20px; margin-top:23px; background-color:lightgray; width:600px; } 
+div.ctable       { padding: 20px; margin-top:28px; background-color:lightgray } 
+div.ctablewhite  { padding: 20px; margin-top:26px; background-color:white } 
+
+table {border-collapse:collapse; border-bottom:1px solid black; border-top:1px solid black;}
+thead { border-bottom:1px solid black; text-align:left}
+
+table.report { border-collapse:collapse; border-bottom:1px solid darkgray; border-top:1px solid darkgray;}
+thead.report {  border-bottom:0px solid darkgray; text-align:left}
+td.report    { background-color:white;padding-right:10px}
+td.reporthell { border-bottom:1px solid darkgray; padding-right:10px; background-color:white}
+td.reportdunkel { border-bottom:1px solid darkgray; padding-right:10px; background-color:lightgray}
+td.reportcolored { border-bottom:1px solid darkgray; padding-right:10px; background-color:coral}
+td.reporthead {border-top: 1px solid #505050; border-bottom: 1px solid #505050; padding-right:4px; background-color:#B0B0B0;}
+th.report {border-top: 1px solid #505050; border-bottom: 1px solid #505050; padding-right:4px; background-color:#B0B0B0;}
+td        { padding-right:5px}
+
+/* Table Entry-Site */
+table.centry {margin-top:40px; margin-bottom:40px;  border-top:0px solid black;  border-bottom:0px solid black; border-collapse:collapse; }
+th.centry { padding-right:40px; padding-bottom:10px;color:#ff4500; margin-bottom:10px;  border-bottom:1px solid #ff4500 ; }
+td.centry  { padding:10px;background-color:lightgray }
+
+/* Table Entry-Site */
+table.cform { border-top:0px solid black;  border-bottom:0px solid black; border-collapse:collapse; }
+
+/* Pedigree*/
+td.pedigree { border-top:solid thin gray;
+              border-spacing: 0px;
+              background-color:white;
+              padding:4px;
+              text-align:left}
+td.pedigree_sire { border-top:solid thin gray;
+              border-spacing: 0px;
+              background-color:gray;
+              padding:4px;
+              text-align:left}
+
+a.header:link  { color:gray;   text-decoration:none }
+a.header:hover   { color:#ff4500; text-decoration:none }
+a:link    { color:black;   text-decoration:none }
+a:hover   { color:#ff4500; text-decoration:none }
+a:visited { color:black;   text-decoration:none }
+a:active  { color:#ff4500; text-decoration:none }
+          
+a.klapptable_btn_b:link {
+    border: 0px solid black;
+    border-radius: 20px;
+    color: black;          
+    margin-right:3px;          
+    padding:4px ;
+    font-size:14px;
+    cursor:pointer;
+}
+          /* --- menu styles ---
+note:
+	not all browsers render styles the same way so try out your style sheet
+	on different browsers before publishing;
+*/
+/* level 0 inner */
+.m0l0iout {
+	font: normal 14px Arial, Tahoma, Verdana, Geneva, Helvetica, sans-serif;
+	text-decoration: none;
+    padding: 3px 10px 10px 10px ;
+	color: #000000;
+}
+/*Ebene 1 Zuchtwerte... */
+.m0l0iover {
+	font: normal 14px Arial, Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+    padding: 3px 10px 10px 10px ;
+	color: #FFFFFF;
+}
+
+/* level 0 outer */
+.m0l0oout {
+	text-decoration : none;
+	background: #FFFFFF;
+}
+.m0l0oover {
+	text-decoration : none;
+	border : 1px solid #ff4500;
+	background: #ff4500;
+}
+
+/* level 1 inner */
+.m0l1iout {
+	font: normal 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+    padding-left: 10px ;
+	color: #FFFFFF;
+}
+.m0l1iover {
+	font: normal 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+    padding-left: 10px ;
+	color: #000000;
+}
+
+/* level 1 outer */
+.m0l1oout {
+	text-decoration : none;
+	border : 1px solid #000000;
+	background: #000000;
+}
+.m0l1oover {
+	text-decoration : none;
+	border : 1px solid #ff4500;
+	background: #ff4500;
+}
+
+/* level 2 inner */
+.m0l2iover {
+	font: normal 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	padding: 3px;
+	color: #000000;
+}
+
+/* level 2 outer */
+.m0l2oout {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #4682B4;
+}
+.m0l2oover {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #5AE55A;
+}
+
+a.info:hover { z-index:2;}
+a.info span { display: none;}
+
+a.info:hover span
+{
+display:block;
+position:absolute;
+top:2em;
+left:2em;
+width:50em;
+border:1px solid #12127D;
+       background-color:#fc0;
+color:#000;
+      text-align: center;
+padding: 5px;
+         font-size: 0.8em;
+}
+
+
+.klapptable_btn_t {
+    border: 0px solid black;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: black;          
+    margin-right:3px;          
+    padding:8px ;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.klapptable_btn_b {
+    border: 0px solid black;
+    border-radius: 20px;
+    color: black;          
+    margin-right:3px;          
+    padding:4px ;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.klapptable_btn_s {
+    padding:3px;
+    vertical-align:middle;
+    border-bottom:1px solid darkgray;
+}
+.chelpbold, .chelp {
+    margin-top:5px;
+}

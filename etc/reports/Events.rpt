@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE GUI PUBLIC "1" "report.dtd">
+<Report>
+  <General
+    DataSource="GetData()"
+    CreatePDF="pdf()"
+    Name="Liste Events" PageFooter="All_Pages" PageHeader="All_Pages"/>
+  <Detail Name="Detail_0">
+    <Lines Column="1" Name="Lines_11" Row="1" LineType="solid" LineWidth="thin"/>
+  </Detail>
+</Report>

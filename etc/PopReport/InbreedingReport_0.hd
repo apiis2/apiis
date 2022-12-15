@@ -1,0 +1,10 @@
+\clearpage
+\fancyhead[LE,LO]{Distribution of Inbreeding}
+\section{Inbreeding}
+\subsection{Distribution of animals by year and inbreeding level}
+\begin{multicols}{2}
+This section presents a distribution of animals by inbreeding levels and year of birth. 
+Eleven inbreeding classes of size 5\% were defined. The last inbreeding class
+included all animals with inbreeding coefficient >50\%. The number
+of animals by inbreeding class and year are given in the table. 
+\end{multicols}

@@ -1,0 +1,20 @@
+\clearpage
+\fancyhead[LE,LO]{Number of Inbred Animals}
+\subsection{Number of inbred animals and parents per generation}
+\begin{multicols}{2}
+This report presents the number of \textit{\underline{all}} offspring,
+\textit{\underline{inbred}} offspring  
+and \textit{\underline{parents}} per generation. It is assumed that all offspring belong to
+ the generation $i$ and their parents to generation $i-1$. 
+ The information in the tables is grouped by
+offspring, sires and dams. Within each group (\textit{i.e.} offspring, sires and
+dams), the following information is presented per generation:
+\begin{description}
+  \item[total :]  total number of offspring/sires/dams.
+  \item[inbred :] number of \textit{inbred} offspring/sires/dams.
+  \item[percent:] of \textit{inbred} offspring/sires/dams.
+  \end{description}
+The last row in the table (\textit{i.e.} total) lists the corresponding values
+computed across generations.   
+\end{multicols}
+

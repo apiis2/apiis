@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form PUBLIC "1" "form.dtd">
+<Form Name="empty_fp19">
+  <General Name="General_515" StyleSheet="/etc/apiis.css" Description="Apiis"/>
+
+  <Block Name="Block_488" >
+    <DataSource Name="DataSource_493">
+      <none/>
+    </DataSource>
+
+    <Field Name="Field_360">
+      <Link LinkLabel="" URL=""/>
+      <Position Column="1" Position="absolute" Row="3"/>
+      <Miscellaneous Visibility="hidden"/>
+      <Text/>
+      <Color/>
+      <Format/>
+      
+    </Field>
+    <Image Name="Image_71a" Alt="Test" Src="/icons/blank1.gif">
+       <Position Column="0" Row="0" Width="1px"/>
+    </Image>
+
+  </Block>
+</Form>

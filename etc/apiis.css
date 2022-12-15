@@ -1,0 +1,254 @@
+body.menu   {font-family: arial;
+            font-size:13pt;
+            background-color:#ffffcc}
+body.report {font-family: times new roman;
+            font-size:13pt;
+            background-color:#FFFFFF}
+
+select {
+          background-color:white;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-left:1pt  }
+
+
+h3 {color:black}
+strong  {font-weight:bolder}
+
+table {border-spacing:0pt}
+td {padding:1pt}
+
+table.hmenu {background-color:yellow;
+            text-align:center}
+
+td.hmenuhead {vertical-align:top;
+              font-family: arial;
+              font-size:14pt;
+              color:darkblue;
+              font-weight:bold;
+              padding:4pt;
+              text-align:left}
+
+table.menu {background-color:darkgreen;
+            border-style: ridge;
+            border-spacing:0pt;
+            text-align:left}
+
+td.txtbox {
+          border:groove darkgray 2px;
+          font-family:arial;
+          font-size:8pt;
+          font-weight:normal;
+          padding-left:1pt  }
+
+td.menu {vertical-align:top;
+         padding:4pt;
+         color:white;
+         text-align:left}
+td.menubutton {vertical-align:top;
+         padding:4pt;
+         text-align:center;
+         border-top:ridge}
+
+td.menuhead{border-bottom:groove darkgrey;
+            vertical-align:top;
+            color:white;
+            font-family: arial bold;
+            letter-spacing:2pt;
+            font-size:16pt;
+            padding:8pt;
+            text-align:center;
+            }
+td.menubody{vertical-align:top;
+         font-family: arial bold;
+         letter-spacing:1pt;
+            font-size:16pt;
+            padding:8pt;
+         text-align:center;
+         border-bottom:ridge}
+
+td.menufeet{border-top:groove darkgrey;
+            vertical-align:middle;
+            font-family: arial bold;
+            color:white;
+            font-size:12pt;
+            text-align:center;
+            padding:4pt}
+
+table.report {border-top: solid #AD3942 thin;
+              border-bottom: solid #AD3942 thin;
+              border-spacing:0pt}
+
+td.reporthead {background-color:lightgray}
+td.report {padding:2pt}
+td.reporthell {padding:2pt;background-color:white}
+td.reportdunkel {padding:2pt;background-color:lightgray}
+
+
+table.katalog {border-top: solid #AD3942 thin;
+              border-bottom: solid #AD3942 thin;
+              border-spacing:0pt}
+td.katalog {padding:0pt}
+td.katalog1 {padding:0pt;
+             border-top: solid #AD3942 thin;
+             background-color:lightgray}
+
+table.pedigree {background-color:oldlace;
+            border: ridge brown;
+            border-spacing:0pt;
+            text-align:left}
+td.pedigree { border:solid thin brown;
+              padding:4pt;
+              text-align:left}
+
+a {text-decoration:none}
+a:link {color:#AA0000}
+a:active {color:#FF3300}
+a:visited {color:#330099}
+
+
+input.txf {
+          border:groove darkgray 2px;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-left:1pt  }
+input.txferr {background-color:red;
+          border:groove darkgray 2px;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-left:1pt  }
+
+
+input.cbx {
+          border:none;
+          font-size:12pt;
+          font-weight:normal;
+          }
+input.sub {background-color:lightgray;
+          border:outset darkgray 2px;
+          font-family:arial;
+          width:220px;
+          font-size:10pt;
+          font-weight:normal;
+          padding-top:2pt;
+          padding-bottom:0pt;
+          padding-left:1pt;
+          cursor:pointer  }
+input.sub:active {background-color:white;
+          border:groove darkgray 2px;
+          font-family:arial;
+          width:220px;
+          font-size:10pt;
+          font-weight:normal;
+          padding-top:2pt;
+          padding-bottom:0pt;
+          padding-left:1pt;
+          cursor:pointer  }
+input.res {background-color:lightgray;
+          border:outset darkgray 2pt;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-top:2pt;
+          padding-bottom:0pt;
+          padding-left:1pt;
+          cursor:pointer    }
+select.pop {
+          background-color:white;
+          border:groove red 2pt;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-left:1pt  }
+select.scr {
+          border:groove darkgray 2pt;
+          background-color:white;
+          font-family:arial;
+          font-size:10pt;
+          font-weight:normal;
+          padding-top:1pt;
+          padding-bottom:0pt;
+          padding-left:1pt  }
+
+
+
+/* --- menu styles ---
+note:
+	not all browsers render styles the same way so try out your style sheet
+	on different browsers before publishing;
+*/
+/* level 0 inner */
+.m0l0iout {
+	font-family:  Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	text-decoration: none;
+	padding: 3px;
+	color: #a52a2a;
+}
+.m0l0iover {
+	font: bold 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	padding: 3px;
+	color: #FFFFFF;
+}
+
+/* level 0 outer */
+.m0l0oout {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #D3D3d3;
+}
+.m0l0oover {
+	text-decoration : none;
+	border : 1px solid #a52a2a;
+	background: #4682B4;
+}
+
+/* level 1 inner */
+.m0l1iout {
+	font: 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	padding: 3px;
+	color: #FFFFFF;
+}
+.m0l1iover {
+	font: bold 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	padding: 3px;
+	color: #000000;
+}
+
+/* level 1 outer */
+.m0l1oout {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #4682B4;
+}
+.m0l1oover {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #5AE55A;
+}
+
+/* level 2 inner */
+.m0l2iover {
+	font: bold 14px Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	padding: 3px;
+	color: #000000;
+}
+
+/* level 2 outer */
+.m0l2oout {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #4682B4;
+}
+.m0l2oover {
+	text-decoration : none;
+	border : 1px solid #A52A2A;
+	background: #5AE55A;
+}

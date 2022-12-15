@@ -1,0 +1,29 @@
+\clearpage
+\fancyhead[LE,LO]{Average Inbreeding}
+\subsection{Average inbreeding of offspring and parents by year}
+\begin{multicols}{2}
+Inbreeding trend (\textit{i.e.} annual average inbreeding) is useful to determine the rate
+at which inbreeding accumulates in a population. It is frequently used to quantify
+the rate of loss of genetic diversity. This section presents the average 
+inbreeding of all animals born, their sires and dams, and parents 
+(or sires and dams together). The first part of the table includes the
+average inbreeding for the offspring, sire, dam, and parents while the second part
+provides the corresponding numbers used to compute the averages. 
+The columns in the table are:
+
+\begin{description}
+  \item[inbreeding of offspring :] average inbreeding of all animals born in a given year.
+  \item[inbreeding of sires :]     average inbreeding of sires with offspring in a given year.
+  \item[inbreeding of dams :]      average inbreeding of dams with offspring in a given year.
+  \item[inbreeding of parents :]   average inbreeding of parents (\textit{i.e.}
+  sires and dams together). 
+  \item[number of offspring : ]     born in a given year.
+  \item[number of sires : ]         with offspring in a given year.
+  \item[number of dams : ]          with offspring in a given year.
+\end{description}
+
+Corresponding values for the entire population are provided in the last 
+row of the table (denoted \textit{total}).
+
+\end{multicols}
+

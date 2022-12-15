@@ -1,0 +1,13 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Number of Sires}
+\subsection{Effective number of sires based on probability of identity}
+\begin{multicols}{2}
+This section presents the effective number of sires per generation calculated via 
+probability of identity. \textit{More information on the probability of identity}. The columns in the table are:
+\begin{description}
+  \item[probability :] the probability that two animals have identical sires.
+  \item[$Ne$ sires: ] the number of sires calculated as a reciprocal of probability. 
+  \item[${\Delta F}$ :] the rate of inbreeding.
+\end{description}
+\end{multicols}
+

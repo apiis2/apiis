@@ -1,0 +1,115 @@
+##############################################################################
+# $Id: needed_modules,v 1.36 2021/05/27 20:06:19 ulf Exp $
+##############################################################################
+# List all modules needed for APIIS.
+# Comments and empty lines are allowed in this file.
+
+[CORE]
+Cache::Memcached::Fast
+Compress::Zlib
+Config::IniFiles
+Config::Auto
+CPAN
+Data::Dumper
+Date::Calc
+Digest::MD5
+File::Basename
+List::Util
+List::MoreUtils
+Scalar::Util
+Storable
+Sys::Syslog
+Text::ParseWords
+XML::Parser
+XML::Simple
+XML::Writer
+XML::DTDParser
+XML::LibXML
+Devel::Size
+Text::Wrap
+
+[TK]
+Tk 804.024
+Tk::BrowseEntry
+Tk::DateEntry
+Tk::MListbox
+Tk::ObjEditor
+Tk::ObjScanner
+Tk::MatchEntry
+Tk::Table
+
+[DATABASE]
+DBD::CSV
+# DBD::mysql
+# DBD::Oracle
+DBD::Pg 1.30
+# DBD::SQLite
+DBI 1.35
+DBIx::Recordset
+SQL::Statement
+Text::CSV_XS
+DBIx::SQLCrosstab
+Tree::DAG_Node
+
+[I18N]
+Encode
+Locale::Maketext
+Locale::Maketext::Lexicon
+
+[NETWORKING]
+Net::EasyTCP 0.26
+Net::FTP
+
+[MISC]
+Statistics::Descriptive
+Template
+Template::Plugin::DBI
+Term::ReadKey
+Tie::IxHash
+Time::HiRes
+Spreadsheet::WriteExcel
+Spreadsheet::ParseExcel
+Unicode::String 
+Unicode::Map
+File::MMagic
+MIME::Types
+File::Type
+Perl6::Slurp
+Parallel::ForkManager
+JSON
+MLDBM
+Graphics::ColorObject
+DateTime
+Log::Log4perl
+Switch
+Archive::Extract
+Statistics::Basic
+Statistics::LineFit
+utf8::all
+Spreadsheet::Read
+XML::XML2JSON
+
+[WEB]
+HTML::Template
+Apache::Session
+CGI::Session
+Std::Form
+
+[ENCRYPTION]
+Crypt::CBC
+Crypt::Blowfish
+
+[COMPRESSION]
+Compress::Zlib
+
+[MAIL]
+Mail::SendEasy
+
+[POPREPORT]
+Proc::ProcessTable
+Parallel::ForkManager
+Graph::Writer::GraphViz
+Email::Valid
+Mail::Sendmail
+Sys::CPU
+Statistics::LineFit

@@ -1,0 +1,11 @@
+
+    <Field Name="do_query_block">
+      <Button ButtonLabel="Query" ButtonImage="/icons/do_query.png" ButtonImageOver="/icons/do_query2.png" 
+              ButtonImageActive="/icons/do_query3.png" Navigationbar="yes"
+              Command="do_query_block"/>
+      <Position Column="0" Columnspan="3" Position="absolute" Row="19" />
+      <Miscellaneous/>
+      <Text/>
+      <Color/>
+      <Format MarginLeft="10px" BlockFloat="left" Display="block" BlockWidth="25px" BlockHeight="21px"/>
+    </Field>

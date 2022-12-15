@@ -1,0 +1,19 @@
+\clearpage
+\fancyhead[LE,LO]{Number of Known Parents}
+\subsection{The number of animals with one or both parents unknown per year}
+\begin{multicols}{2}
+This section presents 
+the number of animals born in a specific year with known or unknown parentage.
+Animals with both parents unknown are the base animals. The table is divided
+into three parts \textit{i.e.} animals with known, unknown parents and base animals. The
+first two parts (\textit{i.e.} animals with known, or unknown parents) are further 
+subdivided into a sire and dam columns. The columns in the
+table are:
+
+\begin{description}
+  \item[Num of Sires :] number of animals with known/unknown sires. 
+  \item[Num of Dams :]  number of animals with known/unknown dams. 
+  \item[Num Animals :]  number of base animals (\textit{i.e.} both sire and dam unknown).
+\end{description}
+
+\end{multicols}

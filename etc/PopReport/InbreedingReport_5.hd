@@ -1,0 +1,34 @@
+\clearpage
+\fancyhead[LE,LO]{Effective Population Size}
+\section{Effective Population Size}
+\subsection{Effective Population Size based on the rate of inbreeding}
+\begin{multicols}{2}
+
+Effective population size (\textit{Ne}) is the number of individuals that would
+give rise to the observed or calculated rate of inbreeding (${\Delta F}$), if they bred in the manner of
+the idealized population (Falconer \& Mackay, 1996). The \textit{Ne} is a 
+a measure of genetic diversity within a population. It is therefore an important
+parameter in breeding of domestic animals and planning strategies for
+conservation of endangered animal and plant species (Nomura, 2002). This section presents 
+effective population size calculated using $\textit{Ne}=1/2{\Delta F}$. The
+rate of inbreeding per generation (${\Delta F}$) was calculated using
+
+\begin{displaymath}
+{\Delta F}=\frac{F_{t}-F_{t-1}}{1-F_{t-1}} 
+\end{displaymath}
+
+\textit{where} $F_{t}$ and $F_{t-1}$ are the average inbreeding of offspring and 
+their parents, respectively (Falconer \& Mackay, 1996). The columns in the table are: 
+
+\begin{description}
+  \item[Avg \textit{F} Animals :] average inbreeding coefficient for animals born in a given year.
+  \item[Avg \textit{F} Sires   :] average inbreeding coefficient for sires of animals born in a given year.
+  \item[Avg \textit{F} Dams    :] average inbreeding coefficient for dams of animals born in a given year.
+  \item[Avg \textit{F} Parents :] average inbreeding coefficient for sires and dams of animals born in a given year.
+  \item[${\Delta F}$        :] the rate of inbreeding per generation.
+  \item[$Ne$                :] the effective population size.
+\end{description}
+
+\textit{Note:} The effective population size was not computed for ${\Delta F}=0$ since it is undefined. 
+\end{multicols}
+
