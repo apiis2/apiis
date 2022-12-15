@@ -1,0 +1,17 @@
+#!/bin/sh
+##############################################################################
+# $Id: secure_CVS,v 1.1 2008-01-22 15:11:13 duchev Exp $
+##############################################################################
+# This script changes the permissions of the CVS files allow only owner access
+# Use it with caution when you know, what you are doing.
+# Usually you want to start this script in the base directory of your working
+# copy you checked out from cvs.
+##############################################################################
+
+
+for file in `find . -name CVS -print`
+do
+   echo $file
+   chmod -R u+rw $file
+   chmod -R go-rwx $file
+done

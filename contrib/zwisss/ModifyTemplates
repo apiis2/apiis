@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+
+use Getopt::Std;
+getopts( 'a:b:t:m:', \%opts );
+exit if ( $opts{'a'} eq $opts{'b'} );
+
+if ( $opts{'m'} ) {
+
+    open( IN, "$opts{'m'}" ) || die "Can't open file $opts{'m'}";
+    my @con = <IN>;
+    my $con = join( '', @con );
+    close(IN);
+    eval($con);
+    if ($@) {
+        print "Error in config file";
+        die;
+    }
+
+}
+else {
+
+    @traits = ( 'ltz', 'usf', 'imf', 'fuvz', 'ffl', 'usmd', 'rmfl', 'ptz', 'ph1k' );
+
+    if ( $opts{'t'} eq 'pest' ) {
+        $pest_model = 'lmf pelm skmw sex bjq bg abt uss wu animal',
+
+          @treated = (
+            "ltz    NONE 0. NONE",
+            "usf    NONE 0. NONE",
+            "imf    NONE 0. NONE",
+            "fuvz     NONE 0. NONE",
+            "ffl    NONE 0. NONE",
+            "usmd    NONE 0. NONE",
+            "rmfl   NONE 0. NONE",
+            "ptz    NONE 0. NONE",
+            "ph1k    NONE 0. NONE",
+          );
+    }
+    else {
+        ######################### EDIT-Section #####################################
+        # example
+        # don't forget ";" in each row within the colons
+        #
+        # @vce_model=(
+        #  'lgf1=   efa   wn          bjq                           animal;',
+        #  'lgf2_e= zwzk  wn          bjq                      wu   animal;',
+        #  'mgg=   p1(gv)  zwzk  wn          bjq        bwdt        wu   animal;',
+        #  'sgg=   p1(gv)  zwzk  wn          bjq        bwdt        wu   animal;',
+        #  );
+
+        @vce_model = (
+            'ltz  =          sex bjq bg wu animal;',
+            'usf  = p1(lmf)  sex bjq bg uss animal;',
+            'imf  = p1(skmw) sex abt bg animal;',
+            'fuvz = p1(pelm) sex abt bg animal;',
+            'ffl  = p1(skmw) sex abt bg animal;',
+            'usmd = p1(lmf)  sex bg bjq uss animal;',
+            'rmfl = p1(skmw) sex abt bg  animal;',
+            'ptz  = p1(pelm) sex abt bg wu animal;',
+            'ph1k =      sex sh  bg animal;',
+        );
+
+        ######################## END ###############################################
+
+    }
+}
+$model = $traits[ $opts{'a'} ] . '_' . $traits[ $opts{'b'} ];
+
+if ( $opts{'t'} eq 'pest' ) {
+
+    open( IN, "template.pest" ) || die "Fehler beim Lesen von $model.pest";
+    while (<IN>) {
+        $data .= $_;
+    }
+    close(IN);
+    $pm = "MODEL" . "\n" . "  $traits[$opts{'a'}] = $pest_model" . "\n" . "  $traits[$opts{'b'}] = $pest_model" . "\n";
+    $data =~ s/MODEL/$pm/ig;
+    $tm = "TREATED_AS_MISSING" . "\n" . "  $treated[$opts{'a'}]" . "\n" . "  $treated[$opts{'b'}]" . "\n";
+    $data =~ s/TREATED_AS_MISSING/$tm/ig;
+    if ( ( $pest_model[ $opts{'a'} ] =~ / wu / ) or ( $pest_model[ $opts{'b'} ] =~ / wu / ) ) {
+        $wu = "  vg_for wu\n  1. .1\n  .1 1.\n\nVE";
+        $data =~ s/VE/$wu/i;
+    }
+    open( OUT, ">$model.pest" );
+    print OUT $data;
+    close(OUT);
+
+}
+else {
+
+    open( IN, "template.vce" ) || die "Fehler beim Lesen von $model.vce";
+    while (<IN>) {
+        $data .= $_;
+    }
+    close(IN);
+
+    $de = "dependent   = " . " $traits[$opts{'a'}] $traits[$opts{'b'}]";
+    $data =~ s/dependent   =/$de/ig;
+    $pm = "MODEL" . "\n" . "  $vce_model[$opts{'a'}]" . "\n" . "  $vce_model[$opts{'b'}]" . "\n";
+    $data =~ s/MODEL/$pm/ig;
+    if ( ( $vce_model[ $opts{'a'} ] =~ / wu / ) or ( $vce_model[ $opts{'b'} ] =~ / wu / ) ) {
+        $wu = "Covariance" . "\n" . "   wu;";
+        $data =~ s/Covariance/$wu/ig;
+    }
+    open( OUT, ">$model.vce" );
+    print OUT $data;
+    close(OUT);
+
+}

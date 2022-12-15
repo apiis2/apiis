@@ -1,0 +1,101 @@
+#!/bin/bash
+##############################################################################
+# $Id: update_apiis,v 1.2 2006/08/11 09:41:01 heli Exp $
+# This is a script to periodically (e.g. via crontab) look for newer
+# versions of the Apiis core on the ftp server ftp.tzv.fal.de.
+# If there is a newer Apiis version it will be downloaded and installed.
+# Example:
+#    Copy this script to /usr/local/sbin
+#    Adapt it to your setup
+#    Create a file /etc/cron.d/update_apiis, which contains this line:
+#    10 13 * * * root /usr/local/sbin/update_apiis >>/var/log/apiis/core.log 2>&1
+# This will start update_apiis every day at 13:10 h.
+# 
+# Define the APIIS_INST variable which is the base for all installations.
+# In APIIS_INST the tar-files will get unpacked, they create a subtree like
+# 'apiis-0.3.5'. A link 'current' points to this directory.
+# When a new version 'apiis-0.3.6' is installed/unpacked, the link is moved
+# to there. The old apiisrc file is copied to the new version.
+#
+# APIIS_OWNER and APIIS_GROUP are the guys, who own the whole apiis tree.
+#
+# FILE_ACCESS and DIR_ACCESS control, if only members of APIIS_GROUP can
+# access the files and directories or if every user on this server has
+# these rights.
+#
+# (2005-09-08 heli@tzv.fal.de)
+##############################################################################
+
+APIIS_INST=/usr/local/apiis
+SRC_DIR=$APIIS_INST/src
+APIIS_OWNER=root
+APIIS_GROUP=bin
+FILE_ACCESS=g+r,o+r      # group and world readable
+DIR_ACCESS=g+rx,o+rx     # group and world accessable
+# FILE_ACCESS=g+r,o-rwx  # only group, no world access
+# DIR_ACCESS=g+rx,o-rwx  # dito
+
+# ftp site:
+FTP_SERVER=ftp.tzv.fal.de
+CORE_DIR=/pub/apiis/core
+
+# wget options:
+LOG=/var/log/apiis/core.log
+WGET_OPTS="-T120"
+# WGET_OPTS="-T120 --ftp-user ftp --ftp-password apiis@apiisvn"
+
+##############################################################################
+if [ ! -d $APIIS_INST ]; then
+   mkdir -p $APIIS_INST
+fi
+if [ ! -d $SRC_DIR ]; then
+   mkdir -p $SRC_DIR
+fi
+
+echo "Running $0" >$LOG # overwrite old file
+echo "================================================" >>$LOG
+wget $WGET_OPTS \
+     -a $LOG \
+     -O $SRC_DIR/LATEST_CORE_IS \
+     $FTP_SERVER:$CORE_DIR/LATEST_IS
+
+latest_ret=`echo $?`
+
+if [ $latest_ret = 0 ]; then
+   latest=`cat $SRC_DIR/LATEST_CORE_IS`
+   current=`cat $APIIS_INST/CURRENT_CORE_IS`
+
+   if [ $latest != $current ]; then
+      LOG=/var/log/apiis/install-${latest}.log
+      echo "Running $0:" >$LOG
+      echo "================================================" >>$LOG
+      wget $WGET_OPTS \
+           -a $LOG \
+           -O $SRC_DIR/${latest}.tar.gz \
+           $FTP_SERVER:$CORE_DIR/${latest}.tar.gz
+      core_ret=`echo $?`
+      if [ $core_ret = 0 ]; then
+         echo "Download succeeded, now installing $latest ..." >>$LOG
+         (cd $APIIS_INST && \
+          chown $APIIS_OWNER.$APIIS_GROUP $SRC_DIR/${latest}.tar.gz 2>>$LOG && \
+         echo "Unpacking $SRC_DIR/${latest}.tar.gz in `pwd` ..." >>$LOG && \
+         tar xzf $SRC_DIR/${latest}.tar.gz 2>>$LOG && \
+         echo "Copying apiisrc from current/etc to ${latest}/etc" >>$LOG && \
+         cp -f ${latest}/etc/apiisrc ${latest}/etc/apiisrc-${latest} 2>>$LOG && \
+         cp -f current/etc/apiisrc ${latest}/etc 2>>$LOG && \
+         echo "Linking ${latest} to ./current in `pwd`" >>$LOG && \
+         ln -snf ${latest} current 2>>$LOG && \
+         echo "Changing ownership to $APIIS_OWNER.$APIIS_GROUP" >>$LOG && \
+         chown -R $APIIS_OWNER.$APIIS_GROUP ${latest} 2>>$LOG && \
+         echo "Set access rights to $FILE_ACCESS (files) and $DIR_ACCESS (dirs)" >>$LOG && \
+         find ${latest} -type f -print |xargs chmod $FILE_ACCESS 2>>$LOG && \
+         find ${latest} -type d -print |xargs chmod $DIR_ACCESS 2>>$LOG && \
+         echo ${latest} >$APIIS_INST/CURRENT_CORE_IS )
+         echo "done.">>$LOG
+      else
+         echo "Problems downloading $latest" >>$LOG
+      fi
+   fi
+else
+   echo "Problems downloading $FTP_SERVER:$CORE_DIR/LATEST_IS" >>$LOG
+fi

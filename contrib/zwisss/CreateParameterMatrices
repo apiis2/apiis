@@ -1,0 +1,487 @@
+#!/usr/bin/perl -w
+
+=pod
+ 
+=head1 NAME
+ 
+CreateParameterMatrices
+ 
+=head1 SYNOPSIS
+ 
+perl CreateParameterMatrices 
+      
+=head1 ABSTRACT
+ 
+For large datasets with a lot of traits a normal VCE run isn't possible. In this case two-trait-models are the way. A 5-trait model will be 10 two-trait estimates  instead of one. After concatenation of vce-listfiles ParseVCE extracts the results into ascii-files and CreateParameterMatrices creates matrices from that. All kind of vce-matrices in full or triangle form can be created with or without errors.
+
+
+=head1 PRESUPPOSITION
+
+Before using CreateParameterMatrices the programm ParseVCE has to be run and tables Estimates and Models are available. 
+
+=cut
+
+=head1 CONFIGURATION
+
+The configuration has to take place in the script CreateParameterMatrices. Please use a editor like vi and change the rows from 
+
+ ######## start section of configuration 
+
+ between
+
+ ######## end section of configuration
+
+Each matrix need an entry in $config->[$i]. The columns has the following meaning:
+
+ - Column 1: Name of the random/residual effect (Column 3 in table Estimates)
+ - Colunn 2: Kind of matrices (Column 2 in table Estimates)
+ - Column 3: Counts of decimals 
+ - Column 4: Kind of matrices
+              - t = triangle
+	      - f = full
+	      - p = with phenotypic values
+ - Column 5: Position of errors
+              - r = right (+- $value)
+	      - b = bottom (new row)
+ - Column 6: Average of Variances or Heritabilities
+              - a = average
+	      - '' or other = nothing
+ - Column 7: Character for distance
+              - t = tabulator
+	      - '' or other = blank
+
+
+Example: 
+  $config->[0] = [ 'animal',   'NATURAL', '2', 'f', '', '', 's' ];
+  $config->[1] = [ 'residual', 'RATIOS', '2', 't', 'r', '', 't' ];
+
+The last configuration is the specification of traits. The names must be the same like column 5 and column 6. 
+
+Example: 
+  #@traits = ( 'ltz', 'usf', 'imf', 'fuvz', 'ffl', 'usmd', 'rmfl', 'ptz', 'ph1k', 'dv' );
+  @traits = ( lgf1, lgf2, lgf3 ,lgf45 ,lgf67 ,lgf2_e ,lgf3_e ,lgf8_e ,mgg, sgg );
+
+=cut
+
+#use strict;
+use Getopt::Std;
+my ( $opt_m, $opt_v, $opt_p, @traits, %hs_varianten, @diagonale, $k, $i, $v, %hs_parameter, $dec, $vse, $vfull, $minmax,
+    $mt, $eff, @pse, @par, @phen, @par_g, @pse_g, @phen_g, @matse, @matmm, %opts, $mm );
+
+getopts( 'f:n:t:v:p:', \%opts );
+my $config = [];
+$opt_v = $opts{'v'};
+$opt_v = '' if ( !$opt_v );
+$mm='1m';
+$dottocomma=0;
+
+if ($opts{'p'}) {
+
+    open( IN, "$opts{'p'}" ) || die "Can't open file $opts{'p'}";
+    my @con = <IN>;
+    my $con=join('',@con);
+    close(IN);
+    eval($con);
+    if ($@) {
+        print "Error in config file";
+        die;
+    }
+
+}
+else {
+
+######## start section of configuration
+    #
+    #$config->[] = [ '',   '', '', '', '', '', '' ];
+    #$config->[0] = [ '',         'Phenotypic', '7', 'f', '', '', 'b' ];
+    #$config->[1] = [ 'residual', 'NATURAL',    '7', 'f', '', '', 'b' ];
+    #$config->[2] = [ 'animal',   'NATURAL',    '7', 'f', '', '', 'b' ];
+    #$config->[3] = [ 'residual', 'RATIOS', '2', 't', 'r', '', 't' ];
+
+    $config->[0] = [ 'animal', 'RATIOS', '3', 'p', 'b', '', 't' ];
+
+    @traits = ( 'ltz', 'usf', 'imf', 'fuvz', 'ffl', 'usmd', 'rmfl', 'ptz', 'ph1k' );
+
+    #$opt_v = 'bg101_102_103' if ( !$opt_v );
+    #$opt_p = 3 if (! $opt_p);
+    $mm = '2m';
+######## end section of configuration
+}
+my %hs_typ;
+my %hs_effekt;
+undef $minmax;
+my $vminmax;
+
+open( IN, "Models.csv" ) || die "can't open file: Models.csv\n";
+while (<IN>) {
+    my @t = split /\|/;
+    if ( !$opt_p ) {
+        $hs_varianten{ $t[0] } = 1;
+    }
+    elsif ( ( $t[$opt_p] eq $opt_v ) and ($opt_v) ) {
+        $hs_varianten{ $t[0] } = 1;
+    }
+    else {
+        print "Error\n";
+        exit 0;
+    }
+}
+close(IN);
+
+#-- position der diagonalelemente erstellen
+@diagonale = (0);
+for ( $k = $#traits + 1 ; $k > 1 ; $k-- ) {
+    push( @diagonale, $diagonale[ $#traits + 1 - $k ] + $k );
+}
+
+#-- Filtern der Parameter entsprechend den Varianten
+open( IN, "Estimates.csv" ) || die "kann file: Estimates.csv nicht öffnen";
+while (<IN>) {
+    chomp();
+    my @t = split /\|/;
+    map {
+        if ( !$_ ) { $_ = '' }
+    } @t;
+    if ( exists $hs_varianten{ $t[0] } ) {
+        if ( !exists $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"} ) {
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"} = [ 1, $t[6], $t[6] * $t[6], $t[6], $t[6] ];
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"} = [ 1, $t[6], $t[6] * $t[6], $t[6], $t[6] ];
+        }
+        else {
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[0]++;
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[1] += $t[6];
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[2] += ( $t[6] * $t[6] );
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[3] = $t[6]
+              if ( $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[3] < $t[6] );
+            $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[4] = $t[6]
+              if ( $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[4] > $t[6] );
+
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[0]++;
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[1] += $t[6];
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[2] += ( $t[6] * $t[6] );
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[3] = $t[6]
+              if ( $hs_parameter{"$t[1]:::$t[2]:::$t[4]:::$t[5]"}->[3] < $t[6] );
+            $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[4] = $t[6]
+              if ( $hs_parameter{"$t[1]:::$t[2]:::$t[5]:::$t[4]"}->[4] > $t[6] );
+        }
+    }
+}
+close(IN);
+
+my %hs_erg;
+
+# Schleife über alle configurierten Matrizen
+foreach my $ar_mt (@$config) {
+
+    $hs_effekt{ $ar_mt->[0] } = 1 if ( $ar_mt->[0] and ( $ar_mt->[0] ne '' ) );
+    $hs_typ{ $ar_mt->[1] } = 1;
+
+    $eff   = $ar_mt->[0];
+    $mt    = $ar_mt->[1];
+    $vse   = $ar_mt->[4];
+    $dec   = $ar_mt->[2];
+    $vfull = $ar_mt->[3];
+    my $se = '';
+    $se = 'STD_ERR of components' if ( $mt eq 'NATURAL' );
+    $se = 'STD_ERR of ratios'     if ( $mt eq 'RATIOS' );
+
+    my $peff = $mt . ' vg_for animal' if ( $eff eq 'animal' );
+    $peff = $mt . ' vg_for ' . $eff if ( ( $eff ne 'animal' ) and ( $eff ne 'residual' ) );
+    $peff = $mt . ' VE' if ( $eff eq 'residual' );
+
+    $hs_erg{ $eff . ":::" . $mt }->{'Title'}     = $peff;
+    $hs_erg{ $eff . ":::" . $mt }->{'Config'}    = $ar_mt;
+    $hs_erg{ $eff . ":::" . $mt }->{'Parameter'} = [];
+    $hs_erg{ $eff . ":::" . $mt }->{'SE'}        = [];
+    $hs_erg{ $eff . ":::" . $mt }->{'Phenotyp'}  = [];
+    $hs_erg{ $eff . ":::" . $mt }->{'MinMax'}    = [];
+
+    my $ik = 0;
+
+    #--
+    for ( $k = 0 ; $k <= $#traits ; $k++ ) {
+        $ik = $k;
+
+        #-- Phänotypische Korrelationen
+
+        for ( $i = $ik ; $i <= $#traits ; $i++ ) {
+
+            if ( $i == $k ) {
+                if ( ( $eff eq 'animal' ) and ( $mt eq 'RATIOS' ) ) {
+                    push( @{ $hs_erg{ $eff . ":::" . $mt }->{'Phenotyp'} }, 1 );
+                }
+                if ( $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[1] ) {
+                    push(
+                        @{ $hs_erg{ $eff . ":::" . $mt }->{'Parameter'} },
+                        sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[1] /
+                              $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[0]
+                        )
+                    );
+                }
+                else {
+                    push( @{ $hs_erg{ $eff . ":::" . $mt }->{'Parameter'} }, '-' );
+                }
+                my $pse;
+                if ( $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[1]
+                    and ( $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[1] ) )
+                {
+                    push(
+                        @{ $hs_erg{ $eff . ":::" . $mt }->{'SE'} },
+                        sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[1] /
+                              $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[0]
+                        )
+                    );
+                }
+                else {
+                    push( @{ $hs_erg{ $eff . ":::" . $mt }->{'SE'} }, '' );
+
+                }
+
+                if ( $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[0]
+                    and ( $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[0] > 1 ) )
+                {
+                    push(
+                        @{ $hs_erg{ $eff . ":::" . $mt }->{'MinMax'} },
+                        "("
+                          . sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[4]
+                          )
+                          . ' - '
+                          . sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$i] . ":::" }->[3]
+                          )
+                          . ')'
+                    );
+                }
+            }
+            else {
+
+                if ( ( $eff eq 'animal' ) and ( $mt eq 'RATIOS' ) and ( $mm ne '1m' ) ) {
+                    my $mt1 = 'Phenotypic';
+                    if (
+                        $hs_parameter{ $mt1 . "::::::" . $traits[$k] . ":::" }->[0]
+                        and (  ( $hs_parameter{ $mt1 . "::::::" . $traits[$k] . ":::" }->[0] < 1 )
+                            or ( $hs_parameter{ $mt1 . "::::::" . $traits[$i] . ":::" }->[0] < 1 ) )
+                      )
+                    {
+                        push( @{ $hs_erg{ $eff . ":::" . $mt }->{'Phenotyp'} }, '-' );
+                    }
+                    else {
+                        push(
+                            @{ $hs_erg{ $eff . ":::" . $mt }->{'Phenotyp'} },
+                            sprintf(
+                                '%5.' . $dec . 'f',
+                                $hs_parameter{ $mt1 . "::::::" . $traits[$k] . ":::" . $traits[$i] }->[1] / (
+                                    sqrt(
+                                        (
+                                            $hs_parameter{ $mt1 . "::::::" . $traits[$i] . ":::" }->[1] /
+                                              $hs_parameter{ $mt1 . "::::::" . $traits[$i] . ":::" }->[0]
+                                        )
+                                      ) * sqrt(
+                                        (
+                                            $hs_parameter{ $mt1 . "::::::" . $traits[$k] . ":::" }->[1] /
+                                              $hs_parameter{ $mt1 . "::::::" . $traits[$k] . ":::" }->[0]
+                                        )
+                                      )
+                                )
+                            )
+                        );
+                    }
+                }
+
+                push( @{ $hs_erg{ $eff . ":::" . $mt }->{'MinMax'} }, '-' );
+
+                if ( $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$k] . ":::" . $traits[$i] }->[1] ) {
+                    push(
+                        @{ $hs_erg{ $eff . ":::" . $mt }->{'Parameter'} },
+                        sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $mt . ":::" . $eff . ":::" . $traits[$k] . ":::" . $traits[$i] }->[1]
+                        )
+                    );
+                }
+                else {
+                    push( @{ $hs_erg{ $eff . ":::" . $mt }->{'Parameter'} }, '-' );
+                }
+                if ( $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$k] . ":::" . $traits[$i] }->[1] ) {
+                    push(
+                        @{ $hs_erg{ $eff . ":::" . $mt }->{'SE'} },
+                        sprintf(
+                            '%5.' . $dec . 'f',
+                            $hs_parameter{ $se . ":::" . $eff . ":::" . $traits[$k] . ":::" . $traits[$i] }->[1]
+                        )
+                    );
+                }
+                else {
+                    push( @{ $hs_erg{ $eff . ":::" . $mt }->{'SE'} }, '' );
+
+                }
+            }
+        }
+    }
+}
+
+#-- Druck
+if ( $mm eq '1m' ) {
+    my $print;
+    my $tab = "\t";
+    my $outh;
+    my $i = 0;
+    foreach (@traits) {
+        my $out = "$opt_v" . $tab;
+        $outh .= "$opt_v" . $tab . "Trait" . $tab;
+        $out  .= "$_" . $tab;
+        foreach my $ar_mt (@$config) {
+            my $typ = $ar_mt->[1];
+            my $eff = $ar_mt->[0];
+            if ( $typ eq 'Phenotypic' ) {
+                $outh .= $tab;
+                $out  .= $hs_erg{ ':::' . $typ }->{'Parameter'}->[ $diagonale[$i] ] . $tab;
+
+            }
+            else {
+                $outh .= "$eff" . $tab;
+                if ( $hs_erg{ $eff . ':::' . $typ }->{'Config'}->[4] eq 'r' ) {
+                    $out .=
+                        $hs_erg{ $eff . ':::' . $typ }->{'Parameter'}->[ $diagonale[$i] ] . ' +-'
+                      . $hs_erg{ $eff . ':::' . $typ }->{'SE'}->[ $diagonale[$i] ]
+                      . $tab;
+                }
+                else {
+                    $out .= $hs_erg{ $eff . ':::' . $typ }->{'Parameter'}->[ $diagonale[$i] ] . $tab;
+                }
+            }
+        }
+        $i++;
+        if ( !$print ) {
+            print $outh. "\n";
+            $print = 1;
+        }
+        print $out. "\n";
+    }
+
+}
+else {
+
+    my $tab;
+    foreach my $key ( keys %hs_erg ) {
+        if ( $hs_erg{$key}->{'Config'}->[6] eq 't' ) {
+            $tab = "\t";
+        }
+        else {
+            $tab = " ";
+        }
+        my $tabf = $tab;
+        if ( $vfull eq 't' ) {
+            for ( my $j = 1 ; $j <= $k ; $j++ ) {
+                $tabf .= $tab;
+            }
+        }
+
+        my @par    = @{ $hs_erg{$key}->{'Parameter'} };
+        my @se     = @{ $hs_erg{$key}->{'SE'} };
+        my @phen   = @{ $hs_erg{$key}->{'Phenotyp'} };
+        my @minmax = @{ $hs_erg{$key}->{'MinMax'} };
+
+        map { s/\s//g } @phen;
+        map { s/\s//g } @se;
+        map { s/\s//g } @par;
+        map { s/\s//g } @minmax;
+        print "\n" . join( ',', @{ $hs_erg{$key}->{'Config'} } ) . "\n";
+        print $tab;
+        for ( $k = 0 ; $k <= $#traits ; $k++ ) {
+	    $traits[$k]=~s/\./,/g if ($dottocomma==1);
+            print $traits[$k] . $tab;
+        }
+        print "\n";
+        my @mat = ();
+        for ( $k = 0 ; $k <= $#traits ; $k++ ) {
+            for ( $i = $k ; $i <= $#traits ; $i++ ) {
+                if ( $i eq $k ) {
+                    if ( $hs_erg{$key}->{'Config'}->[4] eq 'r' ) {
+                        $mat[$k][$i] = $par[ $diagonale[$k] ] . ' +- ' . $se[ $diagonale[$k] ];
+                    }
+                    else {
+                        $mat[$k][$i] = $par[ $diagonale[$k] ];
+                    }
+                    $matse[$k][$i] = $se[ $diagonale[$k] ];
+                    $matmm[$k][$i] = $minmax[ $diagonale[$k] ];
+                }
+                else {
+                    $matse[$k][$i] = $se[ $i + $diagonale[$k] - $k ];
+                    $matmm[$k][$i] = $minmax[ $i + $diagonale[$k] - $k ];
+                    $matse[$i][$k] = ' ';
+                    $matmm[$i][$k] = ' ';
+                    if ( $hs_erg{$key}->{'Config'}->[4] eq 'r' ) {
+                        $mat[$k][$i] = $par[ $i + $diagonale[$k] - $k ] . ' +- ' . $se[ $i + $diagonale[$k] - $k ];
+                    }
+                    else {
+                        $mat[$k][$i] = $par[ $i + $diagonale[$k] - $k ];
+                    }
+                    if ( $hs_erg{$key}->{'Config'}->[3] eq 'f' ) {
+                        $mat[$i][$k] = $par[ $i + $diagonale[$k] - $k ];
+                    }
+                    else {
+                        if ( $hs_erg{$key}->{'Config'}->[3] eq 'p' ) {
+                            $mat[$i][$k] = $phen[ $i + $diagonale[$k] - $k ];
+                        }
+                        else {
+                            $mat[$i][$k] = ' ';
+                        }
+                    }
+                }
+            }
+        }
+
+        #--- Druck der Matrize
+        for ( $k = 0 ; $k <= $#traits ; $k++ ) {
+            print $tab;
+            for ( $i = 0 ; $i <= $#traits ; $i++ ) {
+                $mat[$k][$i] = 'undef' if ( !$mat[$k][$i] );
+                
+	        $mat[$k][$i]=~s/\./,/g if ($dottocomma==1);
+		print $mat[$k][$i] . $tab;
+            }
+            print "\n";
+            if ( $hs_erg{$key}->{'Config'}->[4] eq 'b' ) {
+                print "\t";
+                for ( $i = 0 ; $i <= $#traits ; $i++ ) {
+                    $matse[$k][$i] = 'undef' if ( !$matse[$k][$i] );
+	            $matse[$k][$i]=~s/\./,/g if ($dottocomma==1);
+		    print $matse[$k][$i] . $tab;
+                }
+                print "\n";
+            }
+            if ( $hs_erg{$key}->{'Config'}->[5] eq 'a' ) {
+                print $tab;
+                for ( $i = 0 ; $i <= $#traits ; $i++ ) {
+                    $matmm[$k][$i] = 'undef' if ( !$matmm[$k][$i] );
+	            $matmm[$k][$i]=~s/\./,/g if ($dottocomma==1);
+                    print $matmm[$k][$i] . $tab;
+                }
+                print "\n";
+            }
+        }
+
+    }
+}
+
+=head1 REPORTING BUGS
+
+Reporting bugs to <ulf.mueller@smul.sachsen.de>
+
+=head1 SEE ALSO
+
+The full documentation for apiis is maintained as a  Tex­
+info manual.
+
+=head1 AUTHOR
+
+Written by Ulf MÜller <ulf.mueller@smul.sachsen.de>
+__END__

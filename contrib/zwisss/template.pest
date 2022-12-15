@@ -1,0 +1,69 @@
+RELATIONSHIP
+  Rel_For animal
+  INFILE='mslmr.ped'
+  OUTFILE='mslmr.ped.vce' [text
+  undefined='     0000000000'
+  MAX_CHAR=15
+  INPUT
+    animal 1    15
+    m_p    16   15
+    f_p    31   15
+  
+DATA
+  INFILE='mslmr.dat'
+  OUTFILE='mslmr.dat.vce' [text
+  INPUT
+C traits / effects
+   animal 999999 1 15
+     ltz       0      16      15 
+     usf       0      31      15 
+    usmd       0      46      15 
+     ptz       0      61      15 
+    ph1k       0      76      15 
+    rmfl       0      91      15 
+     ffl       0     106      15 
+     imf       0     121      15 
+    fuvz       0     136      15 
+      dv       0     151      15 
+     alt       0     166      15 
+     lmf       0     181      15 
+    pelm       0     196      15 
+    skmw       0     211      15 
+     sex      14     226      15 
+      br     115     241      15 
+    bder     119     256      15 
+      sh      13     271      15 
+     bjq    1157     286      15 
+      wn     112     301      15 
+      rk      13     316      15 
+      bg      16     331      15 
+      wu   11162     346      15 
+     uss      19     361      15 
+     abt    1293     376      15 
+ 
+MODEL
+
+ 
+TRANSFORMATION
+
+VG 
+  vg_for animal
+  1. .1
+  .1 1.
+
+VE
+  1. .1
+  .1 1.
+
+PRINTOUT
+  outfile = 'mslmr.lst'
+  page = 1500000 
+
+SOLVER
+  IOC           <STOP = .0001 relax = 0.6. max_iter =2
+  IOD_GS animal <STOP = .0001 relax = 1.2. max_iter =2
+c SMP
+     
+SYSTEM_SIZE
+  NON_ZERO=8970000
+  TOTAL   =91819369

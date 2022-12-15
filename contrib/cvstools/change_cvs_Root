@@ -1,0 +1,23 @@
+#!/bin/sh
+##############################################################################
+# $Id: change_ulf_Root,v 1.3 2019/09/25 08:24:44 ulf Exp $
+##############################################################################
+# This script changes the administrative CVS/Root files to a new value and
+# saves the old file in Root.saved.
+# Use it with caution when you know, what you are doing.
+# Usually you want to start this script in the base directory of your working
+# copy you checked out from ulf.
+##############################################################################
+
+# config section:
+name=ulf
+server=zwisss.net
+ulfroot=/myrepos
+# config section end
+
+for file in `find . -name Root -print`
+do
+   echo $file
+   cp $file ${file}.saved
+   echo ":pserver:${name}@${server}:${ulfroot}" > "$file"
+done

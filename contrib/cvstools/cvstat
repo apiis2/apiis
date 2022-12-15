@@ -1,0 +1,40 @@
+#!/bin/sh
+###########################################################################
+# $Id: cvstat,v 1.1 2005/11/29 08:15:58 heli Exp $
+###########################################################################
+# cvstat is a nice little script to get the status of the cvs file. Usually
+# you use it with -n to get only the names of those files, which are not
+# Up-to-date. With the -R switch you can make it non-recursive.
+# -h gives you some usage notes.
+# Usage:
+#    cvstat [-n|-R|-h]
+#
+# Usually you put this script into you search path, e.g. to /usr/local/bin or
+# $HOME/bin.
+###########################################################################
+
+# presettings:
+opt_n="this_hopefully_will_never_occur"
+opt_R='*'
+
+while getopts "hnR" option
+do
+   case $option in
+      h ) echo "usage: cvstat [-hnR]"
+          echo "       cvstat without argument shows the status of the files."
+          echo "       -h This help."
+          echo "       -n shows only files which are *not* Up-to-date."
+          echo "       -R shows the filestatus only in current directory."
+	  exit
+          ;;
+      n ) opt_n="Up-to-date"
+          ;;
+      R ) opt_R="-l"
+          ;;
+      * ) echo "Unknown option!" ;;
+   esac
+done
+
+cvs stat "$opt_R" . 2>&1 | grep File: |grep -v "$opt_n" |more
+
+alias cvsstat=cvstat

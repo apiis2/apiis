@@ -1,0 +1,253 @@
+#!/bin/bash
+
+######### Edit
+project=leicoma;
+model=fb;
+password=fwihbv;
+extract_parameterfile=fb_extract.par;
+step=$1;
+v='0 1 2 3 4 5 6 7';
+t=(ltz usf imf fuvz ffl usmd rmfl ptz );
+
+# path of pest
+pest='/usr/bin/pest';
+
+# path for vce
+vce='/opt/vce/vce-5';
+
+############ End
+
+echo "";
+echo "************************************************";
+echo "Check parameter";
+echo "";
+
+if [ $step == "" ] 
+then
+  echo " variable step (5th parameter) not set -> exit";
+  echo "************************************************";
+  exit;
+fi
+
+if [ $model == "" ] 
+then
+  echo " variable model (2nd parameter) not set -> exit";
+  echo "************************************************";
+  exit;
+fi
+if [ $project == "" ] 
+then
+  echo " variable project (1st parameter) not set -> exit";
+  echo "************************************************";
+  exit;
+fi
+if [ $password == "" ] 
+then
+  echo " variable password (3rd parameter) not set -> exit";
+  echo "************************************************";
+  exit;
+fi
+if [ ! -f $model/$extract_parameterfile ] 
+then
+  echo " parameterfile for extract_for_blup.pl: $model/$extract_parameterfile not exists -> exit";
+  echo "************************************************";
+  exit;
+fi
+if [ ! -f $APIIS_HOME/ref_breedprg/zwisss/extract_for_blup.pl ] 
+then
+  echo " $APIIS_HOME/ref_breedprg/zwisss/extract_for_blup.pl not exists -> exit";
+  echo "************************************************";
+  exit;
+fi
+
+export APIIS_LOCAL=$APIIS_HOME/apiis-kurs/$project;
+
+path=$APIIS_LOCAL/zwisss/$model;
+echo "Path: $path";
+echo "USER: $USER";
+echo "Model: $model";
+echo "Project: $project";
+echo "Password: $password";
+echo "Paramterfile: $extract_parameterfile";
+
+echo "";
+echo "Start";
+echo "";
+if [ ! -d $path ]
+then
+  echo "$path not exists";
+  exit;
+else
+  cd $path;
+fi  
+pwd;
+
+
+##################### step 1 #####################################
+#   modify parameterfile for extract_for_blup.pl 
+##################################################################
+#   to extract data via sql 
+#   it makes blupped.txt and blupdat.txt
+##################################################################
+
+if [ $step == '1' ]
+then
+  time perl $APIIS_HOME/ref_breedprg/zwisss/extract_for_blup.pl -p $project -d $USER -w $password -f $extract_parameterfile -s;
+fi
+
+##################### step 2 #####################################
+# edit parameterfile for pest
+##################################################################
+# - modify parameterfile for pest using information in file
+#   $path/structure.txt
+# - change covariables to 0
+# - max_iter =2 is enough to create a pestfile
+# - OUTFILE='blupdat.txt.vce' [text
+# - OUTFILE='blupped.txt.vce' [text
+# - start pest to create a vce-datafile with all traits
+##################################################################
+
+if [ $step == '2' ]
+then
+  if [ ! -f  $model.pest ] 
+  then
+    echo " pest paramterfile "$model.pest" not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+
+  time pest $model.pest 500;
+fi 
+
+##################### step 3 #####################################
+#  edit  $model.config
+##################################################################
+# - cp $APIIS_HOME/contrib/zwisss/extimates.config $APIIS_HOME/$project/zwisss/$model/$model.config
+# - replace model-section and treated_as_missing-section with parameter
+#   from your $model.pest
+# - replace model-section 
+#
+# It is designed for 2-trait models
+# 
+# the order of traits in start_2m.sh must be the same like in
+# change_model_*
+#
+# Note: Paths of parameterfiles or programms must be consistence
+#
+# See to change_model_pest.pl, change_model_vce.pl
+#
+# ulf.mueller@koellitsch.lfl.smul.sachsen.de
+#
+##########################################################
+
+if [ $step == '3' ]
+then
+  if [ ! -f  $model.config ] 
+  then
+    echo " "$model.config" not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+  if [ ! -f  $APIIS_HOME/contrib/zwisss/ModifyTemplates ] 
+  then
+    echo " "$APIIS_HOME/contrib/zwisss/ModifyTemplates" not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+  if [ ! -f  $pest ] 
+  then
+    echo " $pest not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+  if [ ! -f  $vce ] 
+  then
+    echo " $vce not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+
+for i in $v
+  do
+    for j in $v
+    do
+     if test $i -eq $j
+     then
+        continue
+     fi
+     if test $j -lt $i
+     then
+        continue
+     fi
+     
+     echo "";
+     echo "$i $j";
+     echo "";
+
+     time perl $APIIS_HOME/contrib/zwisss/ModifyTemplates -a $i -b $j -t pest;
+     k=${t[$i]}_${t[$j]};
+    
+     $pest $k.pest 300;
+     if test -e efflist.pest;
+     then
+       rm -f efflist.pest;
+       rm -f *.list;
+     fi
+  
+     time perl $APIIS_HOME/contrib/zwisss/ModifyTemplates -a $i -b $j -t vce;
+     $vce $k.vce;
+     pwd >> vce.results
+     less $k >> vce.results
+     less $k.vce.cov-fmt >> vce.results
+     pwd >> vce.results.all
+     less $k >> vce.results
+     less $k.vce.lst >> vce.results.all
+     #rm *.vce;
+  
+    done
+  done
+fi 
+
+
+##################### step 4 #####################################
+#  parsing of a vce result file 
+##################################################################
+
+if [ $step == '4' ]
+then
+  if [ ! -f  $APIIS_HOME/contrib/zwisss/ParseVCE ] 
+  then
+    echo " "$APIIS_HOME/contrib/zwisss/ParseVCE" not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+  perl $APIIS_HOME/contrib/zwisss/ParseVCE -f vce.results.all; 
+fi
+
+
+################### step 5 #########################################
+#  creates parameter matrices
+##################################################################
+
+if [ $step == '5' ]
+then
+  if [ ! -f  $APIIS_HOME/contrib/zwisss/CreateParameterMatrices ] 
+  then
+    echo " "$APIIS_HOME/contrib/zwisss/CreateParameterMatrices" not exists -> exit";
+    echo "************************************************";
+    exit;
+  fi
+  perl $APIIS_HOME/contrib/zwisss/CreateParameterMatrices -p mslmr.config 
+fi
+
+################### step 6 #########################################
+#  creates parameter matrices
+##################################################################
+
+if [ $step == '6' ]
+then
+  cd $APIIS_LOCAL/zwisss; 
+  pwd;
+  ~/apiis/contrib/zwisss/calc_tbv.pl -apr 'fb/fb.par,mslmr/mslmr.pest' -m $project.model -u $USER -w $password -l $project;
+  ~/apiis/contrib/zwisss/calc_tbv.pl -afdbr 'fb/fb.par,mslmr/mslmr.pest' -m $project.model -u $USER -w $password -l $project;
+fi

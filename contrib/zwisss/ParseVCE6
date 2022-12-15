@@ -1,0 +1,262 @@
+#!/usr/bin/perl
+use Getopt::Std;
+getopts('f:'); 
+
+=pod
+ 
+=head1 NAME
+ 
+ParseVCE
+ 
+=head1 SYNOPSIS
+ 
+ParseVCE [-OPTIONS]
+      -f VCE6-listfile
+
+=head1 ABSTRACT
+ 
+Extract a lot of results from a given VCE6-listfile into several asciifiles which can be used to insert into a database. The VCE6-listfile can contain more than one sub-listfiles. 
+
+=cut
+
+open( IN, $opt_f ) || die "\n Can't open $opt_f\n\n";
+while (<IN>) {
+    $data .= $_;
+}
+
+=head DESCRIPTION
+
+ParseVCE generates five tables in ascii-format. Columns are '|'-separated
+  - Models
+  - Generals
+  - Effects
+  - Statistics
+  - Estimates
+
+=head2 table Models
+
+Table Models contains an identifier for a specific model and the name of model.
+
+  Example:
+  1|/home/b08guest/apiis/th/zwisss/msl/rk800_801/mszvth/2m/ltz_usf.job|msl|rk800_801|mszvth|2m
+  
+  Columns:
+  1   - identifier for model
+  2   - path for VCE-modelfile
+  3-6 - names of subdirectory
+
+=head2 table Generals
+
+Table Generals contain informations about the whole estimation
+  
+  Example:
+  1|Fri|23.Jun.2006|07:44:05|17:03:45|1206034.2344|3|28|36 
+  
+  Columns: 
+  1 - identifier of model
+  2 - day of week
+  3 - date 
+  4 - time of start
+  5 - time of cpu
+  6 - likelihood
+  7 - status 
+  8 - rounds first value
+  9 - rounds second value
+  
+=head2 table Effects
+
+Table Effects contain informations of all effects which used in the special estimations in a nomalized type.
+
+  Example:
+   1|sex|F|3
+   1|bjq|F|2314
+   1|bg|F|7
+   1|wu|R|43551
+   1|animal|A|660765
+   1|lmf|F|1
+   1|uss|F|8
+  
+  Columns:
+   1 - identifier of model
+   2 - name of effect
+   3 - type of effect
+   4 - number of classes
+
+=head2 table Statistics
+
+Table Statistics contains a statistical overview for all independent variables
+
+  Example:
+  1|ltz|611978|585.42812|59.05437|324.00000|892.00000
+  1|usf|611990|11.58988|2.62812|3.00000|49.80000
+  1|lmf|612049|90.17013|35.50422|0.00000|120.00000
+
+  Columns:
+  1 - identifier of model
+  2 - name of trait
+  3 - n
+  4 - average
+  5 - standarddeviation
+  6 - minimum
+  7 - maximum
+
+=head2 table Estimates
+
+Table Estimates contains all values of estimation (variances, covariances, heritabilities, korrelations and errors) from all matrices. 
+
+  Example:
+  1|NATURAL|wu|R|ltz||129.70000|
+  1|NATURAL|animal|A|ltz||1049.00000|
+  1|NATURAL|animal|A|ltz|usf|29.16000
+  1|NATURAL|animal|A|usf||3.13000|
+  1|NATURAL|residual|E|ltz||1451.00000|
+  1|NATURAL|residual|E|ltz|usf|0.01402
+  1|NATURAL|residual|E|usf||1.09100|
+  1|Phenotypic|||ltz||2630.00000|
+  1|Phenotypic|||ltz|usf|29.17000
+  1|Phenotypic|||usf||4.22100|
+  1|RATIOS|wu|R|ltz||0.04930|
+  1|RATIOS|animal|A|ltz||0.39890|
+  1|RATIOS|animal|A|ltz|usf|0.50880
+  1|RATIOS|animal|A|usf||0.74160|
+  1|RATIOS|residual|E|ltz||0.55180|
+  1|RATIOS|residual|E|ltz|usf|0.00035
+  1|RATIOS|residual|E|usf||0.25840|
+
+  Columns:
+  1 - identifier of model
+  2 - name of matrizes
+  3 - name of effect
+  4 - type of effect (random, animal, error)
+  5 - name of first trait 
+  6 - name of second trait
+  7 - value of estimation
+
+Is there only a first trait column 7 is a variance or heritability. Is there a first and a second trait column 7 is a covariance or a korrelation depend from the type of matrices. 
+
+=cut
+
+close(IN);
+open( OUTT, ">Models.csv" );
+open( OUTG, ">Generals.csv" );
+open( OUTE, ">Effects.csv" );
+open( OUTS, ">Statistics.csv" );
+open( OUTP, ">Estimates.csv" );
+my $nmod;
+my $model;
+my $typ;
+my $statistik;
+my $estmodel;
+my $general;
+my $matrices;
+my @traits;
+my $id;
+my $vfactor;
+
+while ($data=~/(version.*?Thank)/smxg) {
+  $data1=$1;
+
+    if ( $data1 =~ /Current/ ) {
+
+         #-- Model-Ident ermitteln = Dir+Parameterfile
+	 my ( $dir, $par ) = ( $data1 =~ /Current.*?:\s(.*?)\s.*?Parameter.*?:\s(.*)/g );
+	 $id = $dir . '/' . $par;
+	 $nmod++;
+	 @t=split('/',$id);
+	 print OUTT "$nmod|$id|$t[6]|$t[7]|$t[8]|$t[9]\n";
+    }
+    ( $wtag, $mon,$tag,$zeit,$jahr,$cpu ) = ( $data1 =~ /\s+?(\w+?)\s(\w+?)\s+?(\d+)\s([0-9:]+?)\s(\d{4}).*?used:\s+(.*)/g );
+    ( $likelhood, $status, $round1, $round2) = ( $data1 =~ /likelihood\s:\s+?(\S+?)\s+?status\s:\s+?(\d+?).*?(\d+).*?\/\s+?(\d+)/g );
+    ( $likelhood) = ( $data1 =~ /Likelihood.*?:\s+?(\S+?)\s+?/);
+    print OUTG "$nmod|$wtag|".$tag.'.'.$mon.'.'.$jahr."|$zeit|$cpu|$likelhood|$status|$round1|$round2\n";
+
+@traits = ();
+$id     = '';
+($vd,$vc, $vm,$vg,$vp)=(
+           $data1=~/std\..*?_+\b(.*?)_____.*Count\s+(\S.*?)_____.*
+                   P\sE\sD.*
+		   M\sO\sD\s.*?_+\b(.*?)_____.*
+		   C\sO\sE.*E\sS\sT(.*?)
+		   (Matrices.*)\*.+?/smxg);
+
+#-- Statistik
+while ( $vd =~ /\s+?(\b.*?)\s+?\b.*?\s+?(\d+)\s+?([\d\.]+?)\s+?([\d\.]+?)\s+?([\d\.]+?)\s+?([\d\.]+)/g ) {
+   print OUTS "$nmod|$1|$2|$5|$6|$3|$4\n";
+}
+
+#-- Anzahl Merkmale ermitteln
+undef $tt;
+@traits=split('\s+',$vc);
+@diagonale = (0);
+for ( $k = $#traits + 1 ; $k > 1 ; $k-- ) {
+    push( @diagonale, $diagonale[ $#traits + 1 - $k ] + $k );
+}
+
+#-- Effekte
+$vfactor=1;
+#-- Effekte
+while ( $vm =~ /\s+?(\b.*?)\s+?([F|A|R])\s+?(\d+?)\s/g ) {
+     print OUTE "$nmod|$1|$2|$3\n";
+} 
+
+#matrices
+while (
+    $vp =~ /^         # Anfang der Zeile
+               (.*?)     # alles bis Leerzeile
+	       ^\s*$/smxg
+  )
+{
+    my $t=$1;
+    next if ($t eq '');
+    $parameter=''; $rea=''; $field=''; @a=();
+
+    if ($t =~ /Matrices:\s(.*?)\s+?\-\-/) {
+      $typ = $1;
+    }
+
+    #-- if phenotypic matrices
+    if ($t=~ /Matrices:.*?Type/sm) {
+       ($rea, $field,$parameter)=($t=~ /Type:\s([REA])\s+?Level:\s+?\d+?\s+?(\w+).*?([-]?\d*?\.\d+.*)/sm); 
+    } elsif ($t=~ /Matrices:\sPheno/sm) {
+       ($parameter)=($t=~ /\-\s+?(([-]?\d*?\.\d+.*)|(\-\-\-).*)/sm); 
+    } else {
+       ($rea, $field,$parameter)=($t=~ /Type:\s([REA])\s+?Level:\s+?\d+?\s+?(\w+).*?([-]?\d*?\.\d+.*)/sm); 
+    }
+    @a = split( /\s+/, $parameter );
+    for ( $k = $#traits + 1 ; $k > 0 ; $k-- ) {
+            for ( $i = 0 ; $i < $k ; $i++ ) {
+                if ( $i == 0 ) {
+                    print OUTP "$nmod|$typ|$field|$rea|$traits[$#traits+1-$k]||"
+                      . sprintf( '%5.5f', $a[ $diagonale[ $#traits + 1 - $k ] ] ) . "|\n" if ($a[ $diagonale[ $#traits + 1 - $k ] ]);
+                }
+                else {
+                    print OUTP "$nmod|$typ|$field|$rea|$traits[$#traits+1-$k]|$traits[$#traits+1-$k+$i]|"
+                      . sprintf( '%5.5f', $a[ $diagonale[ $#traits + 1 - $k ] + $i ] ) . "\n" if ($a[ $diagonale[ $#traits + 1 - $k ] + $i ]);
+                }
+            }
+    }
+
+    if ( $tt and $typ eq 'Phenotypic' and $t =~ /([-]?\d*?\.\d+.*)/sm ) {
+  }
+}
+}
+close(OUTE);
+close(OUTG);
+close(OUTP);
+close(OUTS);
+close(OUTT);
+
+
+=head1 REPORTING BUGS
+
+Reporting bugs to <ulf.mueller@smul.sachsen.de>
+
+=head1 SEE ALSO
+
+The full documentation for apiis is maintained as a  Tex­
+info manual.
+
+=head1 AUTHOR
+
+Written by Ulf MÜller <ulf.mueller@smul.sachsen.de>
+ 
