@@ -129,11 +129,14 @@ sub PrintHeader {
     $title=$self->GUIobj->general->name;
   }  
   
+  print $query->header(-charset=>"$enc");
+  
+  my $t=$self->MakeStyle($self->GUIobj);
+  
+  print $query->start_html(-encoding=>$enc,-style=>{src=>$css,-code=>$t}, -class=>"menu", -title=>$title);
+  
   return if (lc($ph) eq "no");
   
-  print $query->header(-charset=>"$enc");
-  my $t=$self->MakeStyle($self->GUIobj);
-  print $query->start_html(-encoding=>$enc,-style=>{src=>$css,-code=>$t}, -class=>"menu", -title=>$title);
   my $opt_p=$query->param('sid');
   my $opt_u=$query->param('user');
   my $opt_m=$query->param('m');
