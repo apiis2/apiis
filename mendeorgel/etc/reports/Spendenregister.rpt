@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE GUI PUBLIC "1" "report.dtd">
+<Report>
+  <General
+    DataSource="Spendenregister()"
+    PrintHeader="No"
+    StyleSheet="/etc/apiis.css"
+    Name="Spendenregister" PageFooter="All_Pages" PageHeader="All_Pages" CharSet="UTF-8"/>
+  <Detail Name="Detail_10">
+    <Data Column="1" Content="[field]" Name="Data_13" Row="1" />
+  </Detail>
+</Report>
