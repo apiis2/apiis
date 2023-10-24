@@ -1,0 +1,953 @@
+<?xml version="1.0"?>
+<!DOCTYPE model SYSTEM "model.dtd">
+
+<model >
+
+    <general
+
+        dbport      = "5432"
+        dbuser      = "apiis_admin"
+        dbname      = "mendeorgel"
+        dbdriver    = "Pg"
+        dbencoding  = "utf8"
+        dbhost      = "localhost">
+    </general>
+    
+    &AccessRightsTables;
+    
+<!-- ________EVENT_________________________________________ -->  
+   
+   <table           name=   "event">
+   
+        <column     name=   "db_event" DATATYPE="BIGINT" LENGTH="20" 
+                    DESCRIPTION="Event-DBID" 
+                    CHECK="NotNull"  >
+        </column>
+        
+        <column     name="db_sampler" DATATYPE="BIGINT" LENGTH="20" 
+                    DESCRIPTION="Interne ID des Pruefers" 
+                    CHECK=""  >
+        </column>
+    
+        <column     name="event_dt" DATATYPE="TIMESTAMP" LENGTH="10" 
+                    DESCRIPTION="Test-Datum" 
+                    CHECK="NotNull"  >
+        </column>
+        
+        <column     name="event_dtend" DATATYPE="TIMESTAMP" LENGTH="10" 
+                    DESCRIPTION="until to Test-Datum" 
+                    CHECK=""  >
+        </column>
+        
+        <column     name="db_location" DATATYPE="BIGINT" LENGTH="20" 
+                    DESCRIPTION="Interne ID des Prueforts" 
+                    CHECK="NotNull"  >
+        </column>
+        
+        
+        &GlobalColumns;
+    
+        <TABLE>
+            <TRIGGER    PREINSERT=  "'SetColumn db_event seq_event__db_event',
+                                    'SetVersion version',
+                                    'SetGuid guid',
+                                    'SetNode owner',
+                                    'SetNow last_change_dt',
+                                    'SetUser last_change_user'" 
+                        PREUPDATE=  "'SetVersion version',
+                                    'SetNow last_change_dt',
+                                    'SetUser last_change_user'">
+            </TRIGGER>
+            
+        <CONSTRAINTS    PRIMARYKEY="REF_COL:db_event;CONCAT:event_dt,db_location" 
+                        SEQUENCE="seq_event__db_event" 
+                        INDEX="unique db_event">
+            </CONSTRAINTS>
+        </TABLE>
+    </table>
+
+    <table
+
+        name  = "transfer">
+
+        <column
+
+            LENGTH       = "20"
+            DESCRIPTION  = "Internal ID of animal"
+            CHECK        = "NotNull"
+            DATATYPE     = "BIGINT"
+            name         = "db_animal">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_unit"
+            LENGTH       = "20"
+            DESCRIPTION  = "Internal ID of unit"
+            CHECK        = "NotNull,ReservedStrings">
+        </column>
+
+        <column
+
+            DATATYPE     = "CHAR"
+            name         = "ext_animal"
+            LENGTH       = "30"
+            CHECK        = "ReservedStrings"
+            DESCRIPTION  = "External ID of an animal">
+        </column>
+
+        <column
+
+            DATATYPE     = "DATE"
+            name         = "opening_dt"
+            LENGTH       = "10"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "number channel is open up to this time">
+        </column>
+
+        <column
+
+            name         = "closing_dt"
+            DATATYPE     = "DATE"
+            LENGTH       = "10"
+            DESCRIPTION  = "number channel is closed up to this time"
+            CHECK        = "">
+<!-- temporär            CHECK        = "DateDiff 0 5000 opening_dt"> --> 
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "id_set"
+            LENGTH       = "10"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "Set of categories for the numbering scheme">
+        </column>
+
+        &GlobalColumns;
+
+        <TABLE
+>
+
+            <CONSTRAINTS
+
+                PRIMARYKEY  = "REF_COL:db_animal;CONCAT:db_unit,ext_animal;VIEW:entry_transfer;WHERE:closing_dt is NULL;"
+                INDEX       = "db_animal,ext_animal db_unit"
+                SEQUENCE    = "seq_transfer__db_animal">
+            </CONSTRAINTS>
+
+            <TRIGGER
+
+                PREINSERT  = "'SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user', 'SetNow opening_dt'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+        </TABLE>
+    </table>
+
+    <table
+
+        name  = "unit">
+
+        <column
+
+            name         = "db_unit"
+            DATATYPE     = "BIGINT"
+            LENGTH       = "20"
+            DESCRIPTION  = "Internal ID of a unit"
+            CHECK        = "NotNull">
+        </column>
+
+        <column
+
+            LENGTH       = "20"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "Class of a unit"
+            MODIFY       = "LowerCase"
+            DATATYPE     = "CHAR"
+            name         = "ext_unit">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "External name of a unit"
+            CHECK        = "NotNull,ReservedStrings"
+            LENGTH       = "20"
+            DATATYPE     = "CHAR"
+            name         = "ext_id">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_member"
+            LENGTH       = "10"
+            DESCRIPTION  = "Short name of a code"
+            CHECK        = "">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_address"
+            DESCRIPTION  = "Short name of a code"
+            CHECK        = ""
+            LENGTH       = "10">
+        </column>
+
+        <column
+
+            LENGTH       = "10"
+            DESCRIPTION  = "number channel is open up to this time"
+            CHECK        = "NotNull"
+            DATATYPE     = "DATE"
+            name         = "opening_dt">
+        </column>
+
+        <column
+
+            name         = "closing_dt"
+            DATATYPE     = "DATE"
+            DESCRIPTION  = "number channel is closed up to this time"
+            CHECK        = "DateDiff 0 5000 opening_dt"
+            LENGTH       = "10">
+        </column>
+
+        &GlobalColumns;
+
+        <TABLE
+>
+
+            <TRIGGER
+
+                PREINSERT  = "'SetColumn db_unit seq_unit__db_unit','SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user', 'SetNow opening_dt'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+
+            <CONSTRAINTS
+
+                SEQUENCE    = "seq_unit__db_unit"
+                INDEX       = "db_unit, ext_unit ext_id"
+                PRIMARYKEY  = "WHERE:closing_dt is NULL;CONCAT:ext_unit,ext_id;VIEW:entry_unit;REF_COL:db_unit;">
+            </CONSTRAINTS>
+        </TABLE>
+    </table>
+
+    <table
+
+        name  = "codes">
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_code"
+            DESCRIPTION  = "Internal ID of a code"
+            CHECK        = "NotNull"
+            LENGTH       = "20">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Internal ID of a code"
+            CHECK        = "NotNull"
+            LENGTH       = "20"
+            name         = "class"
+            DATATYPE     = "CHAR"
+            MODIFY       = "UpperCase">
+        </column>
+
+        <column
+
+            LENGTH       = "20"
+            DESCRIPTION  = "External name of a code"
+            CHECK        = "NotNull"
+            name         = "ext_code"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            name         = "short_name"
+            DATATYPE     = "CHAR"
+            LENGTH       = "10"
+            CHECK        = ""
+            DESCRIPTION  = "Short name of a code">
+        </column>
+
+        <column
+
+            LENGTH       = "20"
+            CHECK        = ""
+            DESCRIPTION  = "Long name of a code"
+            name         = "long_name"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            CHECK        = ""
+            DESCRIPTION  = "Description of a code"
+            LENGTH       = "100"
+            DATATYPE     = "CHAR"
+            name         = "description">
+        </column>
+
+        <column
+
+            name         = "opening_dt"
+            DATATYPE     = "DATE"
+            LENGTH       = "10"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "number channel is open up to this time">
+        </column>
+
+        <column
+
+            CHECK        = "DateDiff 0 5000 opening_dt"
+            DESCRIPTION  = "number channel is closed up to this time"
+            LENGTH       = "10"
+            DATATYPE     = "DATE"
+            name         = "closing_dt">
+        </column>
+
+        &GlobalColumns;
+        
+        <TABLE
+>
+
+            <CONSTRAINTS
+
+                INDEX       = "db_code, class ext_code"
+                SEQUENCE    = "seq_codes__db_code"
+                PRIMARYKEY  = "REF_COL:db_code;CONCAT:class,ext_code;VIEW:entry_codes;WHERE:closing_dt is NULL;">
+            </CONSTRAINTS>
+
+            <TRIGGER
+
+                PREINSERT  = "'SetColumn db_code seq_codes__db_code','SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user', 'SetNow opening_dt'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+        </TABLE>
+    </table>
+
+<!-- _______________________________ address _________________________ -->
+
+    <table name  = "address">
+
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_address"
+            DESCRIPTION  = "Internal ID of an address"
+            CHECK        = "NotNull"
+            LENGTH       = "20">
+        </column>
+
+        <column  name = "referenz_nr" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        
+        <column  name = "manual" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "manual_no" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "register" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "register_no" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "ton" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "ton_no" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        
+        <column  name = "preis" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "spende" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        
+        <column  name = "fl_reserviert" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "fl_prospect" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "fl_spendenregister" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "fl_patenschaftsbuch" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "fl_spende_veroeffentlichen" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "fl_newsletter" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "reserviert_bis" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "DATE"/>
+
+        <column  name = "anrede" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "vorname" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "name" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "strasse" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "plz" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "ort" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "telefon" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "email" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        <column  name = "pub_name" LENGTH = "50" DESCRIPTION  = "" CHECK = "" DATATYPE     = "CHAR"/>
+        
+        <column
+
+            LENGTH       = "25"
+            DESCRIPTION  = "External name of a address"
+            CHECK        = "NotNull"
+            name         = "ext_address"
+            DATATYPE     = "CHAR">
+        </column>
+        
+        <column
+
+            name         = "firma_name"
+            DATATYPE     = "CHAR"
+            LENGTH       = "50"
+            CHECK        = ""
+            DESCRIPTION  = "firma_name">
+        </column>
+
+
+        <column
+
+            LENGTH       = "20"
+            DESCRIPTION  = "Title of a person"
+            CHECK        = "ForeignKey codes db_code class=TITLE"
+            DATATYPE     = "BIGINT"
+            name         = "db_title">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Salutation of a person"
+            CHECK        = "ForeignKey codes db_code class=SALUTATION"
+            LENGTH       = "20"
+            name         = "db_salutation"
+            DATATYPE     = "BIGINT">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Firstname of a person"
+            CHECK        = ""
+            LENGTH       = "50"
+            name         = "first_name"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            DATATYPE     = "CHAR"
+            name         = "second_name"
+            LENGTH       = "50"
+            DESCRIPTION  = "Second name of a person"
+            CHECK        = "">
+        </column>
+
+        <column
+
+            CHECK        = ""
+            DESCRIPTION  = "Street"
+            LENGTH       = "50"
+            DATATYPE     = "CHAR"
+            name         = "street">
+        </column>
+
+        <column
+
+            LENGTH       = "5"
+            DESCRIPTION  = "Zip"
+            CHECK        = ""
+            name         = "zip"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            DATATYPE     = "CHAR"
+            name         = "town"
+            LENGTH       = "50"
+            DESCRIPTION  = "Town"
+            CHECK        = "">
+        </column>
+
+        <column name="county" DATATYPE="CHAR" LENGTH="20" DESCRIPTION="Landkreis"  CHECK=""></column>dd
+        <column
+
+            LENGTH       = "10"
+            CHECK        = "ForeignKey codes db_code class=COUNTRY"
+            DESCRIPTION  = "Country"
+            DATATYPE     = "BIGINT"
+            name         = "db_country">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Language"
+            CHECK        = "ForeignKey codes db_code class=LANGUAGE"
+            LENGTH       = "10"
+            name         = "db_language"
+            DATATYPE     = "BIGINT">
+        </column>
+
+
+
+        <column
+
+            name         = "phone_priv"
+            DATATYPE     = "CHAR"
+            CHECK        = ""
+            DESCRIPTION  = "phone_priv"
+            LENGTH       = "50">
+        </column>
+
+        <column
+
+            LENGTH       = "50"
+            CHECK        = ""
+            DESCRIPTION  = "phone_firma"
+            name         = "phone_firma"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "phone_mobil"
+            CHECK        = ""
+            LENGTH       = "50"
+            DATATYPE     = "CHAR"
+            name         = "phone_mobil">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "fax"
+            CHECK        = ""
+            LENGTH       = "50"
+            name         = "fax"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            name         = "http"
+            DATATYPE     = "CHAR"
+            LENGTH       = "50"
+            CHECK        = ""
+            DESCRIPTION  = "http">
+        </column>
+
+        <column
+
+            LENGTH       = "50"
+            DESCRIPTION  = "birth_dt"
+            CHECK        = ""
+            name         = "birth_dt"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            DATATYPE     = "CHAR"
+            name         = "comment"
+            CHECK        = ""
+            DESCRIPTION  = "comment"
+            LENGTH       = "50">
+        </column>
+
+      <column name="bank" DATATYPE="CHAR" LENGTH="10" DESCRIPTION="Bank"  CHECK=""  ></column>
+      <column name="iban" DATATYPE="CHAR" LENGTH="10" DESCRIPTION="IBAN"  CHECK="" ></column>
+
+        <column
+
+            name         = "bic"
+            DATATYPE     = "CHAR"
+            LENGTH       = "50"
+            DESCRIPTION  = "bic"
+            CHECK        = "">
+        </column>
+
+        <column
+
+            name         = "db_payment"
+            DATATYPE     = "BIGINT"
+            CHECK        = "ForeignKey codes db_code class=PAYMENT"
+            DESCRIPTION  = "db_payment"
+            LENGTH       = "50">
+        </column>
+
+        <column
+
+            name         = "member_entry_dt"
+            DATATYPE     = "DATE"
+            DESCRIPTION  = "member_entry_dt"
+            LENGTH       = "50">
+            CHECK        = "">
+        </column>
+
+        <column
+
+            name         = "member_exit_dt"
+            DATATYPE     = "DATE"
+            DESCRIPTION  = "member_exit_dt"
+            LENGTH       = "50">
+            CHECK        = "">
+        </column>
+
+        &GlobalColumns;
+        
+        <TABLE>
+
+            <CONSTRAINTS
+                INDEX       = "unique db_address, unique referenz_nr"
+                SEQUENCE    = "seq_address__db_address"
+                PRIMARYKEY  = "REF_COL:db_address;CONCAT:manual_no, register_no, ton_no, name;">
+            </CONSTRAINTS>
+
+            <TRIGGER
+                PREINSERT  = "'SetColumn db_address seq_address__db_address','SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user', 'SetNow reserviert_bis'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+        </TABLE>
+    </table>
+
+<!--___________________ animal ___________________________________________-->
+
+    <table name  = "animal">
+
+        <column
+
+            name         = "db_animal"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "Internal ID of animal"
+            LENGTH       = "20"
+            DATATYPE     = "BIGINT">
+        </column>
+
+        <column
+
+            name         = "db_sire"
+            CHECK        = "NotNull"
+            LENGTH       = "20"
+            DESCRIPTION  = "Internal ID of sire"
+            DATATYPE     = "BIGINT">
+        </column>
+
+        <column
+
+            name         = "db_dam"
+            DESCRIPTION  = "Internal ID of dam"
+            LENGTH       = "20"
+            CHECK        = "NotNull"
+            DATATYPE     = "BIGINT">
+        </column>
+
+        <column
+            DESCRIPTION  = "Sex of an animal"
+            LENGTH       = "20"
+            CHECK        = "ForeignKey codes db_code class=BREED"
+            DATATYPE     = "BIGINT"
+            name         = "db_breed">
+        </column>
+
+        <column
+            DESCRIPTION  = "Sex of an animal"
+            LENGTH       = "20"
+            CHECK        = "ForeignKey codes db_code class=SEX"
+            DATATYPE     = "BIGINT"
+            name         = "db_sex">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Selection status of an animal"
+            LENGTH       = "20"
+            CHECK        = "ForeignKey codes db_code class=EINSTUFUNG"
+            DATATYPE     = "BIGINT"
+            name         = "db_selection">
+        </column>
+
+        <column
+            DATATYPE     = "CHAR"
+            name         = "name"
+            DESCRIPTION  = "Name"
+            LENGTH       = "10"
+            CHECK        = "">
+        </column>
+
+        <column
+            DATATYPE     = "DATE"
+            name         = "birth_dt"
+            DESCRIPTION  = "birth date"
+            LENGTH       = "10"
+            CHECK        = "">
+        </column>
+
+        <column
+            DATATYPE     = "DATE"
+            name         = "hb_ein_dt"
+            DESCRIPTION  = "birth date"
+            LENGTH       = "10"
+            CHECK        = "">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "Internal use of a date for checking"
+            LENGTH       = "10"
+            CHECK        = ""
+            DATATYPE     = "DATE"
+            name         = "la_rep_dt">
+        </column>
+
+        <column
+
+            CHECK        = "List NEW SELECTION SERVICE FARROW WEANING EXIT"
+            DESCRIPTION  = "Last action"
+            LENGTH       = "10"
+            name         = "la_rep"
+            DATATYPE     = "CHAR">
+        </column>
+
+        &GlobalColumns;
+        
+        <TABLE>
+
+            <TRIGGER
+                PREINSERT  = "'SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+
+            <CONSTRAINTS
+                INDEX  = "unique db_animal, db_sire, db_dam">
+            </CONSTRAINTS>
+        </TABLE>
+    </table>
+
+    <table
+
+        name  = "locations">
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_animal"
+            DESCRIPTION  = "Internal ID of animal"
+            LENGTH       = "20"
+            CHECK        = "NotNull">
+        </column>
+
+        <column LENGTH="20" LABEL="Location" DATATYPE="BIGINT" name="db_location" 
+                CHECK="NotNull" struct_type="recommended" 
+                DESCRIPTION="Animal location - it can be farm or enclosure or even field" 
+                form_type="editable" ar_check="1"
+        />
+
+        <column
+
+            DESCRIPTION  = "animal comes into an location"
+            LENGTH       = "10"
+            CHECK        = "NotNull"
+            DATATYPE     = "DATE"
+            name         = "entry_dt">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_entry_action"
+            DESCRIPTION  = "Action while entering the location"
+            CHECK        = "NotNull,ForeignKey codes db_code class=ENTRY_ACTION"
+            LENGTH       = "10">
+        </column>
+
+        <column
+
+            DATATYPE     = "DATE"
+            name         = "exit_dt"
+            CHECK        = ""
+            DESCRIPTION  = "exit_dt"
+            LENGTH       = "10">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_exit_action"
+            DESCRIPTION  = "Action while exit the location"
+            CHECK        = "ForeignKey codes db_code class=EXIT_ACTION"
+            LENGTH       = "10">
+        </column>
+
+        &GlobalColumns;
+        
+      <TABLE>
+         <TRIGGER 
+          PREINSERT="SetVersion version,SetGuid guid,SetNode owner,SetNow last_change_dt,SetUser last_change_user" 
+          PREUPDATE="SetVersion version,SetNow last_change_dt,SetUser last_change_user" />
+         <CONSTRAINTS 
+		    PRIMARYKEY  =   ""
+            SEQUENCE    =   "" 
+            INDEX       =   "db_location, db_animal"/>
+      </TABLE>
+    </table>
+
+
+    <table
+
+        name  = "languages">
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "lang_id"
+            LENGTH       = "20"
+            CHECK        = "NotNull"
+            DESCRIPTION  = "language id">
+        </column>
+
+        <column
+
+            LENGTH       = "2"
+            DESCRIPTION  = "language id"
+            CHECK        = ""
+            DATATYPE     = "CHAR"
+            name         = "iso_lang">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "language id"
+            CHECK        = "NotNull"
+            LENGTH       = "20"
+            name         = "lang"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+            CHECK5="" DATATYPE="TIMESTAMP" 
+            DESCRIPTION="Timestamp of creation" LENGTH="22"
+            MODIFY="" name="creation_dt"/>
+
+    <column CHECK="NotNull" CHECK1="" CHECK2="" CHECK3="" CHECK4=""
+      CHECK5="" DATATYPE="CHAR" 
+      DESCRIPTION="Who did the creation" LENGTH="20"
+      MODIFY="SetUser" name="creation_user"/>
+    <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+      DATATYPE="TIMESTAMP" 
+      DESCRIPTION="Timestamp of end using" LENGTH="22"
+       name="end_dt"/>
+    <column CHECK="" CHECK1="" CHECK2="" CHECK3="" CHECK4="" CHECK5=""
+      DATATYPE="CHAR" 
+      DESCRIPTION="Who did the end status" LENGTH="20"
+       name="end_user"/>
+    
+       &GlobalColumns;
+
+        <TABLE
+>
+
+            <TRIGGER
+
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'"
+                PREINSERT  = "'SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+
+            <CONSTRAINTS
+
+                PRIMARYKEY  = ""
+                SEQUENCE    = "seq_languages__lang_id"
+                INDEX       = "unique lang_id, unique iso_lang, unique guid">
+            </CONSTRAINTS>
+        </TABLE>
+    </table>
+
+    <table
+
+        name  = "nodes">
+
+        <TABLE
+>
+
+            <CONSTRAINTS
+
+                SEQUENCE    = "seq_database__guid"
+                INDEX       = "unique guid"
+                PRIMARYKEY  = "">
+            </CONSTRAINTS>
+
+            <TRIGGER
+
+                PREINSERT  = "'SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user'"
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+        </TABLE>
+
+        <column
+
+            DESCRIPTION  = "node name"
+            CHECK        = "NotNull"
+            LENGTH       = "20"
+            name         = "nodename"
+            DATATYPE     = "CHAR">
+        </column>
+
+        <column
+
+            DESCRIPTION  = "node ip address"
+            CHECK        = "NotNull"
+            LENGTH       = "10"
+            name         = "address"
+            DATATYPE     = "CHAR">
+        </column>
+
+        &GlobalColumns;
+
+    </table>
+
+    <table
+
+        name  = "breedcolor">
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_breedcolor"
+            DESCRIPTION  = ""
+            CHECK        = ""
+            LENGTH       = "10">
+        </column>
+        
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_breed"
+            DESCRIPTION  = ""
+            CHECK        = "NotNull, ForeignKey codes db_code class='BREED'"
+            LENGTH       = "10">
+        </column>
+
+        <column
+
+            DATATYPE     = "BIGINT"
+            name         = "db_color"
+            LENGTH       = "10"
+            CHECK        = "NotNull, ForeignKey codes db_code class='FARBSCHLAG'"
+            DESCRIPTION  = "">
+        </column>
+
+        <column
+
+            LENGTH       = "10"
+            DESCRIPTION  = ""
+            CHECK        = "NotNull, ForeignKey codes db_code class='RASSEGRUPPE'"
+            DATATYPE     = "BIGINT"
+            name         = "db_breedgroup">
+        </column>
+
+        &GlobalColumns;
+
+        <TABLE
+>
+
+            <CONSTRAINTS
+
+                SEQUENCE    = "seq_breedcolor__db_breedcolor"
+                INDEX       = "unique db_breedcolor"
+                PRIMARYKEY  = "REF_COL:db_breedcolor;CONCAT:db_breed,db_color;">
+            </CONSTRAINTS>
+
+            <TRIGGER
+
+                PREUPDATE  = "'SetVersion version','SetNow last_change_dt','SetUser last_change_user'"
+                PREINSERT  = "'SetColumn db_breedcolor seq_breedcolor__db_breedcolor','SetVersion version','SetGuid guid','SetNode owner','SetNow last_change_dt','SetUser last_change_user'">
+            </TRIGGER>
+        </TABLE>
+    </table>
+
+</model>
