@@ -47,7 +47,7 @@ Apiis->initialize( VERSION => '$Revision: 1.66 $' );
 
 #-- Debug-option einstellen
 $debug = 1 if $apiis->syslog_priority  eq 'debug' or $apiis->filelog_priority eq 'debug';
-$debug=1;
+$debug=0;
 
 if ($ARGV[0]) {
     $cgi=CGI->new($ARGV[0] );
@@ -68,7 +68,7 @@ if ($language) {
 
 
 #-- wenn ein Report, dann apiisajax ausschalten
-if ((scalar($cgi->param('g')) and (scalar($cgi->param('g')=~/^\/etc\/.+?\.rpt$/))) and 
+if ((scalar($cgi->param('g')) and (scalar($cgi->param('g')=~/^\/etc\/.+?\.(rpt|pfrm)$/))) and 
    ((scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq 'apiisajax')))) {
    $cgi->param('formtype'=>''); 
 }
@@ -521,7 +521,13 @@ elsif (scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq '
 
     my ($form, $mem_cache);
     $form   = scalar($cgi->param('g'));
-    $form   = $session{'_apiis_local'}.$form if ($form and ($form=~/^\/etc/));
+    
+    if ($session{'_apiis_local'} and $form and ($form=~/^\/etc/)) {
+        $form   = $session{'_apiis_local'}.$form;
+    }
+    else {    
+#        $form   = $apiis->APIIS_LOCAL.$form ;
+    }
 
     if (scalar($cgi->param('formtype') eq 'Extjs')) {
         $gui = Apiis::Form::Extjs->new( xmlfile => $form );
