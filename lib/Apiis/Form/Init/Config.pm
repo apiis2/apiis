@@ -340,7 +340,7 @@ sub _read_node {
             # push @{$self->{'_flat'}{$nodename}{'_data_refs'}}, \$var;
             $self->{'_flat'}{$nodename}{'_widget_refs'} = undef;
             $self->{'_flat'}{$nodename}{'_displays_intdata'} = undef;
-            if ( lc $self->{'_flat'}{$nodename}{'InternalData'} eq 'yes' ) {
+            if ( $self->{'_flat'}{$nodename}{'InternalData'} and (lc $self->{'_flat'}{$nodename}{'InternalData'} eq 'yes' )) {
                 $self->{'_flat'}{$nodename}{'_displays_intdata'} = 1;
             }
 
