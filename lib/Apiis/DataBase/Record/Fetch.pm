@@ -33,6 +33,8 @@ sub _fetch {
         my $order_by_ref = $args{'order_by'};
         delete $args{'order_by'};
 
+        $sql_user='system' if (!$sql_user);
+
         # check order_by clause:
         if ($order_by_ref) {
             if ( ref $order_by_ref ne 'ARRAY' ) {
