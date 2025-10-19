@@ -157,7 +157,7 @@ else {
 #####################################################################################################
 if (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'configuration')) {
 
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     print "Content-type: text/html; charset=UTF-8 \n\n";
@@ -180,7 +180,7 @@ elsif (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'logi
         $language="'$language'";
     }
 
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     print "Content-type: text/html; charset=UTF-8\n\n";
@@ -268,7 +268,7 @@ elsif (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'logi
 #####################################################################################################
 elsif (scalar($cgi->param('action')) and (scalar($cgi->param('action')) eq 'do_execute_sql')) {
 
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     print "Content-type: text/html; charset=UTF-8\n\n";
@@ -308,7 +308,7 @@ elsif (scalar($cgi->param('formtype')) and (scalar($cgi->param('formtype')) eq '
 
     $wheremsg=$opt_f.':::'.$opt_a.':::'.$language;
     
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     print "Content-type: text/html; charset=UTF-8\n\n";
@@ -454,7 +454,7 @@ elsif (scalar($cgi->param('json'))) {
     $gui->{'_cgi'}->{'command'} = $json->{'command'};
     $gui->{'_cgi'}->{'sid'}     = $sid;
 
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     print "Content-type: text/html; charset=UTF-8\n\n";
@@ -489,7 +489,7 @@ elsif (scalar($cgi->param('json'))) {
         $message=__('Error');
     }
 
-    print "Access-Control-Allow-Origin: http://evonta.ddns.net:8000\n";
+    print "Access-Control-Allow-Origin: https://apiis.evonta.com/herdbuch\n";
     print "Access-Control-Allow-Methods: GET,POST\n";
     print "Access-Control-Allow-Headers: Content-Type, Accept\n"; 
     
