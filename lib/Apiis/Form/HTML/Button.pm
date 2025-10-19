@@ -10,7 +10,8 @@ use warnings;
 use strict;
 use Data::Dumper;
 #use base 'Apiis::Form::HTML::Button';
-
+use Apiis;
+our $apiis;
 =head1 NAME
 
 Apiis::Form::HTML::Button -- Common subroutines for Button commands
@@ -34,6 +35,11 @@ sub _button  {
    my $query=$self->{_query};
    my $arg='';
 
+   #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+   if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category)) {
+        return  ' ';
+   }
+   
    my $vfieldname=$self->GetValue( $fieldname, 'Name');
    my $vcommand=$self->GetValue( $fieldname, 'Command');
    my $url=$self->GetValue( $fieldname, 'URL');
@@ -74,7 +80,8 @@ sub _button  {
    $arg.=' name="'. $vfieldname .'"' if ($vfieldname);
    $arg.=' id="'. $vfieldname .'"' if ($vfieldname);
    $arg.=' target="_blank"';
-   if (($vcommand eq 'do_save') ) {
+   
+   if ($vcommand eq 'do_save')  {
      $arg.=' type="button" onClick="Submit('."'".$vfieldname."'".')" ';
      $arg.=' alt="'.$url.'" ' if ($url);
    } elsif ($vcommand eq 'do_runevents') {
