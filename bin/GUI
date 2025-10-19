@@ -47,7 +47,6 @@ Apiis->initialize( VERSION => '$Revision: 1.66 $' );
 
 #-- Debug-option einstellen
 $debug = 1 if $apiis->syslog_priority  eq 'debug' or $apiis->filelog_priority eq 'debug';
-$debug=0;
 
 if ($ARGV[0]) {
     $cgi=CGI->new($ARGV[0] );
@@ -608,7 +607,7 @@ else {
     
         $query->param(-name=>'filename',-value=>'/tmp/'.$filename);
     }
-    else {
+    elsif ($query->{param}->{'filename'}[0]) {
         my $filename=$query->{param}->{'filename'}[0];
         $query->param(-name=>'filename',-value=>'/tmp/'.$filename);
     }
