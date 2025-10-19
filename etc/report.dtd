@@ -5,7 +5,7 @@
 >
 <!ATTLIST General 
            Name       ID                       #REQUIRED
-           AR         CDATA     ""
+           AR         (1|2|3|4) "3"
            Difficulty (basic|advanced) "basic"
            ToolTip    CDATA     ""
            Help       CDATA     ""
