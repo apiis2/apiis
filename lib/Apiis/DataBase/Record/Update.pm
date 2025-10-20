@@ -207,7 +207,9 @@ sub _update {
         }
 
         # authorization:
-        $self->auth();
+#-- mue 20.10.2025 deactivate auth insert/delete/update-Statements are not analyzed anymore
+#$self->auth();
+
         last EXIT if $self->status;
         if ($debug) {
             $apiis->log( 'debug',

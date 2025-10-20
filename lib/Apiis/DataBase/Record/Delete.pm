@@ -46,7 +46,8 @@ sub _delete {
         }
 
         # authorization:
-        $self->auth;
+#-- mue 20.10.2025 deactivate auth insert/delete/update-Statements are not analyzed anymore
+#$self->auth();
         last EXIT if $self->status;
 
         __check_FK_violation($self);
