@@ -86,7 +86,7 @@ use Data::Dumper;
 
    my @methods = qw{ id user_id password authenticated
                  user_node session_id lang_id language roles
-                 user_marker user_session_id user_language_id
+                 user_marker user_session_id user_language_id user_category
                  };
     my %_attr_data = map { '_' . $_ => undef } @methods;
 
