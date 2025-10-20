@@ -163,6 +163,7 @@ sub _connect_db {
    my ( $thisuser, $thispasswd, $db_handle );
    my $app_user = 0;
    EXIT: {
+
       if ( exists $args{'user'} and lc $args{'user'} eq 'application' ){
          if ( not $self->connected_sys ) {
             $self->status(1);
@@ -208,6 +209,11 @@ sub _connect_db {
 
          $thisuser = $apiis->User->id;
          $thispasswd = $apiis->User->_passwd; # cleartext!
+        
+         #--mue apiis_admin as role defined. all other user in ar_users   
+         $thisuser = $apiis->Model->db_user;
+         $thispasswd = $apiis->Model->db_password;
+         
          $apiis->log('debug', "_connect_db: going to connect as user $thisuser");
          # $apiis->log('debug', "_connect_db: going to connect as user $thisuser / $thispasswd");
       } else {
@@ -221,7 +227,8 @@ sub _connect_db {
          $thispasswd = $apiis->Model->db_password;
          $apiis->log('debug', "_connect_db: going to connect as system user $thisuser");
       }
-   
+  
+      #-- Connect DB 
       eval {
          $db_handle = DBI->connect(
             $self->{_connect}, $thisuser, $thispasswd,
@@ -230,15 +237,17 @@ sub _connect_db {
                 PrintError => 0,
                 PrintWarn  => 0 }
          );
-	 # setting utf8 flag for retrieved data if database is in Unicode
-	 if ( $apiis->Model->db_driver eq 'Pg' ) {
-         if ($apiis->Model->db_pg_enable_utf8) {
-	        $db_handle->{pg_enable_utf8}=1 if (lc $apiis->Model->db_encoding eq 'unicode');
-         } else {
-            $db_handle->{pg_enable_utf8}=0;         
-         }
-	 }
+	    
+        # setting utf8 flag for retrieved data if database is in Unicode
+	    if ( $apiis->Model->db_driver eq 'Pg' ) {
+            if ($apiis->Model->db_pg_enable_utf8) {
+	            $db_handle->{pg_enable_utf8}=1 if (lc $apiis->Model->db_encoding eq 'unicode');
+            } else {
+                $db_handle->{pg_enable_utf8}=0;         
+            }
+	    }
       };
+
       if ($@) {
          my $err_msg = $@;
          chomp $err_msg;
@@ -608,7 +617,7 @@ sub _get_user {
     my @oldcolumns =
         qw{ user_id login password lang_id user_node session_id };
     my @newcolumns = qw{
-        user_id           user_login   user_password
+        user_id           user_login   user_password user_category 
         user_language_id  user_marker  user_session_id };
 
     # old auth setup (should be removed later):
