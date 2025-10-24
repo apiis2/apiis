@@ -301,6 +301,38 @@ sub GetZIndex {
     return ( $i, $useform );
 }
 
+sub myfindAR {
+    my $self  = shift;
+    my $dir   = shift;
+    
+    my ( @filesAR, $ext, $f_obj);
+
+    #-- Schleife über alle Dateien und Unter-Verzeichnisse 
+    for my $file ( glob $dir . '*' ) {
+        
+        #-- Dateiname analysieren 
+        my ( $volume, $directories, $filepart ) = File::Spec->splitpath($file);
+        ( $filepart, $ext ) = ( $filepart =~ /\d*_*(.*?)(\.rpt|\.frm|\.mfrm|\.pfrm)*$/i );
+        
+        #recursion for directories
+        if ( -d $file ) {
+            push @filesAR, $self->myfindAR( $file . '/' );
+        }
+       
+        # -- wenn keine gültige Extension, dann überspringen  
+        next if (!$ext);
+
+        #-- xml-File als objekt initialisieren      
+        $f_obj = Apiis::Form::HTML->new( xmlfile => $apiis->APIIS_LOCAL . "/etc/menu/$file" );
+    
+        #-- objekt speichern 
+        $self->{'AR'}->{ $apiis->APIIS_LOCAL . "/etc/menu/$file" }->{'f_obj'}=$f_obj;
+
+        #-- Rechte speichern 
+        $self->{'AR'}->{ $apiis->APIIS_LOCAL . "/etc/menu/$file" }->{'ar'}=$f_obj->GetValue($f_obj->generalname,'AR');
+    }
+}
+
 sub myfind {
     my $self  = shift;
     my $dir   = shift;
@@ -336,55 +368,25 @@ sub myfind {
         else {
             my $b = "/etc/menu/$file";
             if ( ( $ext eq '.mfrm' ) ) {
-                my $f_obj = Apiis::Form::HTML->new( xmlfile => $apiis->APIIS_LOCAL . "/etc/menu/$file" );
+                my $f_obj;
+                if ($self->{'AR'}->{$apiis->APIIS_LOCAL . "/etc/menu/$file"}) {
+                    $f_obj=$self->{'AR'}->{$apiis->APIIS_LOCAL . "/etc/menu/$file"}->{'f_obj'};
+                }
+                else {
+                    $f_obj = Apiis::Form::HTML->new( xmlfile => $apiis->APIIS_LOCAL . "/etc/menu/$file" );
+                }
                 my $opt_p = $query->param('sid');
                 my $opt_u = $query->param('user');
                 my $opt_m = $query->param('m');
                 my $opt_o = $query->param('o');
-                if ( !$f_obj->status ) {
-                    my $i;
-                    #my $i=$self->GetZIndex($f_obj);
+                if ( !$f_obj->status) {
+                    if ( $apiis->User->user_category <= $f_obj->GetValue( $f_obj->generalname, 'AR') ) {
+                        my $i;
+                        #my $i=$self->GetZIndex($f_obj);
 
-                    $f_obj->{_query} = $query;
-                    $i = $self->{_menu}->{_formcounter} if ( !$i );
-                    $i = 0 if ( !$i );
-                    $f_obj->{_formcounter} = $i;
-
-                    my $jsdao = $f_obj->_create_js_dataobject( $self->{_menu} );
-                    $self->{_menu}->{_forms}->{ $i . $f_obj->{'_form_list'}[0] } = $jsdao;
-
-                    $f_obj->{_menu} = 1;
-                    $self->{_style} = $f_obj->MakeStyle( $self->{_style} );
-                    my $table = $f_obj->run;
-                    $self->{_table} .= '<form id="F' . $i . '" method="POST" action="/cgi-bin/GUI" 
-			                          enctype="multipart/form-data" target="_blank">
-					    <input type="hidden" name="sid" value="' . $opt_p . '"  />
-					    <input type="hidden" name="g" value="' . "/etc/menu/$file" . '"  />
-					    <input type="hidden" name="formtype" value="apiisajax"  />
-					    <div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
-	                       ' . $table . '</div></form>';
-                    #$self->{_table} .= '<div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
-                    #       ' . $table . '</div>';
-                    #push( @{ $self->{_menu}->{_div}->{_ids} }, "e$i" );
-                    $self->{_menu}->{_div}->{_ids}->[$i] = "e$i";
-                    $self->{_menu}->{_text} .= "['" . $filepart . "','set_visible(" . $i . ")'],\n";
-                    $self->{_menu}->{_formcounter}++;
-                }
-            }
-            elsif ( $ext eq '.rpt' ) {
-
-                #menuefile aus rpt (UseForm) extrahieren
-
-                my ( $i, $useform ) = $self->GetZIndexFile( $apiis->APIIS_LOCAL . "/etc/menu/$file" );
-                if (defined $i) {
-                    my $f_obj = Apiis::Form::HTML->new( xmlfile => $apiis->APIIS_LOCAL . $useform );
-                    if ( !$f_obj->status ) {
                         $f_obj->{_query} = $query;
-                        if ( !defined $i ) {
-                            $i = $self->{_menu}->{_formcounter};
-                            $i = 0 if ( !$i );
-                            $self->{_menu}->{_formcounter}++;
-                        }
+                        $i = $self->{_menu}->{_formcounter} if ( !$i );
+                        $i = 0 if ( !$i );
                         $f_obj->{_formcounter} = $i;
 
                         my $jsdao = $f_obj->_create_js_dataobject( $self->{_menu} );
@@ -394,13 +396,58 @@ sub myfind {
                         $self->{_style} = $f_obj->MakeStyle( $self->{_style} );
                         my $table = $f_obj->run;
                         $self->{_table} .= '<form id="F' . $i . '" method="POST" action="/cgi-bin/GUI" 
-			                          enctype="multipart/form-data" target="_blank">
-					    <input type="hidden" name="sid" value="' . $opt_p . '"  />
-					    <input type="hidden" name="g" value="' . "/etc/menu/$file" . '"  />
-					    <div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
-	                       ' . $table . '</div></form>';
-                        push( @{ $self->{_menu}->{_div}->{_ids} }, "e$i" );
+                                        enctype="multipart/form-data" target="_blank">
+                            <input type="hidden" name="sid" value="' . $opt_p . '"  />
+                            <input type="hidden" name="g" value="' . "/etc/menu/$file" . '"  />
+                            <input type="hidden" name="formtype" value="apiisajax"  />
+                            <div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
+                            ' . $table . '</div></form>';
+                        #$self->{_table} .= '<div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
+                        #       ' . $table . '</div>';
+                        #push( @{ $self->{_menu}->{_div}->{_ids} }, "e$i" );
+                        $self->{_menu}->{_div}->{_ids}->[$i] = "e$i";
                         $self->{_menu}->{_text} .= "['" . $filepart . "','set_visible(" . $i . ")'],\n";
+                        $self->{_menu}->{_formcounter}++;
+                    }
+                }
+                else {
+                    $self->status(1);
+                    $apiis->errors( $f_obj->errors );
+                    return;
+                }
+            }
+            elsif ( $ext eq '.rpt' ) {
+
+                #menuefile aus rpt (UseForm) extrahieren
+
+                my ( $i, $useform ) = $self->GetZIndexFile( $apiis->APIIS_LOCAL . "/etc/menu/$file" );
+                if (defined $i) {
+                    my $f_obj = Apiis::Form::HTML->new( xmlfile => $apiis->APIIS_LOCAL . $useform );
+                    if ( !$f_obj->status) {
+                        if  ( $apiis->User->user_category <= $f_obj->GetValue( $f_obj->generalname, 'AR') )  {
+                            $f_obj->{_query} = $query;
+                            if ( !defined $i ) {
+                                $i = $self->{_menu}->{_formcounter};
+                                $i = 0 if ( !$i );
+                                $self->{_menu}->{_formcounter}++;
+                            }
+                            $f_obj->{_formcounter} = $i;
+
+                            my $jsdao = $f_obj->_create_js_dataobject( $self->{_menu} );
+                            $self->{_menu}->{_forms}->{ $i . $f_obj->{'_form_list'}[0] } = $jsdao;
+
+                            $f_obj->{_menu} = 1;
+                            $self->{_style} = $f_obj->MakeStyle( $self->{_style} );
+                            my $table = $f_obj->run;
+                            $self->{_table} .= '<form id="F' . $i . '" method="POST" action="/cgi-bin/GUI" 
+                                        enctype="multipart/form-data" target="_blank">
+                            <input type="hidden" name="sid" value="' . $opt_p . '"  />
+                            <input type="hidden" name="g" value="' . "/etc/menu/$file" . '"  />
+                            <div id="e' . $i . '" style="position:absolute;top:160px;visibility:hidden">
+                            ' . $table . '</div></form>';
+                            push( @{ $self->{_menu}->{_div}->{_ids} }, "e$i" );
+                            $self->{_menu}->{_text} .= "['" . $filepart . "','set_visible(" . $i . ")'],\n";
+                        }
                     }
                     else {
                         $self->status(1);
@@ -473,11 +520,17 @@ sub PrintMenue2 {
     # create structure for javascriptmenu
     # loop over all subdirectories of /etc/menu
 
+    # change to APIIS_HOME or APIIS_LOCAL:
+    chdir $startdir or die __( "Cannot change to dir [_1]: [_2]", $startdir, $! ), "\n";
+    
+    my @filesAR;
+    foreach my $thisdir (@dirs) {
+        push @filesAR, $self->myfindAR($thisdir);
+    }
+    
     my @files;
     $self->{_menu}->{_text} = 'var MENU_ITEMS = [' . "\n";
 
-    # change to APIIS_HOME or APIIS_LOCAL:
-    chdir $startdir or die __( "Cannot change to dir [_1]: [_2]", $startdir, $! ), "\n";
     foreach my $thisdir (@dirs) {
         push @files, $self->myfind($thisdir);
     }
@@ -1553,6 +1606,9 @@ sub PrintBody {
 
             next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
 
+            #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+            next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
             my $tab_col = $self->GetValue( $fieldname, 'DSColumn' );
             my $check;
             my @check;
