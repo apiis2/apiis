@@ -91,6 +91,10 @@ sub MakeStyle {
                     );
 
                 next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
+            
+                #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+                next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
 
                 #if ($form_name.'_'.$fieldname eq 'Ablammung_Field_82c1') {
                 #print "kk";
@@ -993,6 +997,10 @@ sub InitJSONData {
                 );
 
             next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
+            
+            #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+            next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
 
             #-- if parameter gets from another form
             my $field;
@@ -1426,6 +1434,10 @@ sub QueryJSONData {
                     );
 
                 next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
+            
+                #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+                next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
 
 
 
@@ -1504,6 +1516,10 @@ sub QueryJSONData {
                     );
 
                 next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
+            
+                #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+                next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
 
                 my $a = '';
                 if ( $self->GetValue( $tab_col, 'Type' ) eq 'Related' ) {
@@ -2256,6 +2272,9 @@ sub run {
 
             next if ( exists $self->{'_disable_targetfield'}->{$fieldname} );
 
+            #-- Feld wird nicht angezeigt, wenn Rechte nicht ausreichen 
+            next if ($self->GetValue( $fieldname, 'AR') and ($self->GetValue( $fieldname, 'AR') lt $apiis->User->user_category));
+            
             my $mem_key = 'js::' . $db_name . ':::' . $form_name . ':::' . $fieldname;
             my $mem_js;
 
