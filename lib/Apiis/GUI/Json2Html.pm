@@ -91,12 +91,12 @@ sub PrintHeader {
     my $ph=''; my $enc; my $css='';my $title;
 
 #    $enc=$self->GUIobj->general->charset;
-#    $css=$self->GUIobj->general->stylesheet;
+     $css='/etc/apiis.css';
 #    $title=$self->GUIobj->general->name;
     $enc='utf8';    
     print $query->header(-charset=>"$enc");
 
-    print $query->start_html();
+    print $query->start_html(-style=>{-src=>$css});
     
     return;
 }
